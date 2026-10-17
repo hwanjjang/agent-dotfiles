@@ -6,7 +6,8 @@ are maintained together. This is a toolchain example, not a complete client inst
 
 The screenshot was captured from the local generated map on 2026-10-17 using an
 isolated Playwright browser, with Screenshot Manual selected. It contains repository
-content only. The PDF was rendered with PDFium and its single page was visually
+content only. The captured How to use text was compared with the current catalog
+entry, and the full detail panel was visible without internal clipping. The PDF was rendered with PDFium and its single page was visually
 checked for readable text, screenshot placement, margins, and footer.
 
 After installing the dependencies documented in

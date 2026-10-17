@@ -2,8 +2,10 @@
 
 Applied at spec time, not after implementation.
 
-- Architecture boundaries and invariants are defined in `AGENTS.md`; specs must
-  state which boundaries a change touches.
+- Use the destination project's documented architecture boundaries and invariants
+  (for example, its own `AGENTS.md` or architecture documents). Specs must state
+  which boundaries a change touches. This collection's maintenance instructions
+  do not define another project's system architecture.
 - Prefer extending existing patterns over introducing new ones; new patterns
   require an "Alternatives considered" section in the spec.
 - Cross-cutting or multi-module changes require a dependency graph in the plan
