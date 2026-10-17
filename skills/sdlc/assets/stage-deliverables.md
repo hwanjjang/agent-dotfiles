@@ -64,6 +64,7 @@ Every deliverable begins with:
 
 ## Design: reports/sdlc/TASK/design/
 
+- Selected design and rationale; record architect/arena use or a justified exclusion under [skill routing](../references/skill-routing.md).
 - Diagram type and decision it supports; source JSON and delivered HTML identities.
 - Mapping from diagram elements to spec requirements and actual code evidence.
 - Resolved Archify contract/version and commands used.
@@ -92,7 +93,7 @@ Every deliverable begins with:
 | --- | --- | --- | --- | --- | --- |
 | Record actual criterion | Record actual test layer | Record applicability | Record assertion | Record explicit failure | Link source/procedure |
 
-- Change classification and test-first sequence.
+- Change classification, selected verification mode and test-first sequence or justified alternative. For alternative mode, record `tdd_exception.reason`, `attempted` and `limitation`, scenario-linked coverage and separate smoke evidence under [the verification contract](../references/verification.md#tdd-method-and-alternative-evidence).
 - Scenario prerequisites/environment/data, actions, expected/failure results, command/procedure and cleanup (use smoke template where applicable).
 - Relevant normal, error, authorization, boundary, retry/duplicate, transition and concurrency coverage; reasons for exclusions.
 - Known capability/environment gaps marked blocked/not-run.

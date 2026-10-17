@@ -1021,7 +1021,7 @@
       "when": [
         "You are maintaining skills, policies or agent instruction entry points."
       ],
-      "usage": "Read skills/writing-for-agents/SKILL.md and its declared dependencies. Use independently or through applicable SDLC routing.",
+      "usage": "Read skills/writing-for-agents/SKILL.md and its declared dependencies when maintaining skills, policies or agent instructions. Use directly as an authoring aid.",
       "behavior": [
         "Author precise triggers, focused methods and observable completion.",
         "Preserves task scope and reports verification limits."

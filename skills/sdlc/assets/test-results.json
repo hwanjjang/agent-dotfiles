@@ -1,5 +1,12 @@
 {
   "candidate": "REPLACE_WITH_TESTED_IDENTITY",
+  "verification_mode": "tdd",
+  "refactor_performed": true,
+  "tdd_exception": {
+    "reason": "",
+    "attempted": "",
+    "limitation": ""
+  },
   "scenarios": [],
   "runs": [],
   "not_applicable_reason": ""

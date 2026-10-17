@@ -17,5 +17,5 @@
   "skill_dependencies": [],
   "policy_dependencies": [],
   "runtime_requirements": [],
-  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. SDLC evidence-mode and existing state/reviewer tests: 52 passed. No model-adherence, live MCP authentication or multi-provider lifecycle claim."
+  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. The separate SDLC test suite checks evidence records, not execution of this skill. No model-adherence, live MCP authentication or multi-provider lifecycle claim."
 }
