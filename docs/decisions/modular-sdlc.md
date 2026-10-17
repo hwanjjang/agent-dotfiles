@@ -234,3 +234,34 @@ and relationships; keep this proposal distinct from executable capability.
 [addy-feedback]: https://www.reddit.com/r/WebAfterAI/comments/1tb2w7q/google_chrome_engineer_addy_osmanis_agent_skills/
 [parallel-feedback]: https://github.com/addyosmani/agent-skills/issues/518
 [duplication-feedback]: https://github.com/addyosmani/agent-skills/issues/172
+
+## Required and additional reviewer overlap — 2026-10-17
+
+AK requested one execution when these roles select the same reviewer. The
+[additional-reviewer contract](../../skills/sdlc/references/optional-reviewers.md#one-assignment-per-reviewer)
+owns selection and reuse; the state helper validates the shared receipt without
+becoming a host dispatcher. One result is not two independent opinions.
+
+The source comparison supports choosing reviewers for useful coverage rather
+than multiplying role labels: [pstack interrogate](https://github.com/cursor/plugins/blob/101b274dd991f694e1f7024be2157e5f3adf07de/pstack/skills/interrogate/SKILL.md)
+uses model diversity; [Matt's code review](https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/code-review/SKILL.md)
+separates standards and spec coverage; [Addy's review](https://github.com/addyosmani/agent-skills/blob/aeac41d4d005999432bb7312f7ff06383a91d59d/skills/code-review-and-quality/SKILL.md)
+covers multiple dimensions. [Superpowers](https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/subagent-driven-development/SKILL.md)
+also distinguishes useful review boundaries from duplicate review of the same diff.
+These are comparisons, not imported scheduling code or proof of equal review quality.
+
+[Community discussion of subagent cost](https://www.reddit.com/r/ClaudeCode/comments/1ubfy7y/whats_really_the_big_deal_with_subagentdriven/)
+contains mixed anecdotal experience; it does not test this particular deduplication
+rule. This change follows the maintainer's explicit request, not a popularity claim.
+Offline regressions cover configuration/authority and an isolated CLI handoff;
+actual host call deduplication and deployment remain unverified.
+
+The existing Addy-derived `code-review-and-quality` remains the inspection method,
+called inside the reviewer selected by SDLC. Its five dimensions already cover
+this repository's needs, so adding another review skill would duplicate ownership.
+The pstack and Matt sources above include their own agent dispatch; importing
+those dispatchers underneath SDLC would recreate the overlap. Their model-diversity
+and standards/spec distinctions inform the integration without importing extra
+reviewer counts, tracker setup or runtime-specific launchers. This is a scope-fit
+decision, not a ranking of individual skill popularity. The canonical routing
+table owns method selection; the focused skill owns its standalone/assigned method.

@@ -308,7 +308,9 @@ def provider_identity(value):
     require(nonempty(value), 'Missing actual provider')
     name = value.strip().casefold()
     for prefix, provider in (('codex', 'openai'), ('openai', 'openai'),
-                             ('claude', 'anthropic'), ('anthropic', 'anthropic')):
+                             ('claude', 'anthropic'), ('anthropic', 'anthropic'),
+                             ('grok', 'xai'), ('xai', 'xai'), ('x.ai', 'xai'),
+                             ('gemini', 'google'), ('google', 'google')):
         if name == prefix or name.startswith(prefix + '-') or name.startswith(prefix + '/'):
             return provider
     return name
@@ -375,6 +377,15 @@ def validate_reviewer_configuration(review, revised=False, expected_effort="medi
         require(provider_identity(review['provider']) != author_provider, 'Same-provider reviewer')
     require(review.get('independent') is True and review['context_id'] != review['builder_context_id']
             and review.get('latest_ga_model_verified') is True, 'Unverified reviewer independence/model')
+    shared = review.get('shared_optional_review')
+    if shared is not None:
+        targets = {'grok': 'xai', 'gemini': 'google'}
+        require(isinstance(shared, str) and shared in targets,
+                'Unknown shared optional reviewer')
+        require(provider_identity(review['provider']) == targets[shared],
+                'Shared review must use the additional reviewer provider')
+        if effort_authority is None:
+            expected_effort = 'high'
     require(review.get('requested_effort') == review.get('effort') == expected_effort
             and review.get('effort_verified') is True, 'Reviewer must resolve verified authorized effort')
     provenance = review.get('reviewer_effort_authority')

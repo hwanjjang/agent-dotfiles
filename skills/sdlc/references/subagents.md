@@ -11,10 +11,10 @@ Read this before delegating. The main agent owns authority decisions, the artifa
 
 Roles do not mandate a fixed agent count. Main may handle optional planning/research/test design/build directly if delegation adds no value, recording its builder role. The builder cannot become its own reviewer by changing labels. There is no separate independent-verification assignment/report in the revised PR route.
 
-For authorized PR work, also dispatch the [optional Grok/Gemini review-only
-assignments](optional-reviewers.md) when available. These are additional qa contexts,
-not required fallback slots. Neither participates in dev/correction; main publishes
-their returned reviews. Apply the optional contract's configuration and skip rules.
+For authorized PR work, apply the [additional-reviewer contract](optional-reviewers.md)
+before dispatch: share matching required/additional roles, and launch only uncovered
+reviewers. These roles never participate in dev/correction; main publishes each
+distinct review once. Required fallback eligibility remains unchanged.
 
 ## Dispatch
 
@@ -60,7 +60,7 @@ Use reviewer 1, then reviewer 2 from actual providers different from the builder
 
 ## 2026-10-03 reviewer effort authority amendment
 
-Default reviewer effort remains medium. An explicit task-scoped AK instruction may override it through the latest successful intent output described in [the state contract](state-contract.md#reviewer-effort-authority). This supersedes literal medium requirements in earlier amendments; preserve their historical execution records. Resolve and observe the authorized value without relabeling runtime evidence. Unsupported host effort leaves review incomplete; no account, permission or launch authority is added.
+Use [effort authority](state-contract.md#reviewer-effort-authority) and [shared-review records](state-contract.md#shared-review-records) for current selection and receipt requirements. Preserve historical execution settings; do not relabel observations or infer new launch authority.
 
 ## 2026-10-15 permission-mode update
 

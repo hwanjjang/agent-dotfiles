@@ -152,7 +152,7 @@ Before completion, check affected user/API/operations documentation, README and 
 
 ## 2026-10-03 reviewer effort authority amendment
 
-Default reviewer effort remains medium. An explicit task-scoped AK instruction may override it through the latest successful intent output described in [the state contract](../state-contract.md#reviewer-effort-authority). This supersedes literal medium requirements in earlier amendments; preserve their historical execution records. Resolve and observe the authorized value without relabeling runtime evidence. Unsupported host effort leaves review incomplete; no account, permission or launch authority is added.
+Use [effort authority](../state-contract.md#reviewer-effort-authority) and [shared-review records](../state-contract.md#shared-review-records) for current selection and receipt requirements. Preserve historical execution settings; do not relabel observations or infer new launch authority.
 
 ## 2026-10-15 additional optional PR reviewers
 
@@ -178,3 +178,11 @@ Use the user's language and the destination repository's artifact conventions.
 Historical model names are preferences to verify, not claims of host availability.
 The screenshot-manual skill provides the required screenshot/PDF production path;
 archify provides diagram production. Both keep generated evidence local by default.
+
+## 2026-10-17 shared required/additional reviewer
+
+AK requested one execution when the required and additional reviewer are the same.
+Follow the [single-assignment contract](../optional-reviewers.md#one-assignment-per-reviewer)
+and [receipt mapping](../state-contract.md#shared-review-records). They supersede
+earlier separate-context and literal-medium requirements for shared reviews.
+Preserve the required review gates and the actual execution history.

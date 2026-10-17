@@ -1,20 +1,46 @@
 # Additional optional PR reviewers
 
-Source: AK's 2026-10-15 instruction. Apply to authorized SDLC PR work, in addition
-to the existing required review and its provider fallback chain.
+Source: AK's 2026-10-15 instruction, amended 2026-10-17: when the required and
+additional reviewer are the same, run once and share the result. Apply to
+authorized SDLC PR work. Required reviewer eligibility and fallback still apply.
 
 | Reviewer | Model target | Reasoning effort | Role |
 | --- | --- | --- | --- |
-| Grok | Grok 4.7 | high | Optional PR review only |
-| Gemini | Gemini 3.8 | high | Optional PR review only |
+| Grok | Grok 4.7 | high | Additional review, or shared with required review |
+| Gemini | Gemini 3.8 | high | Additional review, or shared with required review |
 
-Attempt both reviews for the current candidate when available, including when the
-required reviewer has already returned PASS. Neither is a fallback slot or a
-substitute for the required review. Run the two independently; failure of one does
-not skip the other. Parallel execution is optional when the host supports isolation.
-They remain additional contexts even if a required reviewer shares their provider.
-Each assignment shares the candidate's current PR-review attempt and stage budget;
-it does not create a new counter or reset an existing one.
+## One assignment per reviewer
+
+Resolve the required and additional roster before dispatch, and reconcile it again
+when required fallback changes. Match the actual model provider, not account,
+launcher or role labels: Grok is xAI; Gemini is Google. An effort difference alone
+is not a reason to create another reviewer.
+
+- When a required reviewer also covers a listed provider, use one independent
+  assignment for both roles. Keep the required review's latest-GA model and all
+  its eligibility/coverage checks. The shared run defaults to **high**; explicit
+  task-scoped effort authority takes precedence. Do not launch required Grok
+  medium plus additional Grok high for the same candidate.
+- Attempt only additional providers not covered by that required assignment.
+  Distinct reviewers remain independent; an optional failure does not skip the
+  other provider. Parallel execution remains optional.
+- If that reviewer is already running or has returned, inspect its context,
+  actual settings, exact head/base, scope and evidence before reusing it. Complete
+  missing required checks in the same independent context when possible. Never
+  relabel medium as high, count one result as two independent opinions, or rerun
+  an unchanged passing review merely to satisfy an additional role's preset.
+- A shared review must meet every required gate; an optional-only permission
+  exception or partial review cannot become required PASS. If it cannot proceed,
+  retain its findings and advance the required fallback. Record the failed
+  additional attempt too instead of retrying the same unavailable reviewer.
+
+For example: required Claude plus additional Grok/Gemini are distinct assignments.
+If Claude is unavailable and required fallback selects Grok, share that Grok review
+and attempt only Gemini separately. Both roles link to one context, verdict and
+publication record; a shared failure is still a required-review failure.
+
+Assignments share the candidate's current PR-review attempt and stage budget;
+sharing roles creates neither another counter nor a reset.
 
 ## Selection and boundaries
 
@@ -25,12 +51,17 @@ separate effort setting; retain evidence of that mapping. Do not silently substi
 a different version or lower effort. If the target/configuration cannot be resolved
 or verified, skip that optional review with the observed reason.
 
-For these two additional contexts only, the named model and high effort override
-the required review's latest-GA and intent-derived effort rules. Keep the required
-review configuration and state receipts unchanged. Other host discovery, existing
-permission and read-only isolation requirements still apply; permission-mode configuration is optional. If mode setup fails, continue with verified read-only execution under the existing permissions rather than skipping for that reason.
+For separate additional assignments, use the table's named model/high defaults.
+For a shared assignment, apply the selection above and record its actual model;
+do not claim that a different pinned optional model was run. The
+[state contract](state-contract.md#shared-review-records) defines the one required
+receipt and additional-role reference. Other host discovery, permission and
+read-only isolation requirements still apply; permission-mode configuration is
+optional. If mode setup fails, continue with verified read-only execution under
+existing permissions rather than skipping for that reason.
 
-Use a separate context from the builder and every other reviewer. Grok and Gemini
+Use a separate context from the builder and other distinct reviewers; shared roles
+use the same reviewer context. Grok and Gemini
 must not participate in implementation or correction in this SDLC workflow. Give
 them the current PR URL, exact head/base and diff, requirements, applicable policy,
 self-verification evidence and unresolved finding/response history. Their task is
@@ -46,11 +77,12 @@ task-owned effects within existing authority, preserving other contributors' wor
 
 ## Results, comments and corrections
 
-The main agent publishes each completed review as an attributed PR comment using
+The main agent publishes each distinct completed review once as an attributed PR comment using
 the actual reviewer/model/effort and reviewed head. Group findings under **Required /
 Recommended** with reviewer-prefixed stable IDs (for example `GROK-1`, `GEM-1`),
 locations, evidence and requested action;
-publish a concise clean-review result when there are no findings. Do not call a
+publish a concise clean-review result when there are no findings. Name both roles
+when sharing a result; do not duplicate its comment. Do not call a
 partial/failed run PASS. Reviewer agents return results to main rather than writing
 to GitHub themselves. Read current comments before posting to avoid duplicates.
 If publication fails, retain the result and record the failure; do not claim it was
@@ -77,8 +109,9 @@ it alone. Unselected recommendations receive no follow-up tracking.
 Skip on an observed rate/quota limit, service outage, authentication/tool failure,
 deadline exceeded without a complete return, or unavailable/unverifiable model,
 effort or read-only isolation. Mode selection or observation failures alone are not skip reasons. Give each assignment a bounded deadline at dispatch.
-Before readiness, each optional assignment must have returned or have a recorded
-skip. Stop only task-owned timed-out runs within existing authority; retain partial
+Before readiness, each additional target must have a returned review, a reference
+to its shared required review, or a recorded skip. Stop only task-owned timed-out
+runs within existing authority; retain partial
 findings. A late returned Required finding triggers the same readiness reassessment.
 Record target, attempted
 configuration, timestamp, exact reason and observation. Do not repeatedly retry the
@@ -90,9 +123,11 @@ Keep completed, partial and skipped outcomes in the PR-review index and durable
 handoff. Include context, actual model/configuration, head/base, findings and the
 published comment URL/ID when present. Mention skipped targets and reasons once in
 the consolidated PR review/readiness comment; a skip is neither PASS nor a finding.
-Do not place optional configurations in the mandatory `review` receipt or invent
-`reviewer_slot` values for them. The state CLI validates the existing required review;
-the main agent is responsible for attempting, recording and publishing these extras.
+Separate optional-only configurations stay outside the mandatory `review` receipt;
+do not invent `reviewer_slot` values. A shared result uses the actual required slot
+and the [shared-review record](state-contract.md#shared-review-records), with one
+finding/disposition history. The CLI checks receipt eligibility, not launcher calls;
+main is responsible for deduplicating dispatch and publication.
 
 Optional availability, verdicts and publication failures do not by themselves block
 readiness or replace required-review PASS. Unresolved Required findings, missing

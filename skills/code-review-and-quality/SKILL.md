@@ -9,6 +9,26 @@ Scope: inspect the requested artifact and return findings. A favorable review is
 not permission to edit, merge, publish, or deploy. Respect the requested endpoint.
 Pin the reviewed revision and distinguish requirements from quality findings.
 
+## Run within the assigned review
+
+Use this skill directly for a requested review, or inside the independent reviewer
+context selected by a coordinating workflow. The coordinator owns provider/model
+selection, role sharing, fallback, publication and re-review. This method does not
+start another reviewer or require SDLC state for standalone use.
+
+Before inspecting, establish the exact base/head (or identified local snapshot),
+diff, task/spec requirements, applicable repository standards, available verification
+evidence and prior finding/response history. Record missing inputs as review gaps;
+do not invent requirements or call an incomplete assessment PASS.
+
+Apply the dimensions below to the actual change. Keep requirement compliance and
+repository-standard findings distinguishable; stylistic heuristics are recommendations
+unless a real requirement or defect makes them blocking. Return candidate identity,
+scope, findings with locations/evidence/impact and verification limits. Use the
+coordinator's finding schema and disposition rules when supplied; otherwise use
+this skill's standalone severity guidance. Do not claim checks ran merely because
+the author supplied a passing report.
+
 ## Overview
 
 Multi-dimensional code review with quality gates. Every change gets reviewed before merge — no exceptions. Review covers five axes: correctness, readability, architecture, security, and performance.
@@ -213,7 +233,9 @@ Check the author's verification story:
 
 ## Multi-Model Review Pattern
 
-Use different models for different review perspectives:
+When a coordinating workflow selects different models for review perspectives,
+apply this method within each assigned context. The diagram illustrates those
+roles; it does not instruct an assigned reviewer to spawn more agents:
 
 ```
 Model A writes the code

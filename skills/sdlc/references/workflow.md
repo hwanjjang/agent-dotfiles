@@ -119,8 +119,8 @@ Planning owes user scenarios using [the scenario artifact](../assets/user-scenar
 
 Use the [review fallback and finding handoff](verification.md) for each review/correction cycle. A reviewer unable to perform required checks hands available evidence and unresolved findings to the next reviewer. Required findings cannot be waived by the author. The builder records its selection and response for every finding, applies selected changes, reruns affected checks and pushes. Repeat until reviewer PASS and no selected change remains, within existing stage budgets. Unselected recommendations remain only as review results.
 
-Also attempt the [optional Grok 4.7 high and Gemini 3.8 high reviews](optional-reviewers.md)
-and publish their attributed PR comments. They review only; availability failures
-are recorded skips and do not replace or expand the required-review fallback gate.
+Apply the [additional-reviewer selection](optional-reviewers.md) with the required
+roster, sharing matching reviewers and publishing each distinct result once.
+Availability failures remain recorded skips; required eligibility is unchanged.
 
 Before final readiness, inspect all affected documents and diagrams and update them where necessary. A late document/code change goes through renewed affected verification and review. Completion records the final document check and no remaining author-selected changes. The separate independent-verification stage is excluded; its ID/history remain for compatibility. Use `upgrade-review-workflow` when adopting this revision for an existing PR task, preserving all history and counters. No additional workflow management is introduced for non-PR work.

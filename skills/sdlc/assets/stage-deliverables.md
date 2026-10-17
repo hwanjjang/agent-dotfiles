@@ -130,7 +130,7 @@ The independent-verification stage is historical only in the revised PR route; n
 
 - Actual PR review/comment URL and stable record ID; publication status.
 - Exact reviewed base/head and consumed upstream revisions.
-- Author/reviewer providers and contexts, exact latest GA reviewer model, observed authorized effort (medium by default), verified read-only boundary/evidence, optional honest requested/observed permission mode, host/isolation.
+- Author/reviewer providers and contexts, exact latest GA reviewer model, observed effort under [current selection](../references/optional-reviewers.md#one-assignment-per-reviewer), verified read-only boundary/evidence, optional honest requested/observed permission mode, host/isolation.
 - Current model-selection source/timestamp and actual execution receipt; profile/account labels separately from actual provider identity.
 - Reviewer slot, unavailable earlier reviewers and actual failure evidence; received finding IDs, author responses/fixes and remaining checks.
 - Review scope/lenses and fixed-schema findings:
@@ -202,4 +202,4 @@ Use the current PR route: required user scenarios, documentation/manual evidence
 
 ## 2026-10-03 reviewer effort authority amendment
 
-Default reviewer effort remains medium. An explicit task-scoped AK instruction may override it through the latest successful intent output described in [the state contract](../references/state-contract.md#reviewer-effort-authority). This supersedes literal medium requirements in earlier amendments; preserve their historical execution records. Resolve and observe the authorized value without relabeling runtime evidence. Unsupported host effort leaves review incomplete; no account, permission or launch authority is added.
+Use [effort authority](../references/state-contract.md#reviewer-effort-authority) and [shared-review records](../references/state-contract.md#shared-review-records) for current selection and receipt requirements. Preserve historical execution settings; do not relabel observations or infer new launch authority.

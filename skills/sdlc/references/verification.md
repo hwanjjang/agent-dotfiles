@@ -115,14 +115,19 @@ local ignored reports alone are not a cross-context or final durable handoff.
 
 ## PR review and reviewer fallback
 
-Keep the required review/fallback below and also attempt the
-[additional optional Grok/Gemini reviews](optional-reviewers.md). Their attributed
+Keep the required review/fallback below and apply the
+[additional reviewer selection and sharing rules](optional-reviewers.md). Their attributed
 PR comments and findings join this review cycle; their availability does not add a
 required gate. Follow that contract for skipped runs and finding-resolution handoff.
 
 Supply upstream artifact index, intent/spec/plan revisions, request/ACs, policy, exact base/head and diff, builder self-verification, user scenarios, documentation/manual and test/smoke evidence. Do not seed the reviewer with the expected conclusion. PR review challenges acceptance, actual behavior, evidence and the change; there is no separate independent-verification stage or report in the revised PR route.
 
 PR review uses [host eligibility](host-adapters.md), then checks requirements, normal/error behavior, retries/concurrency, security/data, external effects, coverage, architecture, documentation, operation and rollback. Passing CI or smoke does not replace review.
+
+Use the review method through [stage-to-skill routing](skill-routing.md), inside
+each selected reviewer context. Include its resolved source with the review inputs;
+method invocation is not another reviewer assignment. This contract owns the
+required receipt and finding lifecycle; the focused skill owns inspection technique.
 
 Finding schema:
 
@@ -165,7 +170,7 @@ Before final readiness, check affected README, API, operations and user document
 
 ## 2026-10-03 reviewer effort authority amendment
 
-Default reviewer effort remains medium. An explicit task-scoped AK instruction may override it through the latest successful intent output described in [the state contract](state-contract.md#reviewer-effort-authority). This supersedes literal medium requirements in earlier amendments; preserve their historical execution records. Resolve and observe the authorized value without relabeling runtime evidence. Unsupported host effort leaves review incomplete; no account, permission or launch authority is added.
+Use [effort authority](state-contract.md#reviewer-effort-authority) and [shared-review records](state-contract.md#shared-review-records) for current selection and receipt requirements. Preserve historical execution settings; do not relabel observations or infer new launch authority.
 
 ## 2026-10-15 permission-mode update
 
