@@ -1,0 +1,263 @@
+"""Exercise account delivery in disposable homes, never by changing HOME."""
+import contextlib
+import importlib.util
+import io
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts'))
+import setup_account as setup
+import account_storage as storage
+
+
+class AccountSetupTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix='account install ')
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.home = self.root / 'first account'
+        self.home.mkdir()
+        self.repo = self.root / 'source'
+        self.repo.mkdir()
+        # A minimal committed source includes real account runtime/templates and two dependent skills.
+        for name in ['account', 'policies', 'mcp']:
+            shutil.copytree(ROOT / name, self.repo / name)
+        for name in ['planning-with-files', 'tdd']:
+            shutil.copytree(ROOT / 'skills' / name, self.repo / 'skills' / name,
+                            ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+        (self.repo / 'README.md').write_text('Synthetic source\n')
+        self.git('init', '-q');self.commit('initial')
+        env = {k: v for k, v in os.environ.items() if k not in ('CODEX_HOME', 'CLAUDE_CONFIG_DIR', 'HERMES_HOME')}
+        self.environ = patch.dict(os.environ, env, clear=True);self.environ.start();self.addCleanup(self.environ.stop)
+
+    def git(self, *args):
+        return subprocess.check_output(['git', '-C', str(self.repo), *args], stderr=subprocess.DEVNULL).decode().strip()
+
+    def commit(self, msg):
+        self.git('add', '.');self.git('-c', 'user.name=Synthetic', '-c', 'user.email=test@example.invalid', 'commit', '-qm', msg)
+        return self.git('rev-parse', 'HEAD')
+
+    def prepare(self, **kwargs):
+        return setup.prepare(self.home, self.repo, **kwargs)
+
+    def apply(self, **kwargs):
+        plan, changes = self.prepare(**kwargs)
+        self.assertFalse(plan['conflicts'])
+        with storage.lock(self.home):
+            ident = storage.transact(self.home, plan, changes)
+        return ident
+
+    def config(self, name, value):
+        path = self.home / name;path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value));return path
+
+    def test_preview_does_not_mutate_either_home_or_source(self):
+        before = storage.observed(self.home);source = storage.observed(self.repo)
+        plan, changes = self.prepare()
+        self.assertTrue(changes);self.assertEqual(storage.observed(self.home), before)
+        self.assertEqual(storage.observed(self.repo), source)
+        self.assertNotIn('.hermes/SOUL.md', plan['changes'])
+
+    def test_install_update_uninstall_preserves_unrelated_settings(self):
+        self.config('.claude/settings.json', {'permissions': {'deny': ['Bash(rm *)']}, 'hooks': {'Stop': [{'hooks': [{'command': 'personal-check'}]}]}})
+        self.config('.codex/auth.json', {'token': 'SYNTHETIC'})
+        keep = self.home / '.agents/skills/paseo/SKILL.md';keep.parent.mkdir(parents=True);keep.write_text('host-owned')
+        self.apply()
+        for client in ('agents', 'claude'):
+            self.assertEqual((self.home / f'.{client}/skills/tdd/SKILL.md').read_bytes(), (self.repo / 'skills/tdd/SKILL.md').read_bytes())
+        self.assertIsNone(self.apply(action='update'))
+        source = self.repo / 'policies/communication.md';source.write_text(source.read_text()+'\nNew synthetic revision.\n')
+        revision = self.commit('update policy');self.apply(action='update')
+        self.assertEqual(setup.load_receipt(self.home)['source_revision'], revision)
+        self.assertIn('New synthetic', (self.home / setup.BUNDLE / 'policies/communication.md').read_text())
+        self.apply(action='uninstall')
+        self.assertFalse((self.home / '.agents/skills/tdd').exists())
+        self.assertFalse(setup.load_receipt(self.home))
+        self.assertEqual(keep.read_text(), 'host-owned')
+        self.assertEqual(json.loads((self.home / '.codex/auth.json').read_text()), {'token':'SYNTHETIC'})
+        config = json.loads((self.home / '.claude/settings.json').read_text())
+        self.assertEqual(config['permissions']['deny'], ['Bash(rm *)'])
+        self.assertEqual(config['hooks']['Stop'][0]['hooks'][0]['command'], 'personal-check')
+
+    def test_managed_file_drift_blocks_update_and_uninstall(self):
+        self.apply();target = self.home / setup.BUNDLE / 'policies/communication.md';target.write_text('local edit')
+        for action in ('update', 'uninstall'):
+            with self.assertRaisesRegex(ValueError, 'Managed asset changed'):
+                self.prepare(action=action)
+        self.assertEqual(target.read_text(), 'local edit')
+
+    def test_modified_managed_hook_is_not_silently_removed(self):
+        self.apply();p=self.home / '.codex/hooks.json';config=json.loads(p.read_text())
+        config['hooks']['Stop'][0]['hooks'][0]['timeout']=999;p.write_text(json.dumps(config))
+        with self.assertRaisesRegex(ValueError, 'Managed hook changed'):
+            self.prepare(action='uninstall')
+
+    def test_hermes_opt_in_requires_install_and_persists_then_removes(self):
+        with patch.object(setup.shutil, 'which', side_effect=lambda n: None if n=='hermes' else '/synthetic/'+n):
+            with self.assertRaisesRegex(ValueError, 'installed hermes'):
+                self.prepare(hermes=True)
+        p=self.home / '.hermes/SOUL.md';p.parent.mkdir();p.write_text('Keep personality.\n')
+        cfg=self.config('.hermes/config.yaml', {'synthetic':'untouched'});original=cfg.read_bytes()
+        with patch.object(setup.shutil, 'which', return_value='/synthetic/tool'):
+            self.apply(hermes=True);self.assertTrue(setup.load_receipt(self.home)['hermes'])
+            self.assertIsNone(self.apply(action='update'))
+            self.apply(action='update',hermes=False)
+        self.assertFalse((self.home / '.hermes/skills/tdd').exists())
+        self.assertEqual(p.read_text(), 'Keep personality.\n');self.assertEqual(cfg.read_bytes(),original)
+
+    def test_mcp_opt_in_and_removal_preserve_personal_entries(self):
+        p=self.home / '.codex/config.toml';p.parent.mkdir();p.write_text('model = "personal-model"\n\n[mcp_servers.personal]\nurl = "https://example.invalid/mcp"\n')
+        self.config('.claude.json', {'theme':'dark','mcpServers':{'personal':{'url':'https://example.invalid'}}})
+        self.apply(mcp=['github','context7','playwright'])
+        parsed=setup.tomllib.loads(p.read_text())
+        self.assertEqual(parsed['mcp_servers']['github']['bearer_token_env_var'],'GITHUB_MCP_TOKEN')
+        self.assertEqual(parsed['mcp_servers']['github']['http_headers']['X-MCP-Readonly'],'true')
+        self.apply(action='update',mcp=[])
+        self.assertEqual(set(setup.tomllib.loads(p.read_text())['mcp_servers']),{'personal'})
+        self.assertEqual(json.loads((self.home / '.claude.json').read_text())['theme'],'dark')
+
+    def test_existing_mcp_collision_is_a_conflict_not_a_replacement(self):
+        self.config('.claude.json',{'mcpServers':{'github':{'url':'https://example.invalid'}}})
+        with self.assertRaisesRegex(ValueError,'MCP name conflicts'):
+            self.prepare(mcp=['github'])
+        self.assertFalse((self.home / storage.RECEIPT).exists())
+
+    def test_unowned_directory_needs_exact_plan_and_rollback_recovers_it(self):
+        p=self.home / '.agents/skills/tdd';p.mkdir(parents=True);(p/'SKILL.md').write_text('old unowned')
+        plan,_=self.prepare();self.assertIn('.agents/skills/tdd',plan['conflicts'])
+        planfile=self.root/'approved.json';planfile.write_bytes(storage.encoded(plan))
+        argv=['install','--repo',str(self.repo),'--home',str(self.home),'--apply']
+        with contextlib.redirect_stdout(io.StringIO()),contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(setup.main(argv),2)
+            out=io.StringIO()
+            with contextlib.redirect_stdout(out):self.assertEqual(setup.main(argv+['--approve-plan',str(planfile)]),0)
+        ident=json.loads(out.getvalue())['transaction'];self.assertTrue(p.is_symlink())
+        with storage.lock(self.home):storage.rollback(self.home,ident)
+        self.assertFalse(p.is_symlink());self.assertEqual((p/'SKILL.md').read_text(),'old unowned')
+
+    def test_stale_preview_rejected_before_any_write(self):
+        plan,changes=self.prepare();self.config('.claude/settings.json',{'user_edit':True})
+        with storage.lock(self.home),self.assertRaisesRegex(ValueError,'changed since preview'):
+            storage.transact(self.home,plan,changes)
+        self.assertFalse((self.home / setup.BUNDLE).exists())
+
+    def test_rollback_refuses_overwriting_post_install_edits(self):
+        ident=self.apply();p=self.home / '.claude/CLAUDE.md';p.write_text(p.read_text()+'personal update\n')
+        with self.assertRaisesRegex(ValueError,'later changes'):
+            storage.rollback_plan(self.home,ident)
+        self.assertIn('personal update',p.read_text())
+
+    def test_failed_write_rolls_back_and_keeps_private_backup(self):
+        original=storage.put;calls=[]
+        def fail_once(path,value):
+            calls.append(path)
+            if len(calls)==4:raise OSError('synthetic failure')
+            return original(path,value)
+        plan,changes=self.prepare()
+        with storage.lock(self.home),patch.object(storage,'put',side_effect=fail_once),self.assertRaisesRegex(ValueError,'rollback|rolled-back'):
+            storage.transact(self.home,plan,changes)
+        self.assertFalse((self.home / storage.RECEIPT).exists())
+        for name in changes:self.assertEqual(storage.observed(storage.safe(self.home,name)),plan['before'][name])
+        journals=list((self.home / storage.STATE_DIR / 'transactions').glob('*/journal.json'))
+        self.assertEqual(len(journals),1);self.assertEqual(journals[0].stat().st_mode & 0o777,0o600)
+
+    def test_symlink_parent_and_source_delivery_overlap_rejected(self):
+        outside=self.root/'elsewhere';outside.mkdir();(self.home/'.agents').symlink_to(outside)
+        with self.assertRaisesRegex(ValueError,'Unsafe parent'):
+            self.prepare()
+        (self.home/'.agents').unlink()
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(setup.main(['install','--home',str(self.home),'--repo',str(self.home)]),2)
+
+    def test_legacy_receipt_cannot_bypass_an_unmatched_instruction_owner(self):
+        path = self.home / '.codex/AGENTS.md'
+        path.parent.mkdir(parents=True)
+        path.write_text('<!-- another-owner:begin -->\nKeep this.\n<!-- another-owner:end -->\n')
+        receipt = self.root / 'legacy.json'
+        receipt.write_text(json.dumps({'version': 1, 'home': str(self.home),
+                                       'instructions': {}, 'hooks': {}}))
+        with self.assertRaisesRegex(ValueError, 'Existing managed instructions'):
+            self.prepare(legacy=receipt)
+        self.assertFalse((self.home / setup.BUNDLE).exists())
+        self.assertIn('Keep this.', path.read_text())
+
+    def test_legacy_receipt_retires_only_exact_fragments(self):
+        block='<!-- example:begin -->\nOld shared instructions.\n<!-- example:end -->\n'
+        p=self.home / '.codex/AGENTS.md';p.parent.mkdir();p.write_text('Personal rule.\n'+block)
+        group={'hooks':[{'command':'python3 old-planning-hook.py codex stop.py'}]}
+        self.config('.codex/hooks.json',{'hooks':{'Stop':[group,{'hooks':[{'command':'personal-check'}]}]}})
+        legacy=self.root/'old-receipt.json';legacy.write_text(json.dumps({'version':1,'home':str(self.home),'instructions':{'.codex/AGENTS.md':block},'hooks':{'.codex/hooks.json':{'Stop':[group]}}}))
+        with self.assertRaisesRegex(ValueError,'legacy-receipt'):
+            self.prepare()
+        plan,changes=self.prepare(legacy=legacy);self.assertIn('legacy instruction/hook ownership transfer',plan['conflicts'])
+        with storage.lock(self.home):storage.transact(self.home,plan,changes)
+        self.assertIn('Personal rule.',p.read_text());self.assertNotIn('Old shared',p.read_text())
+        groups=json.loads((self.home/'.codex/hooks.json').read_text())['hooks']['Stop']
+        self.assertTrue(any(g['hooks'][0]['command']=='personal-check' for g in groups))
+
+    def test_second_host_has_own_paths_and_no_host_secrets_in_source(self):
+        self.apply();first=setup.load_receipt(self.home)
+        self.home=self.root/'different host';self.home.mkdir();self.apply();second=setup.load_receipt(self.home)
+        self.assertEqual(first['source_revision'],second['source_revision'])
+        self.assertNotEqual(first['home'],second['home'])
+        self.assertNotIn(first['home'],json.dumps(second))
+        self.assertNotIn(str(self.home),(self.repo/'account/instructions.md').read_text())
+
+    def test_source_is_committed_and_update_removes_retired_skill(self):
+        before=self.git('rev-parse','HEAD')
+        (self.repo/'policies/communication.md').write_text('Uncommitted content')
+        self.apply()
+        self.assertEqual(setup.load_receipt(self.home)['source_revision'],before)
+        self.assertNotEqual((self.home/setup.BUNDLE/'policies/communication.md').read_text(),'Uncommitted content')
+        shutil.rmtree(self.repo/'skills/tdd');self.commit('retire skill')
+        self.apply(action='update')
+        self.assertFalse((self.home/'.agents/skills/tdd').is_symlink())
+        self.assertTrue((self.home/'.agents/skills/planning-with-files').is_symlink())
+
+    def test_config_drift_and_disabled_mcp_are_not_overwritten(self):
+        self.apply(mcp=['context7'])
+        p=self.home/'.codex/config.toml';p.write_text(p.read_text()+'enabled = false\n')
+        self.assertIn('.codex/config.toml',setup.status(self.home)['drift'])
+        with self.assertRaisesRegex(ValueError,'outside the marked block'):
+            self.prepare(action='update')
+
+    def test_inline_planning_hooks_and_global_override_are_reported(self):
+        p=self.home/'.codex/config.toml';p.parent.mkdir()
+        p.write_text('[[hooks.Stop]]\n[[hooks.Stop.hooks]]\ncommand = "python3 old-planning-hook.py"\n')
+        with self.assertRaisesRegex(ValueError,'Inline Codex'):
+            self.prepare()
+        p.unlink();(p.parent/'AGENTS.override.md').write_text('Temporary preference')
+        with self.assertRaisesRegex(ValueError,'masks global guidance'):
+            self.prepare()
+
+    def test_failure_replacing_directory_preserves_original(self):
+        p=self.home/'.agents/skills/tdd';p.mkdir(parents=True);(p/'SKILL.md').write_text('original')
+        with patch.object(storage, '_put_file', side_effect=OSError('synthetic')):
+            with self.assertRaises(OSError):storage.put(p,{'link':'/synthetic/destination'})
+        self.assertEqual((p/'SKILL.md').read_text(),'original')
+
+    def test_receipt_cannot_claim_paseo_or_authentication(self):
+        self.apply();path=self.home/storage.RECEIPT;receipt=json.loads(path.read_text())
+        for name in ['.agents/skills/paseo','.codex/auth.json']:
+            changed=dict(receipt);changed['assets']=dict(receipt['assets'],**{name:None});path.write_text(json.dumps(changed))
+            with self.assertRaisesRegex(ValueError,'unsupported asset'):
+                setup.load_receipt(self.home)
+
+    def test_hook_toggle_keeps_skills_and_unrelated_hooks(self):
+        self.apply();self.apply(action='update',hooks=False)
+        self.assertTrue((self.home/'.agents/skills/tdd').is_symlink())
+        self.assertFalse((self.home/'.agents/bin/planning-hook.py').exists())
+        self.assertFalse(json.loads((self.home/'.codex/hooks.json').read_text()).get('hooks'))
+        self.apply(action='update',hooks=True)
+        self.assertTrue((self.home/'.agents/bin/planning-hook.py').exists())
+
+
+if __name__=='__main__':unittest.main()
