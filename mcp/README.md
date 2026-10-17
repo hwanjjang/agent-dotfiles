@@ -19,7 +19,8 @@ Code expands `${VAR}` in these files. A missing variable is a configuration erro
 to resolve before attempting authentication, not a reason to add a real token.
 
 GitHub is deliberately read-only in this starter profile. A task requiring writes
-needs an explicitly selected profile and appropriate authority. Context7 queries
+can use the registered authenticated `gh` capability within task authority.
+MCP-based writes need an explicitly selected profile and appropriate authority. Context7 queries
 are sent to its remote service; send the scoped technical question, not private
 source or logs. Playwright uses a fresh profile; authenticated storage and browser
 outputs remain local. `--isolated` is session isolation, not a security sandbox.
@@ -47,3 +48,6 @@ Sources:
 
 The [tool registry](../tools/registry.json) records upstream projects and selected
 versions. Remote endpoints are provider-managed services, not commit-pinned binaries.
+
+See [client verification](../docs/client-verification.md) for scoped adoption
+checks and the distinction between discovery, authentication and actual operation.

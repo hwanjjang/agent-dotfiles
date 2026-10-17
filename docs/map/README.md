@@ -85,4 +85,9 @@ example of structured catalog data with an offline viewer. The
 specification and implementation. These are research references; this viewer
 does not bundle their code or depend on their runtimes.
 
+The [repository feature map](../verification/verify-repository/features/README.md)
+is a separate maintenance source for real catalog verification recipes. Catalog
+entries link to it; do not duplicate its expected behavior or store runtime pass
+status in catalog.json.
+
 No hosted publication or automatic installation is configured.

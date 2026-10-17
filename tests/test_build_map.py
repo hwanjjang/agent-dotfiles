@@ -69,8 +69,22 @@ class MapBuildTests(unittest.TestCase):
                 self.assertEqual(build_map.main(), 0)
             self.catalog["entries"][0]["summary"] = "Changed behavior."
             catalog_path.write_text(json.dumps(self.catalog))
+            before = {p: p.read_bytes() for p in directory.iterdir()}
             with patch("sys.argv", ["build_map.py", "--check"]):
                 self.assertEqual(build_map.main(), 1)
+            self.assertEqual({p: p.read_bytes() for p in directory.iterdir()}, before)
+
+    def test_check_rejects_missing_output_without_creating_it(self):
+        directory = self.root / "docs/map"
+        directory.mkdir(parents=True)
+        (directory / "catalog.json").write_text(json.dumps(self.catalog))
+        (directory / "viewer.template.html").write_text(build_map.MARKER)
+        before = {p: p.read_bytes() for p in directory.iterdir()}
+        with patch.object(build_map, "ROOT", self.root):
+            with patch("sys.argv", ["build_map.py", "--check"]):
+                self.assertEqual(build_map.main(), 1)
+        self.assertFalse((directory / "index.html").exists())
+        self.assertEqual({p: p.read_bytes() for p in directory.iterdir()}, before)
 
 
 if __name__ == "__main__":

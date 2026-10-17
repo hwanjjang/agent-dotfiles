@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "09d06eb4b97a1020ab31e84030e38baf1099c7dc",
+  "path": "pstack/skills/tdd",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "eeb868e2dfebee528d730a67d7b17498fac4bb85dec2e38bc5c5176aca4d5d2f"
+  },
+  "adaptations": [
+    "Portable invocation metadata; single TDD method for this collection.",
+    "Locally extended bug-fix method to test-first feature changes and behavior-preserving refactors.",
+    "Preserved practical alternatives and linked shared policies and optional SDLC evidence contract."
+  ],
+  "skill_dependencies": [],
+  "policy_dependencies": [
+    "policies/behavioral-tests.md",
+    "policies/evidence.md"
+  ],
+  "runtime_requirements": [],
+  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. The separate SDLC test suite checks evidence records, not execution of this skill. No model-adherence, live MCP authentication or multi-provider lifecycle claim."
+}

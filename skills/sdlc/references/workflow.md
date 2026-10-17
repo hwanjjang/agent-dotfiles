@@ -14,6 +14,12 @@ Apply the revised workflow to authorized PR tasks. Do not create state, issue/PR
 
 Record exclusions in the artifact index with a reason. Independent assessment is selected initially for review-only and plan-only; a bounded non-implementation task may explicitly skip it with a rationale. The revised PR implementation route excludes the separate independent-verification stage; self-verification and actual PR review remain required. A stage that runs owes its own real deliverable. Do not invent a phase solely to fill a matrix. Clarify changed scope through a dated intent amendment and assess its downstream impact.
 
+## Skill methods
+
+Use [stage-to-skill routing](skill-routing.md) for preparation, investigation,
+design, task planning, implementation, verification and correction. This is the
+single routing table; skill methods do not create competing stage records.
+
 ## Proportionate scope and evidence
 
 Use a few observable outcomes that cover the requested behavior; there is no fixed
@@ -47,7 +53,21 @@ For an explicitly delegated pre-merge task, record the repository/branch/PR scop
 
 Route implementation through all applicable stages up to verified PR review/correction. Then enter the existing completion stage and produce a `merge-ready` output/receipt following the state contract. It records `merge_authorized: false`, current actual head/base, current CI/check and PR review evidence, resolved Must Fix findings, actual PR state, and remaining assumptions/risks. Merge is not-applicable; never invoke merge, enable auto-merge or enter a merge queue. Inspect whether automation is already armed/queued before claiming the PR will remain unmerged. A later request to merge requires an explicit authority amendment and refreshed evidence, not reinterpretation of the readiness receipt.
 
-At each applicable stage assess whether a material issue update is useful and comment when needed. Only main posts on the task's own issue. Read recent comments before posting, retain the comment ID/URL, and reconcile an uncertain result before retrying. Do not create an issue just to hold updates or infer permission for issue-field edits, transitions or mentions. Honor explicit no-write limits. PR comments group concise findings into Required and Recommended, plus execution blockers and final readiness with evidence links. Keep full schemas, model settings and logs in task reports. Unselected recommendations end in the review record; do not create follow-up tasks or tracking. Readiness and production-coupling assessment inform the human handoff without authorizing or executing production.
+## Issue workflow integration
+
+For authorized PR work, assess the linked issue at every applicable stage under
+the [shared issue workflow policy](../../../policies/issue-workflow.md). Record
+the published update URL, no useful new information, no linked issue, or the actual
+publication blocker in the stage receipt. Main is the policy's coordinator for
+this task. Keep non-PR work within the existing intake scope; this integration
+does not require new tracking for local work. The shared policy owns issue update
+triggers, publication safety, handoff and closure rules.
+
+PR comments group concise findings into Required and Recommended, plus execution
+blockers and final readiness with evidence links. Keep full schemas, model settings
+and logs in task reports. Unselected recommendations end in the review record;
+do not create follow-up tasks or tracking. Readiness and production-coupling
+assessment inform the human handoff without authorizing or executing production.
 
 ## Deliverable handoff
 
@@ -59,10 +79,10 @@ The [stage templates](../assets/stage-deliverables.md) define minimum content. R
 | intent | Canonical intent: problem, outcome, scope/exclusions, constraints, observable AC IDs, source/authority, risks/questions, revision/gate → investigation/spec and final assessment. |
 | investigation | `R/investigation.md`: question, facts versus hypotheses, code/source locations, checks/results, unknowns, implications → spec or review-only completion. |
 | spec | Canonical spec: requirements, interfaces/data, security/UX, normal/failure behavior, observability/migration, alternatives and verification strategy → design/plan/review. |
-| design | `R/design/`: exact Archify JSON and delivered HTML with deterministic, browser, visual-review evidence and spec/code traceability → plan/review. |
+| design | `R/design/`: selected architect/arena design and rationale, plus applicable Archify JSON and delivered HTML with deterministic, browser, visual-review evidence and spec/code traceability → plan/review. |
 | plan | Canonical plan plus user-scenarios JSON: user, goal, prerequisites, steps, expected/failure results, AC mapping; file operations, ordered work/dependencies, test commands, migration/rollback, blast radius, risks/rejected alternative/proof → builder/reviewer. |
 | test-design | `R/test-plan.md` and introduced test sources: AC-to-layer/scenario map, prerequisites, expected/failure outcomes, applicability and cleanup → build/self-verification. |
-| build | Actual code/tests/docs diff plus `R/build.md`: plan mapping, candidate identity, deviations, intended Red/Green/post-refactor evidence → self-verification. |
+| build | Actual code/tests/docs diff plus `R/build.md`: plan mapping, candidate identity, deviations, tdd or explicitly justified alternative evidence → self-verification. |
 | self-verification | `R/self-verification.md`, `R/test-results.json`, `R/documentation.json` and applicable screenshot PDF manual/source, retained execution evidence: distinct test/smoke outcomes, candidate/environment, counts/commands/exit codes, eligibility → PR review. |
 | independent-verification (legacy) | Historical stage ID retained for existing records; excluded from the revised PR route. No separate report or execution is required. |
 | pr-review | Actual authorized PR review/comment plus `R/pr-review.md` index: stable record ID/URL, exact head/base, eligible configuration receipt, findings/verdict → corrections/merge. |

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/mattpocock/skills",
+  "revision": "49dd158d1076134a641b33efb035946536778336",
+  "path": "skills/productivity/writing-for-agents",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "551adca942227b44192edba88acd4e8db911f0121ce58ad16944ccf6a896a74a"
+  },
+  "adaptations": [
+    "Condensed authoring reference; no new runtime or mandatory lifecycle.",
+    "Removed universal claims about client invocation; verify actual client behavior.",
+    "Omitted upstream SKILL-MECHANICS.md and UI metadata because their behavior is client-specific."
+  ],
+  "skill_dependencies": [],
+  "policy_dependencies": [],
+  "runtime_requirements": [],
+  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. The separate SDLC test suite checks evidence records, not execution of this skill. No model-adherence, live MCP authentication or multi-provider lifecycle claim."
+}

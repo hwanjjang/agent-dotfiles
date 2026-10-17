@@ -32,16 +32,46 @@ these files are templates and are not activated by this checkout.
 - AK-authored source: import SDLC and issue-writing, plus architecture and security
   policies. Remove private links and project attribution; scope communication and
   publication authority to each task. Retain state scripts and their tests.
+- Architecture policy: retain three minimum principles after source review and
+  maintainer direction. Replace mandatory alternatives sections and dependency
+  graphs with task-appropriate guidance; link pstack and Matt design material as
+  optional references. This does not change the separate architect or SDLC workflows.
 - Required diagram production: include Archify at the selected baseline pin with
   its runtime, schemas, templates, and third-party notices.
 - Required screenshot manuals: include a focused source/PNG/PDF workflow with a
   reproducible generator, raster preview, and mandatory visual inspection.
+- Logging policy: combine Addy's severity and structured-event guidance with
+  Matt's targeted temporary probes and cleanup. The [policy](../../policies/logging.md)
+  owns pinned sources, license notices, local adaptations, and runtime verification
+  expectations. This imports the selected guidance without requiring both complete
+  upstream workflows or claiming individual-skill popularity from collection stars.
 
 The AK source's common MCP list was empty. The three initial connection templates
 therefore come from provider documentation, not an inferred private configuration.
 Account setup scripts, personal host hooks/settings, project history, raw captures,
 and unrelated integration configuration are outside this initial portable import.
 Graft and other optional toolchains are deferred to keep the requested minimum.
+
+The [issue workflow policy](../../policies/issue-workflow.md) consolidates common
+issue lifecycle rules consumed by issue-writing and SDLC. It owns pinned source
+attribution and MIT notices. Its [decision note](../decisions/issue-workflow.md)
+records fit, adaptations and limited community evidence. This is a local synthesis
+of selected guidance, not installation of the three upstream orchestration stacks.
+Affected skill provenance declares the shared policy dependencies; distribution
+must preserve their links. Tracker execution remains unverified. Codex source discovery is recorded in
+[client verification](../client-verification.md); no account installation is claimed.
+
+The three focused additions and their SDLC integration are described in the
+[adoption decision](../decisions/skill-integration.md). Their provenance records
+pin upstream source and distinguish local extensions from original methods.
+The single tdd method replaces duplicated method prose; SDLC retains executable
+evidence validation, additional smoke and existing authority gates.
+
+The [verification pair](../decisions/verification.md) adopts pstack generation and
+maintenance with all feature-map examples and MIT notices. Local adaptations
+remove hardcoded client paths and implied publication, preserve requested coverage
+and distinguish product defects from documentation drift. Optional tooling stays
+a reference; no additional MCP server is enabled.
 
 ## Update procedure
 

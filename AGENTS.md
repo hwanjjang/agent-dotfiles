@@ -33,6 +33,11 @@ language; communicate in the user's language.
 
 ## Maintaining the source
 
+When authoring or revising skills, policies or instruction entry points, use
+[writing-for-agents](skills/writing-for-agents/SKILL.md) alongside the host's
+skill-creator contract. Keep this maintenance guidance separate from distributed
+execution policies.
+
 - Keep `policies/` for portable defaults, `skills/` for focused workflows, and
   `mcp/` for credential-free connection definitions and their documentation.
   Do not mix repository maintenance rules into the distributed payload.
@@ -60,11 +65,34 @@ language; communicate in the user's language.
 - Actively search the internet when designing or changing the repository
   structure, policies, skills, MCP configuration, or distribution approach. Do
   not rely only on prior knowledge or links already supplied in the conversation.
-- Prioritize [pstack](https://github.com/cursor/plugins/tree/main/pstack),
-  [Matt Pocock's skills](https://github.com/mattpocock/skills), and
-  [Addy Osmani's agent skills](https://github.com/addyosmani/agent-skills) in
-  structure and workflow comparisons. Also search other developers' maintained
+- Evaluate task fit, primary-source behavior, community evidence, and verification
+  results first. When candidates remain comparable or the choice is ambiguous,
+  use this maintainer preference order as a tie-breaker:
+  **1. [pstack](https://github.com/cursor/plugins/tree/main/pstack),
+  2. [Matt Pocock's skills](https://github.com/mattpocock/skills),
+  3. [Addy Osmani's agent skills](https://github.com/addyosmani/agent-skills)**.
+  Preference alone is not a reason to select an approach or reject a better fit.
+  This order is not a claim about individual skill popularity or quality.
+  Preserve explicitly agreed adoptions unless a change is requested.
+  Also search other developers' maintained
   repositories for relevant examples; no single project is a complete template.
+- Validate candidate adoptions against community feedback about the specific
+  skill or workflow. Search Reddit, developer communities, and social platforms
+  for firsthand usage, comparisons, failures, and criticisms. Read original posts
+  and relevant replies; distinguish independent experience from author promotion,
+  reposts, automated summaries, and collection-wide opinions. Repository stars,
+  installation counts, likes, and votes alone do not establish individual skill
+  preference or effectiveness.
+- Record community evidence with source links, dates, the skill or workflow
+  discussed, version/client/task context when available, positive and negative
+  findings, and verification limits. Seek independent corroboration and do not
+  count repeated reports of the same experience as separate evidence. State when
+  evidence is limited, mixed, or unavailable; do not invent a consensus or ranking.
+  Use this evidence to assess candidates and explain selection decisions before
+  applying the preference tie-breaker. Community preference complements
+  primary-source review and relevant task verification; it does not replace them.
+  If proceeding with limited feedback,
+  label the selection provisional with respect to community validation.
 - Inspect primary sources: actual directory trees, manifests, instruction files,
   skill definitions, scripts, and official client/protocol documentation. Check
   source revisions and distinguish portable conventions from client-specific

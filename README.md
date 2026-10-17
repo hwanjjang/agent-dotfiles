@@ -12,12 +12,30 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 15 skill packages, five portable policies,
+**Status:** Initial content collection: 20 skill packages, seven portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
-focused checks are documented; account installation and end-to-end client behavior
-are not yet verified. See [skills](skills/README.md), [policies](policies/README.md),
+focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
+temporary project; account installation and end-to-end client behavior are not
+claimed. See [client verification](docs/client-verification.md) for exact limits,
+and browse [skills](skills/README.md), [policies](policies/README.md),
 [MCP templates](mcp/README.md), and [adoption records](docs/upstream/README.md).
+
+The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
+and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
+
+The [architecture policy](policies/architecture.md) keeps three minimum principles:
+findable code, clear boundaries and responsibilities, and verifiable changes.
+Detailed design guidance is optional and used when the task needs it.
+
+The [issue workflow policy](policies/issue-workflow.md) defines issue creation,
+updates, comments, handoff and closure. Use it directly or through issue-writing
+and SDLC; see the [selection and community evidence](docs/decisions/issue-workflow.md).
+
+The [verification adoption](docs/decisions/verification.md) adds project-local
+verification generation and maintenance. The [repository feature map](docs/verification/verify-repository/features/README.md)
+connects this checkout’s catalog journeys to a runnable verifier; it does not claim
+account installation or MCP connectivity.
 
 ## Repository structure
 
@@ -56,11 +74,13 @@ is part of maintaining this project; `AGENTS.md` defines that requirement.
 
 ## Content scope
 
-The [modular AK SDLC proposal](docs/decisions/modular-sdlc.md) describes the
-intended workflow: early intent clarification, independently usable stages,
-parallel design exploration, and dependency-aware implementation. It remains a design
-proposal: imported building blocks are present, while the complete modular AK SDLC
-integration is future work.
+The [AK SDLC design](docs/decisions/modular-sdlc.md) is connected through the
+[stage-to-skill routing](skills/sdlc/references/skill-routing.md): early intent
+clarification, parallel design, dependency-aware implementation and focused
+verification. Skills remain independently usable. The single pstack-derived
+`tdd` method serves bug fixes and test-first feature changes; diagnosis and review
+corrections reuse it. Source integration and evidence checks are implemented;
+complete multi-provider execution still needs a target-host run.
 
 | Area | Purpose |
 | --- | --- |
@@ -189,8 +209,10 @@ and account installers are not automatically activated.
 | [Matt Pocock's skills](https://github.com/mattpocock/skills) | Small composable skills, intent clarification, shared domain language, and short feedback loops. |
 | [Addy Osmani's agent skills](https://github.com/addyosmani/agent-skills) | Separation of workflows, personas, and entry commands; explicit repository-only instruction scope and attention to skill packaging boundaries. |
 
-pstack, Matt Pocock, and Addy Osmani are the priority references for future
-structure and workflow research. The structure decision also compares other
+The [repository research instructions](AGENTS.md#external-research-is-part-of-this-project)
+define the preference tie-breaker, community-feedback checks for individual skills and
+workflows, and how to select alternatives.
+The structure decision also compares other
 maintained repositories, with source revisions and tradeoffs recorded.
 
 The [pstack map](https://erictechpro.github.io/super-board/pstack/) and
