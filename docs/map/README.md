@@ -91,3 +91,21 @@ entries link to it; do not duplicate its expected behavior or store runtime pass
 status in catalog.json.
 
 No hosted publication or automatic installation is configured.
+
+## Separate AK SDLC view
+
+The [AK SDLC skill map](workflow.html) adds ordered stages and Anytime triggers
+without changing this catalog viewer. Read its [guide](workflow.md) for usage and
+the separate `scripts/build_workflow.py` generation/check command. Changes to
+shared catalog entries require regenerating and checking both viewers.
+
+Every current skill has an `explanation` object in the catalog (optional for other
+entry types): `example` (situation, request, steps and result), `flows`, conditional
+`calls`, `adaptation_notes` and labeled `sources`. The workflow viewer uses these
+in its existing detail sections. Shared summaries, behavior and results also
+appear in this catalog viewer. Keep examples illustrative and verify claims
+against the local skill before borrowing a reference map's explanation. Record
+the explanation's source basis and reviewed fingerprints in
+[skill-explanations.json](skill-explanations.json). Locally authored skills use
+their public local sources; a reference-map counterpart is not required. See the
+[workflow guide](workflow.md#source-and-maintenance) for the update procedure.

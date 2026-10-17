@@ -7,6 +7,10 @@ projects, clients, and machines. This repository aims to keep the shared parts i
 one reviewable place, so improvements can carry forward to the next task and
 environment.
 
+Follow the [AK SDLC skill map](docs/map/workflow.html) for ordered stages, skill
+choices and Anytime triggers. See its [guide](docs/map/workflow.md) and
+[screenshot walkthrough](docs/manual/workflow.pdf).
+
 Explore the [interactive map](docs/map/index.html) for usage, behavior, source
 links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and

@@ -1,0 +1,475 @@
+{
+  "title": "AK SDLC skill map",
+  "description": "Read left to right, then down. This is the PR implementation route; select only the methods the task needs. Focused skills also work directly without starting SDLC.",
+  "subtitle": "Follow the stages, choose the method, or find a skill for the task in front of you.",
+  "source": "skills/sdlc/references/skill-routing.md",
+  "stage_source": "skills/sdlc/scripts/sdlc_state.py",
+  "phases": [
+    {
+      "id": "understand",
+      "title": "Understand",
+      "summary": "Clarify the outcome and inspect the evidence."
+    },
+    {
+      "id": "shape",
+      "title": "Shape",
+      "summary": "Agree on the contract, design and reviewable slices."
+    },
+    {
+      "id": "prove",
+      "title": "Build & prove",
+      "summary": "Implement small slices and verify the integrated candidate."
+    },
+    {
+      "id": "deliver",
+      "title": "Review & deliver",
+      "summary": "Resolve findings and stop at the authorized endpoint."
+    }
+  ],
+  "stages": [
+    {
+      "id": "triage",
+      "title": "Triage",
+      "phase": "understand",
+      "summary": "Choose scope, route and endpoint.",
+      "gate": "Coordinator",
+      "handoff": "Task boundaries and authority.",
+      "steps": [
+        {
+          "label": "Coordinator selects the route",
+          "skills": [
+            "sdlc"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intent",
+      "title": "Intent",
+      "phase": "understand",
+      "summary": "Resolve consequential unknowns before committing to a plan.",
+      "gate": "As needed",
+      "handoff": "Outcome, constraints and acceptance criteria.",
+      "steps": [
+        {
+          "label": "Choose an interview: lightweight OR durable docs",
+          "skills": [
+            "grill-me",
+            "grill-with-docs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigation",
+      "title": "Investigation",
+      "phase": "understand",
+      "summary": "Trace existing behavior; reproduce uncertain failures.",
+      "gate": "Evidence first",
+      "handoff": "Source-backed facts, reproduction and open questions.",
+      "steps": [
+        {
+          "label": "Understand unfamiliar code",
+          "skills": [
+            "how"
+          ]
+        },
+        {
+          "label": "For a difficult defect, diagnose the cause",
+          "skills": [
+            "diagnosing-bugs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spec",
+      "title": "Specification",
+      "phase": "shape",
+      "summary": "Synthesize the agreed intent and investigation.",
+      "gate": "Reuse a sufficient spec",
+      "handoff": "Canonical specification and acceptance mapping.",
+      "steps": [
+        {
+          "label": "Create or update the specification",
+          "skills": [
+            "to-spec"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "design",
+      "title": "Design",
+      "phase": "shape",
+      "summary": "Settle interfaces, ownership and consequential tradeoffs.",
+      "gate": "Skip with rationale when inapplicable",
+      "handoff": "Selected design, alternatives and supporting evidence.",
+      "steps": [
+        {
+          "label": "Lead the design",
+          "skills": [
+            "architect"
+          ]
+        },
+        {
+          "label": "For competing designs: compare providers; return to architect",
+          "skills": [
+            "arena"
+          ]
+        },
+        {
+          "label": "When a diagram clarifies the design",
+          "skills": [
+            "archify"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "title": "Plan",
+      "phase": "shape",
+      "summary": "Sequence thin, verifiable slices and appropriate PR boundaries.",
+      "gate": "Tickets only on request",
+      "handoff": "Dependencies, owners, acceptance and checks.",
+      "steps": [
+        {
+          "label": "Decompose the agreed scope",
+          "skills": [
+            "planning-and-task-breakdown"
+          ]
+        },
+        {
+          "label": "Keep one execution notebook",
+          "skills": [
+            "planning-with-files"
+          ]
+        },
+        {
+          "label": "If tickets or drafts are requested",
+          "skills": [
+            "to-tickets"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "test-design",
+      "title": "Test design",
+      "phase": "prove",
+      "summary": "Identify observable behavior and how to prove it.",
+      "gate": "Non-executable changes may use alternative evidence",
+      "handoff": "Focused test plan or justified alternative checks.",
+      "steps": [
+        {
+          "label": "Use the collection’s single test-first method",
+          "skills": [
+            "tdd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "title": "Build",
+      "phase": "prove",
+      "summary": "Implement and check each slice, then integrate.",
+      "gate": "Parallel work requires independent, authorized slices",
+      "handoff": "Changes and evidence from the combined candidate.",
+      "steps": [
+        {
+          "label": "Run the test-first loop",
+          "skills": [
+            "tdd"
+          ]
+        },
+        {
+          "label": "If independent slices can run in parallel",
+          "skills": [
+            "swarm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "self-verification",
+      "title": "Self-verification",
+      "phase": "prove",
+      "summary": "Exercise the actual integrated candidate and affected scenarios.",
+      "gate": "Use the target project’s verifier",
+      "handoff": "Candidate-bound checks, coverage and explicit gaps.",
+      "steps": [
+        {
+          "label": "For this repository: run the project-local checks",
+          "skills": [
+            "repository-verifier"
+          ]
+        },
+        {
+          "label": "When screenshot/PDF documentation applies",
+          "skills": [
+            "screenshot-manual"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pr-review",
+      "title": "PR review",
+      "phase": "deliver",
+      "summary": "Prepare a reviewable candidate, then review it independently.",
+      "gate": "Independent reviewer; prefer another provider",
+      "handoff": "Candidate-bound findings and their disposition.",
+      "steps": [
+        {
+          "label": "Author prepares the PR when needed",
+          "skills": [
+            "make-pr-easy-to-review"
+          ]
+        },
+        {
+          "label": "SDLC assigns reviewers; each applies this method once",
+          "skills": [
+            "code-review-and-quality"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "correction",
+      "title": "Correction",
+      "phase": "deliver",
+      "summary": "Fix confirmed findings and renew affected verification and review.",
+      "gate": "Only when findings require changes",
+      "handoff": "Updated candidate → self-verification → PR review.",
+      "steps": [
+        {
+          "label": "If the cause is uncertain, diagnose first",
+          "skills": [
+            "diagnosing-bugs"
+          ]
+        },
+        {
+          "label": "Fix behavior through the same test-first loop",
+          "skills": [
+            "tdd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "merge",
+      "title": "Merge",
+      "phase": "deliver",
+      "summary": "Integrate only after the required gates and explicit merge authority.",
+      "gate": "Only for an authorized main endpoint",
+      "handoff": "Verified integration result.",
+      "steps": [
+        {
+          "label": "Coordinator checks authority and integrates",
+          "skills": [
+            "sdlc"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "completion",
+      "title": "Completion",
+      "phase": "deliver",
+      "summary": "Report the result, evidence, limits and remaining handoff.",
+      "gate": "Stop at the authorized endpoint",
+      "handoff": "Traceable completion record.",
+      "steps": [
+        {
+          "label": "Coordinator closes the task",
+          "skills": [
+            "sdlc"
+          ]
+        }
+      ]
+    }
+  ],
+  "excluded_stages": [
+    {
+      "id": "independent-verification",
+      "reason": "Not a separate stage on the current PR implementation route. It remains in the state model for explicitly requested local, plan-only or review-only lifecycle runs."
+    }
+  ],
+  "anytime": [
+    {
+      "id": "clarify",
+      "title": "Clarify & understand",
+      "description": "Revisit an assumption or unfamiliar area at any point.",
+      "items": [
+        "grill-me",
+        "grill-with-docs",
+        "grilling",
+        "domain-modeling",
+        "how",
+        "diagnosing-bugs"
+      ]
+    },
+    {
+      "id": "organize",
+      "title": "Organize & communicate",
+      "description": "Maintain context and produce the record the task actually needs.",
+      "items": [
+        "planning-with-files",
+        "archify",
+        "writing-for-agents",
+        "issue-writing",
+        "screenshot-manual"
+      ]
+    },
+    {
+      "id": "verification",
+      "title": "Create & maintain verification",
+      "description": "Fill a missing repeatable check or repair known drift within the current stage.",
+      "items": [
+        "create-verification-skill",
+        "maintain-verification-skill",
+        "repository-verifier",
+        "repository-feature-map"
+      ]
+    },
+    {
+      "id": "guardrails",
+      "title": "Policies & tool connections",
+      "description": "Consult applicable policies and connection prerequisites; selecting a card installs nothing.",
+      "items": [
+        "policy-architecture",
+        "policy-behavioral-tests",
+        "policy-evidence",
+        "policy-security",
+        "policy-logging",
+        "policy-issue-workflow",
+        "policy-visual-documentation",
+        "policy-pr-workflow",
+        "mcp-context7",
+        "mcp-github",
+        "mcp-playwright",
+        "tool-registry"
+      ]
+    }
+  ],
+  "triggers": {
+    "grill-me": "A consequential idea or requirement is still ambiguous; sharpen it through an interview without creating domain documents.",
+    "grill-with-docs": "The interview also needs durable domain terms or architectural decisions in a glossary and ADRs.",
+    "grilling": "You want to stress-test a plan or decision through focused questions; it is also the interview method used by the two grill wrappers.",
+    "domain-modeling": "Terminology is inconsistent, or a glossary or architectural decision needs to be recorded or refined.",
+    "how": "You need a source-backed explanation of unfamiliar execution flow, ownership or subsystem boundaries before changing code.",
+    "diagnosing-bugs": "A difficult or intermittent failure has an uncertain cause; reproduce it and test hypotheses before fixing it.",
+    "planning-with-files": "Research or execution spans many steps or tool calls and needs one persistent task notebook.",
+    "archify": "An architecture, workflow or interaction is easier to understand as an explorable, validated diagram.",
+    "writing-for-agents": "The artifact you are authoring or reviewing is an agent skill, policy or instruction.",
+    "issue-writing": "You are authorized to draft, create or rewrite an issue body with clear scope and verifiable acceptance criteria.",
+    "screenshot-manual": "Users need instructions demonstrated with real product screenshots and a rendered, visually checked PDF.",
+    "create-verification-skill": "A real project lacks repeatable user-facing verification; establish its verifier and feature recipes.",
+    "maintain-verification-skill": "Existing verification recipes may have drifted and a scoped audit or repair has been requested.",
+    "repository-verifier": "You changed this repository’s catalog UI or map generation and need its actual browser and freshness checks.",
+    "repository-feature-map": "You need to identify the affected repository user journey and find its verification recipe.",
+    "policy-architecture": "Code is hard for agents to find, understand or verify, or you are designing a new project boundary.",
+    "policy-behavioral-tests": "You are designing tests and need to choose observable behavior instead of implementation details.",
+    "policy-evidence": "You are about to claim completion or correctness and need evidence tied to the actual candidate.",
+    "policy-security": "Work touches public source, credentials, access boundaries or externally supplied material.",
+    "policy-logging": "You add or review logs, choose diagnostic levels, structure events or remove temporary debug probes.",
+    "policy-issue-workflow": "Work is tracked by an issue and needs a progress update, decision, blocker, handoff or closure record.",
+    "policy-visual-documentation": "A change needs a diagram or screenshot manual and you must establish source and verification requirements.",
+    "policy-pr-workflow": "You are splitting work into reviewable PRs, preparing the review context or coordinating dependent PRs.",
+    "mcp-context7": "A task needs current library documentation; inspect the connection template and prerequisites before opting in.",
+    "mcp-github": "Authorized work needs GitHub issue or PR access through MCP; inspect credential and permission requirements first.",
+    "mcp-playwright": "A task needs browser interaction or screenshots through MCP; inspect the isolated browser setup first.",
+    "tool-registry": "You need to select or verify an external CLI, diagram, PDF or MCP dependency."
+  },
+  "category_titles": {
+    "triage": [
+      "Choose scope & endpoint"
+    ],
+    "intent": [
+      "Choose: lightweight interview",
+      "OR: interview with documents"
+    ],
+    "investigation": [
+      "1. Understand existing code",
+      "2. Diagnose uncertain failures"
+    ],
+    "spec": [
+      "Synthesize the agreed scope"
+    ],
+    "design": [
+      "Design → compare → explain"
+    ],
+    "plan": [
+      "Decompose → record → ticket"
+    ],
+    "test-design": [
+      "Plan observable checks"
+    ],
+    "build": [
+      "1. Test-first implementation",
+      "2. Optional parallel slices"
+    ],
+    "self-verification": [
+      "Verify → document when needed"
+    ],
+    "pr-review": [
+      "Prepare → independent review"
+    ],
+    "correction": [
+      "Diagnose → fix → re-verify"
+    ],
+    "merge": [
+      "Only with merge authority"
+    ],
+    "completion": [
+      "Report & hand off"
+    ]
+  },
+  "group_titles": {
+    "clarify": "Clarify & understand",
+    "organize": "Organize & communicate",
+    "verification": "Verification upkeep",
+    "guardrails": "Policies & connections"
+  },
+  "node_labels": {
+    "sdlc": "coordinate stages and authority",
+    "grill-me": "clarify consequential intent",
+    "grill-with-docs": "interview with glossary / ADRs",
+    "grilling": "stress-test a plan or decision",
+    "domain-modeling": "refine terms and decisions",
+    "how": "explain code from evidence",
+    "diagnosing-bugs": "reproduce and find the cause",
+    "to-spec": "synthesize the agreed spec",
+    "architect": "select interfaces and design",
+    "arena": "compare competing providers",
+    "archify": "draw validated diagrams",
+    "planning-and-task-breakdown": "split into reviewable slices",
+    "planning-with-files": "keep one execution notebook",
+    "to-tickets": "requested tickets or drafts",
+    "tdd": "test first, then implement",
+    "swarm": "run independent slices",
+    "repository-verifier": "check this repository",
+    "screenshot-manual": "real screenshots to PDF",
+    "make-pr-easy-to-review": "prepare the author-side PR",
+    "code-review-and-quality": "review the actual candidate",
+    "issue-writing": "draft a clear issue body",
+    "writing-for-agents": "write skills and policies",
+    "create-verification-skill": "create repeatable checks",
+    "maintain-verification-skill": "repair verifier drift",
+    "repository-feature-map": "find affected user scenarios",
+    "policy-architecture": "findable, clear, verifiable",
+    "policy-behavioral-tests": "test observable behavior",
+    "policy-evidence": "prove claims before done",
+    "policy-security": "protect secrets and access",
+    "policy-logging": "levels and structured logs",
+    "policy-issue-workflow": "record progress and handoffs",
+    "policy-visual-documentation": "diagrams and visual manuals",
+    "policy-pr-workflow": "small reviewable PRs",
+    "mcp-context7": "current library docs",
+    "mcp-github": "authorized issue / PR access",
+    "mcp-playwright": "browser actions and captures",
+    "tool-registry": "external tool prerequisites"
+  }
+}

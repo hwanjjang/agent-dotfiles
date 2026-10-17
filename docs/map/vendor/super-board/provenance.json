@@ -1,0 +1,58 @@
+{
+  "upstream": "https://github.com/EricTechPro/super-board",
+  "revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 Eric Tech",
+  "upstream_directory": "diagrams/_shared",
+  "dependencies": [
+    "Python 3.9+ standard library at build time",
+    "Browser with SVG, dialog, pointer events and localStorage; no runtime network dependencies"
+  ],
+  "files": {
+    "layout_sdlc.py": {
+      "upstream_sha256": "0e282220d9991a19a55bad6b56129eb5d9c8a9eb7f5ddd2ff12f444b84dc5e0e",
+      "local_sha256": "85e78055661c5d1b1774b44f2a0d26a4805b211b7113f7c0ec6346d2a0cab88f"
+    },
+    "layout_sdlc.js": {
+      "upstream_sha256": "9bdc970aeb2d169cdf87a35b48f94b67dfe455a0770dbfb9452df88d72531c6a",
+      "local_sha256": "9bdc970aeb2d169cdf87a35b48f94b67dfe455a0770dbfb9452df88d72531c6a"
+    },
+    "shell.css": {
+      "upstream_sha256": "b07e69b45638328e3fe4437c40ca5b6e75fdfcab5378d9a1c7fe72613286be04",
+      "local_sha256": "b07e69b45638328e3fe4437c40ca5b6e75fdfcab5378d9a1c7fe72613286be04"
+    },
+    "shell.js": {
+      "upstream_sha256": "244b5f5a8f1be9554e64d4c7605cb4fcf027c6a6ae17273fedadd01759c856fb",
+      "local_sha256": "244b5f5a8f1be9554e64d4c7605cb4fcf027c6a6ae17273fedadd01759c856fb"
+    },
+    "skillmap.css": {
+      "upstream_sha256": "b5c3cccdc53ddacc84463b06e6bd1f14ea4c4b6964e587cefcae69183be33333",
+      "local_sha256": "b5c3cccdc53ddacc84463b06e6bd1f14ea4c4b6964e587cefcae69183be33333"
+    },
+    "skillmap.js": {
+      "upstream_sha256": "81423180d901f32f0d9284df85de939c02a4bd2cef9627b49c4b065e06412043",
+      "local_sha256": "81423180d901f32f0d9284df85de939c02a4bd2cef9627b49c4b065e06412043"
+    },
+    "canvas.js": {
+      "upstream_sha256": "40a617db4010003dca19bf665e44524bc8db973ec3b7af948733958a6ec37217",
+      "local_sha256": "40a617db4010003dca19bf665e44524bc8db973ec3b7af948733958a6ec37217"
+    },
+    "sitenav.html": {
+      "upstream_sha256": "28e7a3cb264191467b2d339ff7eee0e3e27af5856b00e766a77d95c9accbf42c",
+      "local_sha256": "28e7a3cb264191467b2d339ff7eee0e3e27af5856b00e766a77d95c9accbf42c"
+    }
+  },
+  "template": {
+    "upstream": "diagrams/_shared/shell.html",
+    "local": "docs/map/workflow.template.html",
+    "sha256": "67dd105d40b05f70375f27626d4d1148bd4274c39980cd985bf3a2adc7e256e2"
+  },
+  "adaptations": [
+    "layout_sdlc.py derives stage IDs, labels, palettes and total width from AK SDLC data instead of the six hard-coded upstream stages.",
+    "Unused platform-logo dependency removed; no unverified platform support filter is advertised.",
+    "Local build wrapper supplies repository navigation/attribution and maps existing catalog and workflow metadata to the upstream data contract.",
+    "Shared CSS, dialog, canvas and shell behavior retained unchanged. No upstream logos, complete skill catalog, comparison rankings or installed plugins adopted. Selected reference explanations inform the separately recorded local catalog summaries.",
+    "Read the sibling page script with Path.read_text so its file handle closes deterministically.",
+    "Route the Anytime band header through the existing group model with aggregated item IDs, avoiding the upstream undefined-stage dialog."
+  ]
+}

@@ -1,6 +1,7 @@
 """Behavior checks for public map generation and catalog drift detection."""
 
 import importlib.util
+import copy
 import json
 from pathlib import Path
 import tempfile
@@ -55,6 +56,38 @@ class MapBuildTests(unittest.TestCase):
         skill.write_text("---\nname: example\ndescription: Synthetic example.\n---\n")
         with self.assertRaisesRegex(ValueError, "unmapped reusable content: skills/example/SKILL.md"):
             build_map.validate(self.catalog, self.root)
+
+    def test_rich_explanations_reject_unknown_calls_and_nonpublic_sources(self):
+        explanation = {
+            "example": {"situation": "A question.", "youType": "Read the guide.",
+                        "whatHappens": ["Explain the scope."], "youGet": "Context."},
+            "flows": [["Read", "@overview"]], "calls": ["overview"],
+            "adaptation_notes": ["Illustrative example."],
+            "sources": [{"label": "Source", "source": "README.md"}]}
+        self.catalog["entries"][0]["explanation"] = explanation
+        build_map.validate(self.catalog, self.root)
+        invalid = [
+            ("calls", ["unknown"]), ("flows", [["@unknown"]]),
+            ("example", {"situation": "Incomplete"}),
+            ("sources", [{"label": "Private", "source": ".local/private.md"}]),
+            ("sources", [{"label": "Escape", "source": "../private.md"}]),
+            ("sources", [{"label": "Credentials", "url": "https://user:secret@example.com"}])]
+        for key, value in invalid:
+            with self.subTest(key=key, value=value):
+                broken = copy.deepcopy(explanation)
+                broken[key] = value
+                self.catalog["entries"][0]["explanation"] = broken
+                with self.assertRaises(ValueError):
+                    build_map.validate(self.catalog, self.root)
+
+    def test_rich_examples_are_escaped_as_data(self):
+        root = Path(__file__).resolve().parents[1]
+        catalog = json.loads((root / "docs/map/catalog.json").read_text())
+        rich = next(e for e in catalog["entries"] if "explanation" in e)
+        rich["explanation"]["example"]["youType"] = "</script><img src=x>"
+        output = build_map.render(catalog, build_map.MARKER, root)
+        self.assertEqual(output.count("</script>"), 1)
+        self.assertNotIn("<img src=x>", output)
 
     def test_check_rejects_stale_generated_html(self):
         directory = self.root / "docs/map"
