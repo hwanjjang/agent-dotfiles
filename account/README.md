@@ -44,9 +44,11 @@ there is no blanket force-delete option.
 The preview's `hook_activation` section lists the exact Codex event, matcher,
 command and definition hash for the selected source revision. Its seven planning
 events are SessionStart, UserPromptSubmit, PreToolUse, PostToolUse,
-PermissionRequest, PreCompact and Stop. The preview also states that trusted hooks
-run outside the model sandbox and that native trust persists. Keep previews local:
-their resolved commands contain host paths.
+PermissionRequest, PreCompact and Stop. Both clients' hook commands run outside the model sandbox. The `claude` list also
+provides exact definitions: `runs_when_event_fires: true` means they execute after
+installation when the event fires; `native_trust_step: false` means there is no
+Codex-style trust step. The shared `trust_persists` flag describes Codex native
+trust only. Keep previews local: their resolved commands contain host paths.
 
 When requesting an account transition, include both installation and activation
 in one concrete approval: identify the target, source revision, reviewed preview
