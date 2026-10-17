@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Manual synthetic observation qualification. Does not register native hooks."""
+"""Manage private observation grants and synthetic imports; never registers hooks."""
 import argparse
 import json
 from pathlib import Path
@@ -16,11 +16,12 @@ def parser():
     result.add_argument('--home', type=Path, required=True,
                         help='Explicit existing account home (use a disposable directory for qualification)')
     commands = result.add_subparsers(dest='command', required=True)
-    grant = commands.add_parser('grant', help='Opt one exact synthetic project/profile/source into collection')
+    grant = commands.add_parser('grant', help='Opt one exact project/client/profile/source into collection')
     grant.add_argument('--project', type=Path, required=True)
+    grant.add_argument('--client', choices=('synthetic', 'claude'), default='synthetic')
     grant.add_argument('--profile', default='default')
-    grant.add_argument('--source', default='fixture-v1', help='Synthetic stream identity including its generation')
-    grant.add_argument('--start-after', required=True, type=int, help='Current source sequence high-water mark')
+    grant.add_argument('--source', help='Synthetic stream generation; native Claude uses claude-hooks-v1')
+    grant.add_argument('--start-after', type=int, help='Required synthetic source high-water mark; native receipt order is automatic')
     grant.add_argument('--lifetime-seconds', type=int, default=2592000)
     for name in ('capture', 'import', 'events', 'revoke'):
         command = commands.add_parser(name)
@@ -42,8 +43,14 @@ def main(argv=None):
     try:
         store = Store(args.home)
         if args.command == 'grant':
-            output = store.grant(args.project, profile=args.profile, source=args.source,
-                                 start_after=args.start_after, lifetime_seconds=args.lifetime_seconds)
+            if args.client == 'synthetic' and args.start_after is None:
+                raise InvalidEvent('source_high_water_required')
+            if args.client != 'synthetic' and args.start_after is not None:
+                raise InvalidEvent('native_sequence_is_automatic')
+            source = args.source or ('fixture-v1' if args.client == 'synthetic' else 'claude-hooks-v1')
+            output = store.grant(args.project, profile=args.profile, source=source,
+                                 start_after=args.start_after or 0, lifetime_seconds=args.lifetime_seconds,
+                                 client=args.client)
         elif args.command == 'capture':
             output = store.capture(args.registration, args.epoch, sys.stdin.buffer.read(EVENT_LIMIT + 1))
         elif args.command == 'import':

@@ -1,0 +1,20 @@
+{
+  "title": "Opt in to Claude observations",
+  "scenario": "Scenario: native-observation / workflow-map. Candidate based on doctor parent 7131b4b, captured 2026-10-18. Python 3.11+, Git and Claude are required. Start with disposable settings; native model verification requires authorized provider access. Default installations collect nothing.",
+  "steps": [
+    {
+      "title": "Find the collection boundary",
+      "instruction": "Open docs/map/workflow.html. Under Anytime, open Self-improvement and eval, then 1. Observe. Expand the details and follow Sources to the store and native collection guide.",
+      "screenshot": "native-observe.png",
+      "caption": "Actual local map dialog: Claude opt-in is available; Codex collection and comparative eval remain planned.",
+      "expected": "Use account/observation/native.md for the authoritative commands. A grant selects one exact project; the installer selects one Claude registration per account."
+    },
+    {
+      "title": "Register, verify and revoke",
+      "instruction": "Create a grant with observations.py grant --client claude --project PATH and an explicit --home. Preview install or update with --observation-registration ID, then apply the reviewed plan. Start a fresh authorized session and inspect events. To stop, revoke the grant; use update --observation-registration none to remove delivery.",
+      "screenshot": "native-result.png",
+      "caption": "Browser-rendered selected results from an actual disposable Claude/Haiku 5.5 run; not a terminal screenshot.",
+      "expected": "Check native records and planning recovery independently. Prompts, arguments, file contents and transcript paths must be absent from stored records. Revocation disables old callbacks. This run does not prove complete coverage or comparative improvement."
+    }
+  ]
+}

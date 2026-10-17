@@ -21,7 +21,7 @@ def managed_target(name):
         return Path(name).name not in PRESERVED_SKILLS
     return (name.startswith('.agents/agent-dotfiles/bundle/')
             or name.startswith('.codex/hooks/')
-            or name in {RECEIPT, '.agents/bin/planning-hook.py',
+            or name in {RECEIPT, '.agents/bin/planning-hook.py', '.agents/bin/observation-hook.py',
                         '.claude/hooks/planning-with-files-dispatch.sh', '.codex/AGENTS.md',
                         '.claude/CLAUDE.md', '.hermes/SOUL.md', '.codex/hooks.json',
                         '.claude/settings.json', '.codex/config.toml', '.claude.json'})

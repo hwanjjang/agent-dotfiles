@@ -32,6 +32,20 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
         return finish(result)
     result['source_revision'] = receipt.get('source_revision')
     checks.append(check('installation', 'pass', 'An owned installation receipt is present.'))
+    if receipt.get('observation'):
+        try:
+            import sys
+            from setup_account import ROOT
+            sys.path.insert(0, str(ROOT))
+            from account.observation.store import Store
+            grant = Store(home).registration(receipt['observation']['registration_id'])
+            active = grant is not None and grant['epoch'] == receipt['observation']['epoch']
+            checks.append(check('observation.grant', 'pass' if active else 'blocked',
+                                'Selected observation grant is active; native delivery is not checked.' if active
+                                else 'Selected observation grant is expired, revoked or replaced.',
+                                '' if active else 'Remove the owned observation route or explicitly select a new grant.'))
+        except (OSError, ValueError, KeyError, TypeError):
+            checks.append(check('observation.grant', 'blocked', 'Selected observation grant is unavailable or unsafe.'))
     try:
         drift = status(home)['drift']
         checks.append(check('owned-content', 'fail' if drift else 'pass',

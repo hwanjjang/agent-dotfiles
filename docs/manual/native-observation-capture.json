@@ -1,0 +1,29 @@
+{
+  "captured": "2026-10-18",
+  "baseline": "7131b4b",
+  "status": "uncommitted_candidate",
+  "scenario": "native-observation",
+  "client": "Claude Code 2.1.302",
+  "model": "claude-haiku-5-5",
+  "source_sha256": {
+    "account/observation/native.py": "57b729e8067974e7fab28d6313c511a27d2bc5a3824ec64256cb030fc8204d50",
+    "account/observation/store.py": "a3e4a58d53e9dcb146578a37c31c3c361714dcb5753c59eb5022df16db349ff3",
+    "account/observation/files.py": "85e67e1d7048036b368d4055177e0adf290679e942626b07e959fa0b027324d4",
+    "account/hooks/observation-hook.py": "549ece3ddcc6ffacdd858457e9b162b4ebb5d6faf4be311a60bdfaf1859177ab",
+    "scripts/setup_account.py": "096b71f58b860038072510070a3f1a3cfe78928bb3c2a9748dd0d7c97ed596d2",
+    "scripts/account_storage.py": "1895e341548253c9014ecc6bc46bdc9d93d92d58e725567c4ff1c35077ab57af",
+    "docs/map/catalog.json": "063bbf520847f7fe8e7938144ea98ca65ef6cd62cec9de5aa37225475e95f7a9",
+    "docs/map/workflow.json": "0bcd1aef5ccfcd8f6af44dbf2ea04447ac9493dc215e145d5f5d40a36201a4b6"
+  },
+  "images": {
+    "native-observe.png": "a62384c34b14b59303518f7bde01fb53c827d48cf7217a259daf47e9a7b0feca",
+    "native-result.png": "4e0cb5a677f888df5aa6386f38deba59eb2d3f9d7230619a24f4f6043b51db98"
+  },
+  "notes": [
+    "Actual current map screenshot and browser-rendered selected results from a fresh integrated-candidate native run.",
+    "Collector, dispatcher, storage and installer hashes match the fresh disposable qualification snapshot.",
+    "Existing authentication with disposable settings; not a hermetic evaluation account.",
+    "PDF render and visual inspection recorded separately after rebuilding."
+  ],
+  "native_fixture_revision": "a978eb27f1b676e72d2f65d0720d5c3733a51953"
+}

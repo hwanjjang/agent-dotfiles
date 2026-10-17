@@ -3,8 +3,10 @@
 Status: design for [issue #9](https://github.com/hwanjjang/agent-dotfiles/issues/9),
 2026-10-17. Source baseline: `ed1da03`. Slice 1 now has a
 [synthetic observation store and manual CLI](../../account/observation/README.md).
-The native collector, task feedback, experiments and promotion interfaces below
-remain future work; performance targets are unmeasured. No live account collection
+The first native slice now provides an opt-in [Claude metadata adapter](../../account/observation/native.md)
+and installer registration, qualified on a disposable configuration on 2026-10-18.
+Codex collection, task feedback, experiments and promotion interfaces remain planned;
+large-ledger performance targets are unmeasured. No persistent real-account collection
 or scheduled work was activated.
 
 ## Problem and intended experience
@@ -46,7 +48,7 @@ this design, not additional state-machine stages or installed capabilities.
 
 | Step | Present capability and boundary |
 | --- | --- |
-| 1. Observe | Synthetic store/CLI exists; native collection is planned. |
+| 1. Observe | Synthetic store/CLI and opt-in Claude hook delivery exist; Codex collection remains planned. |
 | 2. Reproduce | Case design is documented; task binding and triage automation are planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
 | 4. Eval | Frozen comparisons, isolation and qualified grading are designed; the model runner is not implemented. |
@@ -63,16 +65,17 @@ acceptance or account activation boundaries.
 | --- | --- | --- |
 | Delivery | [source_snapshot and receipt handling](../../scripts/setup_account.py) resolve a committed bundle and retain revision/asset fingerprints. | Reuse that identity; do not build another installer. |
 | Account mutation | [account_storage.py](../../scripts/account_storage.py) owns journals, conflicts and guarded rollback. | Observation reads a limited receipt view; only the installer changes delivered configuration. |
-| Hooks | [planning dispatcher](../../account/hooks/planning-hook.py) has a finite planning route allowlist. | Add independently owned observation routes in a later implementation; do not turn planning recovery into telemetry. |
+| Hooks | [planning dispatcher](../../account/hooks/planning-hook.py) has a finite planning route allowlist. | Keep the separate observation dispatcher independent; planning recovery does not collect telemetry. |
 | Current verification | [client verification](../client-verification.md) distinguishes installation, discovery and behavior. | A clean receipt is neither effective-context evidence nor task success. |
 | Codex documentation | [Hooks](https://learn.chatgpt.com/docs/hooks) expose lifecycle identities, optional transcript paths and event-specific fields. Transcript format is unstable; subagent hooks can share the parent's session ID. | Version adapters and qualify child/turn identity. Never infer actor identity from session ID alone. |
 | Codex runner | [Non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) documents JSONL events. Local `codex exec --help` confirms the command surface on 0.159.2. | A possible trial/export adapter; complete event coverage and isolation still need execution checks. |
 | Claude documentation | [Hooks](https://code.claude.com/docs/en/hooks) distinguish response completion, interruption and failures. A Stop payload can contain a newer final message than the transcript. | Stop is a response boundary, not task completion; capture completeness is explicit. |
 
-Native observation routes have not been qualified on either installed client.
-Codex and Claude are initial adapter targets; no Hermes or other-client telemetry
-support is claimed. Missing features disable the affected capability rather than
-silently substituting another event or client.
+Claude observation was qualified with synthetic work on client 2.1.302 and actual
+Haiku 5.5, using disposable installer-generated settings and existing authentication.
+See the [native guide](../../account/observation/native.md) for tested callbacks and
+limits. Codex and Hermes observation remain unsupported. Missing features stay
+unknown rather than silently substituting another event or client.
 
 ## Selected architecture and alternatives
 
@@ -410,7 +413,9 @@ comparison plan before attributing it to the shared configuration.
 
 These are implementation boundaries, not newly published child issues. Slice 1
 is implemented and qualified with synthetic data as described in its
-[guide](../../account/observation/README.md); slices 2–5 remain planned. Each slice depends
+[guide](../../account/observation/README.md). Slice 2 has the Claude-first implementation
+and qualification described in the native guide; Codex and large-ledger performance
+qualification remain open. Slices 3–5 remain planned. Each slice depends
 on the previous contract; expensive model trials begin after deterministic
 collection and isolation qualification.
 
@@ -432,9 +437,11 @@ declared reference machine, tested with concurrent writers and 10,000 synthetic
 events. Record the actual distribution and durability cost; this is a target,
 not an availability promise. Bound every payload/batch and report dropped fields.
 
-The next implementation step is slice 2, native observation adapters. Native
-activation, model-budget selection and any recurring analysis are later explicit
-operations. Open qualification questions are exact installed-client event coverage,
+Next steps are independent Codex qualification and slice 3 task feedback/case
+preparation using the existing Claude metadata. The doctor supplies readiness
+checks; the separate native adapter owns collection. Real-account activation, comparison
+model-budget selection and any recurring analysis are later explicit operations.
+Open qualification questions are exact installed-client event coverage,
 safe model authentication inside the trial sandbox and supported project-filtered
 imports; unsupported features remain disabled while other slices can progress.
 
@@ -468,6 +475,7 @@ discusses selective promotion and evaluation; it is a design proposal, not
 deployment evidence. Selection is provisional with respect to community
 validation and rests on task fit, source inspection and the qualification plan.
 
-No live task traces were ingested and no comparative model benchmark was run for
-this design. Source inspection, architecture review and documentation checks do
-not establish native capture, effective isolation or improved task performance.
+Only metadata from the documented synthetic Claude qualification was captured;
+no private task history was ingested or comparative benchmark run. The bounded
+native evidence does not establish full event coverage, evaluation isolation or
+improved task performance.

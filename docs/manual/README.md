@@ -81,5 +81,23 @@ The [English guide](user-guide/manual-en.pdf) and [Korean guide](user-guide/manu
 cover installation, AK SDLC navigation, private synthetic observations, the proposed
 eval workflow and recovery in 18 pages each. See the [source and capture notes](user-guide/README.md),
 [English editable text](user-guide/manual-en.md) and [Korean editable text](user-guide/manual-ko.md).
-The six-step improvement cycle is documented with explicit implemented/planned status.
-Actual native collection and comparative model evaluation remain future work.
+The six-step improvement cycle is documented with explicit implemented/planned status
+at that capture baseline. See the current native walkthrough below for the later
+Claude adapter; comparative model evaluation remains future work.
+
+## Native Claude collection walkthrough
+
+The [two-page walkthrough](native-observation.pdf) covers finding the collection
+guide, opting in, verifying callbacks and revoking delivery. Its
+[editable source](native-observation.json), [map capture](native-observe.png),
+[sanitized native result capture](native-result.png) and
+[capture manifest](native-observation-capture.json) are maintained together.
+
+The 2026-10-18 candidate is based on `48b854b`; the manifest binds the runtime and
+map sources. The first image shows the actual map; the second is a browser rendering
+of selected results from a real disposable Claude 2.1.302 / Haiku 5.5 session, not
+a terminal screenshot. Native runtime files match the tested snapshot. Both PDF
+pages were rendered and visually checked, with text and page count checked too.
+The [native guide](../../account/observation/native.md) owns commands and limits;
+the [recipe](../verification/verify-repository/features/native-observation.md)
+owns repeatable verification. No real-account collection was activated by this guide.

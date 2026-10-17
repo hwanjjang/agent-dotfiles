@@ -143,6 +143,51 @@ class AccountSetupTests(unittest.TestCase):
         self.assertEqual(len(store.events(grant['registration_id'])), 1)
         self.assertEqual(store.capture(grant['registration_id'], grant['epoch'], payload)['status'], 'duplicate')
 
+    def test_native_observation_selection_preserves_planning_and_is_revocable(self):
+        from account.observation.store import Store
+        from account_doctor import diagnose
+        store = Store(self.home)
+        grant = store.grant(self.repo, client='claude', source='claude-hooks-v1')
+        ident = grant['registration_id']
+        plan, _ = self.prepare(observation_registration=ident)
+        self.assertEqual(len(plan['hook_activation']['claude_observation']), 5)
+        self.assertEqual(len(plan['hook_activation']['codex']), 7)
+        self.assertFalse((self.home / '.agents/bin/observation-hook.py').exists())
+        self.apply(observation_registration=ident)
+        config = json.loads((self.home / '.claude/settings.json').read_text())
+        self.assertEqual(len(config['hooks']['SessionStart']), 2)
+        command = [sys.executable, str(self.home / '.agents/bin/observation-hook.py'), ident, grant['epoch']]
+        payload = json.dumps(dict(cwd=str(self.repo), session_id='session-1', hook_event_name='SessionStart',
+                                  transcript_path='PRIVATE_SENTINEL')).encode()
+        callback = subprocess.run(command, input=payload, capture_output=True, timeout=5)
+        self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'', b''))
+        self.assertEqual(len(store.events(ident)), 1)
+        for bad in (b'not JSON', b'x' * 131073):
+            callback = subprocess.run(command, input=bad, capture_output=True, timeout=5)
+            self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'', b''))
+        # A producer that never closes stdin cannot hold a hook indefinitely.
+        stalled = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            self.assertEqual(stalled.wait(timeout=6), 0)
+            self.assertEqual(stalled.stdout.read(), b'')
+            self.assertEqual(stalled.stderr.read(), b'')
+        finally:
+            if stalled.poll() is None: stalled.kill(); stalled.wait()
+            stalled.stdin.close(); stalled.stdout.close(); stalled.stderr.close()
+        self.assertEqual(setup.status(self.home)['drift'], [])
+        self.assertIsNone(self.apply(action='update'))
+        store.revoke(ident)
+        with patch('account_doctor.shutil.which', return_value='/synthetic/client'):
+            self.assertEqual(diagnose(self.home)['status'], 'blocked')
+        callback = subprocess.run(command, input=b'not JSON', capture_output=True, timeout=5)
+        self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'', b''))
+        self.assertEqual(store.events(ident), [])
+        self.apply(action='update', observation_registration='none')
+        config = json.loads((self.home / '.claude/settings.json').read_text())
+        self.assertEqual(list(config['hooks']), ['SessionStart'])
+        self.assertEqual(len(config['hooks']['SessionStart']), 1)
+        self.assertFalse((self.home / '.agents/bin/observation-hook.py').exists())
+
     def test_modified_managed_hook_is_not_silently_removed(self):
         self.apply();p=self.home / '.codex/hooks.json';config=json.loads(p.read_text())
         config['hooks']['Stop'][0]['hooks'][0]['timeout']=999;p.write_text(json.dumps(config))

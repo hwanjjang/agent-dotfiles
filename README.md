@@ -136,8 +136,10 @@ step, with compatibility checked in that client.
 The [account improvement loop](docs/decisions/account-improvement-loop.md) connects
 private observations to reviewed cases, comparative evaluation and account updates.
 Its first slice provides a [private synthetic observation store](account/observation/README.md)
-with scoped grants, durable records, batch replay and revocation. Native
-collection and comparative model evaluation remain future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
+with scoped grants, durable records, batch replay and revocation. Optional
+[Claude native collection](account/observation/native.md) now uses explicit
+project consent and installer registration; default installations collect nothing.
+Codex collection and comparative model evaluation remain future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
 qualifies setup and bounded model behavior before experiments or after deployment;
 its PASS does not establish improvement over a baseline.
 

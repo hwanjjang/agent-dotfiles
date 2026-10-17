@@ -314,6 +314,20 @@ read-only; use the registered `gh` tool for authorized writes or separately sele
 a suitable write profile. Do not remove the read-only header just to make a test
 pass. Playwright checks should use an isolated synthetic page and disposable state.
 
+## Native observation qualification
+
+The [Claude observation adapter](../account/observation/native.md) was exercised on
+2026-10-18 with Claude Code 2.1.302 and actual Haiku 5.5, using installer-generated
+disposable settings and existing authentication. All five callback types appeared
+alongside planning recovery; six metadata records covered a successful Read and an
+intentional Read failure. Stored records excluded input/output content, and owned
+source files had no drift. Consent and the disposable installation were removed.
+This does not establish a hermetic evaluation environment, complete callback
+delivery, native Linux behavior, subagent identity or Codex/Paseo observation.
+The [recipe](verification/verify-repository/features/native-observation.md) owns
+repeatable checks and the [walkthrough](manual/native-observation.pdf) shows the
+actual map and sanitized selected run results.
+
 Record client/version, source identity, selected path, check and result, then name
 what remains unverified. This is a check procedure, not a claim of installation,
 automatic skill selection, MCP connectivity or complete orchestration.

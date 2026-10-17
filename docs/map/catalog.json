@@ -2451,30 +2451,32 @@
     },
     {
       "id": "observation-store",
-      "title": "Private synthetic observations",
+      "title": "Private observations",
       "kind": "guide",
       "group": "start",
       "status": "available",
       "source": "account/observation/README.md",
-      "summary": "Qualify scoped private records, replay and revocation with synthetic input in a disposable account.",
+      "summary": "Use the synthetic store or explicitly opt one Claude project into bounded native metadata collection.",
       "when": [
-        "Testing the first storage slice of the account improvement loop."
+        "Qualifying private observation storage or opting an approved Claude project into collection."
       ],
-      "usage": "Use Python 3.11+ and the disposable-home example; inspect scripts/improvement/observations.py --help before manual CLI operations.",
+      "usage": "Start with the disposable synthetic example. For native delivery, follow account/observation/native.md: grant --client claude, preview installer --observation-registration ID, then verify actual callbacks. Default installations collect nothing.",
       "behavior": [
-        "Keep exact project/profile/source grants, consent epochs and private metadata separate from installer state.",
-        "Deduplicate stable IDs, commit imported events with their cursor, and purge revoked evidence.",
-        "Native session collection, task triage and model evaluation remain future work."
+        "Keep exact project/client/profile/source grants, consent epochs and private metadata separate from installer state.",
+        "Deduplicate stable tool IDs, commit synthetic imports with their cursor, and purge revoked evidence.",
+        "Claude uses five independent metadata hooks; no prompt, arguments, outputs or transcript reads. Missing identity and coverage stay unknown.",
+        "Codex observation, task feedback automation and comparative evaluation remain planned."
       ],
       "outputs": [
-        "Durable synthetic observations and explicit gaps, with a rebuildable index and revocation checks."
+        "Private synthetic or Claude metadata records and explicit gaps; no task-success or improvement claim."
       ],
       "tags": [
         "account",
         "observations",
         "synthetic",
         "privacy",
-        "evaluation"
+        "evaluation",
+        "claude"
       ]
     },
     {
@@ -2695,7 +2697,7 @@
       "behavior": [
         "Keep source acceptance and account activation separate.",
         "Use guarded rollback while preserving observation records; reproduce production signals before attributing them to a skill.",
-        "Return to step 1 with a new environment identity. Native automatic observation remains planned.",
+        "Return to step 1 with a new environment identity. Claude observation requires explicit project consent and registration; Codex collection remains planned.",
         "Use account doctor to recheck delivered setup and affected client behavior; preserve private observations during update or rollback."
       ],
       "outputs": [
@@ -2728,7 +2730,8 @@
         "For optional Paseo, verify actual provider/model, exact source-content readback and owned-resource cleanup.",
         "With --scenario routing, choose spec and planning skills from natural requirements, then verify acceptance coverage and task dependencies.",
         "Qualify setup before eval and after deployment; a successful smoke run is not comparative improvement evidence and never activates observation collection.",
-        "Triage failures into reviewed reproduction cases; distinguish environment and grader faults from skill behavior before changing source."
+        "Triage failures into reviewed reproduction cases; distinguish environment and grader faults from skill behavior before changing source.",
+        "When observation delivery is selected, report an expired, revoked or replaced grant as blocked without renewing consent."
       ],
       "outputs": [
         "A pass/fail/blocked/skipped report with next actions and explicit coverage.",

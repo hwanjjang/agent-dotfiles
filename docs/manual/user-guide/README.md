@@ -27,6 +27,17 @@ command prefixes. They are not screenshots of a native terminal application.
 `eval-cases.png` and `eval-plan.png` are clearly labeled design illustrations.
 The overview is for orientation; use the interactive map to read individual nodes.
 
+For the later account qualification commands, use the
+[doctor guide](../../../account/README.md#diagnose-and-exercise-the-installation)
+and [screenshot walkthrough](../README.md#account-installation-guide-walkthrough).
+The screenshots here retain their capture baseline; they do not demonstrate the
+doctor or a comparative eval run. The improvement design owns the
+[connection between qualification and eval](../../decisions/account-improvement-loop.md#account-qualification-and-reuse).
+The later [Claude collection guide](../../../account/observation/native.md) covers
+explicit native opt-in, verification and revocation. The bilingual editions' native
+collection status describes their earlier capture baseline; current support is
+documented in that guide. No screenshot here is evidence of native collection.
+
 ## Edit and rebuild
 
 `manual-en.json` and `manual-ko.json` are direct PDF inputs. Edit matching step IDs

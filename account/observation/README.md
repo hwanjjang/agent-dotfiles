@@ -1,10 +1,11 @@
-# Private synthetic observation store
+# Private observation store
 
-This is slice 1 of the [account improvement loop](../../docs/decisions/account-improvement-loop.md).
+This is the private storage foundation of the [account improvement loop](../../docs/decisions/account-improvement-loop.md).
 It implements a local store, a synthetic adapter and a manual maintenance CLI.
-It does not collect native Codex/Claude sessions, inspect transcripts, run models,
-change skills, register hooks or write installer state. Native collection and
-comparative evaluation remain later slices.
+The optional [Claude native adapter](native.md) reuses this store with separate
+project consent and installer registration. Codex collection, task feedback and
+comparative evaluation remain later work. The store never inspects transcripts,
+runs models, changes skills, registers hooks or writes installer state.
 
 Use Python 3.11+ on a local POSIX filesystem, matching the [account installer](../README.md).
 There are no additional packages. Run the CLI from this maintenance checkout;
@@ -31,13 +32,13 @@ files. The selected home itself is canonicalized once as the caller's trust root
 The store is not a security boundary against another process controlling the same
 user account, changing grants or replacing the whole home. Never add it to Git.
 
-A registration binds one canonical project directory, the synthetic client, a
+A registration binds one canonical project directory, a selected client, a
 profile and an exact source generation. Session and native event IDs are scoped
 to that registration and epoch. Subprojects are not implicitly opted in. Different
 profiles and sources have separate registrations; revoke each registration to
 forget a project completely. The implementation uses one exclusive store guard,
 with a one-second wait limit, to serialize capture, import, purge and index rebuild.
-Finer-grained concurrency and native-hook latency qualification are deferred.
+Finer-grained concurrency and large-ledger latency qualification are deferred.
 
 ## Try the complete flow without touching your account
 
@@ -156,7 +157,7 @@ revocation still succeeds and the old source cannot be regranted: select a new
 source generation. Source identity is caller-owned; a dishonest caller relabeling
 history is outside this synthetic adapter's guarantees.
 
-A regrant creates a new epoch and requires an explicitly declared current
+A synthetic regrant creates a new epoch and requires an explicitly declared current
 `start_after` at least as high as the retained bound. Queued old-epoch callbacks
 remain disabled. Grants expire after at most 30 days; expiry immediately prevents
 capture and API reads. Run `prune` for physical cleanup. No background retention
@@ -176,6 +177,7 @@ Tests use temporary homes and synthetic records. They cover scope isolation,
 unknown attribution, allowlisted metadata, deduplication/conflicts, partial batch
 retry, concurrent writers, interrupted publication, consent expiry/revocation,
 regrant, copied old records, private modes and unsafe filesystem objects.
-The next slice adds a qualified native adapter and explicit installer registration
-on a disposable account. Until then, ordinary account sessions produce no records
-through this module.
+The [native guide](native.md) documents implemented Claude delivery and its narrower
+qualification. Default installations still collect nothing. Run
+`python3.11 -m unittest discover -s tests -p 'test_observation_native.py'` and the
+installer tests for native scope, deduplication, neutral delivery and coexistence.
