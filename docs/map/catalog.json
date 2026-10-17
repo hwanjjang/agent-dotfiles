@@ -517,17 +517,17 @@
       "group": "content",
       "status": "available",
       "source": "skills/planning-and-task-breakdown/SKILL.md",
-      "summary": "Turn an existing spec or clear requirements into verifiable vertical slices, a dependency graph, and implementation briefs.",
+      "summary": "Plan verifiable tasks and coherent PR boundaries with source coverage.",
       "when": [
         "The task matches this skill's description and its prerequisites are available."
       ],
-      "usage": "Read skills/planning-and-task-breakdown/SKILL.md. Source presence does not attest client discovery.",
+      "usage": "Read the selected requirements and existing plan; map task ownership, source coverage and intended PR bases.",
       "behavior": [
-        "Follows its packaged workflow and supporting resources.",
-        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+        "Keeps task blockers and PR dependencies distinct in one plan.",
+        "Assigns connector owners and checks every source commitment."
       ],
       "outputs": [
-        "The artifact or report defined by the skill, with actual checks and gaps."
+        "Assignable task graph and appropriately scoped PR map."
       ],
       "tags": [
         "planning-and-task-breakdown",
@@ -1205,6 +1205,110 @@
         "feature-map",
         "repository-feature-map"
       ]
+    },
+    {
+      "id": "policy-pr-workflow",
+      "title": "PR workflow policy",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/pr-workflow.md",
+      "summary": "Keep PRs coherent and verifiable, with explicit bases and authority.",
+      "when": [
+        "Planning or preparing work for review and merge."
+      ],
+      "usage": "Apply alongside destination conventions when choosing merge units or updating a PR.",
+      "behavior": [
+        "Keeps related tests and documentation with each change.",
+        "Separates task dependencies, PR topology and publication authority."
+      ],
+      "outputs": [
+        "Reviewable merge units and candidate-bound evidence."
+      ],
+      "tags": [
+        "pr",
+        "review",
+        "stack",
+        "policy"
+      ]
+    },
+    {
+      "id": "to-tickets",
+      "title": "Turn plans into tickets",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/to-tickets/SKILL.md",
+      "summary": "Materialize an existing plan into outcome tickets or local drafts.",
+      "when": [
+        "A plan, spec or conversation needs implementation tickets."
+      ],
+      "usage": "Read the source and reuse the task plan; write local drafts or publish within existing tracker authority.",
+      "behavior": [
+        "Preserves source commitments, connector ownership and blockers.",
+        "Uses issue-writing and shared issue lifecycle; creation does not start implementation."
+      ],
+      "outputs": [
+        "Traceable ticket drafts or verified published IDs, with blockers and remaining gaps."
+      ],
+      "tags": [
+        "to-tickets",
+        "issue",
+        "planning",
+        "dependencies"
+      ]
+    },
+    {
+      "id": "make-pr-easy-to-review",
+      "title": "Prepare a PR for review",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/make-pr-easy-to-review/SKILL.md",
+      "summary": "Clarify the actual change, review entry points, evidence and split needs.",
+      "when": [
+        "A PR or local candidate needs clearer scope or reviewer guidance."
+      ],
+      "usage": "Inspect head/base and the diff; prepare an accurate body using the destination template and propose needed splits.",
+      "behavior": [
+        "Author preparation remains separate from independent review.",
+        "History changes require authority and actual content-preservation checks."
+      ],
+      "outputs": [
+        "Accurate description, review path and clearly distinguished proposals or applied changes."
+      ],
+      "tags": [
+        "make-pr-easy-to-review",
+        "pr",
+        "review",
+        "history"
+      ]
+    },
+    {
+      "id": "pr-workflow-decision",
+      "title": "PR and ticket adoption",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/pr-workflow.md",
+      "summary": "Compare pstack, Matt, Addy and Cursor Team Kit methods and community evidence.",
+      "when": [
+        "Choosing or updating ticket decomposition and review preparation methods."
+      ],
+      "usage": "Read the source pins, ownership choices, adaptations and evidence limits before changing these methods.",
+      "behavior": [
+        "Uses original Cursor Team Kit attribution and source-specific community reports.",
+        "Keeps one planning authority and optional stack tooling."
+      ],
+      "outputs": [
+        "A traceable adoption rationale and explicit verification limits."
+      ],
+      "tags": [
+        "pr",
+        "tickets",
+        "research",
+        "adoption"
+      ]
     }
   ],
   "relationships": [
@@ -1517,6 +1621,76 @@
       "from": "repository-feature-map",
       "to": "screenshot-manual",
       "label": "links user journeys"
+    },
+    {
+      "from": "policy-pr-workflow",
+      "to": "pr-workflow-decision",
+      "label": "Explains selection and evidence"
+    },
+    {
+      "from": "policy-pr-workflow",
+      "to": "policy-issue-workflow",
+      "label": "Uses issue publication and completion authority"
+    },
+    {
+      "from": "planning-and-task-breakdown",
+      "to": "policy-pr-workflow",
+      "label": "Defines coherent PR boundaries"
+    },
+    {
+      "from": "to-tickets",
+      "to": "planning-and-task-breakdown",
+      "label": "Consumes the task plan"
+    },
+    {
+      "from": "to-tickets",
+      "to": "issue-writing",
+      "label": "Composes ticket bodies"
+    },
+    {
+      "from": "to-tickets",
+      "to": "policy-issue-workflow",
+      "label": "Uses tracker lifecycle and reconciliation"
+    },
+    {
+      "from": "make-pr-easy-to-review",
+      "to": "planning-and-task-breakdown",
+      "label": "Reuses split planning"
+    },
+    {
+      "from": "make-pr-easy-to-review",
+      "to": "policy-pr-workflow",
+      "label": "Uses merge-unit and authority rules"
+    },
+    {
+      "from": "sdlc",
+      "to": "to-tickets",
+      "label": "Routes requested ticket materialization"
+    },
+    {
+      "from": "sdlc",
+      "to": "make-pr-easy-to-review",
+      "label": "Routes author-side review preparation"
+    },
+    {
+      "from": "pr-workflow-decision",
+      "to": "pstack",
+      "label": "Selects per-PR planning and sequencing"
+    },
+    {
+      "from": "pr-workflow-decision",
+      "to": "matt-pocock",
+      "label": "Selects ticket and body guidance"
+    },
+    {
+      "from": "pr-workflow-decision",
+      "to": "addy-osmani",
+      "label": "Extends existing decomposition"
+    },
+    {
+      "from": "overview",
+      "to": "pr-workflow-decision",
+      "label": "Explains reviewable PR adoption"
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/mattpocock/skills",
+  "revision": "49dd158d1076134a641b33efb035946536778336",
+  "path": "skills/engineering/to-tickets",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "56ec23c5b2782785d4e65bff9e315b6d3aeb4ef977c174a219e99489fada1995"
+  },
+  "adaptations": [
+    "Standalone adapter consumes the existing planning skill instead of owning competing decomposition.",
+    "Retains outcome tickets and blocker mapping; adds source-commitment and connector coverage checks.",
+    "Reuses issue-writing and shared lifecycle/publication authority, stable identifiers and uncertain-write reconciliation.",
+    "Replaces upstream setup, fixed labels, scratch paths and explicit-only metadata with portable defaults; no implied implementation.",
+    "Consolidated repeated rules into their existing policy/planning/body authorities; consuming steps link to those rules and retain only adapter-specific actions."
+  ],
+  "skill_dependencies": [
+    "planning-and-task-breakdown",
+    "issue-writing"
+  ],
+  "policy_dependencies": [
+    "policies/issue-workflow.md",
+    "policies/pr-workflow.md",
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "Source requirements and a writable task-local draft location; an available authenticated tracker client only for authorized publication. No mandatory MCP or Git requirement for local drafts."
+  ],
+  "validation": "Strict metadata, relative links, dependency closure and pinned hashes passed. Independent application of the pre-consolidation wording exercised three synthetic cases; subsequent authority-link consolidation received structural and source review only. See docs/client-verification.md. Current package native discovery and authenticated tracker/history execution remain unverified."
+}

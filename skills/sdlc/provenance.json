@@ -9,7 +9,9 @@
     "Use policies/issue-workflow.md as the shared authority for issue lifecycle and publication rules; keep skill-specific body or stage rules here.",
     "Connected existing stages to focused skills through references/skill-routing.md; skills remain independently usable.",
     "Single pstack-derived tdd method; explicit alternative evidence and no-refactor reuse are validated without weakening smoke or publication gates.",
-    "Routes verification setup and drift maintenance to the portable pstack pair; project recipes feed existing evidence gates."
+    "Routes verification setup and drift maintenance to the portable pstack pair; project recipes feed existing evidence gates.",
+    "Routes requested ticket materialization through the existing plan and author-side PR preparation before independent review; no additional lifecycle stage.",
+    "Made the PR workflow policy authoritative over the historical one-task/one-PR equation."
   ],
   "skill_dependencies": [
     "planning-with-files",
@@ -28,7 +30,9 @@
     "diagnosing-bugs",
     "code-review-and-quality",
     "create-verification-skill",
-    "maintain-verification-skill"
+    "maintain-verification-skill",
+    "to-tickets",
+    "make-pr-easy-to-review"
   ],
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
@@ -36,6 +40,8 @@
   "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. SDLC evidence-mode and existing state/reviewer tests: 52 passed. No model-adherence, live MCP authentication or multi-provider lifecycle claim.",
   "policy_dependencies": [
     "policies/issue-workflow.md",
-    "policies/security.md"
+    "policies/security.md",
+    "policies/pr-workflow.md",
+    "policies/evidence.md"
   ]
 }

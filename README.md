@@ -12,7 +12,7 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 20 skill packages, seven portable policies,
+**Status:** Initial content collection: 22 skill packages, eight portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
@@ -31,6 +31,11 @@ Detailed design guidance is optional and used when the task needs it.
 The [issue workflow policy](policies/issue-workflow.md) defines issue creation,
 updates, comments, handoff and closure. Use it directly or through issue-writing
 and SDLC; see the [selection and community evidence](docs/decisions/issue-workflow.md).
+
+The [PR workflow policy](policies/pr-workflow.md) keeps review and merge units
+coherent. Planning owns task and PR boundaries; [to-tickets](skills/to-tickets/SKILL.md)
+materializes tickets, and [make-pr-easy-to-review](skills/make-pr-easy-to-review/SKILL.md)
+prepares reviewer guidance. See the [source comparison and adaptations](docs/decisions/pr-workflow.md).
 
 The [verification adoption](docs/decisions/verification.md) adds project-local
 verification generation and maintenance. The [repository feature map](docs/verification/verify-repository/features/README.md)

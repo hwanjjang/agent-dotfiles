@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+  "path": "cursor-team-kit/skills/make-pr-easy-to-review",
+  "license": "MIT",
+  "license_path": "cursor-team-kit/LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "e8da0d4a85b7c04823698f539251617389f827fd9137100ef7eaea5dcc992fe7"
+  },
+  "adaptations": [
+    "Adopts original Cursor Team Kit source discovered through the Denyer pstack port; not native pstack.",
+    "Conditional history procedure captures immutable identities and checks actual content equality, per-merge-unit checks and combined results.",
+    "Respects actual fork refs, explicit expected-head leases, existing rewrite/publication authority and concurrent work.",
+    "Related behavior/tests/docs stay together; existing planner owns split topology.",
+    "Matt pr supplies optional explanation, evidence and reversibility guidance; destination template remains authoritative. No visual examples copied; retains show-me attribution.",
+    "Consolidated repeated rules into their existing policy/planning/body authorities; consuming steps link to those rules and retain only adapter-specific actions."
+  ],
+  "skill_dependencies": [
+    "planning-and-task-breakdown"
+  ],
+  "policy_dependencies": [
+    "policies/pr-workflow.md",
+    "policies/issue-workflow.md",
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "Git for candidate inspection; an available authenticated tracker/PR client only for authorized external operations. No mandatory MCP."
+  ],
+  "validation": "Strict metadata, relative links, dependency closure and pinned hashes passed. Independent application of the pre-consolidation wording exercised three synthetic cases; subsequent authority-link consolidation received structural and source review only. See docs/client-verification.md. Current package native discovery and authenticated tracker/history execution remain unverified.",
+  "additional_sources": [
+    {
+      "upstream": "https://github.com/mattpocock/skills",
+      "revision": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/pr/SKILL.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "ab63f1cf78647389edcd386c9427c5dfca27ed2836930c24773ffee834c19bcd"
+    },
+    {
+      "upstream": "https://github.com/mattpocock/skills",
+      "revision": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/pr/CREDITS.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "a7a087127665d7298a72280ef6e19c41ad8404523712a788c8dc3ab414bc2497"
+    }
+  ],
+  "discovery_reference": "https://github.com/michael-denyer/pstack-claude/blob/5bd452955f8ded23ee81e022a19c537d6e523350/plugins/pstack/skills/make-pr-easy-to-review/SKILL.md"
+}

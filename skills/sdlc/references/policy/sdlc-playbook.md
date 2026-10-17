@@ -16,6 +16,10 @@ absolutes below, including historical originals. Explicit alternatives need real
 coverage and honest limits; unavailable required checks remain blocked. Existing
 authority, reviewer independence, iteration limits and endpoint gates still apply.
 
+The collection's [PR workflow policy](../../../../policies/pr-workflow.md) owns
+review and merge boundaries. It supersedes the historical one-task/one-PR
+equation below and in the preserved source; task ownership is not a PR count.
+
 ## Core principle
 
 The center of the SDLC is not any model or agent harness. It is the loop
