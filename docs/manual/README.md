@@ -110,7 +110,9 @@ actual results and retain platform blockers. Its [editable source](codex-observa
 [current map capture](codex-observe.png), [macOS results](codex-native-result.png),
 [Linux matrix](linux-observation-result.png) and [capture manifest](codex-observation-capture.json)
 are maintained together. The two result images are browser renderings of selected
-actual qualification evidence, not terminal captures or newly executed model runs.
+actual qualification evidence, not terminal captures. The macOS result is a fresh
+corrected-runtime native run; Linux results remain historical pre-guard partial
+coverage and do not qualify the corrected Linux runtime.
 The native guide owns exact source revisions and coverage; the earlier Claude
 walkthrough retains its historical capture and is not a current Codex map.
 

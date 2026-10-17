@@ -139,9 +139,10 @@ Its first slice provides a [private synthetic observation store](account/observa
 with scoped grants, durable records, batch replay and revocation. Optional
 [Claude and Codex native collection](account/observation/native.md) use explicit
 project consent and one selected client registration; default installations collect
-nothing. Codex requires native trust for four observer definitions. macOS native
-callbacks are qualified on the recorded candidate; Linux has narrower verified
-coverage and explicit blockers. Comparative model evaluation remains future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
+nothing. Codex requires native trust for four observer definitions. A fresh macOS
+Codex fixture verifies the corrected pre-read scope guard with matching runtime
+hashes; Linux results are historical pre-guard partial fixtures with explicit
+blockers. Comparative model evaluation remains future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
 qualifies setup and bounded model behavior before experiments or after deployment;
 its PASS does not establish improvement over a baseline.
 

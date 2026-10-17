@@ -217,7 +217,10 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         require('account/hooks/observation-hook.py' in files and 'account/observation/native.py' in files,
                 'Selected revision has no native observation adapter; disable its registration before downgrading')
         if observation['client'] == 'codex':
-            capability = json.loads(files.get('account/observation/capabilities.json', {'data': b'{}'})['data'])
+            try:
+                capability = json.loads(files.get('account/observation/capabilities.json', {'data': b'{}'})['data'])
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                capability = None
             require(isinstance(capability, dict) and capability.get('schema_version') == 1
                     and isinstance(capability.get('native_sources'), list)
                     and 'codex-hooks-v1' in capability['native_sources'],

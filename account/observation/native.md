@@ -145,18 +145,24 @@ following native results are separate from those synthetic checks.
 
 | Platform/client | Actual evidence | Remaining limit |
 | --- | --- | --- |
-| macOS, Codex 0.163.0 / GPT-6-Luna low | One native turn: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; eleven reviewed definitions trusted | One synthetic task; no delivery-completeness, subagent or environment-exposure claim |
-| Linux aarch64, Codex 0.163.0 / GPT-6-Luna low | Actual callbacks: session start 1, tool starts 4, tool ends 2, response end 1; planning marker present; eleven definitions trusted | Full fixture blocked by `bwrap: Failed RTM_NEWADDR`; apply_patch failed and intended exit 3 was not reached; sandbox was not weakened |
-| Linux aarch64, Claude Code 2.1.302 | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
+| macOS, Codex 0.163.0 / GPT-6-Luna low, corrected runtime | Fresh native turn: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; eleven reviewed definitions trusted | One synthetic task; no delivery-completeness, subagent or environment-exposure claim |
+| Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, historical pre-guard | Actual callbacks: session start 1, tool starts 4, tool ends 2, response end 1; planning marker present; eleven definitions trusted | Full fixture blocked by `bwrap: Failed RTM_NEWADDR`; apply_patch failed and intended exit 3 was not reached; sandbox was not weakened |
+| Linux aarch64, Claude Code 2.1.302, historical pre-guard | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
 
-The macOS fixture revision was `92ced4083df43a79098f220a087ef3a114d3a3b7`;
-Linux used `c94143ba41b050bd52701a59b1b9f167e17366c9`. These are historical
-fixtures: the later pre-read process-directory guard changes collector/store bytes.
-Focused tests and installed-dispatcher checks verify that correction separately;
-the historical native runs do not qualify the corrected runtime or later capacity
-and attribution changes. The macOS intentional shell exit 3 still produced unknown
-observer tool-end status; nested execution IDs were not joined into per-tool proof.
-Linux's unequal start/end counts are retained rather than labeled full coverage.
+The fresh corrected macOS payload fixture is `edf5b11ca47140602563869a1ff11bbf0c052dac`.
+Collector, store, dispatcher and installation-harness hashes match this corrected
+candidate; the public [capture manifest](../../docs/manual/codex-observation-capture.json)
+records their identity separately from the fixture commit. The native run verifies
+the pre-read process-directory guard in its normal granted-project route. Focused
+and installed-dispatcher checks separately exercise rejection outside that root.
+
+The earlier macOS fixture `92ced4083df43a79098f220a087ef3a114d3a3b7` and Linux
+fixture `c94143ba41b050bd52701a59b1b9f167e17366c9` predate that guard. The Linux
+results remain historical partial coverage, not qualification of corrected Linux
+runtime. None of these runs automatically qualifies later capacity or attribution
+changes. The fresh macOS intentional shell exit 3 still produced unknown observer
+tool-end status; nested execution IDs were not joined into per-tool proof. Linux's
+unequal start/end counts remain visible instead of being labeled full coverage.
 
 Each test grant was revoked and each disposable installation removed. Post-revoke
 neutral output/no-record behavior was checked by direct installed dispatchers,

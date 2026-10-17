@@ -229,6 +229,9 @@ class AccountSetupTests(unittest.TestCase):
         self.assertEqual(set(config['hooks']), {'SessionStart','PreToolUse','PostToolUse','Stop'})
         self.assertTrue(all(len(groups) == 1 for groups in config['hooks'].values()))
         self.assertEqual(json.loads((self.home / '.claude/settings.json').read_text()).get('hooks', {}), {})
+        callback = subprocess.run(command, cwd=self.repo, input=payload, capture_output=True, timeout=5)
+        self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
+        self.assertEqual(len(store.events(ident)), 2)
         store.revoke(ident)
         callback = subprocess.run(command, cwd=self.repo, input=b'invalid', capture_output=True, timeout=5)
         self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
@@ -245,6 +248,16 @@ class AccountSetupTests(unittest.TestCase):
         self.assertEqual(len(json.loads((self.home / '.claude/settings.json').read_text())['hooks']['SessionStart']), 1)
         self.assertIsNotNone(store.registration(claude['registration_id']))
         self.assertFalse((self.home / '.agents/bin/observation-hook.py').exists())
+
+    def test_codex_observation_malformed_capability_has_remediation(self):
+        from account.observation.store import Store
+        grant = Store(self.home).grant(self.repo, client='codex', source='codex-hooks-v1')
+        path = self.repo / 'account/observation/capabilities.json'
+        for body in (b'not json', b'\xff'):
+            with self.subTest(body=body):
+                path.write_bytes(body); self.commit('malformed synthetic capability')
+                with self.assertRaisesRegex(ValueError, 'Codex observation capability; disable its registration before downgrading'):
+                    self.prepare(observation_registration=grant['registration_id'])
 
     def test_codex_observation_refuses_source_without_adapter_capability(self):
         from account.observation.store import Store

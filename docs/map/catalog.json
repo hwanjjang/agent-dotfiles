@@ -2464,7 +2464,7 @@
       "behavior": [
         "One selected client registration per account; grants, epochs and records remain owned by the private store.",
         "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
-        "macOS Codex native callbacks/planning passed the recorded fixture. Linux Codex callbacks/planning worked but tool execution was blocked; Linux Claude proves SessionStart only, with authentication unavailable.",
+        "Fresh macOS Codex callbacks/planning passed with corrected process-scope runtime hashes. Linux results are historical pre-guard fixtures: Codex tools were blocked; Claude proves SessionStart only, with authentication unavailable.",
         "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned."
       ],
       "outputs": [

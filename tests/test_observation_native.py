@@ -149,6 +149,22 @@ class CodexObservationTests(unittest.TestCase):
         for path in self.store.root.rglob('*'):
             if path.is_file(): self.assertNotIn(b'PRIVATE_SENTINEL', path.read_bytes())
 
+    def test_codex_categories_do_not_borrow_claude_file_names(self):
+        grant = self.grant()
+        for number, (tool, expected) in enumerate([('Bash','shell'), ('mcp__example__read','mcp'), ('Read','other'), ('Write','other')]):
+            self.capture(grant, tool_name=tool, turn_id='turn-1', tool_use_id=f'tool-{number}')
+            event = next(e for e in self.store.events(grant['registration_id']) if e['tool_call_id']==f'tool-{number}')
+            self.assertEqual(event['tool_category'], expected)
+
+    def test_codex_concurrent_turn_qualified_duplicates_commit_once(self):
+        grant = self.grant()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda _: self.capture(grant, turn_id='turn-1'), range(8)))
+        self.assertEqual(sum(r['status']=='recorded' for r in results), 1)
+        self.assertEqual(sum(r['status']=='duplicate' for r in results), 7)
+        self.assertEqual(self.capture(grant, turn_id='turn-2')['status'], 'recorded')
+        self.assertEqual(len(self.store.events(grant['registration_id'])), 2)
+
     def test_codex_duplicate_scope_includes_turn_and_event(self):
         grant = self.grant()
         self.assertEqual(self.capture(grant, turn_id='turn-1')['status'], 'recorded')

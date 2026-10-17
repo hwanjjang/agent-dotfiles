@@ -7,15 +7,18 @@ MCP selections are opt-in and live connections require separate checks.
 ## Native observation platform coverage — 2026-10-18
 
 The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
-is the authoritative per-platform record: macOS Codex exercised all four observer
-kinds and planning coexistence; Linux Codex produced genuine callbacks/planning
-context but its tool fixture was blocked by bubblewrap; Linux Claude initialized
-and emitted SessionStart but had no usable authentication for a model run. None
-of these results establishes complete delivery, subagent ancestry or effective
-configuration exposure. The [Codex walkthrough](manual/codex-observation.pdf)
-presents sanitized evidence and the existing consent/trust/revoke user path.
-These native fixtures predate the process-directory pre-read guard; focused
-regression and installed-dispatcher checks qualify that later correction separately.
+is the authoritative per-platform record. A fresh macOS Codex/Luna run with
+matching corrected collector/store/dispatcher and installer-harness hashes
+exercised all four observer kinds, planning coexistence and intentional exit 3
+with unknown observer outcomes. Focused and installed-dispatcher checks separately
+verify out-of-project pre-read rejection. The native fixture is one synthetic task,
+not complete delivery, subagent ancestry or effective configuration exposure.
+
+Linux results remain historical pre-guard fixtures: Codex produced genuine
+callbacks/planning context but its full tool fixture was blocked by bubblewrap;
+Claude initialized and emitted SessionStart with no usable model authentication.
+They do not qualify corrected Linux runtime. The [Codex walkthrough](manual/codex-observation.pdf)
+shows the fresh macOS result alongside those historical Linux limits.
 
 A separate whole-client Linux Docker experiment later passed native Codex command
 and synthetic transport canaries without authentication, model calls or observer
