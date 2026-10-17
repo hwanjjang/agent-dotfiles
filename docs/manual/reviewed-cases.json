@@ -1,20 +1,20 @@
 {
   "title": "Review and export a synthetic case",
-  "scenario": "Scenario: reviewed-cases / workflow-map. Historical screenshots captured 2026-10-18 on a candidate based on main 48b854b. Text refreshed after inheriting feedback correction 57173d8. Use Python 3.11+, a disposable home and explicit synthetic inputs; no model call.",
+  "scenario": "Scenario: reviewed-cases / workflow-map. Fresh correction capture on d8cd2c5. Python 3.11+, a disposable home and synthetic inputs; no model call.",
   "steps": [
     {
-      "title": "Inspect the case boundary",
-      "instruction": "Open docs/map/workflow.html and choose 2. Case / reviewed export. Expand its details. Follow Sources to the improvement design and the authoritative observation guide for cases.py request fields.",
+      "title": "Declare the cause and inspect the case boundary",
+      "instruction": "Open docs/map/workflow.html and choose 2. Case / reviewed export. Follow Sources to the authoritative Store guide. Select a frozen revision and feedback; supply triage category and evidence IDs, synthetic inputs and a successful or contrary counterpart.",
       "screenshot": "reviewed-cases-map.png",
-      "caption": "Historical actual map dialog. Explicit reviewed case export remains available; automatic triage and model evaluation remain planned. Current inherited cleanup rules are stated below.",
-      "expected": "A case binds one task revision and selected correction feedback. Supply the synthetic reproduction, outcome contract and successful or contrary counterpart yourself."
+      "caption": "Actual current workflow dialog. Evidence-bound caller triage is reported attribution, not automated diagnosis.",
+      "expected": "Only instruction cases qualify. Outcome cases need a referenced failed tool. Unknown is insufficient; environment/auth/grader are blocked. Routing/adherence need correction-linked evidence without a failed-tool prerequisite."
     },
     {
-      "title": "Review exact bytes, export, then revoke",
-      "instruction": "Run prepare --task with the selected revision, feedback IDs and synthetic payload, then show --task --case. Inspect every field and the counterpart. Review the exact digest with both confirmation flags; export to a new absolute path. Revoke the grant after the disposable check.",
+      "title": "Review exact bytes and export to a new path",
+      "instruction": "Run prepare, then show. Keep its triage envelope private; inspect the public payload and counterpart. Review the exact digest with both flags. Export into an existing directory using its resolved real path. Revoke the disposable grant after the check.",
       "screenshot": "reviewed-cases-result.png",
-      "caption": "Historical browser summary of actual bilingual CLI results, not a terminal or live efficacy result. A fresh integrated CLI journey passed after the inherited feedback correction.",
-      "expected": "Missing correction stays insufficient; unreviewed export is refused. Public fields remain synthetic development data. Revoke purges private lineage and blocks late export; expiry disables access immediately and prune removes retained private bytes. Detached exports remain independent."
+      "caption": "Browser-rendered summary of actual synthetic CLI results, not a terminal or live efficacy result.",
+      "expected": "Missing correction stays insufficient. Unreviewed, existing, parent-link, relative and private-store outputs refuse. Revoke purges private lineage; expiry disables access and prune deletes bytes. Detached synthetic exports remain. Review assertions are not automatic sanitization."
     }
   ]
 }

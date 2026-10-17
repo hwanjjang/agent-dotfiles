@@ -10,6 +10,7 @@ import unittest
 from unittest import mock
 
 from account.observation.store import Store, InvalidEvent
+from account.observation.files import UnsafeStore
 
 
 def synthetic_case():
@@ -33,6 +34,7 @@ class CaseTests(unittest.TestCase):
             schema_version=1, project_root=str(self.project), client='synthetic', profile='default',
             source='fixture-v1', session_id='private-session', sequence=1, source_event_id='event',
             event_kind='tool_end', status='failure')).encode())
+        self.evidence_ids = event['event_ids']
         self.task = self.store.bind_task(selections=[dict(self.grant, session_id='private-session',
             event_ids=event['event_ids'])], goal='PRIVATE_TASK_GOAL', request_id='bind')
         self.feedback = self.store.add_feedback(self.task['task_id'], symptom='PRIVATE_SYMPTOM',
@@ -41,7 +43,8 @@ class CaseTests(unittest.TestCase):
 
     def prepare(self, **changes):
         args = dict(revision_id=self.task['revision_id'], feedback_ids=[self.feedback['feedback_id']],
-                    synthetic_case=synthetic_case(), request_id='case')
+                    synthetic_case=synthetic_case(), request_id='case',
+                    triage=dict(category='instruction', evidence_ids=self.evidence_ids))
         args.update(changes)
         return self.store.prepare_case(self.task['task_id'], **args)
 
@@ -69,7 +72,7 @@ class CaseTests(unittest.TestCase):
         self.assertTrue(data['artifact_hashes'])
 
     def test_missing_correction_is_insufficient_without_case_writes(self):
-        weak=self.store.add_feedback(self.task['task_id'],symptom='Command failed',request_id='weak')
+        weak=self.store.add_feedback(self.task['task_id'],symptom='Command failed',evidence_ids=self.evidence_ids,request_id='weak')
         result=self.prepare(feedback_ids=[weak['feedback_id']])
         self.assertEqual(result['status'],'insufficient')
         self.assertEqual(result['reason'],'claim_evidence_missing')
@@ -99,7 +102,7 @@ class CaseTests(unittest.TestCase):
     def test_revoke_blocks_export_purges_private_cases_but_preserves_detached_export(self):
         case=self.prepare(); self.review(case); self.export(case)
         self.store.revoke(self.grant['registration_id'])
-        with self.assertRaises((InvalidEvent,FileNotFoundError)):
+        with self.assertRaisesRegex(InvalidEvent,'case_not_found'):
             self.export(case,self.output/'after.json')
         self.assertFalse((self.output/'after.json').exists())
         self.assertTrue((self.output/'case.json').exists())
@@ -108,8 +111,8 @@ class CaseTests(unittest.TestCase):
     def test_expired_grant_blocks_review_and_export(self):
         case=self.prepare();self.review(case)
         with mock.patch('account.observation.store.time.time',return_value=10**12):
-            with self.assertRaises(InvalidEvent): self.review(case)
-            with self.assertRaises(InvalidEvent): self.export(case)
+            with self.assertRaisesRegex(InvalidEvent,'task_inactive'): self.review(case)
+            with self.assertRaisesRegex(InvalidEvent,'task_inactive'): self.export(case)
 
     def test_input_whitelist_and_public_holdout_claims_reject(self):
         for change in [dict(classification='holdout'),dict(lineage='private'),dict(task_goal='secret')]:
@@ -123,11 +126,11 @@ class CaseTests(unittest.TestCase):
         case=self.prepare();self.review(case)
         outside=self.home/'unrelated';outside.write_text('untouched')
         (self.output/'link.json').symlink_to(outside)
-        with self.assertRaises((OSError,ValueError)):self.export(case,self.output/'link.json')
+        with self.assertRaises(FileExistsError):self.export(case,self.output/'link.json')
         link=self.home/'export-link';link.symlink_to(self.output)
-        with self.assertRaises((OSError,ValueError)):self.export(case,link/'case.json')
+        with self.assertRaisesRegex(UnsafeStore,'export_path_symlink'):self.export(case,link/'case.json')
         self.export(case)
-        with self.assertRaises((OSError,ValueError)):self.export(case)
+        with self.assertRaises(FileExistsError):self.export(case)
         self.assertEqual(outside.read_text(),'untouched')
 
     def test_tampered_stored_public_payload_cannot_pass_old_digest(self):
@@ -141,10 +144,10 @@ class CaseTests(unittest.TestCase):
         from account.observation.files import export_new
         case=self.prepare(); self.review(case)
         entered=threading.Event(); revoke_started=threading.Event(); revoked=threading.Event()
-        def controlled_export(destination,value):
+        def controlled_export(destination,value,**kwargs):
             entered.set(); self.assertTrue(revoke_started.wait(2))
             self.assertFalse(revoked.wait(.05))
-            export_new(destination,value)
+            export_new(destination,value,**kwargs)
         def revoke():
             self.assertTrue(entered.wait(2));revoke_started.set()
             self.store.revoke(self.grant['registration_id']);revoked.set()

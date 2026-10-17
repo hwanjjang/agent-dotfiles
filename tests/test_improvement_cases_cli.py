@@ -20,7 +20,8 @@ class CaseCliTests(unittest.TestCase):
             self.assertEqual(result.stderr,b'')
             return json.loads(result.stdout)
         request=dict(revision_id=self.task['revision_id'],feedback_ids=[self.feedback['feedback_id']],
-                     synthetic_case=cases.synthetic_case(),request_id='cli')
+                     synthetic_case=cases.synthetic_case(),request_id='cli',
+                     triage=dict(category='instruction',evidence_ids=self.evidence_ids))
         case=call('prepare','--task',self.task['task_id'],body=request)
         common=['--task',self.task['task_id'],'--case',case['case_id']]
         preview=call('show',*common)
@@ -30,6 +31,11 @@ class CaseCliTests(unittest.TestCase):
         call('review',*common,'--digest',case['case_digest'],'--reviewer','maintainer',
              '--confirm-synthetic','--confirm-privacy-review')
         call('export',*common,'--digest',case['case_digest'],'--output',str(self.output/'case.json'))
+        for destination,reason in [(self.output/'case.json','export_exists'),
+                                   (Path('relative.json'),'export_path'),
+                                   (self.store.root/'case.json','export_private_store')]:
+            self.assertEqual(call('export',*common,'--digest',case['case_digest'],
+                             '--output',str(destination),expected=1)['reason'],reason)
         data=json.loads((self.output/'case.json').read_text())
         self.assertEqual(data['case_digest'],case['case_digest'])
         call('prepare','--task',self.task['task_id'],body=dict(request,private_evidence='no'),expected=1)

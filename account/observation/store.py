@@ -472,22 +472,60 @@ class Store:
                 return {'status': 'disabled'}
             raise
 
-    def prepare_case(self, task_id, *, revision_id, feedback_ids, synthetic_case, request_id):
-        """Freeze explicit feedback lineage separately from caller-supplied synthetic data."""
+    @staticmethod
+    def _triage_shape(triage):
+        require(isinstance(triage, dict) and set(triage) == {'category', 'evidence_ids'}, 'case_triage')
+        require(triage['category'] in ('environment', 'auth', 'grader', 'instruction', 'unknown'), 'case_triage')
+        ids = triage['evidence_ids']
+        require(isinstance(ids, list) and 0 < len(ids) <= 128 and all(token(i) for i in ids)
+                and len(set(ids)) == len(ids), 'case_triage')
+
+    def _case_eligibility(self, files, rows, revision_id, feedback_ids, triage, purpose):
+        """Check caller-declared attribution, not an automatic causal diagnosis."""
+        self._triage_shape(triage)
+        revision = next((r for r in rows if r['kind'] == 'task' and r['record_id'] == revision_id), None)
+        require(revision is not None, 'task_revision')
+        feedback = [r for r in rows if r['kind'] == 'feedback' and r['record_id'] in feedback_ids]
+        require({r['record_id'] for r in feedback} == set(feedback_ids), 'case_feedback')
+        require(all(r['revision_id'] == revision_id for r in feedback), 'case_feedback_revision')
+        ids = set(triage['evidence_ids'])
+        selected = {e['event_id'] for selection in revision['selections'] for e in selection['events']}
+        linked = {i for r in feedback for i in r['evidence_ids'] + r['contrary_evidence_ids']}
+        require(ids <= selected and ids <= linked, 'case_triage_evidence')
+        events = [e for ref in revision['registrations']
+                  for record in self._records(files, self._grant(files, ref['registration_id'], ref['epoch']))
+                  for e in record['events'] if e['event_id'] in ids]
+        require({e['event_id'] for e in events} == ids, 'case_triage_evidence')
+        category = triage['category']
+        if category != 'instruction':
+            return revision, dict(status='insufficient' if category == 'unknown' else 'blocked',
+                                  reason='triage_' + category)
+        if not any(r['correction'] for r in feedback):
+            return revision, dict(status='insufficient', reason='claim_evidence_missing')
+        # Routing/adherence cases concern selection or instructions, so a tool
+        # failure is not required. Unknown native outcomes never count as failure.
+        if purpose == 'outcome' and not any(e.get('event_kind') == 'tool_end'
+                                           and e.get('status') == 'failure' for e in events):
+            return revision, dict(status='insufficient', reason='failed_tool_evidence_missing')
+        return revision, None
+
+    def prepare_case(self, task_id, *, revision_id, feedback_ids, synthetic_case, request_id, triage):
+        """Freeze evidence-bound caller triage separately from public synthetic data."""
         from .cases import public_case
+        require(token(request_id), 'request_id')
+        require(token(revision_id), 'task_revision')
         require(isinstance(feedback_ids, list) and 0 < len(feedback_ids) <= 16
                 and all(token(i) for i in feedback_ids) and len(set(feedback_ids)) == len(feedback_ids), 'case_feedback')
+        self._triage_shape(triage)
+        projected = public_case(synthetic_case)
+        request = dict(revision_id=revision_id, feedback_ids=feedback_ids, public_case=projected, triage=triage)
+        require(len(encoded(request)) <= TASK_INPUT_LIMIT, 'task_input_size')
         with self._locked() as files:
             rows = self._task_records(files, task_id)
-            revision = next((r for r in rows if r['kind'] == 'task' and r['record_id'] == revision_id), None)
-            require(revision is not None, 'task_revision')
-            feedback = [r for r in rows if r['kind'] == 'feedback' and r['record_id'] in feedback_ids]
-            require({r['record_id'] for r in feedback} == set(feedback_ids), 'case_feedback')
-            require(all(r['revision_id'] == revision_id for r in feedback), 'case_feedback_revision')
-            if not any(r['correction'] for r in feedback):
-                return {'status': 'insufficient', 'reason': 'claim_evidence_missing'}
-            projected = public_case(synthetic_case)
-            request = dict(revision_id=revision_id, feedback_ids=feedback_ids, public_case=projected)
+            revision, refusal = self._case_eligibility(files, rows, revision_id, feedback_ids, triage,
+                                                       projected['purpose'])
+            if refusal:
+                return refusal
             ident, previous = self._task_retry(files, task_id, rows, 'case', request_id, request)
             if previous:
                 return dict(status='duplicate', case_id=ident, case_digest=previous['case_digest'])
@@ -495,6 +533,7 @@ class Store:
             row = dict(schema_version=1, kind='case', task_id=task_id, record_id=ident,
                        sequence=len(rows) + 1, request_hash=digest(request),
                        registrations=revision['registrations'], **request, case_digest=digest(projected))
+            require(len(encoded(row)) <= TASK_RECORD_LIMIT, 'task_record_size')
             files.write(('tasks', task_id, ident + '.json'), row)
             return dict(status='prepared', case_id=ident, case_digest=row['case_digest'])
 
@@ -510,13 +549,18 @@ class Store:
         projected = public_case({key: public[key] for key in (
             'case_id', 'language', 'purpose', 'inputs', 'outcome_contract', 'counterpart')})
         require(public == projected, 'case_projection_mismatch')
+        _, refusal = self._case_eligibility(files, rows, row['revision_id'], row['feedback_ids'],
+                                             row.get('triage'), public['purpose'])
+        if refusal:
+            raise InvalidEvent(refusal['reason'])
         return rows, row
 
     def case(self, task_id, case_id):
-        """Preview precisely the synthetic payload to review, without private lineage."""
+        """Preview the public payload and private caller-triage envelope; never publish the envelope."""
         with self._locked() as files:
             _, row = self._case(files, task_id, case_id)
-            return dict(status='prepared', case_digest=row['case_digest'], public_case=row['public_case'])
+            return dict(status='prepared', case_digest=row['case_digest'], public_case=row['public_case'],
+                        triage=row['triage'])
 
     def review_case(self, task_id, case_id, *, expected_digest, reviewer,
                     synthetic_data_confirmed=False, privacy_reviewed=False):
@@ -543,9 +587,9 @@ class Store:
                         and r['synthetic_data_confirmed'] is True and r['privacy_reviewed'] is True
                         for r in rows), 'case_not_reviewed')
             destination = Path(destination)
-            require(not destination.resolve(strict=False).is_relative_to(self.root), 'export_private_store')
             # Keep consent validation and publication under the same store guard.
-            export_new(destination, dict(case['public_case'], case_digest=expected_digest))
+            export_new(destination, dict(case['public_case'], case_digest=expected_digest),
+                       private_root_fd=files.fd)
             return dict(status='exported', case_digest=expected_digest)
 
     def _delete_tasks(self, files, registration_id):

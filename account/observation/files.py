@@ -1,10 +1,12 @@
 """Small POSIX private-file boundary; all descendants use directory descriptors."""
 from contextlib import contextmanager
+import errno
 import fcntl
 import json
 import os
 from pathlib import Path
 import stat
+import sys
 import time
 import uuid
 
@@ -32,7 +34,7 @@ def check_private(fd, directory=False):
         raise UnsafeStore('unsafe_store_object')
 
 
-def export_new(destination, value):
+def export_new(destination, value, *, private_root_fd=None):
     """Publish a new local artifact without following links or replacing a file.
 
     The caller holds the observation guard through this operation. The existing
@@ -43,10 +45,24 @@ def export_new(destination, value):
         raise UnsafeStore('export_path')
     parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
     temporary = '.case-export-' + uuid.uuid4().hex
+    private = os.fstat(private_root_fd) if private_root_fd is not None else None
+
+    def refuse_private(fd):
+        info = os.fstat(fd)
+        if private is not None and (info.st_dev, info.st_ino) == (private.st_dev, private.st_ino):
+            raise UnsafeStore('export_private_store')
+
     try:
+        refuse_private(parent)
         for name in path.parts[1:-1]:
-            child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            try:
+                child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            except OSError as error:
+                if error.errno in (errno.ELOOP, errno.ENOTDIR):
+                    raise UnsafeStore('export_path_symlink') from error
+                raise
             os.close(parent); parent = child
+            refuse_private(parent)
         fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=parent)
         try:
             with os.fdopen(fd, 'wb', closefd=False) as stream:
@@ -56,9 +72,14 @@ def export_new(destination, value):
             os.link(temporary, path.name, src_dir_fd=parent, dst_dir_fd=parent, follow_symlinks=False)
             os.fsync(parent)
         finally:
-            os.close(fd)
-            os.unlink(temporary, dir_fd=parent)
-            os.fsync(parent)
+            primary_error = sys.exc_info()[0] is not None
+            try:
+                os.close(fd)
+                os.unlink(temporary, dir_fd=parent)
+                os.fsync(parent)
+            except OSError:
+                if not primary_error:
+                    raise
     finally:
         os.close(parent)
 

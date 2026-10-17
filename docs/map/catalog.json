@@ -2588,11 +2588,11 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Explicit reviewed synthetic case prepare/show/review/export is available. Planned: automatic triage and model evaluation.",
+      "summary": "Evidence-bound caller triage and reviewed synthetic case prepare/show/review/export are available. Automated diagnosis and model evaluation remain planned.",
       "when": [
         "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration."
       ],
-      "usage": "Follow account/observation/README.md: cases.py prepare --task binds an exact task revision and selected feedback; show inspects the supplied synthetic payload; review records its exact digest; export writes a new development artifact. A selected correction and successful/contrary counterpart are required.",
+      "usage": "Follow account/observation/README.md: cases.py prepare --task binds an exact task revision, selected feedback and declared cause/evidence; show inspects the supplied synthetic payload; review records its exact digest; export writes a new development artifact. Only instruction cases are eligible; outcome cases require an actual failed tool. A selected correction and successful/contrary counterpart are required.",
       "behavior": [
         "Keep symptoms, missing evidence and suspected causes separate; feedback is not a diagnosis. Without a selected correction, prepare returns insufficient and writes no case.",
         "Supply synthetic inputs and outcome contracts explicitly. Inspect the exact payload and counterpart, then confirm synthetic data and privacy review against its digest.",

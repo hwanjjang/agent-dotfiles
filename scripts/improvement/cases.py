@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from account.observation.files import BusyStore
+from account.observation.files import BusyStore, UnsafeStore
 from account.observation.store import TASK_INPUT_LIMIT, InvalidEvent, Store, decode, require
 
 
@@ -43,7 +43,7 @@ def main(argv=None):
             require(len(raw) <= TASK_INPUT_LIMIT, 'case_size')
             body = decode(raw)
             require(isinstance(body, dict) and set(body) == {
-                'revision_id', 'feedback_ids', 'synthetic_case', 'request_id'}, 'case_input_fields')
+                'revision_id', 'feedback_ids', 'synthetic_case', 'request_id', 'triage'}, 'case_input_fields')
             output = store.prepare_case(args.task, **body)
         elif args.command == 'show':
             output = store.case(args.task, args.case_id)
@@ -56,6 +56,10 @@ def main(argv=None):
                                       destination=args.output)
     except InvalidEvent as error:
         output = dict(status='rejected', reason=str(error))
+    except UnsafeStore as error:
+        reason = str(error)
+        output = dict(status='rejected', reason=reason) if reason in {
+            'export_path', 'export_path_symlink', 'export_private_store'} else dict(status='error', reason='operation_failed')
     except BusyStore:
         output = dict(status='busy', reason='store_busy')
     except FileExistsError:
@@ -65,7 +69,7 @@ def main(argv=None):
     except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError):
         output = dict(status='error', reason='operation_failed')
     print(json.dumps(output, sort_keys=True, allow_nan=False))
-    return 1 if output['status'] in {'rejected', 'error', 'busy', 'insufficient'} else 0
+    return 1 if output['status'] in {'rejected', 'error', 'busy', 'insufficient', 'blocked'} else 0
 
 
 if __name__ == '__main__':

@@ -258,7 +258,19 @@ is made. Task records are not included in the optional event SQLite index.
 Run `scripts/improvement/cases.py` from the checkout with an explicit `--home`.
 It does not infer a diagnosis, read transcripts, execute fixture code or call a
 model. Preparation binds one exact task revision and an explicit list of feedback
-records from that revision. Without a selected correction, it returns
+records from that revision. Supply a caller-declared `triage.category` of
+`environment`, `auth`, `grader`, `instruction` or `unknown`, plus nonempty unique
+`triage.evidence_ids` from both the frozen revision and the selected feedback's
+evidence/contrary-evidence references. The command checks those references against
+stored events; it does not diagnose their cause. `unknown` returns `insufficient`
+/ `triage_unknown`; environment/auth/grader return `blocked` / `triage_<category>`.
+These paths store no case and cannot be reviewed or exported.
+
+Only `instruction` is eligible. For `purpose: outcome`, a referenced event must
+actually record `tool_end` with `status: failure`; otherwise preparation returns
+`insufficient` / `failed_tool_evidence_missing`. Native `unknown` outcomes do not
+count as failures. Routing/adherence cases instead require correction-linked
+selected evidence without requiring a failed tool. Without a selected correction, it returns
 `insufficient` / `claim_evidence_missing` and stores no case. A correction is
 reported evidence; this command does not prove the suspected cause.
 
@@ -270,6 +282,7 @@ successful/contrary counterpart yourself. The request shape is:
   "revision_id": "<task-revision-id>",
   "feedback_ids": ["<selected-feedback-id>"],
   "request_id": "prepare-export-case-1",
+  "triage": {"category": "instruction", "evidence_ids": ["<selected-event-id>"]},
   "synthetic_case": {
     "case_id": "verification-report-en",
     "language": "en",
@@ -298,7 +311,8 @@ successful/contrary counterpart yourself. The request shape is:
 
 `prepare --task <task-id> < case-request.json` returns a private case record ID
 and `case_digest`. `show --task <task-id> --case <case-record-id>` displays the exact
-synthetic payload and digest for inspection, without private lineage. The caller
+synthetic payload and digest plus a **private triage envelope** for inspection.
+Never publish the whole `show` response: its triage references are private. The caller
 must review its text, files and counterpart for private content and correct
 behavior. `review --task <task-id> --case <case-record-id> --digest <case-digest>
 --reviewer <opaque-reviewer-id> --confirm-synthetic --confirm-privacy-review`
@@ -309,16 +323,26 @@ review; never paste original evidence into synthetic fields.
 
 Finally, `export --task <task-id> --case <case-record-id> --digest <case-digest>
 --output /absolute/path/to/new-case.json` writes a new local artifact. The output
-directory must exist; parent/leaf symlinks, private-store destinations and existing
-files are refused. Publication uses the same store guard as consent checks and
+directory must exist. Use its resolved real path (for example, resolve the parent
+with `Path(output_directory).resolve()`); common macOS `/tmp` and `/var` aliases
+can contain symlinks. Parent symlink/non-directory traversal returns
+`export_path_symlink`; relative paths return `export_path`. Existing leaves,
+including symlinks, return `export_exists`; a descriptor/inode match to the private
+store returns `export_private_store`, including case aliases on insensitive filesystems. Publication uses the same store guard as consent checks and
 revocation. If a filesystem error occurs after publication, a file may exist
-without an acknowledgment; inspect its digest rather than overwriting it.
+without an acknowledgment; inspect its digest rather than overwriting it. Abrupt
+termination or cleanup failure can also leave `.case-export-*` files in that
+output directory. They contain only the reviewed synthetic payload; inspect and
+remove them manually. No automatic orphan recovery runs. Cleanup errors do not
+replace an earlier publication error.
 
 Exports contain only the explicitly supplied synthetic fields, schema version,
 `classification: development`, fixture SHA-256 hashes and `case_digest`. Private
 task goals, symptoms, corrections, event IDs, reviewer IDs and lineage are not
-copied. The digest covers canonical UTF-8 JSON produced by `files.encoded` before
-the `case_digest` field is added. File hashes cover literal UTF-8 file content.
+copied. The public v1 projection is unchanged by private triage. The digest covers
+`files.encoded` before adding `case_digest`: `json.dumps` with `ensure_ascii=True`,
+`sort_keys=True`, `separators=(',', ':')`, `allow_nan=False`, followed by one `\n`,
+then UTF-8 encoding. Korean characters are ASCII `\u` escapes in those bytes. File hashes cover literal UTF-8 file content.
 The receipt's private case record ID differs from the supplied public `case_id`.
 Every public case is development material; no holdout or unseen-status claim is
 accepted. A new payload needs a new request ID and its own exact-digest review.
@@ -327,7 +351,10 @@ Private case/review records share the task directory, grant checks and task purg
 expiry or revocation blocks further preview/review/export. Already reviewed
 synthetic exports contain no private lineage and are independent local artifacts,
 so observation purge does not delete them. No network publication is performed.
-The API is `Store.prepare_case`, `case`, `review_case`, and `export_case`.
+Review/export recheck triage eligibility; old private cases without triage must be
+prepared again. Input shape, tokens and synthetic projection are validated before
+insufficiency is reported. The API is `Store.prepare_case`, `case`, `review_case`,
+and `export_case`.
 
 The bounded input allows `en`/`ko`, `outcome`/`routing`/`adherence`, at most 16
 fixture files per input and 16 entries per contract list. Text/file content limits

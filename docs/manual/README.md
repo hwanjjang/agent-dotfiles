@@ -136,33 +136,26 @@ case export, native Codex collection or comparative evaluation.
 
 ## Reviewed synthetic case walkthrough
 
-The [two-page case walkthrough](reviewed-cases.pdf) follows prepare/show/review/export
-and revoke using explicit synthetic development inputs. Its
-[editable source](reviewed-cases.json), [map image](reviewed-cases-map.png),
+The [two-page case walkthrough](reviewed-cases.pdf) follows evidence-bound caller
+triage, prepare/show/review/export and revoke using synthetic development inputs.
+Its [editable source](reviewed-cases.json), [map image](reviewed-cases-map.png),
 [CLI result image](reviewed-cases-result.png) and [capture manifest](reviewed-cases-capture.json)
-are maintained together. Captured 2026-10-18 on the candidate based on `48b854b`,
-the results image is explicitly a browser rendering of selected actual disposable
-CLI output. It is not a terminal screenshot or a native/model comparison.
+are maintained together. The current correction capture is based on `d8cd2c5`.
+Its result image renders selected actual disposable CLI results in a browser; it
+is not a terminal screenshot or a native/model comparison.
 
-The retained images and PDF keep that historical capture identity. Integration onto
-feedback parent `16fa81f` preserves the corrected native pre-read consent guard;
-a fresh case CLI journey and 187 focused tests passed on the integrated candidate.
-The capture manifest records this separate verification without treating the old
-images as evidence of a new native session.
-
-The later parent refresh onto feedback correction `57173d8` inherits conservative
-corrupt-task cleanup, encoded stored-row bounds and strict revision validation.
-A fresh integrated case journey and 193 focused tests passed. The case PDF text
-and captions now explicitly identify the retained historical screenshots and
-distinguish immediate expiry disable from physical deletion by `prune`. Both
-refreshed PDF pages were rendered and individually viewed; this is no native or
-comparative model qualification.
+Earlier captures on `48b854b`, integration onto `16fa81f` (187 tests), and refresh
+onto `57173d8` (193 tests) remain historical provenance in the capture manifest
+and Git history. Current images and PDF were recaptured for explicit caller triage,
+actual failed-tool eligibility and precise output refusals. Caller attribution is
+checked against selected evidence; it is not a diagnosed cause. Public v1 payloads
+remain unchanged. Fresh correction validation passed 200 tests and the separate
+bilingual CLI journey, including category and destination refusals.
 
 The [Store guide](../../account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
 owns commands and privacy limits; the [case recipe](../verification/verify-repository/features/reviewed-cases.md)
-owns repeatable checks. Review assertions do not guarantee sanitization. Public
-cases remain development data, and automatic triage remains planned. The earlier
-task-feedback manual preserves its dated slice boundary; this case walkthrough
-documents the next slice. Both final case PDF pages were rendered and individually
-viewed, with required text/page count checked. Rebuild using the existing
-screenshot-manual commands with reviewed-cases.json and recapture after changes.
+owns repeatable checks. Review assertions do not guarantee sanitization; public
+cases remain development data. Automated diagnosis remains planned. Both current
+PDF pages were rendered and individually viewed, with required text/page count
+checked. Rebuild using the existing screenshot-manual commands with
+reviewed-cases.json and recapture after workflow changes.

@@ -56,9 +56,9 @@ header for the cycle and each node for its status, handoff and source. Search
 
 This is a separate improvement cycle, not six new mandatory stages in the PR
 state machine. Synthetic storage, explicit task binding/feedback, opt-in Claude collection and the
-installer exist. Explicit reviewed synthetic case export is available; automatic
-triage remains planned and candidate editing uses existing manual methods. Codex
-collection, comparative model trials and automatic promotion remain planned.
+installer exist. Evidence-bound caller triage and reviewed synthetic case export
+are available. Candidate editing uses existing manual methods. Automated diagnosis,
+Codex collection, comparative model trials and automatic promotion remain planned.
 The catalog's **available** status means the linked guide exists, not that every
 described runtime is implemented. Node subtitles and details state these limits.
 

@@ -48,7 +48,7 @@ selections and local feedback. See the [task-feedback walkthrough](docs/manual/t
 and [verification recipe](docs/verification/verify-repository/features/task-feedback.md).
 [Reviewed synthetic case export](account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
 is available with an [exact-digest review walkthrough](docs/manual/reviewed-cases.pdf).
-Automatic triage, Codex collection and comparative evaluation remain planned.
+Evidence-bound caller triage is available; automatic diagnosis, Codex collection and comparative evaluation remain planned.
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.

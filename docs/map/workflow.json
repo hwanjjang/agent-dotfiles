@@ -414,7 +414,7 @@
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
     "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting.",
     "observation-store": "Step 1: collect opted-in observations, bind selected events to a task, record feedback and revoke private evidence. Codex collection remains planned.",
-    "improvement-case": "Step 2: prepare explicit synthetic inputs from selected task feedback, inspect the counterpart, review the exact digest and export a development case. Automatic triage remains planned.",
+    "improvement-case": "Step 2: declare a cause with selected feedback evidence; only instruction cases are eligible. Prepare synthetic inputs, inspect the counterpart, review the exact digest and export development data. Caller triage is not automated diagnosis.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
     "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",
     "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
