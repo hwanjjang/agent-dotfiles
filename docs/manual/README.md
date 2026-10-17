@@ -113,7 +113,7 @@ requalify or rewrite their captures.
 The [three-page Codex walkthrough](codex-observation.pdf) follows the existing
 `native-observation` scenario: select one client, review native trust, inspect
 actual results and retain platform blockers. Its [editable source](codex-observation.json),
-[current map capture](codex-observe.png), [macOS results](codex-native-result.png),
+[map capture at its capture revision](codex-observe.png), [macOS results](codex-native-result.png),
 [Linux matrix](linux-observation-result.png) and [capture manifest](codex-observation-capture.json)
 are maintained together. The two result images are browser renderings of selected
 actual qualification evidence, not terminal captures. The macOS result is a fresh
@@ -121,7 +121,9 @@ corrected parent-native runtime run, before later capacity/attribution changes;
 Linux results remain historical pre-guard partial
 coverage and do not qualify the corrected Linux runtime.
 The native guide owns exact source revisions and coverage; the earlier Claude
-walkthrough retains its historical capture and is not a current Codex map.
+walkthrough retains its historical capture and is not a current Codex map. The
+observation dialog text has changed since these captures; their editable source
+and PDFs describe the recorded revision, not the current dialog.
 
 All three Codex PDF pages were rendered and visually inspected at their capture revision;
 text/page-count checks and browser navigation are recorded separately. Rebuild
