@@ -27,7 +27,7 @@ Reference: [Codex app-server skill discovery](https://learn.chatgpt.com/docs/app
 
 ## Verification pair and repository pilot — 2026-10-17
 
-Two added portable packages bring the source total to 20. Their metadata and the
+The verification pair brought the source total to 20 at that adoption. Their metadata and the
 repository-only verifier pass the strict skill validator. The new pair has not
 been exercised through native client discovery or independently measured for
 model adherence; the earlier 18-package discovery result does not cover it.
@@ -48,6 +48,37 @@ reported live coverage blocked and identified harness reporting/assertion gaps
 that were corrected. This is one bounded forward check, not a benchmark or proof
 that every client/model follows the skills. Raw runs stay local; maintained recipes
 and the [adoption decision](decisions/verification.md) document the reusable method.
+
+## PR and ticket adoption — 2026-10-17
+
+The PR/ticket pair brought the source total to 22 at that adoption. Strict skill validation passed
+for `to-tickets`, `make-pr-easy-to-review`, the changed planning skill and the SDLC
+entry point. Local links, declared skill/policy dependencies, pinned upstream
+hashes and license notices were checked. These packages have not been tested
+through native client discovery or authenticated tracker/PR operations.
+
+The generated map contains 51 entries and 76 relationships. Its six regression
+tests and freshness check passed. The repository browser verifier passed again
+with Playwright 1.64.1 and Chrome 155.0.8059.82. A focused browser check also searched
+and opened all four new entries, checked usage/source links and cleared the search.
+Both new skill detail captures were visually inspected; the isolated browsers
+closed. Map checks do not establish skill execution or MCP connectivity.
+
+One independent agent applied the skills to three synthetic requests and produced
+local artifacts: incomplete export tickets plus independent log cleanup, a fork PR
+body/commit recommendation, and recovery after an uncertain issue-creation result.
+Artifact inspection confirmed retained IDs and connector ownership, separate task
+and PR graphs, destination-template use, qualified evidence and no blind creation
+retry. Unresolved product semantics and unavailable live Git/tracker access stayed
+explicit. No maintained source corrections were needed from this check. A subsequent
+maintainer-requested deduplication replaced repeated rules with links to their
+existing authorities; strict metadata, links and source review were repeated,
+but the model scenario evaluation was not rerun for that wording revision.
+
+This was bounded simulated application, not a benchmark or native invocation.
+Actual history reordering/splitting, per-merge-unit execution, tree equivalence,
+remote leases, tracker publication and full SDLC orchestration were not exercised.
+No account installation, external publication or live ref mutation occurred.
 
 ## Scoped adoption checks
 

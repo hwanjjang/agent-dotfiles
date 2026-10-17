@@ -11,9 +11,44 @@
   },
   "adaptations": [
     "Condensed to an independently callable planning stage.",
-    "Task-scoped records, existing authorization, outcome-based sizing, and dependency-aware handoffs."
+    "Task-scoped records, existing authorization, outcome-based sizing, and dependency-aware handoffs.",
+    "Added PR boundaries alongside task dependencies, reusing one plan and shared PR policy.",
+    "Preserves source commitments and assigns connector ownership; expands wide refactors compatibly before migration and contract removal.",
+    "Consolidated repeated rules into their existing policy/planning/body authorities; consuming steps link to those rules and retain only adapter-specific actions."
   ],
   "skill_dependencies": [],
   "runtime_requirements": [],
-  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+  "validation": "Strict metadata, relative links, dependency closure and pinned hashes passed. Independent application of the pre-consolidation wording exercised three synthetic cases; subsequent authority-link consolidation received structural and source review only. See docs/client-verification.md. Current package native discovery and authenticated tracker/history execution remain unverified.",
+  "additional_sources": [
+    {
+      "upstream": "https://github.com/cursor/plugins",
+      "revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+      "path": "pstack/skills/poteto-mode/playbooks/multi-phase-plan.md",
+      "license": "MIT",
+      "license_path": "pstack/LICENSE",
+      "sha256": "5f239457bfdec3345c92caa06c59bf0257c662b89353f25a1c02ea942dcd00b1"
+    },
+    {
+      "upstream": "https://github.com/cursor/plugins",
+      "revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+      "path": "pstack/skills/poteto-mode/playbooks/opening-a-pr.md",
+      "license": "MIT",
+      "license_path": "pstack/LICENSE",
+      "sha256": "a5aef646de8b651306c2d10974623650e4a013a245aec1c00525bbe0e31bfa76"
+    },
+    {
+      "upstream": "https://github.com/mattpocock/skills",
+      "revision": "49dd158d1076134a641b33efb035946536778336",
+      "path": "skills/engineering/to-tickets/SKILL.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "56ec23c5b2782785d4e65bff9e315b6d3aeb4ef977c174a219e99489fada1995"
+    }
+  ],
+  "policy_dependencies": [
+    "policies/pr-workflow.md",
+    "policies/issue-workflow.md",
+    "policies/evidence.md",
+    "policies/security.md"
+  ]
 }

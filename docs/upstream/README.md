@@ -73,6 +73,13 @@ remove hardcoded client paths and implied publication, preserve requested covera
 and distinguish product defects from documentation drift. Optional tooling stays
 a reference; no additional MCP server is enabled.
 
+The [PR/ticket adoption](../decisions/pr-workflow.md) combines pstack PR planning,
+Matt's ticket adapter and the original Cursor Team Kit review-preparation skill
+discovered through Denyer's port. It extends the existing Addy planning package,
+retains one body authority, and makes source-commitment coverage explicit.
+Per-package provenance lists additional pinned method sources and their hashes.
+No stack runtime, setup skill, MCP or fixed tracker vocabulary is introduced.
+
 ## Update procedure
 
 1. Inspect the pinned origin and local adaptations before selecting a new revision.

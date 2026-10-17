@@ -15,7 +15,7 @@ Do not copy this repository's root AGENTS.md as a shared policy.
 | Investigation and design | how, architect, arena, diagnosing-bugs |
 | Planning and execution | planning-and-task-breakdown, planning-with-files, swarm, sdlc |
 | Verification construction and maintenance | create-verification-skill, maintain-verification-skill |
-| Verification, review and issues | tdd, code-review-and-quality, issue-writing |
+| Verification, review and issues | tdd, code-review-and-quality, make-pr-easy-to-review, issue-writing, to-tickets |
 | Instruction authoring | writing-for-agents |
 | Diagrams and user manuals | archify, screenshot-manual |
 
@@ -25,6 +25,14 @@ corrections. SDLC selects methods through its
 [stage routing](sdlc/references/skill-routing.md); its provenance lists the full
 skill dependency group, whose transitive resources must remain available.
 All declared packages are present. Only applicable methods run on a given task.
+
+`planning-and-task-breakdown` owns the task graph and PR boundaries. `to-tickets`
+consumes that plan and uses `issue-writing` for bodies; `make-pr-easy-to-review`
+handles author preparation before independent review. These standalone skills
+use the [PR policy](../policies/pr-workflow.md) and existing issue lifecycle; the
+[decision record](../docs/decisions/pr-workflow.md) explains source selection and
+community limits. Keep their declared shared policies and skill dependencies
+available when distributing them; neither package installs a tracker or stack tool.
 
 `tdd` is the single testing method, adapted from pstack with local feature and
 refactor branches. SDLC owns receipt validation and integrated smoke, not a second
