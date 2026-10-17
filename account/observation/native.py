@@ -17,7 +17,7 @@ def validate_process_scope(grant):
     require(str(Path.cwd().resolve(strict=True)) == grant['project_root'], 'project_scope')
 
 
-def adapt(stream, grant, existing):
+def envelope(stream, grant):
     client = grant['client']
     events = CLIENT_EVENTS[client]
     raw = stream.read(PAYLOAD_LIMIT + 1)
@@ -40,11 +40,6 @@ def adapt(stream, grant, existing):
         identity = digest([name, turn, tool]) if tool and turn else None
     else:
         identity = digest([name, tool]) if tool else None
-    existing = list(existing)
-    previous = next((event for event in existing if identity is not None
-                     and event['session_id'] == session and event['source_event_id'] == identity), None)
-    sequence = previous['sequence'] if previous else max(
-        (event['sequence'] for event in existing), default=grant['start_after']) + 1
     category = None
     if name in ('PreToolUse', 'PostToolUse', 'PostToolUseFailure'):
         tool_name = value.get('tool_name')
@@ -53,11 +48,23 @@ def adapt(stream, grant, existing):
                     ({'apply_patch'} if client == 'codex' else {'Read', 'Write', 'Edit', 'Glob', 'Grep'}) else 'mcp' if tool_name.startswith('mcp__') else 'other')
     event = dict(schema_version=1, project_root=grant['project_root'], client=grant['client'],
                  profile=grant['profile'], source=grant['source'], session_id=session,
-                 sequence=sequence, source_event_id=identity, tool_call_id=tool,
+                 source_event_id=identity, tool_call_id=tool,
                  event_kind=events[name], tool_category=category,
                  status='failure' if name == 'PostToolUseFailure' else 'pending' if name == 'PreToolUse' else 'unknown')
     if client == 'codex':
         event['turn_id'] = turn
     # PostToolUse proves a callback occurred, not that a shell command/test passed.
     # Session IDs do not establish actor identity. No inferred parent or time; only Codex's explicit turn ID is retained.
+    return event
+
+
+def adapt(stream, grant, existing):
+    """Legacy adapter interface; Store uses the bounded envelope directly."""
+    event = envelope(stream, grant)
+    existing = list(existing)
+    previous = next((old for old in existing if event['source_event_id'] is not None
+                     and old['session_id'] == event['session_id']
+                     and old['source_event_id'] == event['source_event_id']), None)
+    event['sequence'] = previous['sequence'] if previous else max(
+        (old['sequence'] for old in existing), default=grant['start_after']) + 1
     return encoded(event)

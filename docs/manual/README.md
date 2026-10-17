@@ -119,3 +119,16 @@ text/page-count checks and browser navigation are recorded separately. Rebuild
 with the existing screenshot-manual scripts and recapture affected map dialogs
 when their metadata changes. No account installation or activation was performed
 by the documentation workflow.
+
+## Collector capacity and attribution supplement
+
+The [two-page supplement](collector-capacity.pdf), [editable source](collector-capacity.json)
+and [capture manifest](collector-capacity-capture.json) reuse `native-observation`.
+Its [capacity result image](collector-capacity-result.png) and
+[boundary snapshot image](collector-attribution-result.png) are browser renderings
+of selected actual synthetic benchmark/probe results, not terminal screenshots.
+Capacity/recovery and the p95 target passed one final reference-host run; the
+earlier candidate missed the target and remains historical evidence. Snapshot delivery hashes do not
+qualify exact exposure. Both PDF pages are rendered and visually inspected, with
+text and page count checked. Earlier native model results retain their own source
+boundaries; this supplement does not requalify them against the capacity runtime.

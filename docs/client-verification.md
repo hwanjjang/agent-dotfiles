@@ -4,6 +4,18 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Collector capacity and boundary snapshots — 2026-10-18
+
+The later [capacity qualification](../account/observation/capacity.md) executed
+10,000 installed dispatcher subprocesses with four writers, verified all expected
+records, preserved replay identity and recovered an interrupted reservation. It
+passed capacity/recovery and the p95 under 50 ms target (48.04 ms observed) on one
+reference-host run. Its preceding version-1 candidate measured 64.71 ms; that
+historical miss remains documented rather than being relabeled as a pass.
+Two synthetic installed boundary probes also captured delivery snapshots; exact
+effective exposure remains false. These results qualify their frozen collector
+runtime and synthetic fixture, not a new native model run or all platforms.
+
 ## Native observation platform coverage — 2026-10-18
 
 The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
