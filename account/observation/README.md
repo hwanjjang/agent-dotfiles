@@ -92,7 +92,14 @@ contain fixed codes rather than payloads or raw filesystem exceptions. Capture
 statuses are `recorded`, `duplicate`, `disabled`, `rejected`, `busy` or `error`;
 partial-only imports return `incomplete`. Only `recorded` and `duplicate`
 acknowledge durable events. This manual CLI is not a neutral native hook response
-adapter. A rejected/error/busy operation exits nonzero.
+adapter. A rejected/error/busy operation exits nonzero. After argument and Python
+version validation, operation results (including failures) are JSON on stdout.
+Refusal codes include `already_granted`, `source_high_water`,
+`source_generation_required` and `registration_id`. `not_found` means a selected
+home/project path or registration is missing; check those inputs. Lock contention
+returns `busy` with `store_busy`; unexpected storage failures return `error` with
+`operation_failed`, without raw exceptions. Run `prune` before re-granting an
+expired registration that is still marked active.
 
 ## Synthetic input contract
 

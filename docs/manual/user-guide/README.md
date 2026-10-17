@@ -13,7 +13,7 @@ are relative to these sources. The actual map UI remains English in both edition
   baseline does not contain the observation candidate or updated map.
 - Exercised in a disposable account: preview, install, status, unchanged update,
   uninstall, guarded rollback; synthetic grant, capture, retry, read, index,
-  revoke, old-epoch rejection and empty read after deletion.
+  revoke, old-epoch disabling and empty read after deletion.
 - Map browser recipe: `docs/verification/verify-repository/scripts/check-workflow.cjs`;
   scenario authority: `docs/verification/verify-repository/features/workflow-map.md`.
   Navigation, new improvement-cycle nodes, status boundaries and source links passed.
@@ -51,6 +51,10 @@ directory for each review. Inspect every page after edits: rendering alone is no
 visual review. The delivered editions each have 18 pages. All 36 rendered pages
 were inspected for clipping, overlap, missing glyphs, captions and legibility;
 page titles and expected-outcome labels were also checked through PDF extraction.
+After PR review, the English page 12 caption was corrected from “rejected” to
+“disabled”. All 18 English pages were re-rendered: page 12 was visually rechecked,
+and the other 17 pages were pixel-identical to the reviewed edition. The Korean
+PDF was unchanged.
 
 The bundled builder and renderer are reproduction snapshots, not new authoritative skill implementations. They come from `skills/screenshot-manual/scripts/` in the
 repository (MIT; see LICENSE). The only builder adaptation is a localized

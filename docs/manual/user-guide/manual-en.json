@@ -96,7 +96,7 @@
       "screenshot": "screenshots/console-revoke.png",
       "title": "Control the scope, retention and deletion of records",
       "instruction": "The private root is <selected-home>/.agents/agent-dotfiles/observations/. Grants bind exact project/profile/source registrations. There is no recursive account-history scan. Prompts, tool arguments, output and transcript bodies are excluded; allowed ID fields must contain opaque identifiers, not secrets.\nUse revoke --registration ID to disable and purge one registration. Revoke every registration to forget a project. Old-epoch work stays disabled. Regrant requires a new epoch and a declared source high-water mark.\nGrants expire within 30 days. Run prune for physical cleanup; no scheduler is installed. If deletion is interrupted, reads remain disabled and revoke/prune can finish it. Native originals and backups have separate owners.",
-      "caption": "Actual revoke, rejected old-epoch capture and empty consent-aware read after deletion.",
+      "caption": "Actual revoke, disabled old-epoch capture and empty consent-aware read after deletion.",
       "expected": "You can stop collection and remove owned evidence. Before remote triage or judging, approve the exact input, destination, purpose and budget separately. Never publish raw histories or backups."
     },
     {

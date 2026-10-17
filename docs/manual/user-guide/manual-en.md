@@ -147,9 +147,9 @@ The private root is <selected-home>/.agents/agent-dotfiles/observations/. Grants
 Use revoke --registration ID to disable and purge one registration. Revoke every registration to forget a project. Old-epoch work stays disabled. Regrant requires a new epoch and a declared source high-water mark.
 Grants expire within 30 days. Run prune for physical cleanup; no scheduler is installed. If deletion is interrupted, reads remain disabled and revoke/prune can finish it. Native originals and backups have separate owners.
 
-![Actual revoke, rejected old-epoch capture and empty consent-aware read after deletion.](screenshots/console-revoke.png)
+![Actual revoke, disabled old-epoch capture and empty consent-aware read after deletion.](screenshots/console-revoke.png)
 
-Actual revoke, rejected old-epoch capture and empty consent-aware read after deletion.
+Actual revoke, disabled old-epoch capture and empty consent-aware read after deletion.
 
 **Expected result:** You can stop collection and remove owned evidence. Before remote triage or judging, approve the exact input, destination, purpose and budget separately. Never publish raw histories or backups.
 

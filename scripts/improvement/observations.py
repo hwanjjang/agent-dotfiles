@@ -4,9 +4,11 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import sqlite3
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from account.observation.store import BATCH_LIMIT, EVENT_LIMIT, Store
+from account.observation.store import BATCH_LIMIT, EVENT_LIMIT, InvalidEvent, Store
+from account.observation.files import BusyStore
 
 
 def parser():
@@ -55,11 +57,21 @@ def main(argv=None):
             output = {'indexed_events': store.rebuild_index()}
         else:
             output = {'purged_registrations': store.prune()}
-        print(json.dumps(output, sort_keys=True, allow_nan=False))
-        return 1 if output.get('status') in {'error', 'rejected', 'busy'} else 0
-    except (OSError, ValueError, TypeError, KeyError, AttributeError):
-        print('{"status":"error","reason":"operation_failed"}', file=sys.stderr)
-        return 1
+    except InvalidEvent as error:
+        output = {'status': 'rejected', 'reason': str(error)}
+    except BusyStore:
+        output = {'status': 'busy', 'reason': 'store_busy'}
+    except FileNotFoundError:
+        output = {'status': 'rejected', 'reason': 'not_found'}
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError, sqlite3.Error):
+        output = {'status': 'error', 'reason': 'operation_failed'}
+    try:
+        message = json.dumps(output, sort_keys=True, allow_nan=False)
+    except (ValueError, TypeError, RecursionError):
+        output = {'status': 'error', 'reason': 'operation_failed'}
+        message = json.dumps(output, sort_keys=True)
+    print(message)
+    return 1 if output.get('status') in {'error', 'rejected', 'busy'} else 0
 
 
 if __name__ == '__main__':

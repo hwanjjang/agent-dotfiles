@@ -16,17 +16,17 @@
     "scripts/improvement/observations.py": "73019dbf78cf1bde7845187716c67919cccc0234a2eb3f54dce81d995823eb28"
   },
   "delivered_pdf_sha256": {
-    "manual-en.pdf": "923c99639e89cd6f9e02317557b87956e0a5759010ba36c6e4abfe0aa3ff6f4f",
+    "manual-en.pdf": "22673ec087645e063a6ad34076a3df77f60e46dbedee5a0f0ffa1a9d8969cab3",
     "manual-ko.pdf": "1370841ca20b527100cba407fb58f4b28659be4dd39aead6908e314af4a27710"
   },
   "source_and_screenshot_sha256": {
-    "README.md": "a3bcbbfd0769c38a85f215a2233de3c967713c06c5c33234e6b06ae779053bdf",
+    "README.md": "dd56ffc97ecb218ff33016c62e5198db0eb170cc584e75e535fa6cde9a5b8cfa",
     "LICENSE": "51ac333c30801d809567822a19c89bd0c36bdf5d9d31e444ddb643fe8240a5cc",
-    "manual-en.json": "be13189fbdbdeeb0cb57d4118633cec506fe7c9607bca6795a8807c7ca27a3c3",
+    "manual-en.json": "7624710dd79221a100c5543c2376053e7036ef23d53ba3bd5024e8f7f62adc3c",
     "manual-ko.json": "0626610e54d2d7ef4af764728b2c362d34b824d24ad8ebdb7039d54bf3d1eed4",
-    "manual-en.md": "fd76b2fb18fdeb78f9d2d48e406ada9ea7019405b9ec49c5ef6377a351ac5496",
+    "manual-en.md": "ef79bed2264525ef51ae9b9e1f4f3170b0615f25e4b475d19ee9cbae64698c1b",
     "manual-ko.md": "03caf0d326299d995ecc615a3f2caae7bb1bc79c8263e7c99140fd4573eb8744",
-    "bilingual-source.json": "f4712dd82528710b32ad39d52b17e4206b34c891816b43c0ca6d579093697966",
+    "bilingual-source.json": "970149b0dc9a4580a8e0d788adf178b877cfee0c284acbee39783258c051fdf3",
     "build-guide.py": "83d51d54f5fec160f5a671ed78ecf49d1de5b7953196850a85fc473c7b4f9579",
     "render-pages.py": "39ba862edc1af17565afd5bf66bf0adebe7872ebe8cbf86e453736304af15516",
     "requirements.txt": "364d8ad39b9940804ab0d9dcb0d8b23ca446a0774e72582f93eef709df51010a",
@@ -52,7 +52,8 @@
   "visual_review": {
     "pages_per_language": 18,
     "all_36_pages_reviewed": true,
-    "final_rebuild": "Only page 10 in each language changed; both revised pages visually rechecked. Other 34 renders pixel-identical to reviewed pages."
+    "final_rebuild": "Only page 10 in each language changed; both revised pages visually rechecked. Other 34 renders pixel-identical to reviewed pages.",
+    "pr_review_correction": "English page 12: rejected -> disabled; all 18 pages rerendered, changed page inspected, other 17 pixel-identical; Korean PDF unchanged."
   },
   "screenshots": {
     "map": "Actual local UI",
@@ -101,5 +102,10 @@
     "cleanup": "passed",
     "result": "passed",
     "finished": "2026-10-17T13:54:36.342Z"
+  },
+  "post_capture_updates": {
+    "reason": "PR review CLI diagnostic fixes do not change the successful lifecycle states shown in existing captures. Capture product hashes above remain historical.",
+    "cli_sha256": "25f2a6297adff7f74bad712808b2c69cef59c1e8b3edddd5cfba6d917c516662",
+    "manual_caption": "English revoke caption now matches disabled status."
   }
 }
