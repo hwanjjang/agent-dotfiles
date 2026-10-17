@@ -114,5 +114,59 @@ class NativeObservationTests(unittest.TestCase):
         self.assertTrue(all('possible_duplicate' in e['gaps'] for e in events))
 
 
+class CodexObservationTests(unittest.TestCase):
+    setUp = NativeObservationTests.setUp
+    capture = NativeObservationTests.capture
+
+    def grant(self):
+        return self.store.grant(self.project, client='codex', source='codex-hooks-v1')
+
+    def test_codex_events_keep_turn_identity_and_unknown_tool_outcomes(self):
+        grant = self.grant()
+        for name in ('SessionStart', 'PreToolUse', 'PostToolUse', 'Stop'):
+            result = self.capture(grant, hook_event_name=name, turn_id='turn-1', tool_name='apply_patch',
+                                  tool_response={'exit_code': 3, 'output': 'PRIVATE_SENTINEL'})
+            self.assertEqual(result['status'], 'recorded')
+        events = self.store.events(grant['registration_id'])
+        self.assertEqual({e['event_kind'] for e in events}, {'session_start','tool_start','tool_end','response_end'})
+        for e in events:
+            self.assertEqual(e['client'], 'codex')
+            self.assertEqual(e['status'], 'pending' if e['event_kind'] == 'tool_start' else 'unknown')
+            self.assertEqual(e['turn_id'], None if e['event_kind'] == 'session_start' else 'turn-1')
+            self.assertIsNone(e['actor_id'])
+            if e['event_kind'].startswith('tool_'): self.assertEqual(e['tool_category'], 'file')
+        for path in self.store.root.rglob('*'):
+            if path.is_file(): self.assertNotIn(b'PRIVATE_SENTINEL', path.read_bytes())
+
+    def test_codex_duplicate_scope_includes_turn_and_event(self):
+        grant = self.grant()
+        self.assertEqual(self.capture(grant, turn_id='turn-1')['status'], 'recorded')
+        self.assertEqual(self.capture(grant, turn_id='turn-1', tool_response='PASS')['status'], 'duplicate')
+        self.assertEqual(self.capture(grant, turn_id='turn-2')['status'], 'recorded')
+        self.assertEqual(self.capture(grant, turn_id='turn-1', hook_event_name='PreToolUse')['status'], 'recorded')
+        self.assertEqual(len(self.store.events(grant['registration_id'])), 3)
+
+    def test_codex_rejects_failure_event_and_does_not_infer_missing_ids(self):
+        grant = self.grant()
+        self.assertEqual(self.capture(grant, hook_event_name='PostToolUseFailure')['status'], 'rejected')
+        self.assertEqual(self.capture(grant, turn_id='bad id')['status'], 'rejected')
+        for _ in range(2):
+            self.assertEqual(self.capture(grant, turn_id=None)['status'], 'recorded')
+        self.assertTrue(all('possible_duplicate' in e['gaps'] for e in self.store.events(grant['registration_id'])))
+        self.assertEqual(self.capture(grant, cwd=str(self.home))['status'], 'rejected')
+
+    def test_codex_stop_repetition_is_not_deduplicated_or_success(self):
+        grant = self.grant()
+        for _ in range(2): self.capture(grant, hook_event_name='Stop', turn_id='turn-1')
+        events = self.store.events(grant['registration_id'])
+        self.assertEqual(len(events), 2)
+        self.assertTrue(all(e['status'] == 'unknown' and 'possible_duplicate' in e['gaps'] for e in events))
+
+    test_disabled_and_revoked_do_not_read_stdin_or_resurrect_after_regrant = NativeObservationTests.test_disabled_and_revoked_do_not_read_stdin_or_resurrect_after_regrant
+    test_expired_grant_does_not_read_payload = NativeObservationTests.test_expired_grant_does_not_read_payload
+    test_manual_import_cannot_impersonate_native_events = NativeObservationTests.test_manual_import_cannot_impersonate_native_events
+    test_scope_unknown_events_and_content_limits = NativeObservationTests.test_scope_unknown_events_and_content_limits
+
+
 if __name__ == '__main__':
     unittest.main()

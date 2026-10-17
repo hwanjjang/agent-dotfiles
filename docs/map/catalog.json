@@ -2456,19 +2456,19 @@
       "group": "start",
       "status": "available",
       "source": "account/observation/README.md",
-      "summary": "Use the synthetic store or explicitly opt one Claude project into bounded native metadata collection.",
+      "summary": "Opt one Claude or Codex project into bounded native metadata collection, or use the private synthetic store.",
       "when": [
-        "Qualifying private observation storage or opting an approved Claude project into collection."
+        "Collecting metadata for one explicitly approved project/client, or checking platform evidence and gaps."
       ],
-      "usage": "Start with the disposable synthetic example. For native delivery, follow account/observation/native.md: grant --client claude, preview installer --observation-registration ID, then verify actual callbacks. Default installations collect nothing.",
+      "usage": "Follow account/observation/native.md: create an exact-project Claude or Codex grant, preview --observation-registration ID, apply, then verify actual callbacks. Codex requires native trust of four new definitions. Default installations collect nothing.",
       "behavior": [
-        "Keep exact project/client/profile/source grants, consent epochs and private metadata separate from installer state.",
-        "Deduplicate stable tool IDs, commit synthetic imports with their cursor, and purge revoked evidence.",
-        "Claude uses five independent metadata hooks; no prompt, arguments, outputs or transcript reads. Missing identity and coverage stay unknown.",
-        "Codex observation, task feedback automation and comparative evaluation remain planned."
+        "One selected client registration per account; grants, epochs and records remain owned by the private store.",
+        "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
+        "macOS Codex native callbacks/planning passed the recorded fixture. Linux Codex callbacks/planning worked but tool execution was blocked; Linux Claude proves SessionStart only, with authentication unavailable.",
+        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned."
       ],
       "outputs": [
-        "Private synthetic or Claude metadata records and explicit gaps; no task-success or improvement claim."
+        "Private synthetic or native metadata, client-specific evidence and explicit gaps."
       ],
       "tags": [
         "account",
@@ -2476,7 +2476,8 @@
         "synthetic",
         "privacy",
         "evaluation",
-        "claude"
+        "claude",
+        "codex"
       ]
     },
     {
@@ -2697,7 +2698,7 @@
       "behavior": [
         "Keep source acceptance and account activation separate.",
         "Use guarded rollback while preserving observation records; reproduce production signals before attributing them to a skill.",
-        "Return to step 1 with a new environment identity. Claude observation requires explicit project consent and registration; Codex collection remains planned.",
+        "Return to step 1 with a new environment identity. Claude/Codex observation requires explicit project consent and one selected registration; Codex observer definitions also require native trust.",
         "Use account doctor to recheck delivered setup and affected client behavior; preserve private observations during update or rollback."
       ],
       "outputs": [

@@ -1,0 +1,27 @@
+{
+  "title": "Opt in to Codex observations",
+  "scenario": "Scenario: native-observation / workflow-map. 2026-10-18. A committed source, Python 3.11+, Codex and an explicitly authorized disposable project are required. Collection is off by default. Native trust and model access are separate prerequisites.",
+  "steps": [
+    {
+      "title": "Choose one client and review trust",
+      "instruction": "Open the map: Anytime > Self-improvement and eval > 1. Observe. Follow the native guide to create one exact-project Codex grant and preview its installer registration. Review the four observer definitions in native /hooks before activation; existing planning trust is separate.",
+      "screenshot": "codex-observe.png",
+      "caption": "Actual current map dialog. Follow its source guide for the authoritative commands and limits.",
+      "expected": "One selected client receives observation delivery. Default installations collect nothing; preview and discovery alone do not prove callbacks executed."
+    },
+    {
+      "title": "Check actual callback evidence",
+      "instruction": "In an authorized disposable session, exercise a synthetic read/write and an intentional failure. Inspect native records and planning context separately. Retain exact runtime identity and counts; then revoke the grant and remove owned test delivery.",
+      "screenshot": "codex-native-result.png",
+      "caption": "Browser-rendered selected results from an actual macOS Codex 0.163.0 / GPT-6-Luna run; not a terminal screenshot.",
+      "expected": "All four kinds occurred in this fixture. Codex tool-end status remains unknown even after a nonzero shell result. Revoked no-op was checked through a direct dispatcher, not another native model turn."
+    },
+    {
+      "title": "Keep platform blockers visible",
+      "instruction": "Before relying on another host, compare its evidence with the native guide matrix. Treat observed callbacks, usable tools and authenticated model behavior as separate checks. Preserve a blocked result instead of weakening sandbox or authentication boundaries.",
+      "screenshot": "linux-observation-result.png",
+      "caption": "Browser rendering of actual Linux results: Codex callbacks/planning passed but tools were blocked; Claude proves initialization/SessionStart only.",
+      "expected": "A partial Linux result does not qualify the complete fixture. Without usable Claude authentication, a model run was not attempted. No WSL, parent lineage, complete delivery or model-effectiveness claim follows."
+    }
+  ]
+}

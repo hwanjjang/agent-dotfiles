@@ -101,3 +101,21 @@ pages were rendered and visually checked, with text and page count checked too.
 The [native guide](../../account/observation/native.md) owns commands and limits;
 the [recipe](../verification/verify-repository/features/native-observation.md)
 owns repeatable verification. No real-account collection was activated by this guide.
+
+## Codex and platform coverage walkthrough
+
+The [three-page Codex walkthrough](codex-observation.pdf) follows the existing
+`native-observation` scenario: select one client, review native trust, inspect
+actual results and retain platform blockers. Its [editable source](codex-observation.json),
+[current map capture](codex-observe.png), [macOS results](codex-native-result.png),
+[Linux matrix](linux-observation-result.png) and [capture manifest](codex-observation-capture.json)
+are maintained together. The two result images are browser renderings of selected
+actual qualification evidence, not terminal captures or newly executed model runs.
+The native guide owns exact source revisions and coverage; the earlier Claude
+walkthrough retains its historical capture and is not a current Codex map.
+
+All three Codex PDF pages are rendered and visually inspected during this update;
+text/page-count checks and browser navigation are recorded separately. Rebuild
+with the existing screenshot-manual scripts and recapture affected map dialogs
+when their metadata changes. No account installation or activation was performed
+by the documentation workflow.

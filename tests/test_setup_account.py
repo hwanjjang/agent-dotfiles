@@ -188,6 +188,73 @@ class AccountSetupTests(unittest.TestCase):
         self.assertEqual(len(config['hooks']['SessionStart']), 1)
         self.assertFalse((self.home / '.agents/bin/observation-hook.py').exists())
 
+    def test_codex_observation_selection_delivery_and_client_switch(self):
+        from account.observation.store import Store
+        from account_doctor import diagnose
+        import shlex
+        store = Store(self.home)
+        grant = store.grant(self.repo, client='codex', source='codex-hooks-v1')
+        ident = grant['registration_id']
+        plan, _ = self.prepare(observation_registration=ident)
+        self.assertEqual(len(plan['hook_activation']['codex_observation']), 4)
+        self.assertEqual(len(plan['hook_activation']['codex']), 11)
+        self.assertEqual(plan['hook_activation']['claude_observation'], [])
+        self.assertFalse(plan['hook_activation']['trust_changed_by_installer'])
+        self.apply(observation_registration=ident)
+        config = json.loads((self.home / '.codex/hooks.json').read_text())
+        self.assertEqual(len(config['hooks']['SessionStart']), 2)
+        command = shlex.split(plan['hook_activation']['codex_observation'][0]['command'])
+        payload = json.dumps(dict(cwd=str(self.repo), session_id='session-1', turn_id='turn-1',
+                                 hook_event_name='Stop', last_assistant_message='PRIVATE_SENTINEL')).encode()
+        callback = subprocess.run(command, input=payload, capture_output=True, timeout=5)
+        self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
+        self.assertEqual(len(store.events(ident)), 1)
+        for bad in (b'not JSON', b'x' * 131073):
+            callback = subprocess.run(command, input=bad, capture_output=True, timeout=5)
+            self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
+        stalled = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            self.assertEqual(stalled.wait(timeout=6), 0)
+            self.assertEqual(stalled.stdout.read(), b'{}\n')
+            self.assertEqual(stalled.stderr.read(), b'')
+        finally:
+            if stalled.poll() is None: stalled.kill(); stalled.wait()
+            stalled.stdin.close(); stalled.stdout.close(); stalled.stderr.close()
+        self.assertEqual(setup.status(self.home)['drift'], [])
+        self.assertIsNone(self.apply(action='update'))
+        # Observer-only delivery must not accidentally depend on planning selection.
+        self.apply(action='update', hooks=False)
+        config = json.loads((self.home / '.codex/hooks.json').read_text())
+        self.assertEqual(set(config['hooks']), {'SessionStart','PreToolUse','PostToolUse','Stop'})
+        self.assertTrue(all(len(groups) == 1 for groups in config['hooks'].values()))
+        self.assertEqual(json.loads((self.home / '.claude/settings.json').read_text()).get('hooks', {}), {})
+        store.revoke(ident)
+        callback = subprocess.run(command, input=b'invalid', capture_output=True, timeout=5)
+        self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
+        with patch('account_doctor.shutil.which', return_value='/synthetic/client'):
+            self.assertEqual(diagnose(self.home)['status'], 'blocked')
+        self.assertEqual(store.events(ident), [])
+        # One explicit selection switches clients; it never enables both grants.
+        claude = store.grant(self.repo, client='claude', source='claude-hooks-v1')
+        self.apply(action='update', hooks=True, observation_registration=claude['registration_id'])
+        codex_config = json.loads((self.home / '.codex/hooks.json').read_text())
+        self.assertEqual(len(codex_config['hooks']['SessionStart']), 1)
+        self.assertEqual(len(json.loads((self.home / '.claude/settings.json').read_text())['hooks']['SessionStart']), 2)
+        self.apply(action='update', observation_registration='none')
+        self.assertEqual(len(json.loads((self.home / '.claude/settings.json').read_text())['hooks']['SessionStart']), 1)
+        self.assertIsNotNone(store.registration(claude['registration_id']))
+        self.assertFalse((self.home / '.agents/bin/observation-hook.py').exists())
+
+    def test_codex_observation_refuses_source_without_adapter_capability(self):
+        from account.observation.store import Store
+        grant = Store(self.home).grant(self.repo, client='codex', source='codex-hooks-v1')
+        capability = self.repo / 'account/observation/capabilities.json'
+        if capability.exists(): capability.unlink()
+        (self.repo / 'README.md').write_text('Synthetic legacy source without Codex collector.\n')
+        self.commit('source without Codex observation capability')
+        with self.assertRaisesRegex(ValueError, 'Codex observation capability'):
+            self.prepare(observation_registration=grant['registration_id'])
+
     def test_modified_managed_hook_is_not_silently_removed(self):
         self.apply();p=self.home / '.codex/hooks.json';config=json.loads(p.read_text())
         config['hooks']['Stop'][0]['hooks'][0]['timeout']=999;p.write_text(json.dumps(config))

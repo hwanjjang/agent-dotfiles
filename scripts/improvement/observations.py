@@ -18,9 +18,9 @@ def parser():
     commands = result.add_subparsers(dest='command', required=True)
     grant = commands.add_parser('grant', help='Opt one exact project/client/profile/source into collection')
     grant.add_argument('--project', type=Path, required=True)
-    grant.add_argument('--client', choices=('synthetic', 'claude'), default='synthetic')
+    grant.add_argument('--client', choices=('synthetic', 'claude', 'codex'), default='synthetic')
     grant.add_argument('--profile', default='default')
-    grant.add_argument('--source', help='Synthetic stream generation; native Claude uses claude-hooks-v1')
+    grant.add_argument('--source', help='Synthetic stream generation; native clients use CLIENT-hooks-v1')
     grant.add_argument('--start-after', type=int, help='Required synthetic source high-water mark; native receipt order is automatic')
     grant.add_argument('--lifetime-seconds', type=int, default=2592000)
     for name in ('capture', 'import', 'events', 'revoke'):
@@ -47,7 +47,7 @@ def main(argv=None):
                 raise InvalidEvent('source_high_water_required')
             if args.client != 'synthetic' and args.start_after is not None:
                 raise InvalidEvent('native_sequence_is_automatic')
-            source = args.source or ('fixture-v1' if args.client == 'synthetic' else 'claude-hooks-v1')
+            source = args.source or ('fixture-v1' if args.client == 'synthetic' else args.client + '-hooks-v1')
             output = store.grant(args.project, profile=args.profile, source=source,
                                  start_after=args.start_after or 0, lifetime_seconds=args.lifetime_seconds,
                                  client=args.client)

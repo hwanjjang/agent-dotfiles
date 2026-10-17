@@ -123,8 +123,8 @@ class Store:
         project = Path(project).resolve(strict=True)
         require(project.is_dir() and token(profile) and token(source), 'invalid_scope')
         require(integer(start_after), 'source_high_water')
-        require(client == 'synthetic' or (client == 'claude' and profile == 'default'
-                and source == 'claude-hooks-v1'), 'unsupported_adapter')
+        require(client == 'synthetic' or (client in ('claude', 'codex') and profile == 'default'
+                and source == client + '-hooks-v1'), 'unsupported_adapter')
         require(type(lifetime_seconds) in (int, float) and 0 < lifetime_seconds <= 2592000
                 and math.isfinite(lifetime_seconds), 'grant_lifetime')
         registration_id = digest([str(project), client, profile, source])
@@ -156,7 +156,7 @@ class Store:
         if (not grant['active'] or grant['expires_at'] <= time.time()
                 or (epoch is not None and epoch != grant['epoch'])):
             return None
-        require(grant['registration_id'] == registration_id and grant['client'] in ('synthetic', 'claude'), 'invalid_grant')
+        require(grant['registration_id'] == registration_id and grant['client'] in ('synthetic', 'claude', 'codex'), 'invalid_grant')
         return grant
 
     def registration(self, registration_id):

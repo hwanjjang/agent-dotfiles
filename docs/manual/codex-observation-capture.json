@@ -1,0 +1,31 @@
+{
+  "captured": "2026-10-18",
+  "scenario": "native-observation / workflow-map",
+  "status": "documentation_candidate",
+  "native_fixtures": {
+    "macos": "92ced4083df43a79098f220a087ef3a114d3a3b7",
+    "linux": "c94143ba41b050bd52701a59b1b9f167e17366c9"
+  },
+  "source_sha256": {
+    "account/observation/native.py": "fffb1149d2cda219df8fe2a9c2b6bf35ba414d46413b8e15ced28c5f009c4cac",
+    "account/observation/store.py": "078569da06fcb960401c89ba2c311c3dea681c442bc25f73b3dedd7915c781e4",
+    "account/observation/files.py": "85e67e1d7048036b368d4055177e0adf290679e942626b07e959fa0b027324d4",
+    "account/hooks/observation-hook.py": "bcd2b668ddd74aaf8a8cd31394807631e9626d1a13be506a2a651d1998a2eb3d",
+    "scripts/setup_account.py": "cb266861830f924fc284d80f40dfea673717c780dae6dbca45c524e35427fcea",
+    "docs/map/catalog.json": "d290363fac560cf4499c59aaf2d2ca0f5add525609e1ce7af1e620f1024e776d",
+    "docs/map/workflow.json": "0beb612eb21430e282c727a2055bcf58e12999b3122b791d58e867d1ca5c572e"
+  },
+  "images": {
+    "codex-observe.png": "aef30e4b6bd2bafa14afbe7a5867617de80474928589136db277517aeee5cdff",
+    "codex-native-result.png": "c4abebb292d62389e2f1142350d9dacaba5b167468e6fb68b03a49d355d96ba8",
+    "linux-observation-result.png": "7923df4e9e9a50a6048a996a5bff0058e0280037d2c42ecee8d19f822949e952"
+  },
+  "notes": [
+    "Actual current map dialog captured in isolated Chrome.",
+    "Result images are browser-rendered selected actual evidence, not terminal screenshots or new model runs.",
+    "macOS native callback/planning PASS; Linux Codex callback/planning observed but full tool fixture blocked; Linux Claude initialization/SessionStart only, auth unusable.",
+    "All three final PDF pages rendered and visually inspected; text and page count checked.",
+    "Runtime remained frozen; no account mutation or live client calls during documentation work.",
+    "Source hashes identify the integrated documentation candidate. Native fixture revisions are separate; collector/store/dispatcher bytes match their evidence, while installer/harness corrections receive separate CLI checks."
+  ]
+}

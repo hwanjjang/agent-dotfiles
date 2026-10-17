@@ -33,7 +33,7 @@ and [screenshot walkthrough](../README.md#account-installation-guide-walkthrough
 The screenshots here retain their capture baseline; they do not demonstrate the
 doctor or a comparative eval run. The improvement design owns the
 [connection between qualification and eval](../../decisions/account-improvement-loop.md#account-qualification-and-reuse).
-The later [Claude collection guide](../../../account/observation/native.md) covers
+The later [Claude/Codex collection guide](../../../account/observation/native.md) covers
 explicit native opt-in, verification and revocation. The bilingual editions' native
 collection status describes their earlier capture baseline; current support is
 documented in that guide. No screenshot here is evidence of native collection.
