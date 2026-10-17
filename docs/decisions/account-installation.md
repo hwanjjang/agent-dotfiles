@@ -49,12 +49,13 @@ is provisional with respect to community validation and rests on scope fit and t
   credentials/model preferences. Resolve paths/interpreter on the destination host.
 - Preview by default; `--apply` performs the selected operation. Conflicting
   selected assets require approval of the exact fingerprinted preview, with all
-  inputs rechecked. Source/destination overlap and indirect target paths are rejected.
+  inputs rechecked. Source overlap with any affected destination and indirect target paths are rejected.
 - Keep one receipt for owned assets and exact configuration fragments. Merge hooks
   and selected MCP entries; preserve other settings and disabled state. Local drift
   blocks destructive replacement. Preserve Paseo/system tools under their owners.
 - Serialize this installer's mutations with a local lock. Save private originals,
-  write atomically per file, keep an interruption journal and offer guarded rollback.
+  write atomically per file, journal directory displacement before the rename and
+  retain the original privately for retryable rollback without partial copying.
   This is not a multi-file atomic filesystem transaction; close clients during apply.
   It does not lock other editors, supervise agents or recover arbitrary concurrent edits.
 - Codex/Claude get shared skills, account pointers and selected planning hooks.

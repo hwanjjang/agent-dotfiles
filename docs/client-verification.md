@@ -11,10 +11,11 @@ The maintained tests ran on macOS with Python 3.11; Linux/WSL execution and nati
 Windows are not verified here. The [account guide](../account/README.md) owns
 commands and supported default client layouts.
 
-Twenty-one disposable-account tests cover preview without mutation, destination-specific
+Twenty-four disposable-account tests cover preview without mutation, destination-specific
 paths, committed-source selection, revision updates and retired assets, idempotence,
 removal, private backups and rollback, caught write failure, local drift and stale
-approval, directory replacement failure, symlink/overlap rejection, narrow legacy
+approval, interrupted directory takeover/restoration with retry and later-edit
+protection, source checkouts inside selected destinations, symlink rejection, narrow legacy
 receipt transfer and unmatched-owner rejection, preserved Paseo/auth/personal settings, hooks opt-out and duplicate
 routes, Codex instruction masking, MCP conflicts/disabled state and optional Hermes.
 They do not use or change the contributor's real account, HOME or credentials.
@@ -29,7 +30,7 @@ Hermes native hooks/MCP, custom client profiles and client/tool installation are
 outside this adapter. Historical source-only checks below retain their original
 scope; they are not installation evidence.
 
-The 21 installer tests, ten account-hook tests and 19 map tests pass (50 focused
+The 24 installer tests, ten account-hook tests and 19 map tests pass (53 focused
 checks). Both generated maps pass freshness checks. Isolated Chrome verified the
 catalog and workflow interactions; the refreshed two-page account walkthrough
 was rendered, text-checked and visually inspected. Public source/path probes and

@@ -83,7 +83,8 @@ delivery does not prove authentication or a working connection.
 | Authentication, preferences, model choices, trust and permission settings | Local and preserved. No authorization, hook trust or MCP credentials are added implicitly. |
 | State and backups | `.agents/agent-dotfiles/state/`, local only. Never commit or share raw receipts, plans or backups. |
 
-Source and target overlap, symlinked parent directories, symlinked configuration
+Overlap with any replacement/removal target (including a skill directory containing
+the source checkout), symlinked parent directories, symlinked configuration
 files, malformed settings, duplicate planning routes and changed managed content
 are rejected before writing. Default client directories are the supported layout;
 nondefault CODEX_HOME, CLAUDE_CONFIG_DIR or selected HERMES_HOME profiles are
@@ -123,7 +124,11 @@ sh scripts/setup-account.sh rollback --transaction TRANSACTION_ID --apply
 ```
 
 Rollback restores that transaction's originals only if touched paths still match
-its recorded before/after state. Later edits stop recovery rather than being
+its recorded before/after state or a journaled directory-move interruption. Original
+directories remain in the private transaction folder until recovery is no longer
+needed; restoring them uses a rename instead of a partial directory copy. Directory
+takeover requires the target and state directory to share a filesystem; a failed
+cross-device rename rolls back without deleting the source. Later edits stop recovery rather than being
 clobbered. Roll back newest transactions first. Backups may contain private
 configuration; keep them local until recovery is no longer needed. Uninstall does
 not automatically reactivate a replaced legacy setup; rollback is the explicit

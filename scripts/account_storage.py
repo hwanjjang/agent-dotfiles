@@ -93,21 +93,21 @@ def write(path, data, mode=0o600):
             os.unlink(tmp)
 
 
-def put(path, value):
-    displaced = None
+def put(path, value, displaced=None):
+    moved = False
     if path.is_dir() and not path.is_symlink():
-        # Keep the original directory intact until its replacement is in place.
-        displaced = path.parent / ('.agent-dotfiles-displaced-' + uuid.uuid4().hex)
+        # The journal names this private location before the directory moves.
+        require(displaced is not None and observed(displaced) is None,
+                'Directory replacement requires an unused journaled displacement')
         os.replace(path, displaced)
+        moved = True
     try:
         _put_file(path, value)
     except Exception:
-        if displaced is not None and not path.exists() and not path.is_symlink():
+        if moved and not path.exists() and not path.is_symlink():
             os.replace(displaced, path)
         raise
-    else:
-        if displaced is not None:
-            shutil.rmtree(displaced)
+    # Retain the original under the private transaction directory for recovery.
 
 
 def _put_file(path, value):
@@ -162,10 +162,13 @@ def capture(path, destination):
     return {'kind': 'file', 'mode': path.stat().st_mode & 0o777}
 
 
-def restore(path, entry, saved):
+def restore(path, entry, saved, expected):
     if entry['kind'] == 'directory':
+        displaced = saved.parent / entry['displaced']
+        require(observed(displaced) == expected, 'Displaced original changed or missing')
         put(path, None)
-        shutil.copytree(saved, path, symlinks=True)
+        # If interrupted between unlink and rename, the journal still owns both paths.
+        os.replace(displaced, path)
     elif entry['kind'] == 'file':
         put(path, {'data': saved.read_bytes(), 'mode': entry['mode']})
     else:
@@ -185,6 +188,8 @@ def transact(home, plan, changes):
     for index, name in enumerate(changes):
         originals[name] = capture(safe(home, name), folder / str(index))
         originals[name]['saved'] = str(index)
+        if originals[name]['kind'] == 'directory':
+            originals[name]['displaced'] = 'displaced-' + str(index)
     journal = dict(version=1, home=str(home), status='pending', before=plan['before'],
                    after=plan['after'], originals=originals)
     write(folder / 'journal.json', encoded(journal))
@@ -194,7 +199,9 @@ def transact(home, plan, changes):
             # Detect changes between preview and each write, including the receipt.
             require(observed(safe(home, name)) == plan['before'][name], f'Concurrent change: {name}')
             done.append(name)
-            put(safe(home, name), value)
+            entry = originals[name]
+            displaced = folder / entry['displaced'] if entry['kind'] == 'directory' else None
+            put(safe(home, name), value, displaced=displaced)
         for name in changes:
             require(observed(safe(home, name)) == plan['after'][name], f'Post-write mismatch: {name}')
         journal['status'] = 'applied'
@@ -208,7 +215,7 @@ def transact(home, plan, changes):
                     continue
                 require(actual == plan['after'][name], 'Concurrent change during recovery')
                 entry = originals[name]
-                restore(safe(home, name), entry, folder / entry['saved'])
+                restore(safe(home, name), entry, folder / entry['saved'], plan['before'][name])
             except Exception:
                 failures.append(name)
         journal['status'] = 'recovery-required' if failures else 'rolled-back'
@@ -222,14 +229,25 @@ def rollback_plan(home, ident):
     folder = safe(home, STATE_DIR + '/transactions/' + ident)
     journal = json.loads(read(safe(home, STATE_DIR + '/transactions/' + ident + '/journal.json')))
     require(journal.get('version') == 1 and journal.get('home') == str(home)
-            and journal.get('status') in ('applied', 'pending', 'recovery-required'), 'Transaction cannot be rolled back')
+            and journal.get('status') in ('applied', 'pending', 'recovery-required', 'rolling-back'), 'Transaction cannot be rolled back')
     for name, entry in journal['originals'].items():
         require(managed_target(name), 'Unsupported rollback destination')
         path = safe(home, name)
-        require(observed(path) in (journal['before'][name], journal['after'][name]),
-                f'Rollback would overwrite later changes: {name}')
         require(entry['saved'].isdigit(), 'Invalid backup reference')
         saved = folder / entry['saved']
+        actual = observed(path)
+        states = [journal['before'][name], journal['after'][name]]
+        if entry['kind'] == 'directory':
+            require(entry.get('displaced') == 'displaced-' + entry['saved'],
+                    'Missing or invalid journaled displacement')
+            displaced = observed(folder / entry['displaced'])
+            if displaced is not None:
+                require(displaced == journal['before'][name], 'Displaced original changed')
+                if journal['status'] != 'applied':
+                    states.append(None)  # Only a journaled in-progress operation may own a gap.
+            if actual != journal['before'][name]:
+                require(displaced == journal['before'][name], 'Displaced original missing')
+        require(actual in states, f'Rollback would overwrite later changes: {name}')
         if entry['kind'] in ('file', 'directory'):
             require(observed(saved) is not None, 'Missing backup')
             # Backup file permissions are private; compare its content, not storage mode.
@@ -241,13 +259,17 @@ def rollback_plan(home, ident):
 
 def rollback(home, ident):
     folder, journal = rollback_plan(home, ident)
+    journal['status'] = 'rolling-back'
+    write(folder / 'journal.json', encoded(journal))
     for name, entry in reversed(list(journal['originals'].items())):
         path = safe(home, name)
         actual = observed(path)
         if actual == journal['before'][name]:
             continue
-        require(actual == journal['after'][name], f'Concurrent rollback change: {name}')
-        restore(path, entry, folder / entry['saved'])
+        gap = (actual is None and entry['kind'] == 'directory'
+               and observed(folder / entry['displaced']) == journal['before'][name])
+        require(actual == journal['after'][name] or gap, f'Concurrent rollback change: {name}')
+        restore(path, entry, folder / entry['saved'], journal['before'][name])
         require(observed(path) == journal['before'][name], f'Rollback mismatch: {name}')
     journal['status'] = 'rolled-back'
     write(folder / 'journal.json', encoded(journal))

@@ -321,6 +321,13 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         receipt['claude_mcp'] = claude
     # Receipt is last so a successful write represents the entire applied candidate.
     change(RECEIPT, None if remove else {'data': encoded(receipt), 'mode': 0o600})
+    # Asset takeover never grants permission to replace the source checkout itself.
+    source = repo.resolve()
+    for name in changes:
+        target = safe(home, name)
+        for destination in (target, target.resolve()):
+            require(not source.is_relative_to(destination) and not destination.is_relative_to(source),
+                    'Source and delivery overlap: ' + name)
     prerequisites = [exe for exe in ('codex', 'claude', 'git', 'sh', 'node', 'rg', 'gh') if shutil.which(exe) is None]
     plan = dict(version=1, action=action, home=str(home), source_revision=sha,
                 hermes=hermes, planning_hooks=hooks, mcp=mcp, skills=skills,

@@ -143,6 +143,81 @@ class AccountSetupTests(unittest.TestCase):
         with storage.lock(self.home):storage.rollback(self.home,ident)
         self.assertFalse(p.is_symlink());self.assertEqual((p/'SKILL.md').read_text(),'old unowned')
 
+    def test_interrupted_directory_takeover_can_be_rolled_back(self):
+        target = self.home / '.agents/skills/tdd'
+        target.mkdir(parents=True)
+        (target / 'SKILL.md').write_text('original directory')
+        original = storage.observed(target)
+        plan, changes = self.prepare()
+        replace = storage.os.replace
+        def interrupt_after_displacement(src, dst):
+            result = replace(src, dst)
+            if Path(src) == target:
+                raise KeyboardInterrupt('process interrupted after rename')
+            return result
+        with storage.lock(self.home), patch.object(storage.os, 'replace', interrupt_after_displacement):
+            with self.assertRaises(KeyboardInterrupt):
+                storage.transact(self.home, plan, changes)
+        self.assertFalse(target.exists())
+        journal = next((self.home / storage.STATE_DIR / 'transactions').glob('*/journal.json'))
+        target.mkdir()
+        (target / 'later-edit').write_text('preserve later edits')
+        with self.assertRaisesRegex(ValueError, 'later changes'):
+            storage.rollback_plan(self.home, journal.parent.name)
+        self.assertEqual((target / 'later-edit').read_text(), 'preserve later edits')
+        (target / 'later-edit').unlink()
+        target.rmdir()
+        with storage.lock(self.home):
+            storage.rollback(self.home, journal.parent.name)
+        self.assertEqual(storage.observed(target), original)
+        self.assertFalse(setup.load_receipt(self.home))
+
+    def test_interrupted_directory_restoration_is_retryable(self):
+        target = self.home / '.agents/skills/tdd'
+        target.mkdir(parents=True)
+        (target / 'SKILL.md').write_text('original directory')
+        original = storage.observed(target)
+        plan, changes = self.prepare()
+        with storage.lock(self.home):
+            ident = storage.transact(self.home, plan, changes)
+        installed_link = os.readlink(target)
+        target.unlink()
+        with self.assertRaisesRegex(ValueError, 'later changes'):
+            storage.rollback_plan(self.home, ident)
+        target.symlink_to(installed_link)
+        replace, copytree = storage.os.replace, storage.shutil.copytree
+        def interrupt_restore(src, dst):
+            if Path(dst) == target:
+                raise KeyboardInterrupt('process interrupted before restoration rename')
+            return replace(src, dst)
+        def interrupt_copy(src, dst, **kwargs):
+            if Path(dst) == target:
+                Path(dst).mkdir()
+                (Path(dst) / 'partial-copy').write_text('interrupted')
+                raise KeyboardInterrupt('process interrupted during restoration copy')
+            return copytree(src, dst, **kwargs)
+        with storage.lock(self.home), patch.object(storage.os, 'replace', interrupt_restore), patch.object(storage.shutil, 'copytree', interrupt_copy):
+            with self.assertRaises(KeyboardInterrupt):
+                storage.rollback(self.home, ident)
+        with storage.lock(self.home):
+            storage.rollback(self.home, ident)
+        self.assertEqual(storage.observed(target), original)
+        self.assertFalse(setup.load_receipt(self.home))
+
+    def test_source_inside_any_selected_destination_is_rejected(self):
+        source = self.repo
+        for index, suffix in enumerate(['', '/nested-checkout']):
+            with self.subTest(suffix=suffix):
+                self.home = self.root / ('overlap-account-' + str(index))
+                self.home.mkdir()
+                self.repo = self.home / ('.agents/skills/tdd' + suffix)
+                shutil.copytree(source, self.repo)
+                (self.repo / 'uncommitted.txt').write_text('must survive')
+                before = storage.observed(self.repo)
+                with self.assertRaisesRegex(ValueError, 'Source and delivery overlap'):
+                    self.prepare()
+                self.assertEqual(storage.observed(self.repo), before)
+
     def test_stale_preview_rejected_before_any_write(self):
         plan,changes=self.prepare();self.config('.claude/settings.json',{'user_edit':True})
         with storage.lock(self.home),self.assertRaisesRegex(ValueError,'changed since preview'):
@@ -157,10 +232,10 @@ class AccountSetupTests(unittest.TestCase):
 
     def test_failed_write_rolls_back_and_keeps_private_backup(self):
         original=storage.put;calls=[]
-        def fail_once(path,value):
+        def fail_once(path,value,**kwargs):
             calls.append(path)
             if len(calls)==4:raise OSError('synthetic failure')
-            return original(path,value)
+            return original(path,value,**kwargs)
         plan,changes=self.prepare()
         with storage.lock(self.home),patch.object(storage,'put',side_effect=fail_once),self.assertRaisesRegex(ValueError,'rollback|rolled-back'):
             storage.transact(self.home,plan,changes)
@@ -241,7 +316,7 @@ class AccountSetupTests(unittest.TestCase):
     def test_failure_replacing_directory_preserves_original(self):
         p=self.home/'.agents/skills/tdd';p.mkdir(parents=True);(p/'SKILL.md').write_text('original')
         with patch.object(storage, '_put_file', side_effect=OSError('synthetic')):
-            with self.assertRaises(OSError):storage.put(p,{'link':'/synthetic/destination'})
+            with self.assertRaises(OSError):storage.put(p,{'link':'/synthetic/destination'},displaced=self.root/'displaced-test')
         self.assertEqual((p/'SKILL.md').read_text(),'original')
 
     def test_receipt_cannot_claim_paseo_or_authentication(self):
