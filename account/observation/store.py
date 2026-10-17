@@ -18,6 +18,7 @@ BATCH_LIMIT = 65536
 MAX_BATCH_EVENTS = 128
 MAX_RECORDS = 4096
 TASK_INPUT_LIMIT = 65536
+TASK_RECORD_LIMIT = 131072
 MAX_TASKS = 256
 MAX_TASK_RECORDS = 128
 TOKEN = re.compile(r'[A-Za-z0-9_.:@-]{1,160}\Z')
@@ -311,14 +312,16 @@ class Store:
         for name in names:
             if not re.fullmatch(r'[a-f0-9]{64}\.json', name):
                 continue
-            row = files.read(('tasks', task_id, name), TASK_INPUT_LIMIT * 2)
+            row = files.read(('tasks', task_id, name), TASK_RECORD_LIMIT)
             require(isinstance(row, dict) and row.get('schema_version') == 1
                     and row.get('task_id') == task_id and row.get('record_id') == name[:-5]
                     and row.get('kind') in {'task', 'feedback'}
                     and integer(row.get('sequence')) and isinstance(row.get('registrations'), list)
                     and 0 < len(row['registrations']) <= 16, 'corrupt_task')
             for ref in row['registrations']:
-                require(isinstance(ref, dict) and isinstance(ref.get('epoch'), str)
+                require(isinstance(ref, dict) and isinstance(ref.get('registration_id'), str)
+                        and KEY.fullmatch(ref['registration_id'])
+                        and isinstance(ref.get('epoch'), str)
                         and EPOCH.fullmatch(ref['epoch']), 'corrupt_task')
                 if active:
                     try:
@@ -411,6 +414,7 @@ class Store:
             row = dict(schema_version=1, kind='task', task_id=selected_task, record_id=ident,
                        sequence=len(rows) + 1, request_hash=digest(request), goal=goal,
                        registrations=registrations, selections=resolved)
+            require(len(encoded(row)) <= TASK_RECORD_LIMIT, 'task_record_size')
             files.write(('tasks', selected_task, ident + '.json'), row)
             return self._task_receipt(row, 'recorded')
 
@@ -421,6 +425,7 @@ class Store:
         for value, optional in [(symptom, False), (correction, True), (suspected_cause, True)]:
             feedback_text(value, optional=optional)
         require(token(author), 'feedback_author')
+        require(revision_id is None or token(revision_id), 'task_revision')
         require(confidence in {'unknown', 'low', 'medium', 'high'}, 'feedback_confidence')
         evidence_ids = [] if evidence_ids is None else evidence_ids
         contrary_evidence_ids = [] if contrary_evidence_ids is None else contrary_evidence_ids
@@ -437,7 +442,7 @@ class Store:
             if previous:
                 return self._task_receipt(previous, 'duplicate')
             revisions = [r for r in rows if r['kind'] == 'task']
-            revision = next((r for r in revisions if r['record_id'] == revision_id), None) if revision_id else revisions[-1]
+            revision = next((r for r in revisions if r['record_id'] == revision_id), None) if revision_id is not None else revisions[-1]
             require(revision is not None, 'task_revision')
             selected = {e['event_id'] for s in revision['selections'] for e in s['events']}
             require(set(evidence_ids + contrary_evidence_ids) <= selected, 'evidence_not_selected')
@@ -447,6 +452,7 @@ class Store:
                        registrations=revision['registrations'],
                        evidence_status='reported_correction' if correction else 'insufficient_claim_evidence')
             row['revision_id'] = revision['record_id']
+            require(len(encoded(row)) <= TASK_RECORD_LIMIT, 'task_record_size')
             files.write(('tasks', task_id, ident + '.json'), row)
             return self._task_receipt(row, 'recorded')
 
@@ -467,26 +473,42 @@ class Store:
             raise
 
     def _delete_tasks(self, files, registration_id):
-        for task_id in files.names(('tasks',)):
-            if not KEY.fullmatch(task_id):
-                continue
-            # No writer can be active under our store guard. An interrupted
-            # unpublished revision may reference a grant absent from older rows.
-            for name in files.names(('tasks', task_id)):
-                if name.startswith('.pending-'):
-                    files.unlink(('tasks', task_id, name))
-            rows = self._task_records(files, task_id, active=False)
-            if not rows or any(ref['registration_id'] == registration_id for row in rows for ref in row['registrations']):
+        try:
+            task_ids = files.names(('tasks',))
+        except (OSError, ValueError):
+            # An unsafe tasks root has no trustworthy lineage. Unlink links,
+            # never follow them, and discard only this owned private subtree.
+            files.clear(('tasks',))
+            return
+        for task_id in task_ids:
+            try:
+                # No writer is active under this guard. Pending content can
+                # reference a registration absent from the committed revisions.
+                for name in files.names(('tasks', task_id)):
+                    if name.startswith('.pending-'):
+                        files.unlink(('tasks', task_id, name))
+                    else:
+                        require(bool(re.fullmatch(r'[a-f0-9]{64}\.json', name)), 'corrupt_task')
+                rows = self._task_records(files, task_id, active=False)
+                remove = not rows or any(ref['registration_id'] == registration_id
+                                         for row in rows for ref in row['registrations'])
+            except (OSError, ValueError, TypeError, KeyError, RecursionError):
+                # Unknown lineage cannot justify retaining private task bytes.
+                # Valid unrelated tasks are checked individually and preserved.
+                remove = True
+            if remove:
                 files.clear(('tasks', task_id))
 
     def _delete_evidence(self, files, registration_id):
-        files.clear(('records', registration_id))
-        self._delete_tasks(files, registration_id)
-        # Cache has no authority and may contain other registrations: discard all.
-        files.unlink(('index.sqlite',))
-        for name in files.names(()):
-            if name.startswith('.index-'):
-                files.unlink((name,))
+        try:
+            files.clear(('records', registration_id))
+            self._delete_tasks(files, registration_id)
+        finally:
+            # Even an interrupted physical purge must discard the derived cache.
+            files.unlink(('index.sqlite',))
+            for name in files.names(()):
+                if name.startswith('.index-'):
+                    files.unlink((name,))
 
     def _revoke(self, files, registration_id):
         require(isinstance(registration_id, str) and KEY.fullmatch(registration_id), 'registration_id')

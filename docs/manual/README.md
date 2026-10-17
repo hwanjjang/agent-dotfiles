@@ -119,6 +119,15 @@ reads. A fresh synthetic feedback CLI journey and 175 focused tests passed on th
 integrated candidate; the manifest distinguishes these checks from the historical
 capture. This does not extend the screenshots to new native delivery evidence.
 
+The PR33 correction adds conservative cleanup for corrupt task records, a 128 KiB
+encoded stored-row limit and strict optional revision validation. Expiry blocks
+access immediately; `prune` performs physical deletion. The dated screenshots
+precede those safeguards and the corrected map wording; use the current Store
+guide and repeatable recipe for these boundaries. Separate correction tests and
+actual CLI checks verify them. The revised PDF text and captions include this
+errata; both revised pages were rendered and individually viewed. Its screenshots
+remain historical and do not depict a new run.
+
 The [observation guide](../../account/observation/README.md) remains authoritative;
 the [task-feedback recipe](../verification/verify-repository/features/task-feedback.md)
 owns repeatable checks. Rebuild with the screenshot-manual scripts above, replacing

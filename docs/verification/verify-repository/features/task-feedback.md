@@ -39,3 +39,11 @@ In both generated maps, open Private observations. Usage must name task-bind,
 feedback-add and task-show; sources must reach the maintained guide. The reproduction
 node must distinguish implemented task feedback from planned case export. Codex
 collection and comparative evaluation remain planned in this branch.
+
+Correction checks: the focused recovery suite covers corrupt/oversized/missing-lineage/
+symlink task cleanup without following external targets, keeping unrelated active
+tasks and discarding the index. It also checks resolved 128 KiB row refusal,
+128-event acceptance/129-event refusal, malformed revision IDs, overlapping explicit
+selections and revocation of a registration added by a later revision. Expiry blocks
+reads immediately; run `prune` to verify physical deletion. An event in both feedback
+evidence lists remains an explicit mixed observation, not an automatic diagnosis.

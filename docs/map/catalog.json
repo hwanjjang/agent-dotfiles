@@ -2467,7 +2467,7 @@
         "Claude uses five independent metadata hooks; no prompt, arguments, outputs or transcript reads. Missing identity and coverage stay unknown.",
         "Bind exact events or inclusive receipt-sequence ranges across explicitly selected sessions; later events do not expand the revision.",
         "Keep symptoms, corrections, suspected causes and contrary evidence separate. Feedback is not a verified diagnosis.",
-        "Revoke or expire any referenced grant to disable and purge the entire composite task and feedback.",
+        "Revocation purges the composite task; expiry disables access immediately and prune removes retained private bytes. Corrupt unknown-lineage tasks are conservatively purged.",
         "Codex collection, reviewed case export and comparative evaluation remain planned."
       ],
       "outputs": [
