@@ -57,8 +57,8 @@ entry point. Local links, declared skill/policy dependencies, pinned upstream
 hashes and license notices were checked. These packages have not been tested
 through native client discovery or authenticated tracker/PR operations.
 
-The generated map contains 51 entries and 76 relationships. Its six regression
-tests and freshness check passed. The repository browser verifier passed again
+At that adoption, the generated map contained 51 entries and 76 relationships.
+Its six regression tests and freshness check passed. The browser verifier passed again
 with Playwright 1.64.1 and Chrome 155.0.8059.82. A focused browser check also searched
 and opened all four new entries, checked usage/source links and cleared the search.
 Both new skill detail captures were visually inspected; the isolated browsers
