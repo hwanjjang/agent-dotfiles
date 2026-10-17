@@ -111,7 +111,7 @@ async function main() {
     for (const [id, source, expected] of [
       ['policy-communication', 'policies/communication.md', /preserv.*meaning/i],
       ['policy-execution', 'policies/execution.md', /recorded baseline/],
-      ['account-source', 'account/README.md', /source import alone activates nothing/i],
+      ['account-source', 'account/README.md', /preview or explicitly applied account change/i],
       ['planning-hooks', 'account/hooks/README.md', /native account activation remains a separate check/i],
       ['reviewer-runtime', 'skills/sdlc/references/host-adapters.md', /without duplicate reviewers/]
     ]) {
@@ -124,7 +124,7 @@ async function main() {
       }
       await close();
     }
-    check('Account sources, policy triggers, reviewer continuity and source-only activation boundaries');
+    check('Account sources, policy triggers, reviewer continuity and delivery versus native activation boundaries');
     await page.locator('#q').fill('glossary');
     assert.equal(await page.locator('.nd[data-id="domain-modeling"]').evaluate(n => n.classList.contains('dim')), false);
     assert.equal(await page.locator('.nd[data-id="tdd"]').first().evaluate(n => n.classList.contains('dim')), true);

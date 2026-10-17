@@ -1044,7 +1044,7 @@
         "adaptation_notes": [
           "The adopted package retains its upstream method. Its notebook complements task decomposition; it does not create another set of PR boundaries or replace tracker-owned status.",
           "Host hooks, plugin commands and gated modes are installation-dependent. A tool subprocess setting PLAN_ID does not bind an already-running parent host’s hooks.",
-          "Selected pinned POSIX account hook sources are provided separately with inactive templates; no account installer or native activation is claimed."
+          "Selected pinned POSIX account hooks are delivered by the account installer; native trust and event execution still require target-client verification."
         ],
         "calls": [],
         "sources": [
@@ -1484,11 +1484,11 @@
       "group": "content",
       "status": "available",
       "source": "mcp/claude-code/context7.json",
-      "summary": "Opt-in Claude Code connection template; no connection is activated.",
+      "summary": "Opt-in Claude Code template with a Codex account-install adapter; live connection requires verification.",
       "when": [
         "The task needs this tool capability and access is authorized."
       ],
-      "usage": "Read mcp/README.md; merge this server entry without replacing unrelated settings.",
+      "usage": "Read mcp/README.md and account/README.md; select this server with --mcp when previewing account installation or update.",
       "behavior": [
         "Uses documented transport and credential-free placeholders.",
         "Configuration parsing is checked; authenticated connection and tool use are not yet verified."
@@ -1499,7 +1499,8 @@
       "tags": [
         "context7",
         "mcp",
-        "claude"
+        "claude",
+        "codex"
       ]
     },
     {
@@ -1509,11 +1510,11 @@
       "group": "content",
       "status": "available",
       "source": "mcp/claude-code/github.json",
-      "summary": "Opt-in Claude Code connection template; no connection is activated.",
+      "summary": "Opt-in Claude Code template with a Codex account-install adapter; live connection requires verification.",
       "when": [
         "The task needs this tool capability and access is authorized."
       ],
-      "usage": "Read mcp/README.md; merge this server entry without replacing unrelated settings.",
+      "usage": "Read mcp/README.md and account/README.md; select this server with --mcp when previewing account installation or update.",
       "behavior": [
         "Uses documented transport and credential-free placeholders.",
         "Configuration parsing is checked; authenticated connection and tool use are not yet verified."
@@ -1524,7 +1525,8 @@
       "tags": [
         "github",
         "mcp",
-        "claude"
+        "claude",
+        "codex"
       ]
     },
     {
@@ -1534,11 +1536,11 @@
       "group": "content",
       "status": "available",
       "source": "mcp/claude-code/playwright.json",
-      "summary": "Opt-in Claude Code connection template; no connection is activated.",
+      "summary": "Opt-in Claude Code template with a Codex account-install adapter; live connection requires verification.",
       "when": [
         "The task needs this tool capability and access is authorized."
       ],
-      "usage": "Read mcp/README.md; merge this server entry without replacing unrelated settings.",
+      "usage": "Read mcp/README.md and account/README.md; select this server with --mcp when previewing account installation or update.",
       "behavior": [
         "Uses documented transport and credential-free placeholders.",
         "Configuration parsing is checked; authenticated connection and tool use are not yet verified."
@@ -1549,7 +1551,8 @@
       "tags": [
         "playwright",
         "mcp",
-        "claude"
+        "claude",
+        "codex"
       ]
     },
     {
@@ -2412,26 +2415,34 @@
     },
     {
       "id": "account-source",
-      "title": "Account source and ownership",
+      "title": "Account installation and ownership",
       "kind": "guide",
       "group": "start",
       "status": "available",
       "source": "account/README.md",
-      "summary": "Shared instruction entry point and replacement boundaries; no installer or account changes.",
+      "summary": "Install, update, remove and recover a committed account bundle on another POSIX host.",
       "when": [
-        "Preparing an account migration or identifying which manager owns a setting."
+        "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts."
       ],
-      "usage": "Read account/instructions.md and the source guide; preserve the full bundle layout and existing host-owned capabilities.",
+      "usage": "Preview with sh scripts/setup-account.sh install; follow account/README.md before applying or migrating an existing setup.",
       "behavior": [
-        "Keep portable source separate from private settings, Paseo skills, app plugins and installation receipts."
+        "Resolve paths on the destination host; deliver Codex and Claude skills/policies/hooks, with installed Hermes opt-in.",
+        "Keep receipts and private backups; preserve Paseo, authentication and unrelated settings. Require exact-plan approval for conflicting selected assets."
       ],
       "outputs": [
-        "A scoped delivery boundary; source import alone activates nothing."
+        "A preview or explicitly applied account change with a source revision and recovery transaction; native activation requires separate verification."
       ],
       "tags": [
         "account",
         "account-source",
-        "guide"
+        "guide",
+        "install",
+        "update",
+        "uninstall",
+        "rollback",
+        "codex",
+        "claude",
+        "hermes"
       ]
     },
     {
@@ -2441,11 +2452,11 @@
       "group": "start",
       "status": "available",
       "source": "account/hooks/README.md",
-      "summary": "Selected pinned POSIX Codex and Claude planning hooks, with inactive templates and project-route precedence.",
+      "summary": "Pinned POSIX Codex and Claude planning hooks delivered by the account installer, with project-route precedence.",
       "when": [
         "Preparing or verifying lifecycle integration for planning-with-files."
       ],
-      "usage": "Read the hook source guide and run isolated tests before any authorized target-client activation.",
+      "usage": "Use the account guide to install or remove managed hooks; verify native trust and selected-plan recovery in the target client.",
       "behavior": [
         "Restore the selected plan, honor opt-out and avoid a recognized duplicate project route."
       ],
@@ -2503,6 +2514,31 @@
       "tags": [
         "account",
         "account-import-decision",
+        "guide"
+      ]
+    },
+    {
+      "id": "account-installation-decision",
+      "title": "Account distribution design",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-installation.md",
+      "summary": "Source comparisons and ownership decisions for portable installation and recovery.",
+      "when": [
+        "Reviewing the installer scope, safety tradeoffs or community evidence."
+      ],
+      "usage": "Read the account distribution decision and follow its links to source comparisons and verification.",
+      "behavior": [
+        "Separate source packaging, account delivery and actual native activation; keep one manager for owned paths."
+      ],
+      "outputs": [
+        "An auditable installation contract with explicit platform and verification limits."
+      ],
+      "tags": [
+        "account",
+        "install",
+        "ownership",
         "guide"
       ]
     }
@@ -2962,6 +2998,11 @@
       "from": "policy-execution",
       "to": "sdlc",
       "label": "authorized PR workflow"
+    },
+    {
+      "from": "account-source",
+      "to": "account-installation-decision",
+      "label": "distribution design"
     }
   ]
 }

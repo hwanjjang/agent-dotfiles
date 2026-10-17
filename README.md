@@ -20,16 +20,18 @@ the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
-temporary project; account installation and end-to-end client behavior are not
-claimed. See [client verification](docs/client-verification.md) for exact limits,
+temporary project; isolated account installation/update/removal are implemented; end-to-end model
+behavior and authenticated MCP connections are not claimed. See [client verification](docs/client-verification.md) for exact limits,
 and browse [skills](skills/README.md), [policies](policies/README.md),
 [MCP templates](mcp/README.md), and [adoption records](docs/upstream/README.md).
 
 [Account source](account/README.md) adds a portable instruction entry point and
 selected planning hook runtime/templates. Communication and execution rules have
 one owner in `policies/`; system/Paseo skills and personal settings remain under
-their existing managers. This is a selective source import, not an account installer
-or an account replacement. See the [selection decision](docs/decisions/account-source-import.md).
+their existing managers. Use the [account guide](account/README.md) for preview,
+install, update, uninstall and guarded rollback on macOS/Linux/WSL. Codex and Claude
+Code are default; an installed Hermes is opt-in. See the [installation decision](docs/decisions/account-installation.md)
+and the earlier [source selection](docs/decisions/account-source-import.md).
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
@@ -67,13 +69,13 @@ account installation or MCP connectivity.
 agent-dotfiles/
 ├── AGENTS.md       # Instructions for maintaining this repository
 ├── CLAUDE.md       # Claude entry point to the same maintenance instructions
-├── account/        # Portable account entry point and inactive hook source/templates
+├── account/        # Account delivery guide, portable entry point and hook source/templates
 ├── docs/decisions/ # Researched repository design decisions
 ├── docs/map/       # Catalog data, viewer template, and generated interactive map
 ├── policies/       # Shared agent instructions and operating principles
 ├── skills/         # Reusable task workflows
 ├── mcp/            # Credential-free MCP configuration
-├── scripts/        # Repository maintenance tooling
+├── scripts/        # Maintenance and account delivery tooling
 ├── tests/          # Focused maintenance and content-tool checks
 ├── tools/          # External capability registry and prerequisites
 ├── README.md

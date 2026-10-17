@@ -1,7 +1,7 @@
 # Selected planning hook source
 
 Purpose: retain selected-plan recovery and progress reminders without duplicate
-project/account execution. These files are source assets, not active registrations.
+project/account execution. These files are source assets; the [account installer](../README.md) can deliver and register them on an explicitly selected account.
 The supplied account templates target POSIX Codex and Claude Code layouts. No
 Windows, Hermes or plugin-mode account integration is claimed.
 
@@ -22,8 +22,8 @@ The dispatcher is AK-authored MIT source, adapted with a fixed route allowlist,
 payload validation, effective project working directory and child exit propagation.
 
 `codex.example.json` and `claude.example.json` contain only proposed registrations.
-A future installer must merge the selected entries into the client's hook settings,
-resolve supported paths and interpreter, and remove only the replaced owned route.
+The installer merges selected entries into the client's hook settings, resolves
+the destination paths/interpreter, and removes only its owned route.
 Do not overwrite entire settings files or register both plugin and standalone hooks.
 The dispatcher suppresses the recognized project route only when its matcher
 covers the current invocation: session `source`, compaction `trigger`, or

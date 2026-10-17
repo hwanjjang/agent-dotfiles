@@ -2,7 +2,9 @@
 
 These are opt-in Claude Code `.mcp.json` fragments, based on the official client
 and server documentation checked on 2026-10-17. They are not a universal MCP
-configuration schema. Other clients need their own adapters and discovery checks.
+configuration schema. The [account installer](../account/README.md) also translates selected entries into
+Codex TOML and merges Claude user-scope entries. Hermes MCP is not supplied.
+Client discovery and connection checks remain separate.
 No server is enabled by this repository's root configuration.
 
 | Template | Transport and purpose | Requirements |
@@ -51,3 +53,7 @@ versions. Remote endpoints are provider-managed services, not commit-pinned bina
 
 See [client verification](../docs/client-verification.md) for scoped adoption
 checks and the distinction between discovery, authentication and actual operation.
+
+For account scope, use the installer's explicit `--mcp` selection instead of copying
+project JSON into user settings. It never expands or stores credential values,
+preserves unrelated entries, and rejects existing name conflicts.

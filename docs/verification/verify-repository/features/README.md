@@ -9,6 +9,7 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | catalog-search | Find a verification capability and recover from an empty search | Local HTML UI | [Search](catalog-search.md) |
 | catalog-source | Read usage and reach the corresponding maintained source | Local HTML UI and file links | [Usage and source](catalog-source.md) |
 | workflow-map | Follow SDLC stages and find cross-stage methods | Separate local HTML UI | [Workflow map](workflow-map.md) |
+| account-installation | Install, update, remove and recover owned account content | Python CLI / disposable accounts | [Account lifecycle](account-installation.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;
@@ -21,5 +22,5 @@ The separate workflow-map recipe covers its own theme, mobile layout, dialogs, c
 search; those checks do not certify the original catalog viewer.
 
 Unmapped for the original viewer: theme, zoom, keyboard navigation, responsive layouts, all filter
-combinations, PDF generation, installation, MCP and constituent skill behavior.
+combinations, PDF generation, native client activation, MCP and constituent skill behavior.
 These require their own checks when affected; this seed does not certify them.

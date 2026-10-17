@@ -25,10 +25,12 @@ its [source and reproduction steps](../manual/README.md) are maintained alongsid
 Lines highlight documented links for the selected node. They are navigation
 relationships, not runtime calls, mandatory execution order, or inferred impact.
 
-Account instruction and hook guides are mapped as available **source**. The
+The account installer and hook guides are mapped as available **source**. The
 communication/execution policies and review-runtime guide explain their triggers;
 the [selection decision](../decisions/account-source-import.md) records what was
-excluded. None of these entries claims an installed account configuration.
+excluded. The [distribution decision](../decisions/account-installation.md) explains
+portable installation and recovery. Availability does not claim installation on the
+reader's host.
 
 ## One map source, generated presentation
 

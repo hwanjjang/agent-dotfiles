@@ -40,7 +40,7 @@ claim every mapped item is installed or verified in each client.
 See the [screenshot walkthrough](../manual/workflow.pdf) for two user paths.
 
 The Anytime band also includes communication/execution policies and an **Account
-sources & runtime** group. Use it for instruction ownership, planning hook source
+setup & runtime** group. Use it for portable install/update/removal, ownership, planning hooks
 and reviewer launch diagnostics. These are supporting sources, not extra SDLC
 stages or installed account features. Their dialogs link to the authoritative
 guides; the account selection comparison is linked from the account guide.
