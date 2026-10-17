@@ -208,8 +208,12 @@ including whether `task_id` was omitted on the initial bind.
 and `symptom`; optional fields are `author` (opaque ID, default `user`),
 `correction`, `evidence_ids`, `contrary_evidence_ids`, `suspected_cause`,
 `confidence` (`unknown`, `low`, `medium`, `high`) and `revision_id`. Evidence IDs
-must belong to the selected revision. Without `revision_id`, the first submission
-binds the latest revision; retrying the same request keeps that original binding.
+must belong to the selected revision. Omitted or JSON `null` `revision_id` binds
+the latest revision on first submission; any supplied value must be a valid token
+and name an existing revision. Empty strings, booleans, numbers and containers
+are rejected. Retrying the same request keeps its original binding. A selected
+event may appear in both evidence lists when the user reports mixed observations;
+the store preserves that attribution without deciding which interpretation is right.
 `task-show --task <task-id>` returns private revisions and feedback, or `disabled`
 when absent, expired or revoked. Treat its output as private evidence, not a
 sanitized export.
@@ -218,22 +222,35 @@ Submitting feedback explicitly permits local storage of those supplied fields;
 it does not permit transcript reads, model transmission or publication. A failed
 tool event without a correction is `insufficient_claim_evidence`. A supplied
 correction is `reported_correction`, not a verified diagnosis. Cause/confidence
-remain separate from symptoms and contrary evidence. The library exposes
+remain separate from symptoms and contrary evidence. `author` is a caller-supplied
+opaque attribution, not an authenticated identity. The revision's registration IDs
+and epochs bind the selected observations to their consented project/client/profile/
+source; there is no separately verified feedback-author source. The library exposes
 `Store.bind_task`, `Store.add_feedback` and `Store.task`; write refusals raise
 `InvalidEvent` with fixed reasons, which the CLI converts to JSON rejection.
 
 Task records live under `tasks/<task-id>/<record-id>.json` in the same private
 store, with the existing guard and durable-write boundary. Each read and write
-rechecks all referenced grant epochs. Revoking or expiring **any** participating
-registration disables the entire composite task and purges its revisions and
-feedback, even when another registration remains active. The existing `prune`
-command completes interrupted deletion. Copied old-epoch records cannot restore
-access. Uncommitted task temporary files are removed during purge. There are no
+rechecks all referenced grant epochs. Revoking **any** participating registration
+disables the entire composite task and physically purges its revisions and feedback,
+even when another registration remains active. Expiry disables access immediately;
+physical deletion happens when `prune` runs. A later grant repeats cleanup for a
+previously revoked registration. The existing `prune` command also completes
+interrupted deletion. Copied old-epoch
+records cannot restore access. Uncommitted task temporary files are removed during
+purge. Corrupt or unreadable task entries have unknown lineage and are conservatively
+deleted, while valid unrelated active tasks remain. Cleanup unlinks symlinks without
+following their targets and discards the derived SQLite cache even if deletion is
+interrupted by an I/O failure. There are no
 retention holds or inferred task completion in this slice.
 
 Limits: 64 KiB CLI input, 8 KiB UTF-8 per text field, 16 selections and 128 distinct
 events per revision, 256 task directories, and at most 127 committed records per
-task. Selection and purge scan this bounded store; no large-ledger latency claim
+task. Each fully resolved stored task/feedback row must also fit 128 KiB of encoded
+JSON; an expanded row exceeding that bound is refused with `task_record_size` before
+publication. Unicode escaping and resolved event metadata count toward this limit,
+so valid individual field/count limits do not guarantee the combined row fits.
+Selection and purge scan this bounded store; no large-ledger latency claim
 is made. Task records are not included in the optional event SQLite index.
 
 ## Prepare and export a reviewed synthetic case

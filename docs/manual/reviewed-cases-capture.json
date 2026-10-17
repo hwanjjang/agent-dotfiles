@@ -39,5 +39,29 @@
     ],
     "change_scope": "Inherited native process-project consent check runs before hook input reads and ledger scans. Case preparation/review/export behavior is unchanged.",
     "result": "12 case tests, 75 observation tests, 27 installer tests, 54 account tests and 19 map tests passed; separate actual case CLI journey passed. No native/model run in this verification."
+  },
+  "parent_refresh_verification": {
+    "base_commit": "57173d8f18fdb861e167fe8139e2e6acb11666ef",
+    "merge_head_before_commit": "5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1",
+    "scope": "Inherited feedback cleanup/encoded-row/revision corrections merged while preserving reviewed-case prepare/review/export and export_new. Original screenshots remain historical; PDF text/captions explicitly identify this refresh and expiry/prune semantics.",
+    "source_sha256": {
+      "account/observation/store.py": "21bfc4f7104c165b5ae619d1261e84bd350e07cf8491f590cc210fe707a9fd25",
+      "account/observation/files.py": "135f1cb2c7e53ed3c2467f1212b96b8a3c3dfa883b735adf1f2957c56938e0ed",
+      "account/observation/cases.py": "2dedc5d2abfe7cdf3f6b6c054b534bf24bee0624c72ed46365a46ffa6322d095",
+      "scripts/improvement/cases.py": "8960985697e67324a1fd6abb7b905d7b17470e05c599eb55555e4169d8846add",
+      "tests/fixtures/improvement/cases/development.json": "3a2c47a3fea11e4974239a6a9d97002384bf11c1e25a3a2646f08265ad032a5d",
+      "docs/map/catalog.json": "bdc1a5acd7aec825b1959224f5c6cc2e38fb6c964a3046d6fd4cdf5c2d67bd43",
+      "docs/map/workflow.json": "95c791e056b4691e94859b2398de368e5441547e895e12e710bb7015fe480634"
+    },
+    "changed_capture_source": [
+      "account/observation/store.py",
+      "account/observation/files.py",
+      "docs/map/catalog.json"
+    ],
+    "manual_sha256": {
+      "reviewed-cases.json": "2c675fbf246accac687a97a8b41ea0cd1e320f13362118707be10696250515e4",
+      "reviewed-cases.pdf": "2553d25dda66ad8e34df179d49aca9ead183c4e3740381d94e20499f0932e733"
+    },
+    "verification": "193 focused tests and separate actual bilingual case CLI journey passed. Fresh catalog/workflow browser verifiers passed against current sources. Both revised PDF pages rendered and personally viewed; no new screenshots/native/model run claimed."
   }
 }

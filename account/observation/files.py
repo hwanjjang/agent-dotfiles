@@ -183,14 +183,37 @@ class Files:
             pass
 
     def clear(self, path):
-        """Flat owned record directory only; unlink links without traversing them."""
+        """Remove an owned subtree by descriptors, including unsafe leaf links.
+
+        Cleanup must not depend on readable JSON or private modes. Directory
+        descriptors and O_NOFOLLOW keep links from redirecting deletion outside
+        the owned tree; ordinary reads still enforce the stricter private modes.
+        """
+        if not path or any(not isinstance(name, str) or not name or '/' in name
+                           or name in {'.', '..'} for name in path):
+            raise UnsafeStore('unsafe_store_path')
+
+        def remove(parent, name):
+            try:
+                info = os.stat(name, dir_fd=parent, follow_symlinks=False)
+                if stat.S_ISDIR(info.st_mode):
+                    child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                    dir_fd=parent)
+                    try:
+                        for entry in os.listdir(child):
+                            remove(child, entry)
+                        os.fsync(child)
+                    finally:
+                        os.close(child)
+                    os.rmdir(name, dir_fd=parent)
+                else:
+                    os.unlink(name, dir_fd=parent)
+                os.fsync(parent)
+            except FileNotFoundError:
+                pass
+
         try:
             with self.directory(path[:-1]) as parent:
-                with self.directory(path) as child:
-                    for name in os.listdir(child):
-                        os.unlink(name, dir_fd=child)
-                    os.fsync(child)
-                os.rmdir(path[-1], dir_fd=parent)
-                os.fsync(parent)
+                remove(parent, path[-1])
         except FileNotFoundError:
             pass
