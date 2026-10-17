@@ -4,29 +4,29 @@
   "status": "hash_bound_candidate",
   "scenario": "promotion-recommendation",
   "source_sha256": {
-    "scripts/improvement/promotion.py": "057cc842a3a932758c071a7b5c66a104402880f7719dd5c6b31cbc5aba253295",
+    "scripts/improvement/promotion.py": "8b4bd956b92fc70cb450f687c35ec4e101116ab2156ffae8454480102b39c42f",
     "scripts/improvement/evaluation.py": "204cbc967e8b0ee71960a99bd4db00bc7fa3552f71a8688fc961614010ca8d7c",
-    "docs/map/catalog.json": "9c35b5202e4c9cd4db878426668fa6bbced7c9b1ba05b9b5b93125c39838adf5",
-    "docs/map/index.html": "02d64da4c5cfbf9440e09c75e7a8e425a3a6d29fd7a86e972b9f455c08583437",
-    "docs/map/workflow.html": "7c795f82985ef81270a4c812d646e3ebb48b58e8a177d3a83c590f978db0b35e",
-    "docs/decisions/promotion-recommendations.md": "2e5cd9a024666e51494e5531cbc5c10f7df4797d2748a2f8739f51b57672cb77",
-    "docs/verification/verify-repository/features/promotion-recommendation.md": "6745f3ee6af263728c2c07664ce90fa0742176874b1b99f7c42fe60c0480dd47",
-    "docs/manual/promotion.json": "6396b64229c73d6081bb366e3800be741202baddb673f248fd4c7ed01af577fa",
+    "docs/map/catalog.json": "057e49600265d787b88d85dc4f222ae32cdbbad0a02b78a8de0b7d2037ba5946",
+    "docs/map/index.html": "455665087b730a3c0e2819d78c01ffd9aa2c63dd96cdfc223fbf0bce17b1ec9b",
+    "docs/map/workflow.html": "37bfc7e60fdc7eed7c7ea2a06bc1517c0f6857223a01dfc0dc1439b560cc99a2",
+    "docs/decisions/promotion-recommendations.md": "58e7b4e2ee6a884ac4c16fe356d89feb2c3bc60b8b0baddc9c4178ec518f7c13",
+    "docs/verification/verify-repository/features/promotion-recommendation.md": "600943d8ca157841233f0bbc7dbdd58d1f94038a5f8092eb2b9e9b3c30734d5a",
+    "docs/manual/promotion.json": "33beca8eae87e3608bf9f5dbfb4bad95e242579e6d313ea4726d63aaa482e4b3",
     "docs/map/workflow.json": "ea27feb2d2b3daac82534945ec8037467adfd1a16715af0fa2bb7e8f87f7cb51",
     "docs/verification/verify-repository/scripts/check-workflow.cjs": "92c74c4314d6adb89fdb0047cf6948e1abcf810c3c06a267d1672dc6c38f2998",
     "docs/decisions/evaluation-accounting.md": "71191b929650e6b4c00bad46bec960dfb1a26ea271c5022eee354494fcacd831"
   },
   "images": {
-    "promotion-map.png": "6a81125ea44eef44d25db3f34ed257e377fc54390e4f05030d279e45e9523e65",
-    "promotion-result.png": "b502c5433e31609cd9ec4fa215ea57c89546c7764abaedb28ac699eff0c3eeca"
+    "promotion-map.png": "cce5f594a1a41f4dcde4abe2c852a46ec35e285f0202c7b0bae1f2dbbf473d45",
+    "promotion-result.png": "633198fa12d89f99fe719bad7384655515c4217cc2328543caaf8863300504df"
   },
-  "pdf_sha256": "3bf945bb9684a2d12a3211be5c488670988a5cd6e6a7c833814cc66610e9ee70",
+  "pdf_sha256": "978db4b70f4a90558b7530de62731dc3e39c36450f5dbab2a43ca732574550db",
   "pdf_pages": 2,
   "pdf_text_checked": true,
   "all_rendered_pages_visually_checked": true,
   "notes": [
     "Actual local catalog screenshot and browser-rendered actual synthetic CLI output; no native model execution.",
-    "Both freshly rendered PDF pages personally visually inspected after parent refresh: readable content, captions and pagination; no private material.",
+    "Both freshly rendered PDF pages personally visually inspected after per-arm critical and CLI-contract corrections: readable content, captions and pagination; no private material.",
     "Positive arithmetic remains operationally inconclusive; external unmerged PR35 producer dependency remains explicit, with no source delivery or holdout qualification."
   ]
 }

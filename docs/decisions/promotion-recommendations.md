@@ -33,6 +33,24 @@ land that producer or complete its integration prerequisite. It consumes supplie
 development evidence only; see the linked contract for the pinned source revision
 and compatibility limits.
 
+## CLI refusal contract
+
+For the valid `recommend` subcommand, JSON parsing, input over 16 MiB, duplicate
+keys, non-finite numbers, or missing/extra top-level fields produce
+`{"status":"rejected","reason":"invalid_gate_input"}` on stdout with exit code 1.
+Once the five top-level fields are accepted, nested invalid evidence can instead
+produce a full recommendation with `recommendation: reject`,
+`reasons: ["invalid_gate_input"]`, digests and false authority flags, with exit code
+0. A successful CLI process therefore does not mean accepted evidence: inspect
+`recommendation` and `reasons`. Valid but stale, inconsistent or failed-rule inputs
+also return their full rejection recommendation with exit code 0. Command usage
+errors are handled separately by the argument parser (exit code 2).
+
+The actual smoke compares only the top-level files in its disposable working
+directory before and after the CLI journey. It does not prove absence of writes
+throughout the repository or home directory. The broader no-merge/install/model
+behavior is supported by source inspection, not by that cwd snapshot alone.
+
 ## Predeclared arithmetic rules
 
 Freeze one rule name in the experiment's `promotion_rule` before trials:
@@ -42,11 +60,15 @@ Freeze one rule name in the experiment's `promotion_rule` before trials:
 - `equal_quality_lower_tokens_v1`: candidate has at least as many passes, strictly
   lower total tokens, and each case/counterpart stays within the regression margin.
 
-Both rules reject observed critical violations and require complete paired trial
+Both rules reject observed **candidate-arm** critical violations and require complete paired trial
 and primary-metric coverage, qualified deterministic graders, known token usage
 within the frozen token ceiling, and known aggregate trial latency within the
 frozen seconds ceiling. The margin applies per case variant as a proportion of
 scheduled repetitions, so improvements elsewhere cannot cancel a local regression.
+The `rule_result.critical_violations_by_arm` field exposes separate baseline and
+candidate counts, summed from each arm's trial records. Baseline failures remain
+visible diagnostics; they do not reject a candidate that fixes those defects.
+The inherited evaluator's report-wide total remains unchanged.
 These are declared small-sample diagnostic rules, not statistical confidence or
 non-inferiority tests. Introduce a new versioned rule if their meaning changes.
 
@@ -83,8 +105,8 @@ satisfies it. A self-described OS receipt, a mock pilot and a rehashed boolean
 cannot establish trusted live provenance. No input flag disables this boundary.
 
 Keep original evidence when regrading. A changed evaluator requires a new frozen
-identity and a separate report linked to its predecessor. This program only reads
-JSON and its own source; it never runs model calls, fixture commands, Git mutations,
+identity and a separate report linked to its predecessor. This program reads
+JSON stdin plus its own and the evaluator's source bytes; it never runs model calls, fixture commands, Git mutations,
 installer operations or account changes. Redirect output to a new local artifact
 and attach the exact source diff and evidence references to the repository's
 existing review workflow. A recommendation does not authorize source integration

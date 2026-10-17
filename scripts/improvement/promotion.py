@@ -28,7 +28,9 @@ arithmetic result has no operational authority and cannot be used as a receipt.
     rejected, missing = [], []
     if spec['promotion_rule'] not in RULES:
         missing.append('unsupported_rule')
-    if report['critical_violations']:
+    critical_by_arm = {arm: sum(t['critical_violations'] for t in report['trials']
+                                if t['arm'] == arm) for arm in ev.ARMS}
+    if critical_by_arm['candidate']:
         rejected.append('critical_violation')
     if any(report['counts'][v] for v in ('blocked', 'inconclusive')) or report['coverage']['unassigned']:
         missing.append('trial_coverage_incomplete')
@@ -83,6 +85,7 @@ arithmetic result has no operational authority and cannot be used as a receipt.
             'verdict': 'reject' if rejected else 'inconclusive' if missing else 'eligible',
             'reasons': sorted(set(rejected + missing)), 'primary_metric': metric,
             'observed_pass_gain': benefit, 'arms': arms, 'arm_tokens': arm_tokens,
+            'critical_violations_by_arm': critical_by_arm,
             'promotion_eligible': False}
 
 

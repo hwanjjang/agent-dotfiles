@@ -11,10 +11,10 @@
     },
     {
       "title": "Read the limits before acting",
-      "instruction": "Inspect recommendation and reasons before aggregate metrics. Missing evidence remains inconclusive; forged/stale evidence or critical failures reject. Ordinary source review is still required.",
+      "instruction": "Inspect recommendation, rule_result reasons and critical_violations_by_arm. Baseline-only critical defects do not reject a successful fix; candidate critical failures reject even with aggregate gain. Exit 0 alone is not eligibility; follow the source for both refusal shapes.",
       "screenshot": "promotion-result.png",
       "caption": "Browser-rendered summary of the actual synthetic CLI result, not a terminal capture.",
-      "expected": "Even when synthetic arithmetic is eligible, the recommendation is inconclusive. Promotion, merge and installation remain unauthorized."
+      "expected": "The fixture exposes four baseline critical violations and zero candidate violations. Arithmetic is eligible, but the recommendation remains inconclusive; promotion, merge and installation stay unauthorized."
     }
   ]
 }
