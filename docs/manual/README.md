@@ -45,3 +45,24 @@ python3 skills/screenshot-manual/scripts/render_pages.py .local/workflow-manual.
 Re-capture the actual dialogs and inspect every rendered page after a relevant UI
 change. The [workflow-map recipe](../verification/verify-repository/features/workflow-map.md)
 owns browser expectations; this walkthrough explains user actions.
+
+The account-source additions keep the two captured skill dialogs and their actions
+unchanged, so these screenshots retain their recorded historical digest. For the
+new Anytime group and communication/execution policies, use the current
+[workflow guide](../map/workflow.md) and [account guide](../../account/README.md).
+The maintained browser recipe checks the new entries separately; this PDF is not
+an account installation manual.
+
+## Account source walkthrough
+
+The [account source walkthrough](account-source.pdf) covers the new Anytime
+entries without implying installation. Its [editable source](account-source.json),
+[ownership capture](account-source.png) and [hook capture](account-hooks.png)
+show the actual expanded dialogs from workflow digest `23463c35f12e`, captured
+on 2026-10-17 in isolated Chrome at 2x device scale. The maintained browser
+recipe verifies their source links and source-only boundaries.
+
+Both PDF pages were rendered with PDFium and visually checked for readable text,
+complete screenshots, margins and captions. Text and page count were checked with
+pypdf. Regenerate with the screenshot-manual scripts above, substituting
+`account-source.json`; recapture when either documented dialog changes.

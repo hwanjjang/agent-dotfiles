@@ -20,6 +20,13 @@ these files are templates and are not activated by this checkout.
 
 ## Import decisions
 
+- [Account source selection](../decisions/account-source-import.md): compare all
+  three reference collections, retain small communication/execution policies and
+  useful review continuity, and import only the existing planning pin's selected
+  POSIX runtime. [Runtime provenance](../../account/hooks/planning-with-files/provenance.json)
+  records exact source paths, hashes and license. No account installer, generic
+  router, private settings or personal permission exceptions are imported.
+
 - pstack: port investigation, candidate selection, architecture, and scoped workers;
   retain design resources. Replace Cursor-specific runtime assumptions with declared
   host capabilities. Carry evidence and behavioral-test principles as policies.

@@ -16,7 +16,7 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 23 skill packages, eight portable policies,
+**Status:** Initial content collection: 23 skill packages, ten portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
@@ -24,6 +24,12 @@ temporary project; account installation and end-to-end client behavior are not
 claimed. See [client verification](docs/client-verification.md) for exact limits,
 and browse [skills](skills/README.md), [policies](policies/README.md),
 [MCP templates](mcp/README.md), and [adoption records](docs/upstream/README.md).
+
+[Account source](account/README.md) adds a portable instruction entry point and
+selected planning hook runtime/templates. Communication and execution rules have
+one owner in `policies/`; system/Paseo skills and personal settings remain under
+their existing managers. This is a selective source import, not an account installer
+or an account replacement. See the [selection decision](docs/decisions/account-source-import.md).
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
@@ -61,6 +67,7 @@ account installation or MCP connectivity.
 agent-dotfiles/
 ├── AGENTS.md       # Instructions for maintaining this repository
 ├── CLAUDE.md       # Claude entry point to the same maintenance instructions
+├── account/        # Portable account entry point and inactive hook source/templates
 ├── docs/decisions/ # Researched repository design decisions
 ├── docs/map/       # Catalog data, viewer template, and generated interactive map
 ├── policies/       # Shared agent instructions and operating principles

@@ -1043,7 +1043,8 @@
         ],
         "adaptation_notes": [
           "The adopted package retains its upstream method. Its notebook complements task decomposition; it does not create another set of PR boundaries or replace tracker-owned status.",
-          "Host hooks, plugin commands and gated modes are installation-dependent. A tool subprocess setting PLAN_ID does not bind an already-running parent host’s hooks."
+          "Host hooks, plugin commands and gated modes are installation-dependent. A tool subprocess setting PLAN_ID does not bind an already-running parent host’s hooks.",
+          "Selected pinned POSIX account hook sources are provided separately with inactive templates; no account installer or native activation is claimed."
         ],
         "calls": [],
         "sources": [
@@ -1054,6 +1055,10 @@
           {
             "label": "Origin, adaptations and verification limits",
             "source": "skills/planning-with-files/provenance.json"
+          },
+          {
+            "label": "Selected hook source and delivery boundaries",
+            "source": "account/hooks/README.md"
           }
         ]
       }
@@ -1184,7 +1189,8 @@
         "adaptation_notes": [
           "AK owns orchestration; focused skills own their methods and can run independently. Non-PR work receives no new lifecycle unless requested.",
           "The PR implementation route has no separate independent-verification stage. Required and additional roles use one assignment/result when their reviewer matches.",
-          "Three-provider design is an AK preference when available and authorized. Host capabilities, source delivery, actual execution and deployment are distinct claims."
+          "Three-provider design is an AK preference when available and authorized. Host capabilities, source delivery, actual execution and deployment are distinct claims.",
+          "Reuse evidenced reviewer launch configurations across corrections; diagnose wrapper errors before declaring a provider unavailable. Account-specific exceptions do not replace required gates."
         ],
         "calls": [
           "planning-with-files",
@@ -1220,6 +1226,10 @@
           {
             "label": "Verification and review contract",
             "source": "skills/sdlc/references/verification.md"
+          },
+          {
+            "label": "Canonical host adapter and runtime contract",
+            "source": "skills/sdlc/references/host-adapters.md"
           }
         ]
       }
@@ -2351,6 +2361,150 @@
         "research",
         "ssot"
       ]
+    },
+    {
+      "id": "policy-communication",
+      "title": "Communication and writing",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/communication.md",
+      "summary": "Write clear, faithful explanations and artifacts with destination-aware language defaults.",
+      "when": [
+        "Writing a reply, issue, PR, document or UI copy."
+      ],
+      "usage": "Follow the communication policy and the destination format; use the linked issue or PR method when applicable.",
+      "behavior": [
+        "Preserve meaning and uncertainty while removing unnecessary prose."
+      ],
+      "outputs": [
+        "Clear communication that preserves the intended conditions and technical terms."
+      ],
+      "tags": [
+        "account",
+        "policy-communication",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-execution",
+      "title": "Task execution and continuity",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/execution.md",
+      "summary": "Choose proportionate workflows and preserve the task state needed to resume.",
+      "when": [
+        "Starting multi-stage work, handing off, or resuming an existing task."
+      ],
+      "usage": "Use execution policy for routing and continuity; the selected skills own their methods.",
+      "behavior": [
+        "Keep one task record, link existing artifacts and compare the resumed worktree with the recorded baseline."
+      ],
+      "outputs": [
+        "An accurate next action and reusable evidence without a second lifecycle."
+      ],
+      "tags": [
+        "account",
+        "policy-execution",
+        "policy"
+      ]
+    },
+    {
+      "id": "account-source",
+      "title": "Account source and ownership",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "account/README.md",
+      "summary": "Shared instruction entry point and replacement boundaries; no installer or account changes.",
+      "when": [
+        "Preparing an account migration or identifying which manager owns a setting."
+      ],
+      "usage": "Read account/instructions.md and the source guide; preserve the full bundle layout and existing host-owned capabilities.",
+      "behavior": [
+        "Keep portable source separate from private settings, Paseo skills, app plugins and installation receipts."
+      ],
+      "outputs": [
+        "A scoped delivery boundary; source import alone activates nothing."
+      ],
+      "tags": [
+        "account",
+        "account-source",
+        "guide"
+      ]
+    },
+    {
+      "id": "planning-hooks",
+      "title": "Planning hook runtime",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "account/hooks/README.md",
+      "summary": "Selected pinned POSIX Codex and Claude planning hooks, with inactive templates and project-route precedence.",
+      "when": [
+        "Preparing or verifying lifecycle integration for planning-with-files."
+      ],
+      "usage": "Read the hook source guide and run isolated tests before any authorized target-client activation.",
+      "behavior": [
+        "Restore the selected plan, honor opt-out and avoid a recognized duplicate project route."
+      ],
+      "outputs": [
+        "Verified source/runtime assets; native account activation remains a separate check."
+      ],
+      "tags": [
+        "account",
+        "planning-hooks",
+        "guide"
+      ]
+    },
+    {
+      "id": "reviewer-runtime",
+      "title": "Reviewer runtime continuity",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "skills/sdlc/references/host-adapters.md",
+      "summary": "Reuse evidenced reviewer launch routes and distinguish configuration diagnostics from provider failure.",
+      "when": [
+        "A review resumes after correction or a launcher cannot represent a setting."
+      ],
+      "usage": "Use the incomplete-mode-discovery section of the existing SDLC host adapter contract; retain all required review gates.",
+      "behavior": [
+        "Keep actual account settings local and classify launch, quota and isolation failures honestly."
+      ],
+      "outputs": [
+        "A reusable supported route or a concrete review gap, without duplicate reviewers."
+      ],
+      "tags": [
+        "account",
+        "reviewer-runtime",
+        "guide"
+      ]
+    },
+    {
+      "id": "account-import-decision",
+      "title": "Account source selection",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-source-import.md",
+      "summary": "Compare pstack, Matt and Addy before selectively retaining useful account behavior.",
+      "when": [
+        "Reviewing why account source was imported or why an old component was excluded."
+      ],
+      "usage": "Read the pinned comparison, community evidence and verification limits.",
+      "behavior": [
+        "Select by task fit and tested behavior; do not fill every missing capability."
+      ],
+      "outputs": [
+        "An auditable selection without a blanket superiority claim."
+      ],
+      "tags": [
+        "account",
+        "account-import-decision",
+        "guide"
+      ]
     }
   ],
   "relationships": [
@@ -2768,6 +2922,46 @@
       "from": "overview",
       "to": "to-spec",
       "label": "Introduces standalone specification"
+    },
+    {
+      "from": "account-source",
+      "to": "policy-communication",
+      "label": "loads"
+    },
+    {
+      "from": "account-source",
+      "to": "policy-execution",
+      "label": "loads"
+    },
+    {
+      "from": "account-source",
+      "to": "planning-hooks",
+      "label": "runtime source"
+    },
+    {
+      "from": "account-source",
+      "to": "account-import-decision",
+      "label": "selection evidence"
+    },
+    {
+      "from": "planning-hooks",
+      "to": "planning-with-files",
+      "label": "uses pinned skill"
+    },
+    {
+      "from": "sdlc",
+      "to": "reviewer-runtime",
+      "label": "launch continuity"
+    },
+    {
+      "from": "policy-execution",
+      "to": "planning-with-files",
+      "label": "task memory"
+    },
+    {
+      "from": "policy-execution",
+      "to": "sdlc",
+      "label": "authorized PR workflow"
     }
   ]
 }

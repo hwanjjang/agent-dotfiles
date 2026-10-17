@@ -8,7 +8,8 @@
   "adaptations": [],
   "skill_dependencies": [],
   "runtime_requirements": [
-    "Shell/Python as documented; lifecycle hooks require explicit host setup."
+    "Shell/Python as documented; lifecycle hooks require explicit host setup.",
+    "Selected pinned POSIX hook sources and inactive templates are in account/hooks/README.md; no account installer or native activation is claimed."
   ],
   "selection": "Retained the previously selected AK baseline pin; newer upstream revisions were observed but not upgraded in this import.",
   "validation": "Package imported; focused checks pending."

@@ -14,7 +14,8 @@
     "Extracted spec method/content to to-spec; routing, workflow, template and normative policy link to it without a second checklist. Stage state and receipt schema unchanged.",
     "Made the PR workflow policy authoritative over the historical one-task/one-PR equation.",
     "AK 2026-10-17 amendment: one assignment/result/publication for matching required and additional reviewers; shared high default with explicit effort precedence and provider-checked receipt support.",
-    "Required and additional reviewers apply the existing code-review-and-quality method inside their assigned context through the canonical skill-routing table; no second review orchestrator."
+    "Required and additional reviewers apply the existing code-review-and-quality method inside their assigned context through the canonical skill-routing table; no second review orchestrator.",
+    "Consolidated useful account runtime continuity into the existing host adapter contract; no second runtime policy, private authorization or launcher settings imported."
   ],
   "skill_dependencies": [
     "planning-with-files",

@@ -192,7 +192,10 @@
       "local_skill_sha256": "eee1b89110b84ed9500f1bfdc379daa63d11554aae3bcd28ffa2038bd8511357",
       "adopted_upstream": "https://github.com/OthmanAdi/planning-with-files",
       "adopted_revision": "dab9d16fbd9314448b319d112e99f497d7638d89",
-      "adopted_path": ".agents/skills/planning-with-files"
+      "adopted_path": ".agents/skills/planning-with-files",
+      "supporting_sources": {
+        "account/hooks/README.md": "0c55f976f12b467ffa8518ad047aab733c069103edd04a363d776dab8a8414d8"
+      }
     },
     {
       "id": "screenshot-manual",
@@ -208,7 +211,9 @@
       "local_skill_sha256": "e337895e585a7fab41d24f4fd342062ca95918cd7072449f1937c35822bb2ef1",
       "supporting_sources": {
         "skills/sdlc/references/skill-routing.md": "e37e1e49784a7b14c5413da4ec84e4e385b80cfddfc0b10c80f55c983fb4d2b6",
-        "skills/sdlc/references/verification.md": "17179cf97c068699e93cbcc7f822157bfc26515b452099795315a5dcba4dfe8d"
+        "skills/sdlc/references/verification.md": "17179cf97c068699e93cbcc7f822157bfc26515b452099795315a5dcba4dfe8d",
+        "skills/sdlc/references/optional-reviewers.md": "283de4dc04d94d0b7e31af9e27ffba08f898ef2ce8d75604805addfce70c8152",
+        "skills/sdlc/references/host-adapters.md": "87dc354f87537b2b2c56a72db48b27e247c56838199b51e28be1350aab33364b"
       }
     }
   ]

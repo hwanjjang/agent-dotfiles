@@ -27,7 +27,7 @@ At review creation:
 4. Before dispatch, reconcile the roster using [one assignment per reviewer](optional-reviewers.md#one-assignment-per-reviewer), including any required fallback. Resolve and observe the selected effort under that contract and the intent authority; the ordinary default remains `medium`. Permission-mode configuration is optional. Prefer a supported session setting within existing permissions; if it is omitted, unsupported, mismatched or fails, continue with a verified read-only boundary as described below. Do not change global settings or escalate access to satisfy a mode label. Keep the author branch read-only and generated checks isolated.
 5. Inspect resolved settings, execute the reviewer and preserve a receipt containing author/reviewer providers and contexts, exact model, effort, mode, selection source/timestamp, host/tool configuration, isolation, base/head, actual review record ID, scope, findings and verdict.
 
-A personal/team account label is not a model provider. Resolve the executing provider and model even when a named profile is used. If required selection/execution or a required check cannot be performed, retain the exact gap and try the next reviewer. Permit the author provider only after both earlier alternate-provider reviewers cannot proceed. Never label the builder context independent or silently weaken required configuration. Pin verified settings for the correction cycle; recheck availability and record changes before replacement execution.
+A personal/team account label is not a model provider. Resolve the executing provider and model even when a named profile is used. If required selection/execution or a required check cannot be performed, retain the exact gap and try the next reviewer. Permit the author provider only after both earlier alternate-provider reviewers cannot proceed. Never label the builder context independent or silently weaken required configuration.
 
 ## Read-only review with optional mode settings
 
@@ -38,6 +38,19 @@ Verify the review boundary before dispatch using supported read-only tool restri
 New configuration receipts use `read_only_verified: true` plus nonempty `read_only_evidence` referencing the observed boundary. Record `requested_mode`, observed `mode` and `mode_verified` honestly; modes may be omitted/null/default, and an unverified mode stays unverified. A mode-setting error is diagnostic, not an `unavailable_reason`. Real authentication/quota/launch failures and inability to perform required checks still advance the existing fallback chain.
 
 ## Incomplete mode discovery
+
+An empty wrapper mode catalog or inheritance error is a configuration diagnostic,
+not proof that its provider is unavailable. Reuse an observed working route through
+corrections; refresh when the host, launcher, model, account, restrictions or an
+actual execution failure changes that evidence. Missing reviewer self-observation
+does not invalidate independently evidenced host settings. Record requested,
+host-observed and self-reported values separately; unknown values stay unknown.
+
+Personal launcher exceptions stay in local authorization records. They do not
+establish required/shared-review eligibility or override host/repository limits.
+After an automatic approval rejection, retain its reason and retry only with new
+trusted evidence or a narrower authorized action; changing tools does not bypass
+that rejection. An unresolved refusal is a reported review gap.
 
 Do not spend repeated attempts obtaining an auto/full label. Inspect the native contract only as needed to establish the read-only boundary, then launch a bounded review with existing permissions. For example Grok may continue with its observed default mode and native Read/Grep/Glob-only tools; a Gemini wrapper that only exposes bypass permissions should be replaced by an existing native read-only/plan launcher when available, rather than enabling bypass.
 

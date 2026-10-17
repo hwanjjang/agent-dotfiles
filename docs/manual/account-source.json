@@ -1,0 +1,20 @@
+{
+  "title": "Inspect the account sources before delivery",
+  "scenario": "Scenario: workflow-map / account sources. Open docs/map/workflow.html locally. This guide explains the source inventory; no installer or active account configuration is supplied.",
+  "steps": [
+    {
+      "title": "Check ownership and replacement boundaries",
+      "instruction": "Find Account sources & runtime in the Anytime band, or search for account-source. Open the account-source node and expand How it works and Sources.",
+      "screenshot": "account-source.png",
+      "caption": "The actual account-source dialog with its source guide link.",
+      "expected": "Follow account/README.md to distinguish shared source from preserved Paseo skills, host plugins and private settings. Reading or importing source activates nothing."
+    },
+    {
+      "title": "Inspect the selected planning runtime",
+      "instruction": "Close the dialog with Escape. Open planning-hooks in the same Anytime group. Expand How it works and Sources, then follow account/hooks/README.md.",
+      "screenshot": "account-hooks.png",
+      "caption": "The actual planning-hooks dialog describes the selected source and verification boundary.",
+      "expected": "The guide identifies runtime files, proposed registrations, prerequisites and isolated checks. Native discovery, event execution and duplicate-route checks remain necessary before any separately authorized account activation."
+    }
+  ]
+}
