@@ -1,6 +1,9 @@
 """Native callback recovery and bounded delivery attribution in disposable homes."""
 import io
 import json
+import subprocess
+import sys
+import time
 import tempfile
 import unittest
 from pathlib import Path
@@ -123,6 +126,85 @@ class CapacityTests(unittest.TestCase):
             self.assertEqual(self.capture(2), {'status':'rejected','reason':'store_capacity'})
             self.assertEqual(self.capture()['status'],'duplicate')
         self.assertEqual(len(self.store.events(self.rid)),1)
+
+
+class ProcessConcurrencyTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.home = Path(self.temp.name).resolve(); self.project = self.home/'project'; self.project.mkdir()
+        self.store = Store(self.home)
+        self.grant = self.store.grant(self.project, client='codex', source='codex-hooks-v1')
+        self.root = Path(__file__).resolve().parents[1]
+        self.processes = []; self.addCleanup(self.cleanup_processes)
+
+    def cleanup_processes(self):
+        for process in self.processes:
+            if process.poll() is None:
+                process.kill(); process.wait(timeout=5)
+            for stream in (process.stdin, process.stdout, process.stderr):
+                if stream is not None: stream.close()
+
+    def process(self, body, *args):
+        process = subprocess.Popen([sys.executable, '-c',
+            "import sys; sys.path.insert(0,sys.argv[1]); " + body,
+            str(self.root), str(self.home), self.grant['registration_id'], self.grant['epoch'], *args],
+            cwd=self.project, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.processes.append(process); return process
+
+    def capture_code(self):
+        return ("import io,json; from pathlib import Path; from account.observation.store import Store; "
+                "payload=json.dumps(dict(cwd=str(Path.cwd()),session_id='concurrent',turn_id='turn',"
+                "hook_event_name='PostToolUse',tool_name='Bash',tool_use_id='same')).encode(); "
+                "print(json.dumps(Store(sys.argv[2]).capture_native(sys.argv[3],sys.argv[4],io.BytesIO(payload))))")
+
+    def collect(self, process):
+        out, err = process.communicate(timeout=5)
+        self.assertEqual(process.returncode, 0, err); self.assertEqual(err,b'')
+        return json.loads(out)
+
+    def wait_file(self, path):
+        deadline = time.monotonic()+3
+        while not path.exists() and time.monotonic()<deadline: time.sleep(.005)
+        self.assertTrue(path.exists(), 'bounded subprocess rendezvous')
+
+    def test_concurrent_process_stable_id_records_once(self):
+        processes = [self.process(self.capture_code()) for _ in range(8)]
+        results = [self.collect(p)['status'] for p in processes]
+        self.assertEqual(results.count('recorded'), 1)
+        self.assertEqual(results.count('duplicate'), 7)
+        self.assertEqual(len(self.store.events(self.grant['registration_id'])), 1)
+
+    def test_revoke_during_inflight_capture_purges_and_prevents_post_tombstone_records(self):
+        ready, release, revoking = [self.home/name for name in ('ready','release','revoking')]
+        gate = """
+import time
+from pathlib import Path
+from account.observation.files import Files
+original = Files.write
+def paused(files, path, value):
+ if path[0] == 'records':
+  Path(sys.argv[5]).touch()
+  deadline=time.monotonic()+3
+  while not Path(sys.argv[6]).exists():
+   if time.monotonic()>deadline: raise TimeoutError('rendezvous expired')
+   time.sleep(.005)
+ return original(files,path,value)
+Files.write=paused
+"""
+        capture = self.process(gate+self.capture_code(), str(ready), str(release))
+        self.wait_file(ready)
+        revoke = self.process("import json; from pathlib import Path; from account.observation.store import Store; "
+                              "Path(sys.argv[5]).touch(); print(json.dumps(Store(sys.argv[2]).revoke(sys.argv[3])))", str(revoking))
+        self.wait_file(revoking)
+        self.assertIsNone(capture.poll()); release.touch()
+        burst = [self.process(self.capture_code()) for _ in range(4)]
+        self.assertEqual(self.collect(capture)['status'], 'recorded')
+        self.assertEqual(self.collect(revoke)['status'], 'revoked')
+        for process in burst: self.assertIn(self.collect(process)['status'], ('recorded','duplicate','disabled'))
+        self.assertEqual(self.store.events(self.grant['registration_id']), [])
+        self.assertIsNone(self.store.registration(self.grant['registration_id']))
+        self.assertEqual(self.collect(self.process(self.capture_code()))['status'], 'disabled')
+        self.assertEqual(self.store.events(self.grant['registration_id']), [])
 
 
 class AttributionTests(unittest.TestCase):

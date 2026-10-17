@@ -49,7 +49,9 @@ rewriting of valid grant/ledger files by the account owner is not a supported
 recovery procedure; restoring an old grant alone can invalidate sequence history.
 The optimization does not claim tamper-proof storage or hardware power-loss safety.
 
-The hard resource ceiling is 16,383 records per registration. Filename enumeration
+The native hard resource ceiling is 16,383 records per registration. Synthetic
+capture/import registrations keep the earlier 4,096-entry read bound and
+4,095-record write ceiling; their full-ledger scan is not benchmarked here. Filename enumeration
 near the ceiling is still O(n), and mutations still serialize on the store guard. The measured
 10,000-event workload is a qualification point, not a guarantee for every workload
 up to the ceiling. Pending files consume capacity conservatively.
@@ -110,25 +112,30 @@ attempt timed out or returned malformed neutral output.
 
 | Measurement | Final frozen run |
 | --- | ---: |
-| Capture wall time | 89.57 seconds |
-| Capture throughput | 111.65 callbacks/second |
-| Median callback latency | 33.22 ms |
-| p95 callback latency | 48.04 ms |
-| Maximum callback latency | 105.79 ms |
-| Last 1,000 callbacks p95 | 47.65 ms |
-| Twenty replay callbacks p95 | 30.26 ms |
-| Total capture/check/replay time | 91.19 seconds |
+| Capture wall time | 90.11 seconds |
+| Capture throughput | 110.98 callbacks/second |
+| Median callback latency | 33.15 ms |
+| p95 callback latency | 48.16 ms |
+| Maximum callback latency | 94.48 ms |
+| Last 1,000 callbacks p95 | 48.10 ms |
+| Twenty replay callbacks p95 | 31.36 ms |
+| Total capture/check/replay time | 91.76 seconds |
 
 Capacity/recovery and the proposed p95 under 50 ms target passed this one
-reference-host synthetic run. This is not a cross-host latency guarantee. The
+reference-host synthetic run after the review corrections. This is not a
+cross-host latency guarantee. The preceding version-2 run measured p95 48.04 ms
+(89.57 seconds capture), before separating the synthetic ceiling and strengthening
+the qualification predicate. That result remains historical. The
 preceding version-1 candidate passed capacity but missed the target at p95
 64.71 ms (103.79 seconds capture); an earlier candidate before its corruption
 guard measured 62.99 ms. Both remain historical evidence. The final version-2
 run includes the exact-process pre-read guard and the conservative capacity bound.
 Raw per-callback timings, the reference environment and exact runtime hashes are
-retained in ignored evidence. Only one final run was taken after those corrections;
+retained in ignored evidence. Only one final run was taken after each source correction;
 no repeated runs were selected to hide slower results. The timings include actual
-process startup and four-writer contention, but do not qualify native scheduling,
+process startup and four-writer contention for PostToolUse only. The benchmark
+contains no SessionStart/Stop boundary probes, whose snapshot reads hold the same
+store lock; it does not qualify mixed-boundary workload latency or native scheduling,
 model execution, cold caches or hardware power-loss durability.
 
 ## Design references

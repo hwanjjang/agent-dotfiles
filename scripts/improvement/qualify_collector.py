@@ -27,6 +27,19 @@ def summary(values):
                 p95_ms=values[min(len(values)-1, int(.95*len(values)))], max_ms=values[-1])
 
 
+def capacity_pass(report):
+    """Require independent ledger, interrupted-reservation and replay evidence."""
+    count = report['target_callbacks']
+    crash, replay = report['interrupted_attempt'], report['replay']
+    return (report['attempts'] == count and report['durable_records'] == count
+            and report['missing_record_count'] == 0 and report['unexpected_record_count'] == 0
+            and report['unique_sequence_count'] == count and report['statuses'] == {'neutral': count}
+            and crash['returncode'] == -9 and crash['records_before_retry'] == 0
+            and crash['reservation_after_kill'] == 1 and report['reservation_gap_count'] == 1
+            and replay['attempts'] == min(20, count) and replay['all_neutral'] is True
+            and replay['records_after'] == count)
+
+
 def qualify(output, count=10000, workers=4, seconds=120):
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     home=output/'home'; home.mkdir(mode=0o700); project=output/'project'; project.mkdir(mode=0o700)
@@ -43,6 +56,7 @@ def qualify(output, count=10000, workers=4, seconds=120):
                 source_sha256={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in source_names},
                 target_callbacks=count, workers=workers, wall_budget_seconds=seconds,
                 latency_target_p95_ms=50, native_model_session=False, import_batches=0,
+                workload='PostToolUse only; no SessionStart/Stop boundary probes',
                 percentile='sorted index floor(0.95*n), capped to last',
                 account='disposable synthetic account only')
     for name, expected in report['source_sha256'].items():
@@ -107,12 +121,10 @@ Store(sys.argv[1]).capture_native(sys.argv[2],sys.argv[3],sys.stdin.buffer)
     if rows:
         for n in range(min(20,len(rows))):
             began=time.perf_counter(); result=subprocess.run(command,input=payload(rows[n]['number']),capture_output=True,cwd=project,timeout=5)
-            replay.append({'ms':(time.perf_counter()-began)*1000,'neutral':result.returncode==0 and result.stdout==b'{}\n'})
+            replay.append({'ms':(time.perf_counter()-began)*1000,'neutral':result.returncode==0 and result.stdout==b'{}\n' and not result.stderr})
     report['replay']={'attempts':len(replay),'all_neutral':all(r['neutral'] for r in replay),
                       'latency':summary([r['ms'] for r in replay]),'records_after':len(store.events(rid))}
-    report['capacity_pass']=(len(rows)==count and len(events)==count and not expected-actual and not actual-expected
-                             and report['unique_sequence_count']==count and report['replay']['records_after']==count
-                             and report['statuses']=={'neutral':count})
+    report['capacity_pass']=capacity_pass(report)
     report['latency_target_pass']=report['capacity_pass'] and report['latency']['p95_ms']<50
     report['limitations']=['Synthetic installed callbacks, not native host scheduling or model execution',
                            'No power-loss test, cold-cache control or hardware fsync guarantee',
@@ -120,7 +132,7 @@ Store(sys.argv[1]).capture_native(sys.argv[2],sys.argv[3],sys.stdin.buffer)
                            'Retained synthetic grant, records and interrupted reservation under selected evidence output']
     report['total_seconds']=time.monotonic()-start
     (output/'result.json').write_text(json.dumps(report,indent=2)+'\n')
-    print(json.dumps({k:report[k] for k in ('attempts','durable_records','capacity_pass','latency_target_pass','total_seconds')}),flush=True)
+    print(json.dumps(report, sort_keys=True),flush=True)
     return report
 
 

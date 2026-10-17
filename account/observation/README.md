@@ -125,11 +125,12 @@ A stable source event ID deduplicates within registration/epoch/session. Reusing
 it with different normalized content rejects the event. Without a stable ID,
 separate callbacks receive separate local IDs and a `possible_duplicate` gap.
 Identical text is not event identity. A capture is limited to 16 KiB; an import
-to 64 KiB and 128 complete records. The hard ceiling is 16,383 ledger files per
-registration, including native single-event records. Synthetic imports retain
-their existing ledger scan. Native capture uses durable sequence reservations
+to 64 KiB and 128 complete records. Synthetic registrations retain their earlier 4,096-entry read bound and
+4,095-record write ceiling, including batch records. Their capture/import path
+still scans the ledger and is not covered by the native benchmark. Native
+registrations have a separate 16,383-record write ceiling. Native capture uses durable sequence reservations
 and direct replay lookup; see [capacity and attribution](capacity.md) for the
-10,000-callback qualification and its measured p95 latency (48.04 ms on one
+10,000-callback qualification and its measured p95 latency (48.16 ms on one
 reference run). The ceiling is a resource bound, not a claim that every workload up to it has been qualified.
 
 Imports accept bytes explicitly supplied by the caller; they do not open files

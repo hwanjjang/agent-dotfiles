@@ -2464,10 +2464,11 @@
       "behavior": [
         "One selected client registration per account; grants, epochs and records remain owned by the private store.",
         "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
-        "macOS Codex native callbacks/planning passed the recorded fixture. Linux Codex callbacks/planning worked but tool execution was blocked; Linux Claude proves SessionStart only, with authentication unavailable.",
+        "Fresh macOS Codex callbacks/planning passed for the corrected parent native collector. Later capacity/attribution code has synthetic qualification only. Linux results are historical pre-guard fixtures: Codex tools were blocked; Claude proves SessionStart only, with authentication unavailable.",
         "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned.",
         "SessionStart/Stop snapshots record bounded delivery hashes and gaps; tool events inherit no cached identity and effective exposure stays unknown.",
-        "10,000 actual dispatcher subprocesses using synthetic inputs passed record/replay/interruption checks on the reference host; p95 48.04 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior."
+        "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior."
+
       ],
       "outputs": [
         "Private metadata, boundary-scoped delivery snapshots, reservation gaps and measured capacity/latency limits."

@@ -6,8 +6,8 @@
       "title": "Separate capacity from latency",
       "instruction": "Open the Observe source guide and follow capacity.md to run the bounded callback qualifier. Compare attempted callbacks with actual stored IDs, replay counts and interrupted reservation evidence. Read the recorded latency distribution independently of the capacity verdict.",
       "screenshot": "collector-capacity-result.png",
-      "caption": "Browser rendering of the actual final 10,000-callback run. Capacity/recovery and the 50 ms p95 target passed this reference-host run.",
-      "expected": "All 10,000 records were verified; p95 was 48.04 ms on this run, with no cross-host guarantee. The preceding candidate measured 64.71 ms. A reservation hole is not an event, and neutral callback output does not acknowledge storage."
+      "caption": "Browser rendering of the actual corrected 10,000 PostToolUse callback run, excluding boundary probes. Capacity/recovery and the 50 ms p95 target passed this reference-host run.",
+      "expected": "All 10,000 records were verified; p95 was 48.16 ms on this run, with no cross-host or mixed-boundary guarantee. Prior candidates measured 48.04 and 64.71 ms. A reservation hole is not an event, and neutral callback output does not acknowledge storage."
     },
     {
       "title": "Read only the scope of the snapshot",

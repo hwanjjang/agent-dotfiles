@@ -3,35 +3,45 @@
   "scenario": "native-observation",
   "qualification": "synthetic installed dispatcher and boundary probes only",
   "runtime_sha256": {
-    "account/observation/store.py": "e3f1c13aa5f3d3332104fb926a7ac6cca05562e782fe306a3092086ab9e63262",
+    "account/observation/store.py": "214f82aa69d262ee6c62b0e75e0998216d5d704f503d0bfb870d741ca320659e",
     "account/observation/native.py": "5d51b75e103ad18ce4cc74db22970bedb248e3f5e09f6bf2a78cbf8fb9b11762",
     "account/observation/environment.py": "25eada17952f9de980456ad080e04ba0522f63f3832754634797c60ad2ee6e05",
     "account/observation/files.py": "85e67e1d7048036b368d4055177e0adf290679e942626b07e959fa0b027324d4",
     "account/hooks/observation-hook.py": "bcd2b668ddd74aaf8a8cd31394807631e9626d1a13be506a2a651d1998a2eb3d",
-    "scripts/improvement/qualify_collector.py": "a58cc09d15b1a263d8974fb3f6adaf6ec17eb9687d76d613b05bcf738a3648b1"
+    "scripts/improvement/qualify_collector.py": "66ab094e124b850ff0f40a84b0299c9523bedafc72fb9a3d948cec6c823a3901"
   },
   "map_sha256": {
-    "docs/map/catalog.json": "c1dbf9748ff400e6d799a529e65b032d73e485ff5ba4ee7a47c8aa8b97bd31c2",
+    "docs/map/catalog.json": "74006f651d73984772ad755e27498f1f87be62a44c287f6014d281e503c48a71",
     "docs/map/workflow.json": "986cabbd3bc4a8b329b3cf43dcf66bb78a5dafc4f184ca1b56fb81de1f952e9c"
   },
   "images": {
-    "collector-capacity-result.png": "9830fa9f3d4f47e46cd78c8ab583897d49f8f8e1eb41f7296b8716add4261362",
-    "collector-attribution-result.png": "264d928e45cb7e35b27bf443eefcb899b1dce9192aaad0afd27fe3c4f195e867"
+    "collector-capacity-result.png": "be4dda1eca1d59491f3b8f42943454604416cd804c0f5a0cbe97714c12e43705",
+    "collector-attribution-result.png": "0e21d209b27503a608e8beca54f003c57f3315fe7371aefcbb2e3263eb50dde8"
   },
   "results": {
     "callbacks": 10000,
     "capacity_recovery": "pass",
-    "p95_ms": 48.04220795631409,
+    "p95_ms": 48.16000000573695,
     "latency_target": "met in one reference-host run",
-    "effective_exposure_exact": false
+    "effective_exposure_exact": false,
+    "workload": "PostToolUse only; no SessionStart/Stop boundary probes"
   },
   "notes": [
     "Images are browser renderings of selected actual synthetic results, not terminal screenshots.",
-    "All six runtime hashes match the final 10,000-callback run; installed boundary fixture collector/store/dispatcher hashes also match. Fixture commit identity is separate from the final documentation commit.",
+    "All six runtime hashes match the corrected 10,000-PostToolUse run. SessionStart/Stop boundary probes are excluded from this latency workload.",
+    "Boundary image uses the separately identified installed fixture, whose native/store/dispatcher/environment hashes match this runtime. The fixture commit differs from the final documentation commit.",
     "Both PDF pages rendered and visually inspected; page count and required text checked.",
-    "No model, authentication or real-account changes. Synthetic disposable installed-source probe completed and its account/source were removed.",
-    "One final run after process-scope and version-2 capacity corrections; earlier p95 misses remain historical evidence."
+    "No model, authentication or real-account changes. Disposable installed source/account were removed.",
+    "Exactly one final run after these review corrections measured p95 48.16 ms; previous version-2 48.04 ms and version-1 64.71 ms runs remain historical.",
+    "The parent native Codex model fixture qualifies the pre-capacity collector only; this capacity/attribution source has synthetic qualification."
   ],
-  "boundary_fixture_revision": "7921d914d151e4b1d42b6cf7fb002bd3fcc93a26",
-  "benchmark_result_sha256": "9036a08b22e32849b500e8fb8d77145764a1fee423a7af92bb031089df9de16e"
+  "boundary_fixture_revision": "786eb3c208b9ab76b1cd1ddef8d8312e06abb8e3",
+  "benchmark_result_sha256": "6e272f91adfb3ef8581399a974d49c736de0dab07daeb6436e4bc48cf0cf08be",
+  "boundary_runtime_sha256": {
+    "account/observation/native.py": "5d51b75e103ad18ce4cc74db22970bedb248e3f5e09f6bf2a78cbf8fb9b11762",
+    "account/observation/store.py": "214f82aa69d262ee6c62b0e75e0998216d5d704f503d0bfb870d741ca320659e",
+    "account/hooks/observation-hook.py": "bcd2b668ddd74aaf8a8cd31394807631e9626d1a13be506a2a651d1998a2eb3d",
+    "account/observation/environment.py": "25eada17952f9de980456ad080e04ba0522f63f3832754634797c60ad2ee6e05"
+  },
+  "boundary_result_sha256": "a06d13521f0330854d11c164a60f542320d9283c22553f27d248e9ae99873ffe"
 }

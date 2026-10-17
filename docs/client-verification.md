@@ -9,8 +9,9 @@ MCP selections are opt-in and live connections require separate checks.
 The later [capacity qualification](../account/observation/capacity.md) executed
 10,000 installed dispatcher subprocesses with four writers, verified all expected
 records, preserved replay identity and recovered an interrupted reservation. It
-passed capacity/recovery and the p95 under 50 ms target (48.04 ms observed) on one
-reference-host run. Its preceding version-1 candidate measured 64.71 ms; that
+passed capacity/recovery and the p95 under 50 ms target (48.16 ms observed) on one
+PostToolUse-only reference-host run, excluding boundary probes. Before review
+corrections, the prior version-2 run measured 48.04 ms; the version-1 candidate measured 64.71 ms; that
 historical miss remains documented rather than being relabeled as a pass.
 Two synthetic installed boundary probes also captured delivery snapshots; exact
 effective exposure remains false. These results qualify their frozen collector
@@ -19,15 +20,20 @@ runtime and synthetic fixture, not a new native model run or all platforms.
 ## Native observation platform coverage — 2026-10-18
 
 The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
-is the authoritative per-platform record: macOS Codex exercised all four observer
-kinds and planning coexistence; Linux Codex produced genuine callbacks/planning
-context but its tool fixture was blocked by bubblewrap; Linux Claude initialized
-and emitted SessionStart but had no usable authentication for a model run. None
-of these results establishes complete delivery, subagent ancestry or effective
-configuration exposure. The [Codex walkthrough](manual/codex-observation.pdf)
-presents sanitized evidence and the existing consent/trust/revoke user path.
-These native fixtures predate the process-directory pre-read guard; focused
-regression and installed-dispatcher checks qualify that later correction separately.
+is the authoritative per-platform record. A fresh macOS Codex/Luna run with
+matching corrected parent-native collector/store/dispatcher and installer-harness hashes
+exercised all four observer kinds, planning coexistence and intentional exit 3
+with unknown observer outcomes. Focused and installed-dispatcher checks separately
+verify out-of-project pre-read rejection. The native fixture is one synthetic task,
+not complete delivery, subagent ancestry or effective configuration exposure.
+Later capacity/attribution code has separate synthetic qualification and is not
+covered by that native model run.
+
+Linux results remain historical pre-guard fixtures: Codex produced genuine
+callbacks/planning context but its full tool fixture was blocked by bubblewrap;
+Claude initialized and emitted SessionStart with no usable model authentication.
+They do not qualify corrected Linux runtime. The [Codex walkthrough](manual/codex-observation.pdf)
+shows the fresh macOS result alongside those historical Linux limits.
 
 A separate whole-client Linux Docker experiment later passed native Codex command
 and synthetic transport canaries without authentication, model calls or observer

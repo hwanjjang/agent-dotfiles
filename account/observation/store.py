@@ -17,6 +17,7 @@ EVENT_LIMIT = 16384
 BATCH_LIMIT = 65536
 MAX_BATCH_EVENTS = 128
 MAX_RECORDS = 16384
+MAX_SYNTHETIC_RECORDS = 4096
 TOKEN = re.compile(r'[A-Za-z0-9_.:@-]{1,160}\Z')
 KEY = re.compile(r'[a-f0-9]{64}\Z')
 EPOCH = re.compile(r'[a-f0-9]{32}\Z')
@@ -186,7 +187,8 @@ class Store:
 
     def _records(self, files, grant):
         names = files.names(('records', grant['registration_id']))
-        require(len(names) <= MAX_RECORDS, 'store_capacity')
+        limit = MAX_SYNTHETIC_RECORDS if grant['client'] == 'synthetic' else MAX_RECORDS
+        require(len(names) <= limit, 'store_capacity')
         records = []
         for name in names:
             if not re.fullmatch(r'[a-f0-9]{64}\.json', name):
@@ -321,7 +323,7 @@ class Store:
                 with files.directory(('records', registration_id)) as directory:
                     os.fsync(directory)
                 return {'status': 'duplicate', 'event_ids': [e['event_id'] for e in events]}
-            require(len(records) < MAX_RECORDS - 1, 'store_capacity')
+            require(len(records) < MAX_SYNTHETIC_RECORDS - 1, 'store_capacity')
             record = dict(schema_version=1, record_id=record_id, registration_id=registration_id,
                           epoch=epoch, recorded_at=time.time(), events=fresh,
                           event_ids=[e['event_id'] for e in events],

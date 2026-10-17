@@ -57,6 +57,21 @@ class ObservationStoreTests(unittest.TestCase):
             return original(fd)
         return mock.patch("account.observation.files.os.fsync", side_effect=fail_target)
 
+    def test_synthetic_capacity_retains_its_prior_bound(self):
+        grant = self.grant()
+        with mock.patch('account.observation.store.MAX_SYNTHETIC_RECORDS', 2, create=True):
+            self.assertEqual(self.capture(grant)['status'], 'recorded')
+            self.assertEqual(self.capture(grant, source_event_id='second', sequence=2),
+                             {'status': 'rejected', 'reason': 'store_capacity'})
+            self.assertEqual(self.capture(grant)['status'], 'duplicate')
+
+    def test_synthetic_reads_apply_separate_directory_bound(self):
+        grant = self.grant()
+        with self.store._locked() as files:
+            for n in range(3): files.write(('records', grant['registration_id'], f'.pending-{n}'), {})
+        with mock.patch('account.observation.store.MAX_SYNTHETIC_RECORDS', 2, create=True):
+            self.assertEqual(self.capture(grant), {'status': 'rejected', 'reason': 'store_capacity'})
+
     def test_opted_out_capture_neither_parses_nor_creates_account_state(self):
         self.assertEqual(list(self.home.iterdir()), [])
         result = self.store.capture("f" * 64, "f" * 32, b"not JSON")
