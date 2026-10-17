@@ -13,8 +13,8 @@
       "title": "Check actual callback evidence",
       "instruction": "In an authorized disposable session, exercise a synthetic read/write and an intentional failure. Inspect native records and planning context separately. Retain exact runtime identity and counts; then revoke the grant and remove owned test delivery.",
       "screenshot": "codex-native-result.png",
-      "caption": "Browser-rendered selected results from an actual macOS Codex 0.163.0 / GPT-6-Luna run; not a terminal screenshot.",
-      "expected": "All four kinds occurred in this fixture. Codex tool-end status remains unknown even after a nonzero shell result. Revoked no-op was checked through a direct dispatcher, not another native model turn."
+      "caption": "Browser-rendered results from a historical macOS Codex 0.163.0 / GPT-6-Luna fixture, before the later process-directory guard; not a terminal screenshot.",
+      "expected": "All four kinds occurred in this fixture. Codex tool-end status remains unknown even after a nonzero shell result. Revoked no-op was checked through a direct dispatcher, not another native model turn. The later guard requires both process and payload directories to match the granted root and has separate focused and installed-dispatcher checks."
     },
     {
       "title": "Keep platform blockers visible",

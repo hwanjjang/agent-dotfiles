@@ -14,7 +14,7 @@
       "instruction": "Create a grant with observations.py grant --client claude --project PATH and an explicit --home. Preview install or update with --observation-registration ID, then apply the reviewed plan. Start a fresh authorized session and inspect events. To stop, revoke the grant; use update --observation-registration none to remove delivery.",
       "screenshot": "native-result.png",
       "caption": "Browser-rendered selected results from an actual disposable Claude/Haiku 5.5 run; not a terminal screenshot.",
-      "expected": "Check native records and planning recovery independently. Prompts, arguments, file contents and transcript paths must be absent from stored records. Revocation disables old callbacks. This run does not prove complete coverage or comparative improvement."
+      "expected": "Check native records and planning recovery independently. The hook process directory and payload cwd must both match the exact granted root; subdirectory or worktree drift fails closed. Prompts, arguments, file contents and transcript paths must be absent. This run also verified that a fresh native session after revocation added no records; it does not prove complete coverage or comparative improvement."
     }
   ]
 }

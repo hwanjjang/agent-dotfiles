@@ -93,7 +93,7 @@ guide, opting in, verifying callbacks and revoking delivery. Its
 [sanitized native result capture](native-result.png) and
 [capture manifest](native-observation-capture.json) are maintained together.
 
-The 2026-10-18 candidate is based on `48b854b`; the manifest binds the runtime and
+The 2026-10-18 Claude candidate is based on doctor parent `7131b4b`; the manifest binds the runtime and
 map sources. The first image shows the actual map; the second is a browser rendering
 of selected results from a real disposable Claude 2.1.302 / Haiku 5.5 session, not
 a terminal screenshot. Native runtime files match the tested snapshot. Both PDF

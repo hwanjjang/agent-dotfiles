@@ -7,8 +7,8 @@
     "linux": "c94143ba41b050bd52701a59b1b9f167e17366c9"
   },
   "source_sha256": {
-    "account/observation/native.py": "fffb1149d2cda219df8fe2a9c2b6bf35ba414d46413b8e15ced28c5f009c4cac",
-    "account/observation/store.py": "078569da06fcb960401c89ba2c311c3dea681c442bc25f73b3dedd7915c781e4",
+    "account/observation/native.py": "5f6ecde0ebe00946c8522cf9cdd93ab1e223990ece0904e3b7d3dc9616949a33",
+    "account/observation/store.py": "672238697e330b6227c856dbdd0c5d156e3b04937b91529a5c79e44736dfdb01",
     "account/observation/files.py": "85e67e1d7048036b368d4055177e0adf290679e942626b07e959fa0b027324d4",
     "account/hooks/observation-hook.py": "bcd2b668ddd74aaf8a8cd31394807631e9626d1a13be506a2a651d1998a2eb3d",
     "scripts/setup_account.py": "cb266861830f924fc284d80f40dfea673717c780dae6dbca45c524e35427fcea",
@@ -26,6 +26,6 @@
     "macOS native callback/planning PASS; Linux Codex callback/planning observed but full tool fixture blocked; Linux Claude initialization/SessionStart only, auth unusable.",
     "All three final PDF pages rendered and visually inspected; text and page count checked.",
     "Runtime remained frozen; no account mutation or live client calls during documentation work.",
-    "Source hashes identify the integrated documentation candidate. Native fixture revisions are separate; collector/store/dispatcher bytes match their evidence, while installer/harness corrections receive separate CLI checks."
+    "Source hashes identify the integrated documentation candidate. Native fixture revisions are historical: the later pre-read process-directory guard changes collector/store bytes and is covered separately by focused tests and installed CLI checks; those fixtures do not qualify the corrected native runtime."
   ]
 }

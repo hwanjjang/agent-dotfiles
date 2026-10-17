@@ -16,6 +16,8 @@ class NativeObservationTests(unittest.TestCase):
         self.home = Path(self.temp.name).resolve()
         self.project = self.home / 'project'; self.project.mkdir()
         self.store = Store(self.home)
+        context = patch('account.observation.native.Path.cwd', return_value=self.project)
+        context.start(); self.addCleanup(context.stop)
 
     def grant(self):
         return self.store.grant(self.project, client='claude', source='claude-hooks-v1')
@@ -28,6 +30,15 @@ class NativeObservationTests(unittest.TestCase):
         payload.update(changes)
         return self.store.capture_native(grant['registration_id'], grant['epoch'],
                                          io.BytesIO(json.dumps(payload).encode()))
+
+    def test_outside_process_project_does_not_read_or_scan_records(self):
+        class Unreadable:
+            def read(self, *args): raise AssertionError('out-of-scope stdin read')
+        grant = self.grant()
+        with patch('account.observation.native.Path.cwd', return_value=self.home), \
+             patch.object(self.store, '_records', side_effect=AssertionError('out-of-scope scan')):
+            result = self.store.capture_native(grant['registration_id'], grant['epoch'], Unreadable())
+        self.assertEqual(result, {'status': 'rejected', 'reason': 'project_scope'})
 
     def test_native_metadata_and_dedup_without_content_or_inferred_success(self):
         grant = self.grant()
@@ -161,6 +172,8 @@ class CodexObservationTests(unittest.TestCase):
         events = self.store.events(grant['registration_id'])
         self.assertEqual(len(events), 2)
         self.assertTrue(all(e['status'] == 'unknown' and 'possible_duplicate' in e['gaps'] for e in events))
+
+    test_outside_process_project_does_not_read_or_scan_records = NativeObservationTests.test_outside_process_project_does_not_read_or_scan_records
 
     test_disabled_and_revoked_do_not_read_stdin_or_resurrect_after_regrant = NativeObservationTests.test_disabled_and_revoked_do_not_read_stdin_or_resurrect_after_regrant
     test_expired_grant_does_not_read_payload = NativeObservationTests.test_expired_grant_does_not_read_payload

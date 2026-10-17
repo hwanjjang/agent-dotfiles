@@ -10,10 +10,15 @@ EVENTS = {'SessionStart': 'session_start', 'PreToolUse': 'tool_start',
 CLIENT_EVENTS = {'claude': dict(EVENTS, PostToolUseFailure='tool_end'), 'codex': EVENTS}
 
 
-def adapt(stream, grant, existing):
+def validate_process_scope(grant):
     client = grant['client']
     require(client in CLIENT_EVENTS and grant['profile'] == 'default'
             and grant['source'] == client + '-hooks-v1', 'unsupported_adapter')
+    require(str(Path.cwd().resolve(strict=True)) == grant['project_root'], 'project_scope')
+
+
+def adapt(stream, grant, existing):
+    client = grant['client']
     events = CLIENT_EVENTS[client]
     raw = stream.read(PAYLOAD_LIMIT + 1)
     require(isinstance(raw, bytes) and len(raw) <= PAYLOAD_LIMIT, 'payload_size')

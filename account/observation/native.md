@@ -93,7 +93,7 @@ The project path stays in its private grant; records use a project digest. Tool
 names become `shell`, `file`, `mcp` or `other`; private MCP names are not retained.
 Prompts, tool arguments/results, assistant messages and transcript paths are
 discarded and never dereferenced. Raw hook payloads are not written to disk or sent
-over the network. Grant validation precedes reading/parsing the bounded stdin.
+over the network. Grant validation and exact process working-directory validation precede ledger scans and reading/parsing bounded stdin. The payload cwd is checked again afterward. Moving into a subdirectory or another worktree fails closed until that exact project is separately granted. See the [official hook directory contract](https://code.claude.com/docs/en/hooks#reference-scripts-by-path); the session-start project variable alone is insufficient after a directory change.
 
 Tool callback identity combines registration, epoch, session, event name and tool
 ID (plus the explicit turn ID for Codex), so duplicate routes sharing that
@@ -150,10 +150,11 @@ following native results are separate from those synthetic checks.
 | Linux aarch64, Claude Code 2.1.302 | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
 
 The macOS fixture revision was `92ced4083df43a79098f220a087ef3a114d3a3b7`;
-Linux used `c94143ba41b050bd52701a59b1b9f167e17366c9`. Collector, storage and
-dispatcher hashes match this Codex adapter candidate; installer/harness revisions
-remain separately recorded. These runs do not qualify later capacity or attribution
-changes automatically. The macOS intentional shell exit 3 still produced unknown
+Linux used `c94143ba41b050bd52701a59b1b9f167e17366c9`. These are historical
+fixtures: the later pre-read process-directory guard changes collector/store bytes.
+Focused tests and installed-dispatcher checks verify that correction separately;
+the historical native runs do not qualify the corrected runtime or later capacity
+and attribution changes. The macOS intentional shell exit 3 still produced unknown
 observer tool-end status; nested execution IDs were not joined into per-tool proof.
 Linux's unequal start/end counts are retained rather than labeled full coverage.
 
@@ -184,3 +185,5 @@ shell exit status; one reply describes stale output and wrong-package checks, an
 the author acknowledges the coverage limitation. These are useful failure cases,
 not independent validation of this collector or a reason to copy its permission
 rewrites. Community validation of this implementation remains provisional.
+
+The installed callback pins the Python interpreter used by setup. If that executable moves or is removed, reinstall/update with a supported Python 3.11+ interpreter; callbacks may otherwise stop silently. Native re-consent after a corrupt ledger with an unknown frontier is currently unsupported. Do not remove a revocation tombstone to bypass that refusal.

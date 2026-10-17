@@ -159,14 +159,14 @@ class AccountSetupTests(unittest.TestCase):
         command = [sys.executable, str(self.home / '.agents/bin/observation-hook.py'), ident, grant['epoch']]
         payload = json.dumps(dict(cwd=str(self.repo), session_id='session-1', hook_event_name='SessionStart',
                                   transcript_path='PRIVATE_SENTINEL')).encode()
-        callback = subprocess.run(command, input=payload, capture_output=True, timeout=5)
+        callback = subprocess.run(command, cwd=self.repo, input=payload, capture_output=True, timeout=5)
         self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'', b''))
         self.assertEqual(len(store.events(ident)), 1)
         for bad in (b'not JSON', b'x' * 131073):
-            callback = subprocess.run(command, input=bad, capture_output=True, timeout=5)
+            callback = subprocess.run(command, cwd=self.repo, input=bad, capture_output=True, timeout=5)
             self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'', b''))
         # A producer that never closes stdin cannot hold a hook indefinitely.
-        stalled = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stalled = subprocess.Popen(command, cwd=self.repo, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
             self.assertEqual(stalled.wait(timeout=6), 0)
             self.assertEqual(stalled.stdout.read(), b'')
@@ -178,7 +178,8 @@ class AccountSetupTests(unittest.TestCase):
         self.assertIsNone(self.apply(action='update'))
         store.revoke(ident)
         with patch('account_doctor.shutil.which', return_value='/synthetic/client'):
-            self.assertEqual(diagnose(self.home)['status'], 'blocked')
+            report = diagnose(self.home)
+            self.assertEqual(next(c['status'] for c in report['checks'] if c['id'] == 'observation.grant'), 'blocked')
         callback = subprocess.run(command, input=b'not JSON', capture_output=True, timeout=5)
         self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'', b''))
         self.assertEqual(store.events(ident), [])
@@ -206,13 +207,13 @@ class AccountSetupTests(unittest.TestCase):
         command = shlex.split(plan['hook_activation']['codex_observation'][0]['command'])
         payload = json.dumps(dict(cwd=str(self.repo), session_id='session-1', turn_id='turn-1',
                                  hook_event_name='Stop', last_assistant_message='PRIVATE_SENTINEL')).encode()
-        callback = subprocess.run(command, input=payload, capture_output=True, timeout=5)
+        callback = subprocess.run(command, cwd=self.repo, input=payload, capture_output=True, timeout=5)
         self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
         self.assertEqual(len(store.events(ident)), 1)
         for bad in (b'not JSON', b'x' * 131073):
-            callback = subprocess.run(command, input=bad, capture_output=True, timeout=5)
+            callback = subprocess.run(command, cwd=self.repo, input=bad, capture_output=True, timeout=5)
             self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
-        stalled = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stalled = subprocess.Popen(command, cwd=self.repo, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
             self.assertEqual(stalled.wait(timeout=6), 0)
             self.assertEqual(stalled.stdout.read(), b'{}\n')
@@ -229,7 +230,7 @@ class AccountSetupTests(unittest.TestCase):
         self.assertTrue(all(len(groups) == 1 for groups in config['hooks'].values()))
         self.assertEqual(json.loads((self.home / '.claude/settings.json').read_text()).get('hooks', {}), {})
         store.revoke(ident)
-        callback = subprocess.run(command, input=b'invalid', capture_output=True, timeout=5)
+        callback = subprocess.run(command, cwd=self.repo, input=b'invalid', capture_output=True, timeout=5)
         self.assertEqual((callback.returncode, callback.stdout, callback.stderr), (0, b'{}\n', b''))
         with patch('account_doctor.shutil.which', return_value='/synthetic/client'):
             self.assertEqual(diagnose(self.home)['status'], 'blocked')

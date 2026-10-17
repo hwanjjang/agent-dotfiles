@@ -14,6 +14,8 @@ and emitted SessionStart but had no usable authentication for a model run. None
 of these results establishes complete delivery, subagent ancestry or effective
 configuration exposure. The [Codex walkthrough](manual/codex-observation.pdf)
 presents sanitized evidence and the existing consent/trust/revoke user path.
+These native fixtures predate the process-directory pre-read guard; focused
+regression and installed-dispatcher checks qualify that later correction separately.
 
 A separate whole-client Linux Docker experiment later passed native Codex command
 and synthetic transport canaries without authentication, model calls or observer
