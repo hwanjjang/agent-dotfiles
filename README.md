@@ -130,6 +130,9 @@ private observations to reviewed cases, comparative evaluation and account updat
 Its first slice provides a [private synthetic observation store](account/observation/README.md)
 with scoped grants, durable records, batch replay and revocation. Native collection
 and model evaluation remain future work; ordinary account sessions are not collected.
+The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md)
+provides macOS Python canaries and a guarded Linux native synthetic workflow.
+A passing native fixture does not enable live provider access or promotion.
 
 ## Principles
 

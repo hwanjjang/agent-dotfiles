@@ -375,7 +375,8 @@
         "improvement-candidate",
         "improvement-eval",
         "improvement-review",
-        "improvement-deploy"
+        "improvement-deploy",
+        "native-isolation"
       ]
     }
   ],
@@ -417,7 +418,8 @@
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
     "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",
     "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
-    "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned."
+    "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned.",
+    "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted container."
   },
   "category_titles": {
     "triage": [
@@ -519,6 +521,7 @@
     "improvement-candidate": "3. Candidate / manual",
     "improvement-eval": "4. Eval / planned",
     "improvement-review": "5. Review / planned gate",
-    "improvement-deploy": "6. Deploy / installer exists"
+    "improvement-deploy": "6. Deploy / installer exists",
+    "native-isolation": "Native isolation / synthetic"
   }
 }

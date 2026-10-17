@@ -76,3 +76,18 @@ eval workflow and recovery in 18 pages each. See the [source and capture notes](
 [English editable text](user-guide/manual-en.md) and [Korean editable text](user-guide/manual-ko.md).
 The six-step improvement cycle is documented with explicit implemented/planned status.
 Actual native collection and comparative model evaluation remain future work.
+
+
+## Native isolation qualification guide
+
+The [native isolation walkthrough](native-isolation.pdf), [editable source](native-isolation.json)
+and [actual map capture](native-isolation.png) show how to locate and expand the
+new synthetic qualification guide. The capture uses workflow digest `7d40116c807c`,
+isolated Chrome and public repository content only, on 2026-10-18. It proves map
+navigation, not CLI execution. The separate maintained CLI smoke exercised the
+actual Linux client, mock turn, native failed tool and cleanup; scope and commands
+remain authoritative in the [qualification guide](../decisions/evaluation-isolation-pilot.md).
+The single PDF page was rendered with PDFium and visually inspected for readable
+text, complete capture, captions and margins; text and page count were checked
+with pypdf. Rebuild using the screenshot-manual commands above with
+`native-isolation.json`, and recapture when the documented dialog changes.
