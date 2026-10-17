@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+  "path": "pstack/skills/arena",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "ed72f6c132b1ce3974d949581d0adc5dade424fe20793ac3b4c4fae22ecb9354"
+  },
+  "adaptations": [
+    "Portable rewrite preserving frame/candidates/judge/base/synthesis/verification.",
+    "Shared criteria, bounded retries, truthful capability gaps, and explicit endpoint."
+  ],
+  "skill_dependencies": [],
+  "runtime_requirements": [
+    "Authorized independent workers and fresh reviewer; actual model availability must be discovered."
+  ],
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-17",
+  "status": "Declared dependencies and optional connections; no host installation performed.",
+  "entries": [
+    {
+      "id": "git",
+      "kind": "cli",
+      "purpose": "Inspect revisions and isolate implementation with worktrees.",
+      "source": "https://git-scm.com/",
+      "license": "GPL-2.0-only",
+      "executable": "git",
+      "version_policy": "Use the target environment version; record it when validating.",
+      "check": [
+        "git",
+        "--version"
+      ]
+    },
+    {
+      "id": "ripgrep",
+      "kind": "cli",
+      "purpose": "Fast source and file discovery.",
+      "source": "https://github.com/BurntSushi/ripgrep",
+      "license": "MIT OR Unlicense",
+      "executable": "rg",
+      "version_policy": "Use the target environment version; record it when validating.",
+      "check": [
+        "rg",
+        "--version"
+      ]
+    },
+    {
+      "id": "github-cli",
+      "kind": "cli",
+      "purpose": "GitHub source and issue research when CLI access is available.",
+      "source": "https://github.com/cli/cli",
+      "license": "MIT",
+      "executable": "gh",
+      "version_policy": "Use the target environment version; authenticate locally.",
+      "check": [
+        "gh",
+        "--version"
+      ]
+    },
+    {
+      "id": "playwright-mcp",
+      "kind": "mcp-package",
+      "purpose": "Optional isolated browser verification.",
+      "source": "https://github.com/microsoft/playwright-mcp",
+      "license": "Apache-2.0",
+      "package": "@playwright/mcp",
+      "version": "0.0.83",
+      "runtime": "Node.js >=18 and npm/npx",
+      "configuration": "mcp/claude-code/playwright.json"
+    },
+    {
+      "id": "github-mcp",
+      "kind": "remote-mcp",
+      "purpose": "Optional read-only GitHub research.",
+      "source": "https://github.com/github/github-mcp-server",
+      "license": "MIT",
+      "version_policy": "Provider-managed endpoint; service behavior may change.",
+      "configuration": "mcp/claude-code/github.json",
+      "required_environment": [
+        "GITHUB_MCP_TOKEN"
+      ]
+    },
+    {
+      "id": "context7",
+      "kind": "remote-mcp",
+      "purpose": "Optional current library documentation lookup.",
+      "source": "https://github.com/upstash/context7",
+      "license": "MIT",
+      "version_policy": "Provider-managed endpoint; service behavior may change.",
+      "configuration": "mcp/claude-code/context7.json",
+      "required_environment": [
+        "CONTEXT7_API_KEY"
+      ]
+    },
+    {
+      "id": "archify",
+      "kind": "bundled-tool",
+      "purpose": "Required diagram production capability.",
+      "source": "https://github.com/tt-a1i/archify",
+      "license": "MIT",
+      "revision": "d5a1333d7447c866a765adac7d4d062f2f02e4d2",
+      "entrypoint": "skills/archify/bin/archify.mjs",
+      "runtime": "Node.js >=18; browser requirements depend on selected checks.",
+      "check": [
+        "node",
+        "skills/archify/bin/archify.mjs",
+        "doctor"
+      ]
+    },
+    {
+      "id": "screenshot-manual",
+      "kind": "bundled-tool",
+      "purpose": "Required screenshot-based user manual PDF production.",
+      "source": "skills/screenshot-manual/SKILL.md",
+      "license": "MIT",
+      "requirements": "skills/screenshot-manual/requirements.txt",
+      "runtime": "Python >=3.9; suitable TTF font for non-ASCII text.",
+      "validation": "English sample PDF generated, text/images checked, and raster visually inspected."
+    }
+  ]
+}

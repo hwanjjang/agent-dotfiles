@@ -1,0 +1,35 @@
+{
+  "task_id": "TASK",
+  "repository": "OWNER/REPO",
+  "endpoint": "pre-merge",
+  "source": "Fill with the explicit user approval and exact scope; this template grants nothing",
+  "allowed_actions": [
+    "implement",
+    "test",
+    "smoke",
+    "commit",
+    "push",
+    "pr-create",
+    "pr-update",
+    "ci-read",
+    "correct",
+    "transfer-evidence",
+    "spawn-reviewer",
+    "issue-comment"
+  ],
+  "accounts": [],
+  "materials": [
+    "code",
+    "tests",
+    "sdlc-evidence"
+  ],
+  "merge_authorized": false,
+  "prohibited_actions": [
+    "merge",
+    "auto-merge",
+    "merge-queue",
+    "production-deploy",
+    "permission-escalation",
+    "credential-transfer"
+  ]
+}

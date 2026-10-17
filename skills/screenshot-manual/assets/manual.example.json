@@ -1,0 +1,13 @@
+{
+  "title": "Product quick start",
+  "scenario": "Open the product with a synthetic account and complete the selected scenario.",
+  "steps": [
+    {
+      "title": "Open the catalog",
+      "instruction": "Select the catalog entry to see its details.",
+      "screenshot": "screenshots/catalog.png",
+      "caption": "The selected entry shows its usage and source.",
+      "expected": "The detail panel matches the selected entry."
+    }
+  ]
+}

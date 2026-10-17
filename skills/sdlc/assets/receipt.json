@@ -1,0 +1,17 @@
+{
+  "iteration": 1,
+  "decision": "BLOCKED",
+  "reason": "Replace with actual observation",
+  "authority_source": "Replace with user request or delegated policy reference",
+  "candidate": "Replace with source identity",
+  "next_action": "Replace with next authorized action",
+  "inputs": [],
+  "outputs": [],
+  "assessment": {
+    "assessor": "Replace with actual context",
+    "summary": "Replace with content assessment",
+    "criteria": [
+      "AC1"
+    ]
+  }
+}

@@ -1,2 +1,212 @@
 # agent-dotfiles
-SSOT for AI agent policies, skills, and MCP configurations
+
+Single source of truth for AI agent policies, skills, and MCP configurations.
+
+Agent instructions, useful skills, and tool connections tend to spread across
+projects, clients, and machines. This repository aims to keep the shared parts in
+one reviewable place, so improvements can carry forward to the next task and
+environment.
+
+Explore the [interactive map](docs/map/index.html) for usage, behavior, source
+links, and implementation status. Open the HTML from a local checkout; GitHub's
+file view shows source. See the [map guide](docs/map/README.md) for upkeep and
+the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
+
+**Status:** Initial content collection: 15 skill packages, five portable policies,
+three opt-in Claude Code MCP templates, and an external tool registry. Diagram
+production and screenshot-based PDF manuals are included. Source adoption and
+focused checks are documented; account installation and end-to-end client behavior
+are not yet verified. See [skills](skills/README.md), [policies](policies/README.md),
+[MCP templates](mcp/README.md), and [adoption records](docs/upstream/README.md).
+
+## Repository structure
+
+```text
+agent-dotfiles/
+├── AGENTS.md       # Instructions for maintaining this repository
+├── CLAUDE.md       # Claude entry point to the same maintenance instructions
+├── docs/decisions/ # Researched repository design decisions
+├── docs/map/       # Catalog data, viewer template, and generated interactive map
+├── policies/       # Shared agent instructions and operating principles
+├── skills/         # Reusable task workflows
+├── mcp/            # Credential-free MCP configuration
+├── scripts/        # Repository maintenance tooling
+├── tests/          # Focused maintenance and content-tool checks
+├── tools/          # External capability registry and prerequisites
+├── README.md
+└── LICENSE
+```
+
+Content is selected for the workflows described below. Every imported skill carries
+its license, provenance, dependencies, and adaptation notes. Raw source staging and
+private provenance remain local.
+
+Skills should use `skills/<skill-name>/SKILL.md`, with supporting scripts,
+references, and assets kept alongside the skill. MCP configuration formats and
+installation paths will be documented as integrations are added.
+
+`AGENTS.md` is the single source of repository maintenance instructions.
+`CLAUDE.md` imports it and contains no independent rules. These files govern this
+repository, separate from reusable policy content in `policies/`, and should not
+be installed as another project's agent policies.
+
+The [structure decision](docs/decisions/repository-structure.md) compares nine
+upstream repositories and explains this initial layout. Active external research
+is part of maintaining this project; `AGENTS.md` defines that requirement.
+
+## Content scope
+
+The [modular AK SDLC proposal](docs/decisions/modular-sdlc.md) describes the
+intended workflow: early intent clarification, independently usable stages,
+parallel design exploration, and dependency-aware implementation. It remains a design
+proposal: imported building blocks are present, while the complete modular AK SDLC
+integration is future work.
+
+| Area | Purpose |
+| --- | --- |
+| Policies | Shared guidance for execution, communication, verification, and handling permissions. |
+| Skills | Focused workflows for recurring work, with clear triggers and observable completion criteria. |
+| MCP configuration | Reusable connection definitions and prerequisites, with credentials supplied locally. |
+
+For additions and updates, record upstream links, selected revisions, licenses,
+dependencies, and deliberate adaptations. Add client-specific setup and update
+tooling when there is configuration to distribute.
+
+The intended result is a common foundation that projects can adapt to their own
+conventions. Client-specific behavior belongs in an explicit adapter or setup
+step, with compatibility checked in that client.
+
+## Principles
+
+- **Keep shared instructions small.** Put durable defaults in policies and load
+  task-specific detail through skills and references when needed.
+- **Clarify consequential uncertainty.** Resolve questions that change the
+  outcome or scope; handle routine implementation choices within the request.
+- **Compose focused skills.** Give each skill a clear job, dependencies, and a
+  result that can be checked. Add coordination only when the work needs it.
+- **Verify the outcome.** Inspect the actual artifact or behavior. Use focused
+  tests, reproductions, or direct checks, and report limits in the evidence.
+- **Preserve local ownership.** Keep authentication, personal preferences, and
+  machine-specific values local. Updates should preserve unrelated settings and
+  surface conflicts before replacing them.
+- **Improve from observed friction.** Capture reusable lessons when they help
+  future work. Prefer a structural fix or an executable check when it can prevent
+  a recurring mistake.
+
+## Working loop
+
+```text
+Understand the request → Inspect the context → Execute → Verify → Report
+                                                  ↑               |
+                                                  └── Adjust ─────┘
+```
+
+Scale the process to the task. A small edit may need only a direct change and a
+check. Work spanning multiple stages or sessions benefits from a written plan,
+current progress, and a clear next action.
+
+For software work, clarify the intended behavior, settle important design choices,
+build in small verifiable steps, and review the change against the request. A bug
+fix should have a reproduction and evidence that the fix resolves it. Use a
+regression test when a practical test path exists.
+
+Completion means the requested result has been checked. A report should say what
+changed, how it was verified, and what remains unresolved. Save additional records
+when they support review, resumption, or a reusable improvement.
+
+## Configuration boundaries
+
+The proposed configuration model separates three kinds of information:
+
+| Scope | Examples |
+| --- | --- |
+| Shared source | Common policies, maintained skills, upstream provenance, and credential-free MCP definitions. |
+| Project | Repository instructions, domain terminology, build and test commands, and task records. |
+| Account or machine | Credentials, authentication state, personal preferences, local paths, and environment-specific overrides. |
+
+Maintain shared changes in the source repository and distribute them through a
+reviewable update. Installation should show what it owns and which revision it
+delivered. Runtime checks should then confirm that the client discovers the skills
+and can use the intended MCP capabilities.
+
+## What belongs in public Git
+
+This is a public repository. Commit material that another person can review and
+reuse without access to a contributor's accounts or private environment.
+
+| Commit | Examples |
+| --- | --- |
+| Repository documentation and instructions | README, AGENTS.md, CLAUDE.md, licenses, and reviewed design decisions. |
+| Reusable policies and skills | Portable instructions, SKILL.md files, supporting scripts, references, and redistributable assets. |
+| Sanitized configuration | MCP definitions with public endpoints or placeholders, environment variable names, and examples containing synthetic values only. |
+| Reproducible maintenance material | Setup scripts, meaningful tests, dependency locks, upstream revisions, attribution, and documented patches when added. |
+
+### Keep local and untracked
+
+| Do not commit | Examples and location |
+| --- | --- |
+| Secrets and authentication state | API keys, access/refresh tokens, passwords, cookies, OAuth state, private keys, and client certificates. Keep these in a credential store or the account environment. |
+| Effective account configuration | MCP configurations containing credentials, private endpoints, account IDs, or personal absolute paths. Keep local overrides outside the checkout or under `.local/`. |
+| Personal agent overrides | `CLAUDE.local.md`, `.claude/settings.local.json`, `.codex/config.local.toml`, and `.mcp.local.json`. |
+| Working plans and session state | `.planning/`, raw conversations, agent memory, scratch notes, and handoff records. Use `.local/` for other local working files. |
+| Raw evidence and backups | Logs, screenshots, recordings, configuration backups, and diagnostic exports. Use `.local/`, `artifacts/`, `backups/`, or `tmp/`. |
+| Generated environment files | Dependency directories, build output, caches, and OS metadata. |
+
+The local directories above are ignored by Git. They are storage conventions,
+not secure credential stores. Keep durable decisions in reviewed documentation;
+publish examples or evidence only after removing private data and confirming that
+they may be shared.
+
+`.env` and `.env.*` are ignored, with `.env.example` allowed for synthetic
+examples. Use names such as `SERVICE_API_TOKEN` to describe required credentials;
+never include their values. Private service addresses and personal paths should
+be replaced with placeholders such as `https://service.example/mcp` and
+`/path/to/tool`.
+
+Before committing, inspect the staged diff and newly added files against these
+boundaries. Ignore rules do not inspect file contents or remove files already
+tracked by Git. Keep local files out of commits rather than force-adding them.
+
+## Selecting upstream skills
+
+Adopt skills for a concrete need encountered in real work. Before adding one,
+check its trigger, expected output, dependencies, supported environment, license,
+and overlap with existing skills.
+
+Record the source and selected revision. Keep upstream work distinguishable from
+local policy, and document adaptations so later updates can be reviewed. Evaluate
+a skill on a representative task before treating it as a shared default.
+
+## References and influences
+
+Selected skills and adaptations from these projects are included. Per-package
+provenance records exactly which material is present; their whole plugin ecosystems
+and account installers are not automatically activated.
+
+| Reference | What this draft draws from |
+| --- | --- |
+| [pstack](https://github.com/cursor/plugins/tree/main/pstack) | Engineering rigor, task routing, small changes, and direct evidence that the result works. |
+| [Matt Pocock's skills](https://github.com/mattpocock/skills) | Small composable skills, intent clarification, shared domain language, and short feedback loops. |
+| [Addy Osmani's agent skills](https://github.com/addyosmani/agent-skills) | Separation of workflows, personas, and entry commands; explicit repository-only instruction scope and attention to skill packaging boundaries. |
+
+pstack, Matt Pocock, and Addy Osmani are the priority references for future
+structure and workflow research. The structure decision also compares other
+maintained repositories, with source revisions and tradeoffs recorded.
+
+The [pstack map](https://erictechpro.github.io/super-board/pstack/) and
+[Matt Pocock skills map](https://erictechpro.github.io/super-board/mattpocock/)
+helped compare workflow stages and coverage gaps. They are secondary navigation
+guides; use the upstream repositories to verify current behavior and dependencies.
+
+Technical references:
+
+- [Agent Skills specification](https://agentskills.io/specification) for skill
+  structure and loading supporting material on demand.
+- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture) for
+  connecting clients to tools, resources, and prompts.
+- [Cursor plugin documentation](https://cursor.com/docs/plugins) for client-specific
+  packaging of skills, rules, hooks, and MCP integrations.
+
+## License
+
+[MIT](LICENSE).

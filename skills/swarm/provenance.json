@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+  "path": "pstack/skills/swarm",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "031657cb81e490f9aed5c75d6ff2a4fda35ccafbaf72be604e59481cc4080cdc"
+  },
+  "adaptations": [
+    "Portable worker contract with dependency-frontier implementation and single integration writer.",
+    "Added scoped recovery and evidence invalidation; removed Cursor-specific APIs."
+  ],
+  "skill_dependencies": [],
+  "runtime_requirements": [
+    "Authorized parallel workers; Git worktrees for implementation."
+  ],
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+}

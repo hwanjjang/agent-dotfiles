@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+  "path": "pstack/skills/how",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "08a00079bb15b4258874ac3ff62d4ca7e94350ffedb521d0fd296dc9dd21904e",
+    "references/explorer-prompt.md": "6300128385ee940fd42ecb84b0e623435440a2dc283eae54ee4a52ba56947ba1",
+    "references/explainer-prompt.md": "ddb89cebefc24e2b54517a331aedfe045b6971e101f45c71b8cef4cccff45bff"
+  },
+  "adaptations": [
+    "Replaced Cursor-specific models and Task API with host-supported investigation.",
+    "Allowed direct narrow investigations; retained upstream explanation resources."
+  ],
+  "skill_dependencies": [],
+  "runtime_requirements": [
+    "Read access to source; parallel workers optional."
+  ],
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+}

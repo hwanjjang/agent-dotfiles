@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "origin": "AK-authored source, supplied with permission for public reuse.",
+  "license": "MIT",
+  "adaptations": [
+    "Removed private source links and project-specific attribution.",
+    "Made external publication authority task-specific.",
+    "Retained historical source language as author-provided reference; current English amendments govern."
+  ],
+  "skill_dependencies": [
+    "planning-with-files",
+    "archify",
+    "screenshot-manual"
+  ],
+  "runtime_requirements": [
+    "Python 3 standard library for state tools; Git and target project verification tools."
+  ],
+  "validation": "40 packaged state/reviewer tests passed; full provider and PR lifecycle not exercised."
+}
