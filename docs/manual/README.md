@@ -53,14 +53,15 @@ new Anytime group and communication/execution policies, use the current
 The maintained browser recipe checks the new entries separately; this PDF is not
 an account installation manual.
 
-## Account source walkthrough
+## Account installation guide walkthrough
 
-The [account source walkthrough](account-source.pdf) covers the new Anytime
-entries without implying installation. Its [editable source](account-source.json),
+The [account source walkthrough](account-source.pdf) shows the installation and hook-guide Anytime
+entries. The screenshots demonstrate map navigation, not a completed installation. Its [editable source](account-source.json),
 [ownership capture](account-source.png) and [hook capture](account-hooks.png)
-show the actual expanded dialogs from workflow digest `23463c35f12e`, captured
+show the actual expanded dialogs from workflow digest `b4f054f4165a`, captured
 on 2026-10-17 in isolated Chrome at 2x device scale. The maintained browser
-recipe verifies their source links and source-only boundaries.
+recipe verifies their source links and the distinction between delivery and native
+activation. Installation commands remain authoritative in the account guide.
 
 Both PDF pages were rendered with PDFium and visually checked for readable text,
 complete screenshots, margins and captions. Text and page count were checked with

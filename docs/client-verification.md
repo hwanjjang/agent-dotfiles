@@ -1,7 +1,40 @@
 # Client verification boundaries
 
 Source packaging, client discovery and successful task execution are different
-checks. This collection does not install account configuration or enable servers.
+checks. The account installer delivers configuration only when explicitly applied;
+MCP selections are opt-in and live connections require separate checks.
+
+## Portable account installer — 2026-10-17
+
+The installer is designed for macOS/Linux and WSL using Python 3.11+ and Git.
+The maintained tests ran on macOS with Python 3.11; Linux/WSL execution and native
+Windows are not verified here. The [account guide](../account/README.md) owns
+commands and supported default client layouts.
+
+Twenty-four disposable-account tests cover preview without mutation, destination-specific
+paths, committed-source selection, revision updates and retired assets, idempotence,
+removal, private backups and rollback, caught write failure, local drift and stale
+approval, interrupted directory takeover/restoration with retry and later-edit
+protection, source checkouts inside selected destinations, symlink rejection, narrow legacy
+receipt transfer and unmatched-owner rejection, preserved Paseo/auth/personal settings, hooks opt-out and duplicate
+routes, Codex instruction masking, MCP conflicts/disabled state and optional Hermes.
+They do not use or change the contributor's real account, HOME or credentials.
+
+A committed candidate snapshot with all 23 packages was installed in two isolated
+accounts with different paths (including spaces). Each delivered Codex/Claude and
+opt-in Hermes links plus all three MCP definitions. Both passed clean status, a
+zero-change update, owned-content removal and rollback of that removal. Paseo and
+personal guidance survived. This is two target directories on macOS, not two OSes. A clean receipt proves owned content, not native client trust, automatic
+skill selection, instruction adherence, MCP authentication or task effectiveness.
+Hermes native hooks/MCP, custom client profiles and client/tool installation are
+outside this adapter. Historical source-only checks below retain their original
+scope; they are not installation evidence.
+
+The 24 installer tests, ten account-hook tests and 19 map tests pass (53 focused
+checks). Both generated maps pass freshness checks. Isolated Chrome verified the
+catalog and workflow interactions; the refreshed two-page account walkthrough
+was rendered, text-checked and visually inspected. Public source/path probes and
+changed Markdown links were checked. These checks do not activate a real account.
 
 ## Selective account source import — 2026-10-17
 

@@ -396,7 +396,7 @@
     "tool-registry": "You need to select or verify an external CLI, diagram, PDF or MCP dependency.",
     "policy-communication": "Writing a reply, issue, PR, document or UI copy.",
     "policy-execution": "Starting multi-stage work, handing off, or resuming an existing task.",
-    "account-source": "Preparing an account migration or identifying which manager owns a setting.",
+    "account-source": "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts.",
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
     "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting."
   },
@@ -449,7 +449,7 @@
     "organize": "Organize & communicate",
     "verification": "Verification upkeep",
     "guardrails": "Policies & connections",
-    "account": "Account sources & runtime"
+    "account": "Account setup & runtime"
   },
   "node_labels": {
     "sdlc": "coordinate stages and authority",
@@ -491,7 +491,7 @@
     "tool-registry": "external tool prerequisites",
     "policy-communication": "clear, faithful communication",
     "policy-execution": "route work and preserve context",
-    "account-source": "instruction source and ownership",
+    "account-source": "install, update, remove, recover",
     "planning-hooks": "selected-plan lifecycle hooks",
     "reviewer-runtime": "reuse routes and diagnose failures"
   }
