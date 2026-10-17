@@ -1,3 +1,37 @@
+# Repository-local working state (see README: What belongs in public Git)
+/.planning/
+/.local/
+/artifacts/
+/backups/
+/tmp/
+
+# Personal agent overrides and account authentication state
+/CLAUDE.local.md
+/.claude/settings.local.json
+/.codex/config.local.toml
+/.mcp.local.json
+/.codex/auth.json
+/.claude.json
+/.aws/
+/.ssh/
+/.gnupg/
+
+# Secret files and private key material; public examples use synthetic values
+/secrets/
+/credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Python maintenance tooling
+__pycache__/
+*.pyc
+
 # Logs
 logs
 *.log
@@ -147,3 +181,7 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Local workflow and diagram runtime evidence
+/.archify/
+/reports/

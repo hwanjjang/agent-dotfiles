@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/addyosmani/agent-skills",
+  "revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+  "path": "skills/planning-and-task-breakdown",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "ed0f90cc5951ddd4bcab7f871f64efec93a49af9279ef93bc470da77ad8da3f7"
+  },
+  "adaptations": [
+    "Condensed to an independently callable planning stage.",
+    "Task-scoped records, existing authorization, outcome-based sizing, and dependency-aware handoffs."
+  ],
+  "skill_dependencies": [],
+  "runtime_requirements": [],
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+}

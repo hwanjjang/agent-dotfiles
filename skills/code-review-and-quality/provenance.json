@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/addyosmani/agent-skills",
+  "revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+  "path": "skills/code-review-and-quality",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "2db1e850379f255fd3091ef278cde24cd6c7d2ba23e360cc52ea522c40d4396e"
+  },
+  "adaptations": [
+    "Bundled checklist resources and replaced unavailable specialist-skill references.",
+    "Isolated optional experiments, review-only boundary, no implicit issue writes, honest execution gaps."
+  ],
+  "skill_dependencies": [],
+  "runtime_requirements": [],
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified.",
+  "additional_upstream_files": {
+    "references/security-checklist.md": {
+      "destination": "references/security-checklist.md",
+      "sha256": "37774056502fe8970dcd2fd27dca5fa31f2a55232649fc3056c89c3af7d62755"
+    },
+    "references/performance-checklist.md": {
+      "destination": "references/performance-checklist.md",
+      "sha256": "fffc38b8f3b328a973aab8b1a2efdd72b65710d8f4b57f28f8374ddae7f8a88b"
+    }
+  }
+}

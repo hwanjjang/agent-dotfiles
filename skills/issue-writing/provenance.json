@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "origin": "AK-authored source, supplied with permission for public reuse.",
+  "license": "MIT",
+  "adaptations": [
+    "Removed private source links and project-specific attribution.",
+    "Made external publication authority task-specific.",
+    "Retained historical source language as author-provided reference; current English amendments govern."
+  ],
+  "skill_dependencies": [],
+  "runtime_requirements": [],
+  "validation": "Imported baseline; executable checks and portability review pending."
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/OthmanAdi/planning-with-files",
+  "revision": "dab9d16fbd9314448b319d112e99f497d7638d89",
+  "path": ".agents/skills/planning-with-files",
+  "license": "MIT",
+  "retrieved": "2026-10-17",
+  "adaptations": [],
+  "skill_dependencies": [],
+  "runtime_requirements": [
+    "Shell/Python as documented; lifecycle hooks require explicit host setup."
+  ],
+  "selection": "Retained the previously selected AK baseline pin; newer upstream revisions were observed but not upgraded in this import.",
+  "validation": "Package imported; focused checks pending."
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/tt-a1i/archify",
+  "revision": "d5a1333d7447c866a765adac7d4d062f2f02e4d2",
+  "path": "archify",
+  "license": "MIT",
+  "retrieved": "2026-10-17",
+  "adaptations": [],
+  "skill_dependencies": [],
+  "runtime_requirements": [
+    "Node.js and a compatible browser for rendering and browser checks."
+  ],
+  "selection": "Retained the previously selected AK baseline pin; newer upstream revisions were observed but not upgraded in this import.",
+  "validation": "Bundled doctor passed; demo HTML generated and rendered in an isolated browser without runtime errors. Full custom diagram finalize/provenance workflow not exercised.",
+  "packaging_notes": [
+    "Normalized trailing whitespace in seven bundled text files for repository diff checks; no intended runtime change."
+  ]
+}

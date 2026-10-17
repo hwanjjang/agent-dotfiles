@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "origin": "Original workflow and scripts authored for this repository.",
+  "license": "MIT",
+  "references": [
+    "https://www.reportlab.com/docs/reportlab-userguide.pdf",
+    "https://pypdf.readthedocs.io/",
+    "https://pypdfium2.readthedocs.io/"
+  ],
+  "adaptations": [],
+  "skill_dependencies": [],
+  "runtime_requirements": [
+    "Python >=3.9",
+    "Pinned packages in requirements.txt",
+    "Actual screenshots and a suitable font for non-ASCII content"
+  ],
+  "validation": "Six focused tests passed. English sample generated, extracted text/image verified, rendered with PDFium, and visually inspected. Target-language fonts require separate verification."
+}

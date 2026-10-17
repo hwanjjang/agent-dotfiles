@@ -1,0 +1,28 @@
+{
+  "head": "",
+  "base": "",
+  "candidate": "",
+  "required_ci_passed": false,
+  "protections_satisfied": false,
+  "human_requests_resolved": false,
+  "production_trigger": "unknown",
+  "remote_state_verified": false,
+  "authority_source": "",
+  "checked_at": "",
+  "remote_record": "",
+  "evidence": [],
+  "repository": "",
+  "pr_url": "",
+  "push_verified": false,
+  "pr_verified": false,
+  "mergeable": false,
+  "merge_ready": false,
+  "merge_authorized": false,
+  "auto_merge_enabled": false,
+  "merge_queue_enqueued": false,
+  "authority": {
+    "kind": "pre-merge-authority",
+    "path": "",
+    "sha256": ""
+  }
+}

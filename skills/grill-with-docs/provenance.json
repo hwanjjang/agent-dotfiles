@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/mattpocock/skills",
+  "revision": "49dd158d1076134a641b33efb035946536778336",
+  "path": "skills/engineering/grill-with-docs",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
+    "agents/openai.yaml": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9"
+  },
+  "adaptations": [
+    "Documented dependency resolution and missing-dependency behavior."
+  ],
+  "skill_dependencies": [
+    "grilling",
+    "domain-modeling"
+  ],
+  "runtime_requirements": [],
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+}

@@ -1,0 +1,990 @@
+{
+  "schema_version": 1,
+  "title": "Agent map",
+  "description": "Explore the repository, see what is ready, and find the source behind each item.",
+  "groups": [
+    {
+      "id": "start",
+      "title": "Start here",
+      "description": "Understand and maintain this repository."
+    },
+    {
+      "id": "content",
+      "title": "Reusable content",
+      "description": "Policies, workflows, and tool connections."
+    },
+    {
+      "id": "upstream",
+      "title": "Learn upstream",
+      "description": "Priority references, not installed dependencies."
+    }
+  ],
+  "entries": [
+    {
+      "id": "overview",
+      "title": "Repository overview",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "README.md",
+      "summary": "Purpose, current scope, and the boundary between public source and local state.",
+      "when": [
+        "You are new to this repository.",
+        "You need to decide whether a file belongs in public Git."
+      ],
+      "usage": "Read README.md before adding or distributing content.",
+      "behavior": [
+        "Explains which areas are implemented and which remain planned.",
+        "Lists what can be committed and what must stay local."
+      ],
+      "outputs": [
+        "A shared understanding of scope and publication boundaries."
+      ],
+      "tags": [
+        "readme",
+        "public",
+        "private",
+        "scope"
+      ]
+    },
+    {
+      "id": "maintenance",
+      "title": "Maintenance instructions",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "AGENTS.md",
+      "summary": "The single source of instructions for agents working on this repository.",
+      "when": [
+        "You are changing this repository's structure or content.",
+        "You are researching policies, skills, or MCP integration."
+      ],
+      "usage": "Follow AGENTS.md while maintaining this repository.",
+      "behavior": [
+        "Requires active external research for design work, with three priority references.",
+        "Keeps repository maintenance instructions separate from distributed policy content.",
+        "Requires verification appropriate to the change."
+      ],
+      "outputs": [
+        "A scoped, researched change with observable verification."
+      ],
+      "tags": [
+        "agents",
+        "instructions",
+        "research",
+        "ssot"
+      ]
+    },
+    {
+      "id": "claude-entry",
+      "title": "Claude entry point",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "CLAUDE.md",
+      "summary": "Imports the canonical maintenance instructions without duplicating them.",
+      "when": [
+        "You are working on this repository with Claude Code."
+      ],
+      "usage": "CLAUDE.md imports @AGENTS.md; edit the rules in AGENTS.md.",
+      "behavior": [
+        "Provides a client entry point to the same instruction source.",
+        "Contains no independent maintenance rules. Client adherence has not been runtime-tested."
+      ],
+      "outputs": [
+        "One maintained set of repository instructions."
+      ],
+      "tags": [
+        "claude",
+        "import",
+        "ssot"
+      ]
+    },
+    {
+      "id": "structure",
+      "title": "Structure decision",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/repository-structure.md",
+      "summary": "Nine source repositories compared, with revisions and layout tradeoffs recorded.",
+      "when": [
+        "You are proposing a new directory, package, or distribution route."
+      ],
+      "usage": "Read the decision and inspect the relevant upstream sources before changing the layout.",
+      "behavior": [
+        "Keeps initial source directories small and separates them from future client packaging.",
+        "Records observed upstream patterns separately from this repository's choices."
+      ],
+      "outputs": [
+        "A layout choice with a reviewable rationale."
+      ],
+      "tags": [
+        "architecture",
+        "layout",
+        "decisions",
+        "research"
+      ]
+    },
+    {
+      "id": "modular-sdlc",
+      "title": "AK SDLC proposal",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/modular-sdlc.md",
+      "summary": "Proposed independent stages and parallel implementation, with initial building blocks now included.",
+      "when": [
+        "You are designing an SDLC skill or its orchestration.",
+        "You need the proposed input, output, and parallel implementation contracts."
+      ],
+      "usage": "Read the proposal and skill catalog. The complete modular integration remains future work.",
+      "behavior": [
+        "Defines independently usable stage boundaries and a thin coordinator.",
+        "Describes decision-tree preparation, parallel design selection, and dependency-aware implementation.",
+        "Records public user feedback, deliberate adaptations, and future acceptance checks."
+      ],
+      "outputs": [
+        "A reviewable proposal for future workflow skills and their composition."
+      ],
+      "tags": [
+        "sdlc",
+        "proposal",
+        "grilling",
+        "parallel",
+        "orchestration"
+      ]
+    },
+    {
+      "id": "map-maintenance",
+      "title": "Maintain this map",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/map/README.md",
+      "summary": "Update the catalog, regenerate the viewer, and check that it matches the source.",
+      "when": [
+        "You add, rename, or change a policy, skill, or MCP definition.",
+        "You need to update an item's usage, status, or relationships."
+      ],
+      "usage": "python3 scripts/build_map.py\npython3 scripts/build_map.py --check",
+      "behavior": [
+        "Builds a standalone HTML viewer from catalog metadata and the viewer template.",
+        "Checks source paths, statuses, relationships, and coverage of reusable content.",
+        "Fails a freshness check when the generated HTML differs from its inputs."
+      ],
+      "outputs": [
+        "docs/map/index.html, ready to open locally or serve as static documentation."
+      ],
+      "tags": [
+        "map",
+        "catalog",
+        "build",
+        "documentation"
+      ]
+    },
+    {
+      "id": "pstack",
+      "title": "pstack",
+      "kind": "reference",
+      "group": "upstream",
+      "status": "reference",
+      "url": "https://github.com/cursor/plugins/tree/main/pstack",
+      "summary": "Priority reference for engineering workflows, task routing, and verification.",
+      "when": [
+        "You are comparing workflow routing, evidence, or client packaging."
+      ],
+      "usage": "Inspect pinned sources and per-skill provenance. Opening the map does not install or activate anything.",
+      "behavior": [
+        "Provides examples of focused workflows and explicit verification practices.",
+        "The structure decision records the source revision inspected for this repository's initial layout."
+      ],
+      "outputs": [
+        "Research evidence for a scoped local design choice."
+      ],
+      "tags": [
+        "pstack",
+        "poteto",
+        "cursor",
+        "upstream"
+      ]
+    },
+    {
+      "id": "matt-pocock",
+      "title": "Matt Pocock",
+      "kind": "reference",
+      "group": "upstream",
+      "status": "reference",
+      "url": "https://github.com/mattpocock/skills",
+      "summary": "Priority reference for composable skills, clarification, and short feedback loops.",
+      "when": [
+        "You are comparing skill boundaries, catalog organization, or intent clarification."
+      ],
+      "usage": "Inspect pinned sources and per-skill provenance. Opening the map does not install or activate anything.",
+      "behavior": [
+        "Offers examples of small skills and explicit selection of shipped content.",
+        "Use its patterns as evidence; do not assume all of its process fits this repository."
+      ],
+      "outputs": [
+        "Research evidence for a scoped local design choice."
+      ],
+      "tags": [
+        "matt",
+        "pocock",
+        "composable",
+        "upstream"
+      ]
+    },
+    {
+      "id": "addy-osmani",
+      "title": "Addy Osmani",
+      "kind": "reference",
+      "group": "upstream",
+      "status": "reference",
+      "url": "https://github.com/addyosmani/agent-skills",
+      "summary": "Priority reference for lifecycle workflows, packaging, and repository-only instruction scope.",
+      "when": [
+        "You are comparing workflows, entry commands, or skill resource packaging."
+      ],
+      "usage": "Inspect pinned sources and per-skill provenance. Opening the map does not install or activate anything.",
+      "behavior": [
+        "Separates reusable workflows from instructions for maintaining its repository.",
+        "The source comparison notes its documented gap between per-skill installs and root-level references."
+      ],
+      "outputs": [
+        "Research evidence for a scoped local design choice."
+      ],
+      "tags": [
+        "addy",
+        "osmani",
+        "lifecycle",
+        "upstream"
+      ]
+    },
+    {
+      "id": "archify",
+      "title": "Archify",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/archify/SKILL.md",
+      "summary": "Create polished, validated architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as explorable standalone HTML with inline SVG, dark/light themes, optional trace motion, and PNG/JPEG/WebP/SVG/WebM export. Accept plain-language requirements or pasted Mermaid flowchart, sequenceDiagram, and stateDiagram input; inspect repository evidence when the diagram must reflect real code. Use when the user asks to visualize system architecture, infrastructure, cloud/security/network topology, technical workflows, API call sequences, request lifecycles, data pipelines, ETL/ELT, data lineage, state machines, or to convert/beautify Mermaid.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/archify/SKILL.md. Check runtime: node skills/archify/bin/archify.mjs doctor. Follow its finalize workflow for a real diagram; keep editable JSON and HTML.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "archify",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "architect",
+      "title": "Architect",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/architect/SKILL.md",
+      "summary": "Explore architectural alternatives and produce a selected interface and ownership design before consequential implementation.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Supply behavior, scenarios, constraints, and source context. Load how and arena as needed; compare independent designs and return a selected design with rationale.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "architect",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "arena",
+      "title": "Arena",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/arena/SKILL.md",
+      "summary": "Compare independent candidate designs or artifacts, select a base, integrate compatible improvements, and verify the result.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/arena/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "arena",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "code-review-and-quality",
+      "title": "Code Review And Quality",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/code-review-and-quality/SKILL.md",
+      "summary": "Conducts multi-axis code review. Use before merging any change. Use when reviewing code written by yourself, another agent, or a human. Use when you need to assess code quality across multiple dimensions before it enters the main branch. Use when asked to review a diff or a pull request, even when the diff is pasted inline.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/code-review-and-quality/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "code-review-and-quality",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "domain-modeling",
+      "title": "Domain Modeling",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/domain-modeling/SKILL.md",
+      "summary": "Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/domain-modeling/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "domain-modeling",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "grill-me",
+      "title": "Grill Me",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/grill-me/SKILL.md",
+      "summary": "A relentless interview to sharpen a plan or design.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Load grill-me and its grilling dependency. Supply the idea or decision to clarify; answer the current decision frontier before dependent questions. Stop at agreed intent unless further work is authorized.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "grill-me",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "grill-with-docs",
+      "title": "Grill With Docs",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/grill-with-docs/SKILL.md",
+      "summary": "A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Load grill-with-docs, grilling, and domain-modeling together. Clarify the idea while recording resolved terms and durable design decisions.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "grill-with-docs",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "grilling",
+      "title": "Grilling",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/grilling/SKILL.md",
+      "summary": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/grilling/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "grilling",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "how",
+      "title": "How",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/how/SKILL.md",
+      "summary": "Explain a subsystem's architecture, execution flow, ownership, and boundaries from source evidence before changing it.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/how/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "how",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "issue-writing",
+      "title": "Issue Writing",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/issue-writing/SKILL.md",
+      "summary": "Write concise, implementation-ready issues (Jira, GitHub, or any tracker): problem/goal, required changes, and agent-verifiable completion criteria. Use whenever creating, drafting, or rewriting an issue, ticket, or bug report.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/issue-writing/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "issue-writing",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "planning-and-task-breakdown",
+      "title": "Planning And Task Breakdown",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/planning-and-task-breakdown/SKILL.md",
+      "summary": "Turn an existing spec or clear requirements into verifiable vertical slices, a dependency graph, and implementation briefs.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/planning-and-task-breakdown/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "planning-and-task-breakdown",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "planning-with-files",
+      "title": "Planning With Files",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/planning-with-files/SKILL.md",
+      "summary": "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/planning-with-files/SKILL.md. Source presence does not attest client discovery.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "planning-with-files",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "screenshot-manual",
+      "title": "Screenshot Manual",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/screenshot-manual/SKILL.md",
+      "summary": "Create or update a user manual with actual workflow screenshots, editable source, and a rendered and visually checked PDF.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Prepare actual sanitized screenshots and manual JSON. In an isolated Python environment with the skill requirements: python skills/screenshot-manual/scripts/build_manual.py <manual.json> <manual.pdf>; then python skills/screenshot-manual/scripts/render_pages.py <manual.pdf> <new-render-directory>. Inspect every rendered page.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "screenshot-manual",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "sdlc",
+      "title": "Sdlc",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/sdlc/SKILL.md",
+      "summary": "Carry out repository development, issue investigation, and implementation planning with HOTL stage decisions, traceable artifacts, tests, iterative PR review with reviewer fallback, and authorized PR integration. Use for meaningful software work even when the skill is unnamed; exclude simple questions and translations.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Read skills/sdlc/SKILL.md and its current policy amendments. State the requested route and endpoint; required dependencies are planning-with-files, archify, and screenshot-manual for applicable stages.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "sdlc",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "swarm",
+      "title": "Swarm",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/swarm/SKILL.md",
+      "summary": "Coordinate bounded independent workers for coverage, experiments, or implementation slices and return evidence-backed results.",
+      "when": [
+        "The task matches this skill's description and its prerequisites are available."
+      ],
+      "usage": "Supply bounded tasks, dependencies, owned outputs, allowed actions, and checks. Requires authorized workers; implementation uses isolated worktrees and one integration writer.",
+      "behavior": [
+        "Follows its packaged workflow and supporting resources.",
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+      ],
+      "outputs": [
+        "The artifact or report defined by the skill, with actual checks and gaps."
+      ],
+      "tags": [
+        "swarm",
+        "workflow",
+        "source"
+      ]
+    },
+    {
+      "id": "policy-architecture",
+      "title": "Architecture Policy",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/architecture.md",
+      "summary": "Portable guidance with explicit scope and source attribution.",
+      "when": [
+        "Selecting shared behavioral rules for a destination project."
+      ],
+      "usage": "Read this policy and preserve destination instructions and task authority.",
+      "behavior": [
+        "Defines scoped expectations; installation and deterministic enforcement are separate."
+      ],
+      "outputs": [
+        "A selected shared rule with a clear application boundary."
+      ],
+      "tags": [
+        "architecture",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-behavioral-tests",
+      "title": "Test observable behavior",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/behavioral-tests.md",
+      "summary": "Portable guidance with explicit scope and source attribution.",
+      "when": [
+        "Selecting shared behavioral rules for a destination project."
+      ],
+      "usage": "Read this policy and preserve destination instructions and task authority.",
+      "behavior": [
+        "Defines scoped expectations; installation and deterministic enforcement are separate."
+      ],
+      "outputs": [
+        "A selected shared rule with a clear application boundary."
+      ],
+      "tags": [
+        "behavioral-tests",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-evidence",
+      "title": "Evidence before completion",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/evidence.md",
+      "summary": "Portable guidance with explicit scope and source attribution.",
+      "when": [
+        "Selecting shared behavioral rules for a destination project."
+      ],
+      "usage": "Read this policy and preserve destination instructions and task authority.",
+      "behavior": [
+        "Defines scoped expectations; installation and deterministic enforcement are separate."
+      ],
+      "outputs": [
+        "A selected shared rule with a clear application boundary."
+      ],
+      "tags": [
+        "evidence",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-security",
+      "title": "Security Policy",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/security.md",
+      "summary": "Portable guidance with explicit scope and source attribution.",
+      "when": [
+        "Selecting shared behavioral rules for a destination project."
+      ],
+      "usage": "Read this policy and preserve destination instructions and task authority.",
+      "behavior": [
+        "Defines scoped expectations; installation and deterministic enforcement are separate."
+      ],
+      "outputs": [
+        "A selected shared rule with a clear application boundary."
+      ],
+      "tags": [
+        "security",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-visual-documentation",
+      "title": "Visual documentation",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/visual-documentation.md",
+      "summary": "Portable guidance with explicit scope and source attribution.",
+      "when": [
+        "Selecting shared behavioral rules for a destination project."
+      ],
+      "usage": "Read this policy and preserve destination instructions and task authority.",
+      "behavior": [
+        "Defines scoped expectations; installation and deterministic enforcement are separate."
+      ],
+      "outputs": [
+        "A selected shared rule with a clear application boundary."
+      ],
+      "tags": [
+        "visual-documentation",
+        "policy"
+      ]
+    },
+    {
+      "id": "mcp-context7",
+      "title": "Context7 MCP",
+      "kind": "mcp",
+      "group": "content",
+      "status": "available",
+      "source": "mcp/claude-code/context7.json",
+      "summary": "Opt-in Claude Code connection template; no connection is activated.",
+      "when": [
+        "The task needs this tool capability and access is authorized."
+      ],
+      "usage": "Read mcp/README.md; merge this server entry without replacing unrelated settings.",
+      "behavior": [
+        "Uses documented transport and credential-free placeholders.",
+        "Configuration parsing is checked; authenticated connection and tool use are not yet verified."
+      ],
+      "outputs": [
+        "A reviewable connection definition for target-client verification."
+      ],
+      "tags": [
+        "context7",
+        "mcp",
+        "claude"
+      ]
+    },
+    {
+      "id": "mcp-github",
+      "title": "Github MCP",
+      "kind": "mcp",
+      "group": "content",
+      "status": "available",
+      "source": "mcp/claude-code/github.json",
+      "summary": "Opt-in Claude Code connection template; no connection is activated.",
+      "when": [
+        "The task needs this tool capability and access is authorized."
+      ],
+      "usage": "Read mcp/README.md; merge this server entry without replacing unrelated settings.",
+      "behavior": [
+        "Uses documented transport and credential-free placeholders.",
+        "Configuration parsing is checked; authenticated connection and tool use are not yet verified."
+      ],
+      "outputs": [
+        "A reviewable connection definition for target-client verification."
+      ],
+      "tags": [
+        "github",
+        "mcp",
+        "claude"
+      ]
+    },
+    {
+      "id": "mcp-playwright",
+      "title": "Playwright MCP",
+      "kind": "mcp",
+      "group": "content",
+      "status": "available",
+      "source": "mcp/claude-code/playwright.json",
+      "summary": "Opt-in Claude Code connection template; no connection is activated.",
+      "when": [
+        "The task needs this tool capability and access is authorized."
+      ],
+      "usage": "Read mcp/README.md; merge this server entry without replacing unrelated settings.",
+      "behavior": [
+        "Uses documented transport and credential-free placeholders.",
+        "Configuration parsing is checked; authenticated connection and tool use are not yet verified."
+      ],
+      "outputs": [
+        "A reviewable connection definition for target-client verification."
+      ],
+      "tags": [
+        "playwright",
+        "mcp",
+        "claude"
+      ]
+    },
+    {
+      "id": "tool-registry",
+      "title": "External tools",
+      "kind": "guide",
+      "group": "content",
+      "status": "available",
+      "source": "tools/registry.json",
+      "summary": "Selected CLI, diagram, PDF, and MCP capabilities with prerequisites.",
+      "when": [
+        "Choosing or verifying an external runtime dependency."
+      ],
+      "usage": "Read tools/README.md and the registry; install only in the authorized destination.",
+      "behavior": [
+        "Records versions or version policies and official sources."
+      ],
+      "outputs": [
+        "A scoped dependency selection and verification path."
+      ],
+      "tags": [
+        "tools",
+        "diagram",
+        "pdf"
+      ]
+    },
+    {
+      "id": "source-adoption",
+      "title": "Source adoption",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/upstream/README.md",
+      "summary": "Origins, adaptations, update procedure, and compatibility limits.",
+      "when": [
+        "Importing or updating a package."
+      ],
+      "usage": "Read the adoption guide and each affected provenance.json.",
+      "behavior": [
+        "Separates public sources from local private provenance."
+      ],
+      "outputs": [
+        "A reviewable and attributable import."
+      ],
+      "tags": [
+        "provenance",
+        "licenses",
+        "upstream"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "overview",
+      "to": "modular-sdlc",
+      "label": "Links to the proposed workflow"
+    },
+    {
+      "from": "modular-sdlc",
+      "to": "pstack",
+      "label": "Studies parallel design and scoped workers"
+    },
+    {
+      "from": "modular-sdlc",
+      "to": "matt-pocock",
+      "label": "Studies grilling and task-graph execution"
+    },
+    {
+      "from": "modular-sdlc",
+      "to": "addy-osmani",
+      "label": "Studies stage composition and completion criteria"
+    },
+    {
+      "from": "overview",
+      "to": "maintenance",
+      "label": "Points to the maintenance instructions"
+    },
+    {
+      "from": "claude-entry",
+      "to": "maintenance",
+      "label": "Imports the canonical instructions"
+    },
+    {
+      "from": "overview",
+      "to": "structure",
+      "label": "Links to the layout rationale"
+    },
+    {
+      "from": "maintenance",
+      "to": "map-maintenance",
+      "label": "Defines map upkeep responsibilities"
+    },
+    {
+      "from": "structure",
+      "to": "pstack",
+      "label": "Compares the upstream structure"
+    },
+    {
+      "from": "structure",
+      "to": "matt-pocock",
+      "label": "Compares the upstream structure"
+    },
+    {
+      "from": "structure",
+      "to": "addy-osmani",
+      "label": "Compares the upstream structure"
+    },
+    {
+      "from": "architect",
+      "to": "how",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "architect",
+      "to": "arena",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "grill-me",
+      "to": "grilling",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "grill-with-docs",
+      "to": "grilling",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "grill-with-docs",
+      "to": "domain-modeling",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "sdlc",
+      "to": "planning-with-files",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "sdlc",
+      "to": "archify",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "sdlc",
+      "to": "screenshot-manual",
+      "label": "Requires this skill for applicable work"
+    },
+    {
+      "from": "screenshot-manual",
+      "to": "tool-registry",
+      "label": "Declares its PDF runtime dependencies"
+    },
+    {
+      "from": "archify",
+      "to": "tool-registry",
+      "label": "Provides the required diagram runtime"
+    },
+    {
+      "from": "overview",
+      "to": "source-adoption",
+      "label": "Documents imported content and update limits"
+    }
+  ]
+}

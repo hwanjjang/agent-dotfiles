@@ -1,0 +1,15 @@
+{
+  "head": "",
+  "base": "",
+  "candidate": "",
+  "delegated": false,
+  "required_ci_passed": false,
+  "protections_satisfied": false,
+  "human_requests_resolved": false,
+  "production_trigger": "unknown",
+  "remote_state_verified": false,
+  "authority_source": "",
+  "checked_at": "",
+  "remote_record": "",
+  "evidence": []
+}

@@ -1,0 +1,16 @@
+{
+  "scenarios": [
+    {
+      "id": "S1",
+      "user": "",
+      "goal": "",
+      "prerequisites": "",
+      "steps": [],
+      "expected": "",
+      "failure": "",
+      "criteria": [
+        "AC1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Explore the agent catalog",
+  "scenario": "Open the repository map in a browser. This sample checks the screenshot manual toolchain.",
+  "steps": [
+    {
+      "title": "Inspect the manual workflow",
+      "instruction": "Select Screenshot Manual in the catalog to read its workflow and required inputs.",
+      "screenshot": "catalog-detail.png",
+      "caption": "The actual screenshot-manual detail panel in the current catalog.",
+      "expected": "The panel links to the screenshot-manual skill and its declared runtime requirements."
+    }
+  ]
+}
