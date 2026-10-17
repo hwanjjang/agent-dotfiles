@@ -20,7 +20,9 @@ class ProtocolError(Exception):
 class JsonProcess:
     def __init__(self, command, cwd, env, timeout):
         self.timeout = timeout
+        self.deadline = time.monotonic() + timeout
         self.messages = []
+        self.writer = None
         self.queue = queue.Queue()
         self.process = subprocess.Popen(command, cwd=cwd, env=env, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -45,12 +47,43 @@ class JsonProcess:
         finally:
             self.queue.put(None)
 
+    def remaining(self):
+        remaining = self.deadline - time.monotonic()
+        if remaining <= 0:
+            raise ProtocolError('process deadline exceeded')
+        return remaining
+
     def send(self, row):
-        self.process.stdin.write(json.dumps(row) + '\n')
-        self.process.stdin.flush()
+        self.remaining()
+        body = (json.dumps(row) + '\n').encode('utf-8')
+        if len(body) > 1024 * 1024:
+            raise ProtocolError('input frame limit exceeded')
+        errors = []
+
+        def write():
+            try:
+                remaining = memoryview(body)
+                while remaining:
+                    written = os.write(self.process.stdin.fileno(), remaining)
+                    if not written:
+                        raise OSError('client input closed')
+                    remaining = remaining[written:]
+            except (OSError, ValueError) as error:
+                errors.append(error)
+
+        # Anonymous pipes cannot be selected portably on Windows. The owned
+        # process is killed by close() on timeout, releasing a blocked writer.
+        self.writer = threading.Thread(target=write, daemon=True)
+        self.writer.start()
+        self.writer.join(timeout=self.remaining())
+        if self.writer.is_alive():
+            raise ProtocolError('process deadline exceeded while sending')
+        if errors:
+            raise ProtocolError('client input closed or rejected') from errors[0]
+        self.remaining()
 
     def receive(self, predicate, timeout=None):
-        end = time.monotonic() + (self.timeout if timeout is None else timeout)
+        end = min(self.deadline, time.monotonic() + (self.remaining() if timeout is None else timeout))
         while time.monotonic() < end:
             try:
                 row = self.queue.get(timeout=max(.01, end - time.monotonic()))
@@ -59,6 +92,8 @@ class JsonProcess:
             if row is None:
                 raise ProtocolError('client exited or output limit exceeded')
             self.messages.append(row)
+            if not isinstance(row, dict):
+                raise ProtocolError('malformed protocol object')
             if predicate(row):
                 return row
         raise ProtocolError('timeout')
@@ -68,19 +103,29 @@ class JsonProcess:
         row = self.receive(lambda r: r.get('id') == ident)
         if 'error' in row:
             raise ProtocolError('native method unsupported or rejected')
+        if not isinstance(row.get('result'), dict):
+            raise ProtocolError('malformed method result')
         return row['result']
 
     def close(self):
+        cleanup_deadline = max(self.deadline, time.monotonic()) + 1
+        remaining = max(0, self.deadline - time.monotonic())
         try:
-            os.killpg(self.process.pid, signal.SIGTERM)
+            os.killpg(self.process.pid, signal.SIGTERM if remaining else signal.SIGKILL)
         except ProcessLookupError:
             pass
         try:
-            self.process.wait(timeout=3)
+            self.process.wait(timeout=min(3, remaining) if remaining else 1)
         except subprocess.TimeoutExpired:
-            os.killpg(self.process.pid, signal.SIGKILL)
-            self.process.wait(timeout=3)
-        self.reader.join(timeout=1)
+            try:
+                os.killpg(self.process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            # Bounded reap is cleanup, not another execution allowance.
+            self.process.wait(timeout=1)
+        if self.writer is not None:
+            self.writer.join(timeout=max(0, cleanup_deadline-time.monotonic()))
+        self.reader.join(timeout=min(1, max(0, self.deadline-time.monotonic())))
         self.process.stdin.close()
         self.process.stdout.close()
 

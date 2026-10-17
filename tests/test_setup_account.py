@@ -77,6 +77,13 @@ class AccountSetupTests(unittest.TestCase):
                             for row in review['codex']))
         without, _ = self.prepare(hooks=False)
         self.assertEqual(without['hook_activation']['codex'], [])
+        self.assertEqual(without['hook_activation']['claude'], [])
+        claude = review['claude']
+        self.assertEqual(len(claude), 1)
+        self.assertEqual(claude[0]['event'], 'SessionStart')
+        self.assertTrue(claude[0]['runs_when_event_fires'])
+        self.assertFalse(claude[0]['native_trust_step'])
+        self.assertEqual(len(claude[0]['definition_sha256']), 64)
 
     def test_install_update_uninstall_preserves_unrelated_settings(self):
         self.config('.claude/settings.json', {'permissions': {'deny': ['Bash(rm *)']}, 'hooks': {'Stop': [{'hooks': [{'command': 'personal-check'}]}]}})

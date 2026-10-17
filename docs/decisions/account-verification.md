@@ -65,6 +65,17 @@ upgrades, not a claim about current versions or a community preference for our
 custom command. Selection rests on the observed gap and reproducible checks;
 community validation of this implementation remains provisional.
 
+The native/model results discussed below used delivered source `ed1da039` and
+a pre-split doctor orchestrator. At initial doctor PR commit `1df5ade`, only the
+native transport and model-scenario modules matched the final historical runtime
+byte-for-byte; the entire candidate was not freshly native/model qualified.
+Review corrections subsequently change those modules. Historical runs do not
+qualify the corrected implementation. Separate actual Codex GPT-6-Luna and Claude
+Haiku 5.5 runs subsequently exercised the corrected harness against the existing
+`ed1da039` installation; see the current [verification record](../client-verification.md). Candidate-bound checks, source identities
+and review status are recorded in
+[PR #30](https://github.com/hwanjjang/agent-dotfiles/pull/30).
+
 Model choice remains an explicit host decision. A local catalog can describe a
 model as fast/affordable without proving widespread use or current API pricing.
 The host check used its offered GPT-6-Luna; no popularity ranking is asserted.

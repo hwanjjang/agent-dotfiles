@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 import shutil
 
-from account_storage import observed, read, safe
+from account_storage import read, safe
 from setup_account import BUNDLE, load_receipt, status
 
 

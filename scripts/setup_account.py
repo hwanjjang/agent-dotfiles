@@ -333,9 +333,14 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
                        definition_sha256=digest(encoded(dict(event=event, group=group, handler=handler))))
                    for event, groups in receipt['hooks'].get('.codex/hooks.json', {}).items()
                    for group in groups for handler in group['hooks']]
+    claude_review = [dict(event=event, matcher=group.get('matcher'), command=handler['command'],
+                          definition_sha256=digest(encoded(dict(event=event, group=group, handler=handler))),
+                          runs_when_event_fires=True, native_trust_step=False)
+                     for event, groups in receipt['hooks'].get('.claude/settings.json', {}).items()
+                     for group in groups for handler in group['hooks']]
     plan = dict(version=1, action=action, home=str(home), source_revision=sha,
                 hermes=hermes, planning_hooks=hooks, mcp=mcp, skills=skills,
-                hook_activation=dict(codex=hook_review, runs_outside_sandbox=True,
+                hook_activation=dict(codex=hook_review, claude=claude_review, runs_outside_sandbox=True,
                                      trust_persists=True, trust_changed_by_installer=False,
                                      next_action='Review the listed definitions in native /hooks; activate only within explicit authority.'),
                 conflicts=sorted(set(conflicts)), missing_executables=prerequisites,

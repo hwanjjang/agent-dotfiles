@@ -149,7 +149,8 @@ checks a fresh scenario marker, four exact stdout/stderr/exit-code examples,
 acceptance criteria, no fabricated test execution, source-reading evidence and
 unchanged inputs. Native tool traces establish source reads. Paseo's summarized
 logs are supplemented by exact source-content readback and its inspected actual
-model ID; this is not a complete tool audit. A valid reply or successful launch
+model ID. Paseo/Codex labels this evidence `readback-only` and leaves
+`source_read_verified` false; it is not native tool-level proof. A valid reply or successful launch
 alone cannot pass. This bounded scenario does not certify every skill or a full SDLC.
 
 `--scenario routing` checks native Codex/Claude selection of the installed spec and
@@ -176,7 +177,10 @@ approval-never; Claude exposes Read, plus Skill for routing. Existing client sta
 The scenario does not modify trust or persistent permission settings.
 
 Model checks may consume subscription/API quota. `--timeout` bounds each subprocess
-(default 90 seconds, maximum 300); no automatic retries or expensive fallbacks run.
+(default 90 seconds, maximum 300), with a short bounded shutdown/reap allowance.
+Codex protocol steps share one process deadline. No automatic retries or expensive
+fallbacks run. Failed attempts retain an attempted state; unknown delivery is not
+reported as proof that no model request was sent.
 Claude also requests a USD 0.50 CLI budget. Codex/Paseo have no verified hard-dollar
 cap here: bounded runtime and a small prompt are not a guaranteed spending limit.
 Paseo reuses the selected model at low effort, an isolated local workspace, and the

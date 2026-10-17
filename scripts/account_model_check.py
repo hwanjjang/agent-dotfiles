@@ -9,7 +9,6 @@ import shutil
 import signal
 import subprocess
 import tempfile
-import time
 import uuid
 
 from account_doctor import check
@@ -86,7 +85,6 @@ def codex_model_run(model, prompt, project, env, timeout, folder, schema=None):
     """Use the native app-server so identity/reroutes belong to the executed turn."""
     process = JsonProcess(['codex', 'app-server', '--stdio'], project, env, timeout)
     answer, code = '', 'provider-error'
-    deadline = time.monotonic() + timeout
     try:
         process.call(1, 'initialize', dict(clientInfo=dict(name='account_doctor', version='1.0')))
         process.send(dict(method='initialized', params={}))
@@ -100,16 +98,17 @@ def codex_model_run(model, prompt, project, env, timeout, folder, schema=None):
             params['outputSchema'] = schema
         process.call(3, 'turn/start', params)
         completed = process.receive(lambda r: r.get('method') == 'turn/completed'
-                                    and r.get('params', {}).get('threadId') == thread,
-                                    max(.01, deadline - time.monotonic()))
+                                    and r.get('params', {}).get('threadId') == thread)
         code = 0 if completed['params']['turn']['status'] == 'completed' else 'provider-error'
         answer = codex_final_answer(process.messages)
-    except ProtocolError:
+    except (ProtocolError, KeyError, TypeError, AttributeError, ValueError):
         code = 'protocol-error'
     finally:
-        process.close()
-        (folder / 'native.stdout').write_text(''.join(json.dumps(r) + '\n' for r in process.messages))
-        (folder / 'answer.json').write_text(answer)
+        try:
+            process.close()
+        finally:
+            (folder / 'native.stdout').write_text(''.join(json.dumps(r) + '\n' for r in process.messages))
+            (folder / 'answer.json').write_text(answer)
     return code, (folder / 'native.stdout').read_text()
 
 
@@ -271,11 +270,17 @@ def model_checks(home, receipt, client, model, paseo, evidence, timeout, scenari
     except OSError:
         return [check('model.evidence', 'fail', 'Evidence directory must be new and writable; existing runs are never overwritten.')]
     selected = PAYLOAD + (('skills/planning-and-task-breakdown/SKILL.md',) if scenario == 'routing' else ())
-    sources = {name: (home / BUNDLE / name).read_text() for name in selected}
-    before = {name: observed(home / BUNDLE / name) for name in selected}
-    manifest = dict(client=client, requested_model=model, source_revision=receipt['source_revision'],
-                    files={name: hashlib.sha256(content.encode()).hexdigest() for name, content in sources.items()},
-                    scenario=scenario, model_prompt_sent=False, hook_trust_bypass=False, retries=0)
+    manifest = dict(client=client, requested_model=model, source_revision=receipt.get('source_revision'),
+                    files={}, scenario=scenario, model_attempted=False, model_prompt_sent=False,
+                    attempt_state='not_attempted', hook_trust_bypass=False, retries=0)
+    (folder / 'input.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    try:
+        sources = {name: (home / BUNDLE / name).read_text() for name in selected}
+        before = {name: observed(home / BUNDLE / name) for name in selected}
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        return [check('model.prerequisites', 'blocked', 'Selected installed sources are missing or unreadable.',
+                      'Install the required spec/planning sources before another model attempt.')]
+    manifest['files'] = {name: hashlib.sha256(content.encode()).hexdigest() for name, content in sources.items()}
     (folder / 'input.json').write_text(json.dumps(manifest, indent=2) + '\n')
     rows = []
     with tempfile.TemporaryDirectory(prefix='account-model-check-') as temp:
@@ -325,10 +330,13 @@ def model_checks(home, receipt, client, model, paseo, evidence, timeout, scenari
             if scenario == 'routing':
                 command[1:1] = ['--json-schema', json.dumps(response_schema(True))]
         try:
+            manifest.update(model_attempted=True, model_prompt_sent=None, attempt_state='attempted')
+            (folder / 'input.json').write_text(json.dumps(manifest, indent=2) + '\n')
             code, stdout = (codex_model_run(model, prompt, project, env, timeout, folder,
                                            response_schema(True) if scenario == 'routing' else None) if client == 'codex'
                             else run(command, project, env, timeout, folder, 'native'))
-            manifest['model_prompt_sent'] = True
+            manifest['attempt_state'] = 'returned'
+            manifest['client_result'] = code
             events = json_rows(stdout)
             if client == 'codex':
                 answer = (folder / 'answer.json').read_text() if (folder / 'answer.json').exists() else ''
@@ -353,6 +361,8 @@ def model_checks(home, receipt, client, model, paseo, evidence, timeout, scenari
                 grade['plan_verifiable'] = plan_is_verifiable(data)
                 grade['passed'] = grade['passed'] and grade['plan_verifiable']
             grade.update(model_identity(events, client, model))
+            if grade['model_identity_verified']:
+                manifest['model_prompt_sent'] = True
             fixture_unchanged = observed(project) == fixture_before
             # Client/cache files are allowed only under the designated evidence cache.
             grade['fixture_unchanged'] = fixture_unchanged
@@ -373,10 +383,14 @@ def model_checks(home, receipt, client, model, paseo, evidence, timeout, scenari
                               else 'Actual model scenario did not pass; inspect private grade and native logs.',
                               '' if outcome == 'pass' else 'Resolve provider/quota/tool failures or scenario findings; no automatic retry occurs.'))
             if paseo and outcome == 'pass':
-                rows.extend(paseo_model(client, model, prompt, project, env, folder, timeout, marker, sources))
+                try:
+                    rows.extend(paseo_model(client, model, prompt, project, env, folder, timeout, marker, sources))
+                except (OSError, ValueError, KeyError, TypeError, AttributeError, subprocess.SubprocessError):
+                    rows.append(check('model.paseo', 'blocked', 'Optional Paseo check failed; inspect retained evidence.'))
             elif paseo:
                 rows.append(check('model.paseo', 'blocked', 'Native model check did not pass; optional Paseo request was not sent.'))
-        except (OSError, ValueError, subprocess.SubprocessError):
+        except (OSError, ValueError, KeyError, TypeError, AttributeError, ProtocolError, subprocess.SubprocessError):
+            manifest['attempt_state'] = 'error'
             rows.append(check('model.native', 'blocked', 'Model process failed; retained evidence is incomplete.',
                               'Inspect private evidence; do not infer a passing model evaluation.'))
     (folder / 'input.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -387,16 +401,40 @@ def paseo_model(client, model, prompt, project, env, folder, timeout, marker, so
     health = paseo_health(timeout)
     if health[0]['status'] != 'pass':
         return health
-    # Workspace and agent IDs must come from this invocation; never touch unrelated sessions.
     workspace = agent = None
     rows = []
-    fixture_before = observed(project)
-    source_before = {name: observed(Path.home() / BUNDLE / name) for name in sources}
+    owned = dict(workspace_id=None, agent_id=None, requested_model=model,
+                 requested_mode='auto' if client == 'codex' else 'plan', observed_mode=None,
+                 workspace_state='not_attempted', agent_state='not_attempted', cleanup=[])
+    errors = (OSError, ValueError, KeyError, TypeError, AttributeError, subprocess.SubprocessError)
+
+    def save_owned():
+        (folder / 'paseo-owned.json').write_text(json.dumps(owned, indent=2) + '\n')
+
+    def owned_id(value):
+        return value if isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9_-]{1,128}', value) else None
+
+    def cleanup_call(command, label):
+        try:
+            code, raw = run(command, project, env, timeout, folder, label)
+            ok = code == 0
+        except errors:
+            ok, raw = False, ''
+        owned['cleanup'].append(dict(step=label, success=ok))
+        return ok, raw
+
     try:
+        fixture_before = observed(project)
+        source_before = {name: observed(Path.home() / BUNDLE / name) for name in sources}
+        owned['workspace_state'] = 'uncertain'
+        save_owned()
         code, raw = run(['paseo', 'workspace', 'create', '--isolation', 'local', '--path', str(project), '--json'],
                         project, env, timeout, folder, 'paseo-workspace')
         data = json.loads(raw)
-        workspace = data.get('workspaceId') or data.get('workspace', {}).get('id')
+        workspace = owned_id(data.get('workspaceId') or data.get('workspace', {}).get('id'))
+        if workspace:
+            owned.update(workspace_id=workspace, workspace_state='identified')
+            save_owned()
         if code or not workspace:
             raise ValueError('workspace creation not established')
         # The CLI currently summarizes tool output. An exact, independently graded
@@ -407,14 +445,18 @@ def paseo_model(client, model, prompt, project, env, folder, timeout, marker, so
                    'to its exact ' + excerpt + ' read from the installed file (preserve internal newlines). '
                    'The word limit excludes source_quotes.')
         command = ['paseo', 'run', '--background', '--workspace', workspace, '--provider', client + '/' + model,
-                   '--mode', 'auto' if client == 'codex' else 'plan', '--thinking', 'low',
+                   '--mode', owned['requested_mode'], '--thinking', 'low',
                    '--title', 'Account setup smoke', '--json', prompt]
+        owned['agent_state'] = 'uncertain'
+        save_owned()
         code, raw = run(command, project, env, timeout, folder, 'paseo-create')
         data = json.loads(raw)
-        agent = data.get('agentId') or data.get('agent', {}).get('id')
+        agent = owned_id(data.get('agentId') or data.get('agent', {}).get('id'))
+        if agent:
+            owned.update(agent_id=agent, agent_state='identified')
+            save_owned()
         if code or not agent:
             raise ValueError('agent creation not established')
-        (folder / 'paseo-owned.json').write_text(json.dumps(dict(workspace_id=workspace, agent_id=agent, requested_model=model), indent=2) + '\n')
         code, _ = run(['paseo', 'wait', agent, '--timeout', str(timeout), '--json'], project, env, timeout + 5, folder, 'paseo-wait')
         _, raw = run(['paseo', 'logs', agent, '--json'], project, env, timeout, folder, 'paseo-logs')
         _, inspection = run(['paseo', 'inspect', agent, '--json'], project, env, timeout, folder, 'paseo-inspect')
@@ -422,6 +464,8 @@ def paseo_model(client, model, prompt, project, env, folder, timeout, marker, so
         # CLI versions may expose title-cased inspect keys. Accept known shapes only.
         observed_model = identity.get('Model', identity.get('model'))
         observed_provider = identity.get('Provider', identity.get('provider'))
+        owned['observed_mode'] = identity.get('Mode', identity.get('mode'))
+        save_owned()
         decoder = json.JSONDecoder()
         candidates = []
         for match in re.finditer(r'\{', raw):
@@ -438,7 +482,10 @@ def paseo_model(client, model, prompt, project, env, folder, timeout, marker, so
         grade = score(json.dumps(answer), '\n'.join(v for v in quotes.values() if isinstance(v, str))
                       if isinstance(quotes, dict) else '', marker, sources)
         grade.update(source_readback_exact=valid_quotes, observed_model=observed_model, observed_provider=observed_provider,
-                     source_read_proof='exact model readback plus summarized shell trace; not a complete tool audit')
+                     source_read_proof=('readback-only; summarized shell activity does not attribute installed-source reads'
+                                        if client == 'codex' else 'exact readback and named Read summaries; not a complete tool audit'),
+                     qualification_scope='scenario, model identity and source readback',
+                     requested_mode=owned['requested_mode'], observed_mode=owned['observed_mode'])
         grade['fixture_unchanged'] = observed(project) == fixture_before
         grade['installed_sources_unchanged'] = source_before == {name: observed(Path.home() / BUNDLE / name) for name in sources}
         read_trace = '[Shell]' in raw if client == 'codex' else all(
@@ -447,39 +494,59 @@ def paseo_model(client, model, prompt, project, env, folder, timeout, marker, so
         grade['passed'] = (grade['passed'] and valid_quotes and code == 0 and observed_model == model
                            and observed_provider == client and read_trace
                            and grade['fixture_unchanged'] and grade['installed_sources_unchanged'])
+        if client == 'codex':
+            grade['skill_and_policies_read'] = None
+            grade['source_read_verified'] = False
         (folder / 'paseo-grade.json').write_text(json.dumps(grade, indent=2) + '\n')
         rows.append(check('model.paseo', 'pass' if grade['passed'] else 'fail',
-                          'Paseo model, scenario and exact installed-source readback passed.' if grade['passed']
+                          ('Paseo model and scenario passed; installed-source evidence is readback-only.'
+                           if client == 'codex' else 'Paseo model, scenario and named source-read summaries passed.') if grade['passed']
                           else 'Paseo scenario, source readback or actual model identity did not pass.',
                           '' if grade['passed'] else 'Inspect private grade/timeline; summary output alone is insufficient.'))
-    except (OSError, ValueError, subprocess.SubprocessError):
+    except errors:
         rows.append(check('model.paseo', 'blocked', 'Optional Paseo model execution was not established.',
                           'Inspect private creation/connection evidence; never blindly retry uncertain creation.'))
     finally:
         cleanup = True
+        uncertain = 'uncertain' in (owned['workspace_state'], owned['agent_state'])
         if agent:
-            code, _ = run(['paseo', 'archive', agent, '--json'], project, env, timeout, folder, 'paseo-archive-agent')
-            cleanup &= code == 0
+            ok, _ = cleanup_call(['paseo', 'archive', agent, '--json'], 'paseo-archive-agent')
+            cleanup &= ok
+        archived = False
         if workspace:
-            code, _ = run(['paseo', 'workspace', 'archive', workspace, '--json'], project, env, timeout, folder, 'paseo-archive-workspace')
-            cleanup &= code == 0
-            if code == 0:
-                # Local workspace creation implicitly registers this unique temporary
-                # project. Remove its empty registry entry as part of owned teardown.
+            archived, _ = cleanup_call(['paseo', 'workspace', 'archive', workspace, '--json'], 'paseo-archive-workspace')
+            cleanup &= archived
+        if archived and not uncertain and cleanup:
+            # Only this unique temporary path can identify an owned project registration.
+            ok, raw = cleanup_call(['paseo', 'project', 'ls', '--json'], 'paseo-projects')
+            cleanup &= ok
+            if ok:
                 try:
-                    code, raw = run(['paseo', 'project', 'ls', '--json'], project, env, timeout, folder, 'paseo-projects')
                     projects = json.loads(raw)
-                    if code or not isinstance(projects, list):
+                    if not isinstance(projects, list):
                         raise ValueError('project list unavailable')
                     for entry in projects:
-                        if Path(entry.get('path', '')).resolve() == project.resolve():
-                            ident = entry.get('projectId')
+                        if not isinstance(entry, dict):
+                            cleanup = False
+                            continue
+                        if isinstance(entry.get('path'), str) and Path(entry['path']).resolve() == project.resolve():
+                            ident = owned_id(entry.get('projectId'))
                             if not ident:
-                                raise ValueError('project identity unavailable')
-                            code, _ = run(['paseo', 'project', 'delete', ident, '--json'], project, env, timeout, folder, 'paseo-delete-project')
-                            cleanup &= code == 0
-                except (OSError, ValueError, subprocess.SubprocessError):
+                                cleanup = False
+                                continue
+                            deleted, _ = cleanup_call(['paseo', 'project', 'delete', ident, '--json'], 'paseo-delete-project')
+                            cleanup &= deleted
+                except errors:
                     cleanup = False
-        if not cleanup:
-            rows.append(check('paseo.cleanup', 'fail', 'Owned Paseo cleanup failed.', 'Archive only the IDs retained in this run.'))
+        if uncertain or not cleanup:
+            message = ('Paseo creation is uncertain; an agent, workspace or project registration may remain.'
+                       if cleanup else 'Known owned Paseo cleanup did not complete.' +
+                       (' Creation is also uncertain.' if uncertain else ''))
+            rows.append(check('paseo.cleanup', 'fail' if not cleanup else 'blocked', message,
+                              'Reconcile paseo-owned.json and creation/cleanup evidence before retrying; never guess IDs.'))
+        owned['cleanup_status'] = 'fail' if not cleanup else 'blocked' if uncertain else 'pass'
+        try:
+            save_owned()
+        except errors:
+            rows.append(check('paseo.cleanup', 'fail', 'Could not persist the owned-resource cleanup record.'))
     return rows

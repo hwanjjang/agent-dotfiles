@@ -4,9 +4,33 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Doctor review corrections — 2026-10-18
+
+The corrected doctor harness was exercised with actual Codex GPT-6-Luna and
+Claude Haiku 5.5. Both bounded spec scenarios passed actual model identity,
+installed-source use, exact CLI outcomes, input integrity and native planning
+recovery checks. These fresh runs used the existing delivered bundle `ed1da039`;
+they qualify the corrected harness against that installation, not a newly
+installed candidate or every skill. No trust or permission settings changed.
+
+The corrected harness also passed a disposable install → offline doctor →
+uninstall journey delivering doctor PR commit `1df5ade`, with the target home
+unchanged by diagnosis. PR #30 records the final candidate hashes, test results,
+current-head delivery smoke and independent review. Historical evidence below
+retains its original source and coverage limits.
+
 ## Account doctor and model scenarios — 2026-10-17
 
-The maintained account verification recipe now separates offline ownership,
+The historical runs in this section used delivered bundle `ed1da039` and a
+pre-split doctor orchestrator. At the first doctor PR commit `1df5ade`, only
+`account_native.py` and `account_model_check.py` were byte-identical to the final
+historical runtime; this did not qualify that entire commit. Subsequent review
+corrections change those modules too. Historical model results below therefore
+remain evidence for their recorded source. Fresh corrected-harness results are
+listed separately above. Current candidate checks and exact revisions are recorded in
+[PR #30](https://github.com/hwanjjang/agent-dotfiles/pull/30).
+
+The account verification recipe separates offline ownership,
 native readiness and actual model behavior. Codex CLI 0.159.2 and Claude Code
 2.1.285 each discovered all 23 installed skill names. Codex source paths matched
 the owned bundle. Claude's native SessionStart event recovered a synthetic
@@ -35,7 +59,7 @@ completed after the quota reset. All six installed sources were read, the four
 CLI examples and acceptance criteria passed, and the inputs remained unchanged.
 The grader initially mistook Read's line-number prefixes for source content.
 A failing regression reproduced that defect; presentation-prefix normalization
-fixed it, and all 22 doctor tests passed. The retained live evidence then passed
+fixed it, and the then-current 22 doctor tests passed. The retained live evidence then passed
 without another model request; the original failed grade remains private evidence.
 Native discovery and SessionStart recovery also passed again. This verifies the
 bounded `to-spec` scenario, not every skill or Claude through Paseo.
@@ -54,10 +78,11 @@ Raw native/model outputs, prompts, local paths, quota messages and resource IDs
 remain private. Public documentation retains sanitized observations and commands,
 not account receipts. Native initializers can update caches/state; offline doctor
 alone performs no account writes. Hermes, all lifecycle events, model adherence
-on other tasks and remote MCP authentication remain unverified. The maintained regression and manual checks are recorded with this
-change; historical sections below retain their original boundaries.
+on other tasks and remote MCP authentication remained unverified in these runs.
+Regression and manual evidence for the PR candidate is separate; historical
+sections below retain their original boundaries.
 
-### Follow-up coverage — 2026-10-17
+### Historical follow-up coverage — 2026-10-17
 
 - **Codex hooks:** after explicit approval of the exact seven planning hooks and
   their persistent execution outside the sandbox, native `/hooks` trusted them.

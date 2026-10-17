@@ -322,7 +322,7 @@ class PaseoLifecycleTests(unittest.TestCase):
                     if command[1:3]==['workspace','create']:return 0,json.dumps({'workspaceId':'owned-workspace'})
                     if command[1]=='run':return 0,json.dumps({'agentId':'owned-agent'})
                     if command[1]=='logs':return 0,'[Shell] cat selected files\n'+json.dumps(answer)
-                    if command[1]=='inspect':return 0,json.dumps({'Provider':'codex','Model':actual_model})
+                    if command[1]=='inspect':return 0,json.dumps({'Provider':'codex','Model':actual_model,'Mode':'auto'})
                     if command[1:3]==['project','ls']:return 0,json.dumps([{'projectId':'owned-project','path':str(project)}, {'projectId':'unrelated-project','path':'/other'}])
                     return 0,'{}'
                 with patch.object(model,'run',side_effect=fake_run),patch.object(model,'paseo_health',return_value=[check('paseo.connection','pass','Synthetic')]),patch.object(model.Path,'home',return_value=home):
@@ -331,6 +331,13 @@ class PaseoLifecycleTests(unittest.TestCase):
                 self.assertTrue(any(c[1:3]==['archive','owned-agent'] for c in calls))
                 self.assertTrue(any(c[1:4]==['project','delete','owned-project'] for c in calls))
                 self.assertFalse(any('unrelated-project' in c for c in calls))
+                owned=json.loads((folder/'paseo-owned.json').read_text())
+                self.assertEqual(owned['requested_mode'],'auto')
+                self.assertEqual(owned['observed_mode'],'auto')
+                grade=json.loads((folder/'paseo-grade.json').read_text())
+                self.assertIn('readback-only',grade['source_read_proof'])
+                self.assertFalse(grade['source_read_verified'])
+                self.assertIsNone(grade['skill_and_policies_read'])
 
 
 class ModelEvidenceDestinationTests(unittest.TestCase):
