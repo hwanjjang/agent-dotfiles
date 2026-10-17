@@ -91,8 +91,8 @@ Store export and evaluator together, including English/Korean cases and boundary
 inputs. No second private state owner or producer copy is introduced.
 
 Historical PR36 compatibility evidence used out-of-tree producer `5adfbf9`;
-its dated manual/capture receipt retains that identity and cannot establish the
-current integration. Current same-checkout verification is a separate run. Neither
+its dated manual/capture receipt remains in Git history at `a8fa3b1` and cannot
+establish the current integration. Current same-checkout verification is a separate run. Neither
 integration nor deterministic operator checks establish actual model execution.
 
 The local CLI accepts at most 16 MiB of JSON input and bounds completion count,
@@ -119,6 +119,11 @@ repetition. `paired_summary` adds `scheduled_pairs`, `overall`, `dimensions` and
 including missing, duplicate, terminal-error, stale and unqualified trials.
 Dimensions use their own verdicts; the primary metric refers to its dimension,
 not the aggregate outcome. A passing outcome does not resolve unknown routing.
+Dimensions with no defined criteria are unmeasured and also appear as unresolved;
+inspect the frozen criteria and trial checks to distinguish them from lost evidence.
+A primary metric with no criteria is accepted but remains entirely unresolved.
+A definite failed criterion takes precedence over another missing criterion in the
+same arm: that arm remains failed, and its pair is classified from that verdict.
 These are descriptive development counts, not statistical significance,
 non-inferiority estimates or evidence of improved model performance.
 

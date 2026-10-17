@@ -203,6 +203,33 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(summary['overall']['both_fail'], 2)
         self.assertEqual(summary['dimensions']['adherence']['unresolved'], 2)
 
+    def test_definite_failure_with_missing_criterion_stays_failed(self):
+        self.spec['repetitions'] = 1
+        for variant in ev.VARIANTS:
+            self.spec['checks']['verification-en'][variant]['criteria'].append(dict(
+                id='extra-outcome', dimension='outcome', kind='value_equals',
+                target='extra-result', expected=True, critical=False))
+        self.plan = ev.freeze(self.spec)
+        rows = []
+        for trial in self.plan['trials']:
+            row = completion(self.plan, trial)
+            if trial['arm'] == 'baseline':
+                # Definite incorrect claim plus missing extra criterion.
+                row['observations']['check']['claim'] = 'unavailable'
+            else:
+                row['observations']['extra-result'] = True
+            rows.append(row)
+        report = self.report(rows)
+        for trial in report['trials']:
+            if trial['arm'] == 'baseline':
+                self.assertEqual([c['verdict'] for c in trial['checks']], ['fail', 'inconclusive'])
+                self.assertEqual(trial['verdict'], 'fail')
+                self.assertEqual(trial['dimensions']['outcome'], 'fail')
+        expected = dict(improved=2, regressed=0, both_pass=0, both_fail=0, unresolved=0)
+        self.assertEqual(report['paired_summary']['overall'], expected)
+        self.assertEqual(report['paired_summary']['dimensions']['outcome'], expected)
+        self.assertEqual(report['paired_summary']['scheduled_pairs'], 2)
+
     def test_invalid_or_unqualified_pairs_remain_unresolved(self):
         rows = [completion(self.plan, t) for t in self.plan['trials']]
         changed = copy.deepcopy(self.spec)
