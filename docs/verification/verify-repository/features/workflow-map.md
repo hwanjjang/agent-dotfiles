@@ -36,6 +36,9 @@ server or account configuration is installed.
    Breakdown, Planning With Files, Screenshot Manual and SDLC. Each has a concrete
    example, flow, scope notes and public provenance; the SDLC explanation preserves
    its pre-merge endpoint and conditional method selection.
+   Inspect Communication, Execution and the Account sources & runtime group too:
+   source links must resolve, triggers must explain when to use them, and account
+   source/hook entries must state that they do not establish native activation.
 3. Zoom with +/-, Fit, drag the canvas and drag a node. Camera and node placement
    change; placement survives reload. Reset layout restores positions. Full screen
    opens and exits through the control.

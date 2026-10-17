@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.agents/bin/planning-hook.py\" claude session-start",
+            "timeout": 10,
+            "statusMessage": "Restoring planning context"
+          }
+        ]
+      }
+    ]
+  }
+}

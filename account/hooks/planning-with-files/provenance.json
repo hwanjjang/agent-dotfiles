@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/OthmanAdi/planning-with-files",
+  "revision": "dab9d16fbd9314448b319d112e99f497d7638d89",
+  "license": "MIT",
+  "retrieved": "2026-10-17",
+  "selection": "Retain the existing skill pin and only the Codex standalone/POSIX Claude runtime dependency closure. Plugin and Windows launchers are not selected. No package upgrade.",
+  "adaptations": [],
+  "dependencies": [
+    "skills/planning-with-files"
+  ],
+  "files": {
+    "codex/codex_hook_adapter.py": {
+      "upstream_path": ".codex/hooks/codex_hook_adapter.py",
+      "sha256": "eae2f447f8f674f6664a0511195f3aeaa9583c2c85d316c744f3ba9157b0b914"
+    },
+    "codex/context_frame.py": {
+      "upstream_path": ".codex/hooks/context_frame.py",
+      "sha256": "e391bb3f4007db1dc455e2ba6d6dc6a31057336e24bbcf8471c220f503f31147"
+    },
+    "codex/permission_request.py": {
+      "upstream_path": ".codex/hooks/permission_request.py",
+      "sha256": "38e0fb6ea5bbd9f51653b6d1b88ebf806cd46eb5edace1b82d44a1392c3229b0"
+    },
+    "codex/post-tool-use.sh": {
+      "upstream_path": ".codex/hooks/post-tool-use.sh",
+      "sha256": "4298278f3422b2f720f370c2fbc58d50ba993771e644ef8b1f038210381eb2b7"
+    },
+    "codex/post_tool_use.py": {
+      "upstream_path": ".codex/hooks/post_tool_use.py",
+      "sha256": "1b15bcde9aed4ebed31286e1949cee0aea950ed079d47b0b2452bc51db84e45b"
+    },
+    "codex/pre-compact.sh": {
+      "upstream_path": ".codex/hooks/pre-compact.sh",
+      "sha256": "f24bef12e0a0288b5d6431014fc8b1bc37fa3b01c0621e46eafee363ecabb2f2"
+    },
+    "codex/pre-tool-use.sh": {
+      "upstream_path": ".codex/hooks/pre-tool-use.sh",
+      "sha256": "07adf56808f48e7ecabf27e372a9b0e828cbff66d4d4ff8686323838e8e77dac"
+    },
+    "codex/pre_tool_use.py": {
+      "upstream_path": ".codex/hooks/pre_tool_use.py",
+      "sha256": "1aa3f59d401249ff9ac98acf72f5331d57a3691dcc43b3659e9f1d81d0480778"
+    },
+    "codex/resolve-plan-dir.sh": {
+      "upstream_path": ".codex/hooks/resolve-plan-dir.sh",
+      "sha256": "07a26a02c50c5654798805696e3191557675357cb19d9d9c46acffd8f456218f"
+    },
+    "codex/run_sh.py": {
+      "upstream_path": ".codex/hooks/run_sh.py",
+      "sha256": "2d46219ad1ca9c4dedcd6f6f1d8c29114dc2f9df63668800a1d31ed54c608083"
+    },
+    "codex/session-start.sh": {
+      "upstream_path": ".codex/hooks/session-start.sh",
+      "sha256": "5ad94573b70e86a106a6d50ed41321a16c21141ab74d87ecc87054b09c41c2b7"
+    },
+    "codex/stop.py": {
+      "upstream_path": ".codex/hooks/stop.py",
+      "sha256": "7fe23d40db9ed691bbeb1c5cd89af16a4431661e2bdcbf311443f5d1c406af64"
+    },
+    "codex/stop.sh": {
+      "upstream_path": ".codex/hooks/stop.sh",
+      "sha256": "d91f1ddf4eaec6158607ef44fe172b2131a28ec716b583c89c3610118919f313"
+    },
+    "codex/user-prompt-submit.sh": {
+      "upstream_path": ".codex/hooks/user-prompt-submit.sh",
+      "sha256": "eed4d9b3cf9224f9b2f282650f0449a7b8fb781608360776cc4586109231dcc4"
+    },
+    "claude/dispatch.sh": {
+      "upstream_path": "hooks/claude-hook.sh",
+      "sha256": "0f0f402f5ab1a48ef39edfd9794806179af7f84a70eea858daf904ccea5de759"
+    },
+    "LICENSE": {
+      "upstream_path": "LICENSE",
+      "sha256": "4f2e5ecfaa4e0833621cfe54c0bdc2f60f086c0925540d7bdc713517eafb3c84"
+    }
+  },
+  "validation": "Pinned upstream hashes verified. Isolated runtime checks recorded in docs/client-verification.md; native account activation is not claimed."
+}

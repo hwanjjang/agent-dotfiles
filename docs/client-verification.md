@@ -3,6 +3,37 @@
 Source packaging, client discovery and successful task execution are different
 checks. This collection does not install account configuration or enable servers.
 
+## Selective account source import — 2026-10-17
+
+The collection now has 23 skills, ten policies and inactive account hook source
+and templates. The [selection decision](decisions/account-source-import.md) compares
+pstack, Matt and Addy and records rejected additions. The planning skill pin is
+unchanged; its selected POSIX runtime files and license match pinned upstream
+SHA-256 records. No private account settings or permission exceptions are imported.
+
+Ten isolated account-hook tests pass with Python 3.11 and the system Python on macOS. They check
+upstream hashes, template route validity, no-plan execution, selected-plan recovery
+for both clients with space-containing paths, refusal to fall back from a broken
+selector, opt-out, event-scoped project precedence, invocation matchers and invalid
+inputs/routes. The review correction reproduced missing resume/clear/compact
+recovery under a startup-only project registration in both clients before fixing
+it. Tool/compaction filters and unsupported or missing matcher input are covered.
+Tests use disposable delivery layouts and caches; HOME and real account settings
+are not changed. These are direct script checks, not native client activation.
+
+The 19 map tests and 56 SDLC state/reviewer regressions pass, and the SDLC skill
+metadata validates. Generated catalog and workflow maps are current. Existing
+browser scenarios passed in isolated Chrome after the content update. All six new
+catalog entries and five new workflow nodes passed focused usage/source-link
+checks; the workflow checks are in the maintained recipe. The overview and planning
+hook detail capture were visually inspected for layout and readable content.
+
+Not verified: account installation/rollback, effective native hook registration,
+all lifecycle behavior in either client, Windows/Hermes/plugin deployment, MCP
+authentication, live provider execution or comparative task effectiveness. A
+synthetic plan recovery is not an end-to-end SDLC run. Preserve existing client
+features until a separately authorized migration establishes replacement parity.
+
 ## Observed checks — 2026-10-17
 
 - The initial 18 source packages were discovered by the installed Codex CLI 0.159.2 app-server through

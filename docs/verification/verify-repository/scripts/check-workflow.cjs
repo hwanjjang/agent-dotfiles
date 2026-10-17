@@ -108,6 +108,23 @@ async function main() {
       await close();
     }
     check('All seven remaining skill explanations, concrete examples and public provenance links');
+    for (const [id, source, expected] of [
+      ['policy-communication', 'policies/communication.md', /preserv.*meaning/i],
+      ['policy-execution', 'policies/execution.md', /recorded baseline/],
+      ['account-source', 'account/README.md', /source import alone activates nothing/i],
+      ['planning-hooks', 'account/hooks/README.md', /native account activation remains a separate check/i],
+      ['reviewer-runtime', 'skills/sdlc/references/host-adapters.md', /without duplicate reviewers/]
+    ]) {
+      await page.locator('.nd[data-id="' + id + '"]').first().click();
+      await page.locator('#pop .xa').click();
+      assert.match(await page.locator('#pop').innerText(), expected);
+      assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
+      if (id === 'planning-hooks') {
+        await page.locator('#pop').screenshot({path: path.join(output, 'planning-hooks-detail.png'), animations: 'disabled'});
+      }
+      await close();
+    }
+    check('Account sources, policy triggers, reviewer continuity and source-only activation boundaries');
     await page.locator('#q').fill('glossary');
     assert.equal(await page.locator('.nd[data-id="domain-modeling"]').evaluate(n => n.classList.contains('dim')), false);
     assert.equal(await page.locator('.nd[data-id="tdd"]').first().evaluate(n => n.classList.contains('dim')), true);

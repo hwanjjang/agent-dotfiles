@@ -73,3 +73,10 @@ and installers included in upstream packages are source assets; importing them
 does not authorize running them or modifying account settings.
 
 See [adoption records](../docs/upstream/README.md) before updating a package.
+
+The selected POSIX planning runtime now lives in [account/hooks](../account/hooks/README.md)
+with pinned provenance and inactive client templates. The skill source stays here
+as its single dependency. [Account instructions](../account/instructions.md) link
+to communication and execution policies without copying them into every skill.
+SDLC's existing [host adapter contract](sdlc/references/host-adapters.md) now owns
+reviewer continuity as well; account exceptions remain local.

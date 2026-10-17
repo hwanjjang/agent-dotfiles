@@ -339,6 +339,8 @@
       "title": "Policies & tool connections",
       "description": "Consult applicable policies and connection prerequisites; selecting a card installs nothing.",
       "items": [
+        "policy-communication",
+        "policy-execution",
         "policy-architecture",
         "policy-behavioral-tests",
         "policy-evidence",
@@ -351,6 +353,16 @@
         "mcp-github",
         "mcp-playwright",
         "tool-registry"
+      ]
+    },
+    {
+      "id": "account",
+      "title": "Account sources and runtime",
+      "description": "Source preparation and diagnostics only; this map installs nothing.",
+      "items": [
+        "account-source",
+        "planning-hooks",
+        "reviewer-runtime"
       ]
     }
   ],
@@ -381,7 +393,12 @@
     "mcp-context7": "A task needs current library documentation; inspect the connection template and prerequisites before opting in.",
     "mcp-github": "Authorized work needs GitHub issue or PR access through MCP; inspect credential and permission requirements first.",
     "mcp-playwright": "A task needs browser interaction or screenshots through MCP; inspect the isolated browser setup first.",
-    "tool-registry": "You need to select or verify an external CLI, diagram, PDF or MCP dependency."
+    "tool-registry": "You need to select or verify an external CLI, diagram, PDF or MCP dependency.",
+    "policy-communication": "Writing a reply, issue, PR, document or UI copy.",
+    "policy-execution": "Starting multi-stage work, handing off, or resuming an existing task.",
+    "account-source": "Preparing an account migration or identifying which manager owns a setting.",
+    "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
+    "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting."
   },
   "category_titles": {
     "triage": [
@@ -431,7 +448,8 @@
     "clarify": "Clarify & understand",
     "organize": "Organize & communicate",
     "verification": "Verification upkeep",
-    "guardrails": "Policies & connections"
+    "guardrails": "Policies & connections",
+    "account": "Account sources & runtime"
   },
   "node_labels": {
     "sdlc": "coordinate stages and authority",
@@ -470,6 +488,11 @@
     "mcp-context7": "current library docs",
     "mcp-github": "authorized issue / PR access",
     "mcp-playwright": "browser actions and captures",
-    "tool-registry": "external tool prerequisites"
+    "tool-registry": "external tool prerequisites",
+    "policy-communication": "clear, faithful communication",
+    "policy-execution": "route work and preserve context",
+    "account-source": "instruction source and ownership",
+    "planning-hooks": "selected-plan lifecycle hooks",
+    "reviewer-runtime": "reuse routes and diagnose failures"
   }
 }

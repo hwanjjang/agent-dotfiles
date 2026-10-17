@@ -2,6 +2,9 @@
 
 Portable payload, separate from root AGENTS.md; nothing is automatically installed.
 
+- [Communication](communication.md): clear writing, language defaults and faithful meaning across explanations and artifacts.
+- [Execution](execution.md): proportionate task routing, selected-plan continuity and honest capability boundaries.
+
 - [Evidence](evidence.md): match completion claims to observed results.
 - [Behavioral tests](behavioral-tests.md): test contracts rather than internals.
 - [Architecture](architecture.md): keep code findable, responsibilities clear, and changes verifiable with three minimum principles.
