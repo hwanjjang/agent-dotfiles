@@ -133,13 +133,19 @@ async function main() {
       ['observation-store', /synthetic|Synthetic/, 'account/observation/README.md'],
       ['improvement-case', /Planned:/, 'docs/decisions/account-improvement-loop.md'],
       ['improvement-candidate', /manual|Manual/, 'docs/decisions/account-improvement-loop.md'],
-      ['improvement-eval', /comparison runner is not implemented/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-eval', /This tool launches no model or command/, 'docs/decisions/evaluation-accounting.md'],
       ['improvement-review', /automated promotion gate is not implemented/, 'docs/decisions/account-improvement-loop.md'],
       ['improvement-deploy', /automatic eval-to-deployment integration remains planned/, 'docs/decisions/account-improvement-loop.md']
     ]) {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
       assert.match(await page.locator('#pop').innerText(), expected);
+      if (id === 'improvement-eval') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /4\. Eval \/ offline/);
+        assert.match(detail, /Offline accounting is available/);
+        assert.match(detail, /live runner and independent holdout qualification remain planned/);
+      }
       assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
       await close();
     }
