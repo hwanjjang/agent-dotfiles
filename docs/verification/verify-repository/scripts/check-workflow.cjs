@@ -125,6 +125,28 @@ async function main() {
       await close();
     }
     check('Account sources, policy triggers, reviewer continuity and delivery versus native activation boundaries');
+    await page.locator('.ch[data-id="any:improvement"]').click();
+    assert.match(await page.locator('#pop').innerText(), /1 Observe.*2 Reproduce.*3 Candidate.*4 Eval.*5 Review.*6 Deploy/);
+    assert.match(await page.locator('#pop').innerText(), /not extra mandatory PR stages/);
+    await close();
+    for (const [id, expected, source] of [
+      ['observation-store', /synthetic|Synthetic/, 'account/observation/README.md'],
+      ['improvement-case', /Planned:/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-candidate', /manual|Manual/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-eval', /comparison runner is not implemented/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-review', /automated promotion gate is not implemented/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-deploy', /automatic eval-to-deployment integration remains planned/, 'docs/decisions/account-improvement-loop.md']
+    ]) {
+      await page.locator('.nd[data-id="' + id + '"]').first().click();
+      await page.locator('#pop .xa').click();
+      assert.match(await page.locator('#pop').innerText(), expected);
+      assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
+      await close();
+    }
+    await page.locator('#q').fill('eval');
+    assert.equal(await page.locator('.nd[data-id="improvement-eval"]').evaluate(n => n.classList.contains('dim')), false);
+    await page.locator('#q').fill('');
+    check('Separate six-step improvement cycle, honest capability status, eval search and authoritative sources');
     await page.locator('#q').fill('glossary');
     assert.equal(await page.locator('.nd[data-id="domain-modeling"]').evaluate(n => n.classList.contains('dim')), false);
     assert.equal(await page.locator('.nd[data-id="tdd"]').first().evaluate(n => n.classList.contains('dim')), true);

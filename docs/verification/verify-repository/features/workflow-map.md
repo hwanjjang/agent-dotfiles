@@ -39,6 +39,12 @@ server or account configuration is installed.
    Inspect Communication, Execution and the Account setup & runtime group too:
    source links must resolve, triggers must explain when to use them, and account
    source/hook entries must state that they do not establish native activation.
+   Inspect **Self-improvement & eval (1-6)** as a separate numbered cycle:
+   observation, reproduction, candidate, eval, review and deployment. Check each
+   node's source and capability boundary: synthetic storage and installer exist;
+   native collection, model comparison and automatic promotion remain planned.
+   Search `eval` and confirm the comparison node stays visible. These nodes must
+   not add mandatory PR state-machine stages.
 3. Zoom with +/-, Fit, drag the canvas and drag a node. Camera and node placement
    change; placement survives reload. Reset layout restores positions. Full screen
    opens and exits through the control.

@@ -364,6 +364,19 @@
         "planning-hooks",
         "reviewer-runtime"
       ]
+    },
+    {
+      "id": "improvement",
+      "title": "Self-improvement and eval",
+      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage and the installer exist; native collection, model comparison and automatic promotion remain planned. Available means the source guide exists, not that its runtime is implemented.",
+      "items": [
+        "observation-store",
+        "improvement-case",
+        "improvement-candidate",
+        "improvement-eval",
+        "improvement-review",
+        "improvement-deploy"
+      ]
     }
   ],
   "triggers": {
@@ -398,7 +411,13 @@
     "policy-execution": "Starting multi-stage work, handing off, or resuming an existing task.",
     "account-source": "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts.",
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
-    "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting."
+    "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting.",
+    "observation-store": "Step 1: qualify scoped synthetic observations now; native account collection is not implemented.",
+    "improvement-case": "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration. Planned: turn bounded observations and feedback into a synthetic reproducible case.",
+    "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
+    "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",
+    "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
+    "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned."
   },
   "category_titles": {
     "triage": [
@@ -449,7 +468,8 @@
     "organize": "Organize & communicate",
     "verification": "Verification upkeep",
     "guardrails": "Policies & connections",
-    "account": "Account setup & runtime"
+    "account": "Account setup & runtime",
+    "improvement": "Self-improvement & eval (1-6)"
   },
   "node_labels": {
     "sdlc": "coordinate stages and authority",
@@ -493,6 +513,12 @@
     "policy-execution": "route work and preserve context",
     "account-source": "install, update, remove, recover",
     "planning-hooks": "selected-plan lifecycle hooks",
-    "reviewer-runtime": "reuse routes and diagnose failures"
+    "reviewer-runtime": "reuse routes and diagnose failures",
+    "observation-store": "1. Observe / synthetic only",
+    "improvement-case": "2. Case / planned",
+    "improvement-candidate": "3. Candidate / manual",
+    "improvement-eval": "4. Eval / planned",
+    "improvement-review": "5. Review / planned gate",
+    "improvement-deploy": "6. Deploy / installer exists"
   }
 }

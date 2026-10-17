@@ -1,0 +1,111 @@
+{
+  "captured_on": "2026-10-17",
+  "repository": "https://github.com/hwanjjang/agent-dotfiles",
+  "installation_baseline": "ed1da039fdac3da7639f6d9d361f564ad2dffb92",
+  "map_and_observation_revision": "local uncommitted candidate based on installation_baseline",
+  "browser": "155.0.8059.82",
+  "product_sha256": {
+    "docs/map/catalog.json": "7e153ea6b00af9d4bdb46bd485058590659391c5dfc2ea658546203d74eb08ee",
+    "docs/map/workflow.json": "757b538278a88e9ed5a12e2689a27f039ea37b4857c02b5faf723ddd9afa2fb4",
+    "docs/map/workflow.html": "4e4cd474dc721e4979d1123e8a222a559e2fe1f2b9cb3f0658449a04539c6a0d",
+    "docs/map/index.html": "c4cf76479fb0ade6cb35e9045847a6f7772d1d93fb4a186831f9503da553cd9a",
+    "docs/map/workflow.md": "d34d2ba1509f9cdac4f972871de2fd0123f97570298516f4300770db98075b41",
+    "docs/decisions/account-improvement-loop.md": "299877600737281831c5a3d316340ad23088d0210e92a82dcdd4f952ed1473bb",
+    "account/observation/files.py": "85e67e1d7048036b368d4055177e0adf290679e942626b07e959fa0b027324d4",
+    "account/observation/store.py": "1dd197a26a12a9e16ad2a4cd14b42d025b7b6eff9d52205e765e5e5f5eb364fd",
+    "scripts/improvement/observations.py": "73019dbf78cf1bde7845187716c67919cccc0234a2eb3f54dce81d995823eb28"
+  },
+  "delivered_pdf_sha256": {
+    "manual-en.pdf": "22673ec087645e063a6ad34076a3df77f60e46dbedee5a0f0ffa1a9d8969cab3",
+    "manual-ko.pdf": "1370841ca20b527100cba407fb58f4b28659be4dd39aead6908e314af4a27710"
+  },
+  "source_and_screenshot_sha256": {
+    "README.md": "dd56ffc97ecb218ff33016c62e5198db0eb170cc584e75e535fa6cde9a5b8cfa",
+    "LICENSE": "51ac333c30801d809567822a19c89bd0c36bdf5d9d31e444ddb643fe8240a5cc",
+    "manual-en.json": "7624710dd79221a100c5543c2376053e7036ef23d53ba3bd5024e8f7f62adc3c",
+    "manual-ko.json": "0626610e54d2d7ef4af764728b2c362d34b824d24ad8ebdb7039d54bf3d1eed4",
+    "manual-en.md": "ef79bed2264525ef51ae9b9e1f4f3170b0615f25e4b475d19ee9cbae64698c1b",
+    "manual-ko.md": "03caf0d326299d995ecc615a3f2caae7bb1bc79c8263e7c99140fd4573eb8744",
+    "bilingual-source.json": "970149b0dc9a4580a8e0d788adf178b877cfee0c284acbee39783258c051fdf3",
+    "build-guide.py": "83d51d54f5fec160f5a671ed78ecf49d1de5b7953196850a85fc473c7b4f9579",
+    "render-pages.py": "39ba862edc1af17565afd5bf66bf0adebe7872ebe8cbf86e453736304af15516",
+    "requirements.txt": "364d8ad39b9940804ab0d9dcb0d8b23ca446a0774e72582f93eef709df51010a",
+    "demo-observations.py": "60308fa37844f5b081582f58afb744733c8b706e5a3a90f7abd8b05c02f22123",
+    "eval-plan.example.json": "767f8b5ea1eb92a64400b97f8ab6580302c9f9abdec1461ec64935b7acc2afbd",
+    "eval-cases.example.json": "f88f81ca214fa75058c94963335e1a4badb4f82cb38e16ad5a0d9932f539b0cd",
+    "screenshots/console-install.png": "b0278d70ffc1951cbc44d6f578849a037484260a015c2bad6bbe129ba846e72c",
+    "screenshots/console-record.png": "a28189ccb33dc22ca158f3c62e5ccd7e7d460d6c80bce7bc246c1ebdeda7f5d0",
+    "screenshots/console-revoke.png": "8ae29dd8aabcdffe554df24e854e5d547f08da2314f264975c3b7c1d5f5beb70",
+    "screenshots/console-rollback.png": "c8e73f479d070f09804b287e7ed82a9e8e81357d37ccece481168230cae9744b",
+    "screenshots/console-status.png": "e1e62443511147fefa5f07c3caf76262428cd921d5cda37ecb2506259a2b1bb8",
+    "screenshots/eval-cases.png": "786ac9b1b0f02f271a2154a43f345711b7c1de77bdfea907fdeee82882a0d6da",
+    "screenshots/eval-plan.png": "9a39a236dc45be260b8e6fd33e85ab39fe1ea6e6bd1626f153b2995aef889baa",
+    "screenshots/map-anytime.png": "03cc78a35083ad9f4548ca3d4fbf29eaedaeddb6f2dd4bd5d4e93e3c2e12b975",
+    "screenshots/map-hooks.png": "3e59920a15650b445f7eaa757fdcb5a9d53515e363aa0debe42ae12e950ca835",
+    "screenshots/map-install.png": "8add35562bf62bddbfa21f2807901baf8fdf25141e17ca5876fb7f255d16c1bc",
+    "screenshots/map-loop.png": "01b2aa59e42f11ef1396c4e7a3b355fbe630ef0947df80374cd710480093992f",
+    "screenshots/map-overview.png": "336985f663f90c73a3daa1d51b59b82275e8ef6fe25596447a36fd08d4c23886",
+    "screenshots/map-planning.png": "79b8a86db48597b2e99085c50486bd3ced02ce9bba08f1defd9ac8e3d83ecb43",
+    "screenshots/map-review.png": "18bf60152359ed19d6c73b0f237a85093e77f2bcdeb9a48e91333a475a4e71f6",
+    "screenshots/map-tdd.png": "aa5980ce0881fb33f4b8a3e4eb4d80670b88c36a5965106da828d5fe3ea3f78d"
+  },
+  "visual_review": {
+    "pages_per_language": 18,
+    "all_36_pages_reviewed": true,
+    "final_rebuild": "Only page 10 in each language changed; both revised pages visually rechecked. Other 34 renders pixel-identical to reviewed pages.",
+    "pr_review_correction": "English page 12: rejected -> disabled; all 18 pages rerendered, changed page inspected, other 17 pixel-identical; Korean PDF unchanged."
+  },
+  "screenshots": {
+    "map": "Actual local UI",
+    "console": "Document rendering of selected actual sanitized CLI JSON; not a native terminal capture",
+    "eval": "Labeled design illustrations; no scores or model runs"
+  },
+  "native_client_activation_verified": false,
+  "live_mcp_verified": false,
+  "native_collection_implemented": false,
+  "comparative_eval_implemented": false,
+  "model_eval_runs": 0,
+  "map_browser_verification": {
+    "scenario": "workflow-map",
+    "started": "2026-10-17T13:54:30.762Z",
+    "candidate": {
+      "docs/map/catalog.json": "7e153ea6b00af9d4bdb46bd485058590659391c5dfc2ea658546203d74eb08ee",
+      "docs/map/index.html": "c4cf76479fb0ade6cb35e9045847a6f7772d1d93fb4a186831f9503da553cd9a",
+      "docs/map/viewer.template.html": "f522b9b48688bd520e06e0c37bc5844b4ee23bede4880781fc77d3436727b258",
+      "scripts/build_map.py": "eda2100870bbe0c8b5648a7bc7a906a5b28a0dba00bd138acc5327ea2feecdec",
+      "docs/map/workflow.json": "757b538278a88e9ed5a12e2689a27f039ea37b4857c02b5faf723ddd9afa2fb4",
+      "docs/map/workflow.template.html": "67dd105d40b05f70375f27626d4d1148bd4274c39980cd985bf3a2adc7e256e2",
+      "docs/map/workflow.html": "4e4cd474dc721e4979d1123e8a222a559e2fe1f2b9cb3f0658449a04539c6a0d",
+      "scripts/build_workflow.py": "bd0e35440f385a8a2bd8179b374ddfcc1680fbdb51c27e7154b071a92e2df903",
+      "docs/map/vendor/super-board/LICENSE": "50b58456be6ea39782a695e45a6a796689077c36cd3988cd0323397ac0b10449",
+      "docs/map/vendor/super-board/canvas.js": "40a617db4010003dca19bf665e44524bc8db973ec3b7af948733958a6ec37217",
+      "docs/map/vendor/super-board/layout_sdlc.js": "9bdc970aeb2d169cdf87a35b48f94b67dfe455a0770dbfb9452df88d72531c6a",
+      "docs/map/vendor/super-board/layout_sdlc.py": "85e78055661c5d1b1774b44f2a0d26a4805b211b7113f7c0ec6346d2a0cab88f",
+      "docs/map/vendor/super-board/provenance.json": "0cc48704896258c01647fc81dc72e84f45e8ad7f3c0d83c6797d923f81f0a6e0",
+      "docs/map/vendor/super-board/shell.css": "b07e69b45638328e3fe4437c40ca5b6e75fdfcab5378d9a1c7fe72613286be04",
+      "docs/map/vendor/super-board/shell.js": "244b5f5a8f1be9554e64d4c7605cb4fcf027c6a6ae17273fedadd01759c856fb",
+      "docs/map/vendor/super-board/sitenav.html": "28e7a3cb264191467b2d339ff7eee0e3e27af5856b00e766a77d95c9accbf42c",
+      "docs/map/vendor/super-board/skillmap.css": "b5c3cccdc53ddacc84463b06e6bd1f14ea4c4b6964e587cefcae69183be33333",
+      "docs/map/vendor/super-board/skillmap.js": "81423180d901f32f0d9284df85de939c02a4bd2cef9627b49c4b065e06412043"
+    },
+    "checks": [
+      "All canonical route stages and mapped items; alternative branches",
+      "Enriched examples, flows, local adaptations and pinned reference/provenance links",
+      "All seven remaining skill explanations, concrete examples and public provenance links",
+      "Account sources, policy triggers, reviewer continuity and delivery versus native activation boundaries",
+      "Separate six-step improvement cycle, honest capability status, eval search and authoritative sources",
+      "Stage/category/skill dialogs, conditions, usage/source links and search dimming/recovery",
+      "Original zoom, Fit, pan, drag persistence, Reset layout and full screen",
+      "Theme, skill deep links, mobile canvas/dialog, offline operation and source integrity"
+    ],
+    "browser": "155.0.8059.82",
+    "cleanup": "passed",
+    "result": "passed",
+    "finished": "2026-10-17T13:54:36.342Z"
+  },
+  "post_capture_updates": {
+    "reason": "PR review CLI diagnostic fixes do not change the successful lifecycle states shown in existing captures. Capture product hashes above remain historical.",
+    "cli_sha256": "25f2a6297adff7f74bad712808b2c69cef59c1e8b3edddd5cfba6d917c516662",
+    "manual_caption": "English revoke caption now matches disabled status."
+  }
+}

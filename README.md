@@ -9,7 +9,9 @@ environment.
 
 Follow the [AK SDLC skill map](docs/map/workflow.html) for ordered stages, skill
 choices and Anytime triggers. See its [guide](docs/map/workflow.md) and
-[screenshot walkthrough](docs/manual/workflow.pdf).
+[screenshot walkthrough](docs/manual/workflow.pdf). The complete user guides are available
+in [English](docs/manual/user-guide/manual-en.pdf) and [Korean](docs/manual/user-guide/manual-ko.pdf),
+with [editable sources and capture notes](docs/manual/user-guide/README.md).
 
 Explore the [interactive map](docs/map/index.html) for usage, behavior, source
 links, and implementation status. Open the HTML from a local checkout; GitHub's
@@ -122,6 +124,12 @@ tooling when there is configuration to distribute.
 The intended result is a common foundation that projects can adapt to their own
 conventions. Client-specific behavior belongs in an explicit adapter or setup
 step, with compatibility checked in that client.
+
+The [account improvement loop](docs/decisions/account-improvement-loop.md) connects
+private observations to reviewed cases, comparative evaluation and account updates.
+Its first slice provides a [private synthetic observation store](account/observation/README.md)
+with scoped grants, durable records, batch replay and revocation. Native collection
+and model evaluation remain future work; ordinary account sessions are not collected.
 
 ## Principles
 

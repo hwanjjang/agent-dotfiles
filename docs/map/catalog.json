@@ -2446,6 +2446,34 @@
       ]
     },
     {
+      "id": "observation-store",
+      "title": "Private synthetic observations",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "account/observation/README.md",
+      "summary": "Qualify scoped private records, replay and revocation with synthetic input in a disposable account.",
+      "when": [
+        "Testing the first storage slice of the account improvement loop."
+      ],
+      "usage": "Use Python 3.11+ and the disposable-home example; inspect scripts/improvement/observations.py --help before manual CLI operations.",
+      "behavior": [
+        "Keep exact project/profile/source grants, consent epochs and private metadata separate from installer state.",
+        "Deduplicate stable IDs, commit imported events with their cursor, and purge revoked evidence.",
+        "Native session collection, task triage and model evaluation remain future work."
+      ],
+      "outputs": [
+        "Durable synthetic observations and explicit gaps, with a rebuildable index and revocation checks."
+      ],
+      "tags": [
+        "account",
+        "observations",
+        "synthetic",
+        "privacy",
+        "evaluation"
+      ]
+    },
+    {
       "id": "planning-hooks",
       "title": "Planning hook runtime",
       "kind": "guide",
@@ -2540,6 +2568,138 @@
         "install",
         "ownership",
         "guide"
+      ]
+    },
+    {
+      "id": "improvement-case",
+      "title": "2. Reproduce a reviewed case",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-improvement-loop.md",
+      "summary": "Planned: turn bounded observations and feedback into a synthetic reproducible case.",
+      "when": [
+        "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration."
+      ],
+      "usage": "Read the design section From a recorded failure to a candidate; task binding and triage automation are not implemented.",
+      "behavior": [
+        "Separate symptoms, missing evidence and suspected causes; user feedback is not a verified diagnosis.",
+        "Include positive, adjacent-negative and bilingual cases; keep evaluator-owned holdouts separate."
+      ],
+      "outputs": [
+        "A reviewed synthetic case and outcome contract; no automated triage claim."
+      ],
+      "tags": [
+        "self-improvement",
+        "eval",
+        "account",
+        "design"
+      ]
+    },
+    {
+      "id": "improvement-candidate",
+      "title": "3. Prepare a minimal candidate",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-improvement-loop.md",
+      "summary": "Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
+      "when": [
+        "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change."
+      ],
+      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; bind the baseline, diff and resulting identity before comparison.",
+      "behavior": [
+        "Check infrastructure and routing causes before adding instructions.",
+        "Keep graders, fixtures and hidden answers outside the updater; do not change them during an experiment."
+      ],
+      "outputs": [
+        "A candidate identity, hypothesis and minimal diff; no automatic self-editing."
+      ],
+      "tags": [
+        "self-improvement",
+        "eval",
+        "account",
+        "design"
+      ]
+    },
+    {
+      "id": "improvement-eval",
+      "title": "4. Compare through eval",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-improvement-loop.md",
+      "summary": "Planned: compare current and candidate behavior through isolated trials and qualified graders.",
+      "when": [
+        "A candidate needs evidence of task improvement and regression limits before promotion."
+      ],
+      "usage": "Freeze case, model, environment, runner and grader identities plus budget and acceptance rules before running either arm. The comparison runner is not implemented.",
+      "behavior": [
+        "Separate outcome, process and exposure checks; test native routing independently of forced invocation.",
+        "Use deterministic checks first; qualify blinded model judges against known-good, bad and missing-evidence examples.",
+        "Preserve failed, blocked and inconclusive trials; protect holdouts and require separate bounded inference authorization."
+      ],
+      "outputs": [
+        "A candidate-bound comparison report; no model benchmark or automatic pass is claimed."
+      ],
+      "tags": [
+        "self-improvement",
+        "eval",
+        "account",
+        "design"
+      ]
+    },
+    {
+      "id": "improvement-review",
+      "title": "5. Review the promotion evidence",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-improvement-loop.md",
+      "summary": "Existing review methods support a planned promotion gate for skill improvements.",
+      "when": [
+        "A comparison proposes changing the source used by future account tasks."
+      ],
+      "usage": "Use independent review of the exact candidate and sanitized comparison evidence; the automated promotion gate is not implemented.",
+      "behavior": [
+        "Require the predeclared target benefit, no observed critical violations and qualified holdout evidence.",
+        "Unclear results retain the current version; changed candidate or evaluator inputs invalidate corresponding evidence."
+      ],
+      "outputs": [
+        "A reviewed recommendation bound to the tested identity, not permission to merge or deploy."
+      ],
+      "tags": [
+        "self-improvement",
+        "eval",
+        "account",
+        "design"
+      ]
+    },
+    {
+      "id": "improvement-deploy",
+      "title": "6. Deploy and observe again",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/account-improvement-loop.md",
+      "summary": "Existing installer available; automatic eval-to-deployment integration remains planned.",
+      "when": [
+        "An accepted committed candidate is authorized for account deployment."
+      ],
+      "usage": "Preview and apply the accepted committed revision with the existing installer; verify delivered hashes and native behavior before observing the next tasks.",
+      "behavior": [
+        "Keep source acceptance and account activation separate.",
+        "Use guarded rollback while preserving observation records; reproduce production signals before attributing them to a skill.",
+        "Return to step 1 with a new environment identity. Native automatic observation remains planned."
+      ],
+      "outputs": [
+        "An observed deployment or guarded rollback; no automatic account activation."
+      ],
+      "tags": [
+        "self-improvement",
+        "eval",
+        "account",
+        "design"
       ]
     }
   ],
@@ -3003,6 +3163,46 @@
       "from": "account-source",
       "to": "account-installation-decision",
       "label": "distribution design"
+    },
+    {
+      "from": "overview",
+      "to": "observation-store",
+      "label": "Introduces private observations"
+    },
+    {
+      "from": "observation-store",
+      "to": "account-source",
+      "label": "Separates observation and installer ownership"
+    },
+    {
+      "from": "observation-store",
+      "to": "improvement-case",
+      "label": "Next improvement step; follow its status and gate"
+    },
+    {
+      "from": "improvement-case",
+      "to": "improvement-candidate",
+      "label": "Next improvement step; follow its status and gate"
+    },
+    {
+      "from": "improvement-candidate",
+      "to": "improvement-eval",
+      "label": "Next improvement step; follow its status and gate"
+    },
+    {
+      "from": "improvement-eval",
+      "to": "improvement-review",
+      "label": "Next improvement step; follow its status and gate"
+    },
+    {
+      "from": "improvement-review",
+      "to": "improvement-deploy",
+      "label": "Next improvement step; follow its status and gate"
+    },
+    {
+      "from": "improvement-deploy",
+      "to": "observation-store",
+      "label": "Observe the delivered identity again"
     }
   ]
 }
