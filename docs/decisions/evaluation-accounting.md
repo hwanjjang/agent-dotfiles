@@ -22,9 +22,13 @@ python3 scripts/improvement/evaluation.py report < report-input.json > report.js
 `completions` (a list). Reuse the saved inventory after interruption; this module
 never retries work. Write regrades to a separate artifact, retaining the original.
 A fresh grader source hash requires a new frozen experiment and explicitly linked
-regrade, not silently relabeling the old report.
+regrade, not silently relabeling the old report. `freeze` deliberately permits a
+historical grader identity so old inventories can be reconstructed and reported
+as stale; it does not authorize collecting fresh results under that identity.
+For a new collection, use the current `evaluation.py` source hash. Frozen payload
+comparison uses canonical JSON bytes, distinguishing booleans, integers and floats.
 
-- Cases consume the reviewed export v1 whitelist: `case_id`, `language`, `purpose`,
+- Cases consume the provisional export v1 shape from the out-of-tree dependency below: `case_id`, `language`, `purpose`,
   `inputs`, `outcome_contract`, `counterpart`, `schema_version`, `classification`,
   `artifact_hashes`, `case_digest`. Public inputs are always `development`; a renamed
   public fixture cannot become a holdout. Fixture hashes and the whole export digest
@@ -73,16 +77,48 @@ Claims are `passed`, `failed`, or `unavailable`. Unknown exit code is `null`.
 Usage is `null` or `{"input_tokens": 123, "output_tokens": 45}`. Latency is an
 integer number of milliseconds or `null`. Unknown usage never becomes zero.
 
+
+## Unmerged producer dependency
+
+The export producer is **out of tree and unmerged** in this PR baseline. It belongs
+to [PR #35](https://github.com/hwanjjang/agent-dotfiles/pull/35) / issue #24,
+not to this consumer. Compatibility is provisional until that prerequisite lands
+and an in-tree producer/consumer regression can replace the hand-built contract
+fixtures. This PR does not satisfy the full issue #26 dependency or execution gate.
+
+The separate local compatibility run used producer revision
+[`5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1`](https://github.com/hwanjjang/agent-dotfiles/commit/5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1),
+with these SHA-256 identities:
+
+| Producer source at that revision | SHA-256 |
+| --- | --- |
+| `account/observation/cases.py` | `2dedc5d2abfe7cdf3f6b6c054b534bf24bee0624c72ed46365a46ffa6322d095` |
+| `account/observation/files.py` | `bbab8cbee0131350719851a6f3eb126c33037aa9292eec6acad93ab0ac08ce3e` |
+| `account/observation/store.py` | `6ffb64d5a6c6ec911601790937ec21646ff06032b5cd93117ee7c5962d13b9bd` |
+
+This source-bound local run is not evidence that the producer exists in this
+checkout. Review the linked producer separately; do not infer baseline integration
+from the consumer tests or screenshot manual.
+
+The local CLI accepts at most 16 MiB of JSON input and bounds completion count,
+but expanded per-completion checks can produce much larger output and memory use.
+There is no output-size cap. Keep inputs small and inspect duplicate counts; this
+is a local diagnostic command, not a service or arbitrary-input execution endpoint.
+
 ## Report and trust limits
 
 Reports retain every scheduled trial, all submitted completion digests, unknown
 or malformed submissions, duplicate completions, paired per-case results, separate
 dimension and arm counts, critical failures, missing coverage, latency and known
-usage. Duplicate submissions block the trial and retain observable critical
-failures; they cannot replace a failed result. Submitted usage, including duplicate
+usage. Duplicate submissions block the trial and retain all submitted digests and check
+rows. Critical violations count each distinct completion digest once per trial;
+resubmitting an identical failing row cannot inflate that count. Distinct failing
+completions remain counted, and neither can replace a failed result. Submitted usage, including duplicate
 or unassigned submissions, remains in cost accounting. Unknown/missing usage makes
 the total unknown; `known_tokens` is only a subtotal. Dollar cost is unobserved.
-These aggregates are diagnostics, not significance or non-inferiority estimates.
+The `pairs` field contains baseline/candidate rows, not a concordant/discordant
+paired tally. That tally remains part of open issue #26. These aggregates are
+diagnostics, not significance or non-inferiority estimates.
 
 The grader calibrates its current implementation against known-good, wrong,
 subtle artifact error, fabricated success, missing and injected-data examples.

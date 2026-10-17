@@ -1,6 +1,6 @@
 {
   "title": "Compare development evidence",
-  "scenario": "Offline evaluation accounting with Python 3.11+, no credentials or model calls. Inputs and grades are public development evidence, never unseen holdouts.",
+  "scenario": "Offline accounting of supplied synthetic development evidence, Python 3.11+. The export producer is an unmerged PR #35 dependency; see the source contract. No credentials or model calls.",
   "steps": [
     {
       "title": "Freeze the complete comparison",

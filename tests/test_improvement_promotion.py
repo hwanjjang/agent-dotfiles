@@ -78,6 +78,16 @@ class PromotionTests(unittest.TestCase):
             self.assertEqual(result['recommendation'],'reject')
             self.assertIn('report_evidence_mismatch',result['reasons'])
 
+    def test_canonical_report_type_tampering_rejects(self):
+        for field,value in [('critical_violations',False),('scheduled',8.0)]:
+            with self.subTest(field=field):
+                changed=copy.deepcopy(self.report);changed[field]=value
+                result=self.recommend(report=changed)
+                self.assertEqual(result['recommendation'],'reject')
+                self.assertIn('report_evidence_mismatch',result['reasons'])
+        changed=copy.deepcopy(self.plan);changed['schema_version']=True
+        self.assertEqual(self.recommend(experiment=changed)['recommendation'],'reject')
+
     def test_missing_and_unknown_cost_are_inconclusive(self):
         rows=self.rows[:-1];report=ev.compare(self.plan,rows,self.spec)
         self.assertEqual(self.recommend(report=report,completions=rows)['recommendation'],'inconclusive')

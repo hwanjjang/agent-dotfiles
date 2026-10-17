@@ -3,6 +3,9 @@ import copy
 import hashlib
 import json
 import unittest
+import subprocess
+import sys
+from pathlib import Path
 from unittest.mock import patch
 from scripts.improvement import evaluation as ev
 
@@ -182,6 +185,55 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(r['trials'][0]['verdict'],'blocked')
         self.assertEqual(r['critical_violations'],1)
         self.assertEqual(len(r['trials'][0]['completion_checks']),2)
+
+    def test_identical_failing_resubmission_counts_critical_digest_once(self):
+        t=self.plan['trials'][0]
+        bad=completion(self.plan,t,observations={'check':{'exit_code':2,'claim':'passed'}})
+        r=self.report([bad,copy.deepcopy(bad)])
+        self.assertEqual(r['critical_violations'],1)
+        self.assertEqual(r['submitted'],2)
+        self.assertEqual(len(r['trials'][0]['completion_digests']),2)
+        self.assertEqual(len(r['trials'][0]['completion_checks']),2)
+        self.assertEqual(r['trials'][0]['verdict'],'blocked')
+
+    def test_frozen_type_changes_cannot_pass_canonical_tamper_check(self):
+        for changed in [dict(self.plan,schema_version=True),dict(self.plan,schema_version=1.0)]:
+            with self.subTest(schema=changed['schema_version']),self.assertRaises(ev.Invalid):
+                ev.compare(changed,[],self.spec)
+        changed=copy.deepcopy(self.plan);changed['trials'][0]['repetition']=False
+        with self.assertRaises(ev.Invalid):ev.compare(changed,[],self.spec)
+
+    def invoke_cli(self, command, raw):
+        return subprocess.run([sys.executable,str(Path(ev.__file__)),command],input=raw,
+                              stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=15)
+
+    def test_cli_parser_refuses_duplicate_numbers_oversize_and_wrong_fields(self):
+        valid=json.dumps({'experiment':self.plan,'current_spec':self.spec,'completions':[]}).encode()
+        duplicate=valid[:-1]+b', "completions": []}'
+        # Otherwise valid JSON isolates duplicate-key and byte-limit behavior.
+        oversized=valid+b' '*ev.MAX_BYTES
+        for raw in [duplicate,b'{"value":NaN}',b'{"value":Infinity}',
+                    b'{"value":-Infinity}',oversized,b'{}',b'[]',b'{bad',b'\xff']:
+            with self.subTest(prefix=raw[:40]):
+                p=self.invoke_cli('report',raw)
+                self.assertEqual(p.returncode,1)
+                self.assertEqual(json.loads(p.stdout),{'status':'rejected','reason':'invalid_evaluation_input'})
+                self.assertEqual(p.stderr,b'')
+
+    def test_cli_freeze_report_roundtrip(self):
+        p=self.invoke_cli('freeze',json.dumps(self.spec).encode());self.assertEqual(p.returncode,0)
+        frozen=json.loads(p.stdout);self.assertEqual(frozen,self.plan)
+        payload={'experiment':frozen,'current_spec':self.spec,
+                 'completions':[completion(frozen,t) for t in frozen['trials']]}
+        p=self.invoke_cli('report',json.dumps(payload).encode());self.assertEqual(p.returncode,0)
+        report=json.loads(p.stdout);self.assertEqual(report['counts']['pass'],8)
+        self.assertFalse(report['live_eligible']);self.assertEqual(report['promotion'],'inconclusive')
+        # Historical grader identities remain rehydratable for explicit stale reporting.
+        historical=copy.deepcopy(self.spec);historical['identities']['grader']='f'*64
+        p=self.invoke_cli('freeze',json.dumps(historical).encode());self.assertEqual(p.returncode,0)
+        payload={'experiment':json.loads(p.stdout),'current_spec':historical,'completions':[]}
+        p=self.invoke_cli('report',json.dumps(payload).encode());self.assertEqual(p.returncode,0)
+        self.assertEqual(json.loads(p.stdout)['counts']['blocked'],8)
 
     def test_budget_is_frozen_without_required_currency_or_execution(self):
         self.spec['budget']={'model_requests':8,'tokens':4000,'seconds':180}

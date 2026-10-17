@@ -94,14 +94,14 @@ def recommend(*, experiment, report, completions, current_spec, source_diff_dige
     try:
         ev.require(ev.sha(source_diff_digest), 'source_diff_digest')
         ev.require(isinstance(report, dict) and ev.sha(report.get('report_digest')), 'report_digest')
-        ev.require(experiment == ev.freeze(experiment['spec']), 'experiment_integrity')
+        ev.require(ev.encoded(experiment) == ev.encoded(ev.freeze(experiment['spec'])), 'experiment_integrity')
         spec = experiment['spec']
         review.update(report_digest=report['report_digest'], experiment_digest=experiment['experiment_digest'],
                       baseline=spec['identities']['baseline'], candidate=spec['identities']['candidate'])
         if (ev.digest(current_spec) != experiment['spec_digest']
                 or spec['identities']['grader'] != ev.source_hash()):
             outcome, reasons = 'reject', ['stale_experiment']
-        elif report != ev.compare(experiment, completions, spec):
+        elif ev.encoded(report) != ev.encoded(ev.compare(experiment, completions, spec)):
             outcome, reasons = 'reject', ['report_evidence_mismatch']
         else:
             metrics = evaluate_rule(experiment, report)

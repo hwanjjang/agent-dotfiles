@@ -19,12 +19,19 @@ reference, not a claim that this program applied the patch or verified its
 resulting tree. The reviewer must confirm the diff and exact tested identities.
 
 The gate recomputes the entire report from its frozen experiment and submitted
-completions. Rehashing a forged aggregate or flipping `live_eligible` cannot bypass
+completions, comparing canonical JSON bytes for both experiment and report.
+Boolean, integer and floating-point substitutions cannot pass as equal values. Rehashing a forged aggregate or flipping `live_eligible` cannot bypass
 that comparison. A changed current spec, baseline, candidate, contract, grader,
 runner, environment, capability, model or budget invalidates the recommendation.
 The caller supplies the current spec; this pure program does not inspect Git or
 prove that a self-declared tree hash matches a checkout. A trusted operational
 verifier is still required before real eligibility can be supported.
+
+The inherited evaluation contract explicitly identifies its export producer as
+an out-of-tree, unmerged PR #35 dependency. This recommendation slice does not
+land that producer or complete its integration prerequisite. It consumes supplied
+development evidence only; see the linked contract for the pinned source revision
+and compatibility limits.
 
 ## Predeclared arithmetic rules
 

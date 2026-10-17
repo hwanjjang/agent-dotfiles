@@ -1,29 +1,32 @@
 {
   "captured": "2026-10-18",
-  "baseline": "0dac9b8",
+  "baseline": "a8fa3b1413540e03745b061484ff2a617f5d4a47",
   "status": "hash_bound_candidate",
   "scenario": "promotion-recommendation",
   "source_sha256": {
-    "scripts/improvement/promotion.py": "3e3d09ab402b69579d9ee8b1ebb6c9cf46d4a299118233f7238c4b9d50018558",
-    "scripts/improvement/evaluation.py": "8a9378a51904d6ff74dfc76873c430ad46a8eef46ebd4e053ba54c1ff7484b7c",
+    "scripts/improvement/promotion.py": "057cc842a3a932758c071a7b5c66a104402880f7719dd5c6b31cbc5aba253295",
+    "scripts/improvement/evaluation.py": "204cbc967e8b0ee71960a99bd4db00bc7fa3552f71a8688fc961614010ca8d7c",
     "docs/map/catalog.json": "9c35b5202e4c9cd4db878426668fa6bbced7c9b1ba05b9b5b93125c39838adf5",
     "docs/map/index.html": "02d64da4c5cfbf9440e09c75e7a8e425a3a6d29fd7a86e972b9f455c08583437",
-    "docs/map/workflow.html": "ca79926fd747f482fbc96f117ca5c06bf23153db912bfc97cb514a4369738f0e",
-    "docs/decisions/promotion-recommendations.md": "2fd30f9bd598b46e6c8a441f554c7d8b55427e0bb9b1b4ddba22026e8bb5ebbc",
-    "docs/verification/verify-repository/features/promotion-recommendation.md": "3261ff8fa5da8d8b162dc2c6b8dfd388107dbb970c76295aeb8cc3849f6dd6b2",
-    "docs/manual/promotion.json": "88e545a79e402411c84cd8e45ad23a98bb022bfdfd81076b9a73e1bb36c35d30"
+    "docs/map/workflow.html": "7c795f82985ef81270a4c812d646e3ebb48b58e8a177d3a83c590f978db0b35e",
+    "docs/decisions/promotion-recommendations.md": "2e5cd9a024666e51494e5531cbc5c10f7df4797d2748a2f8739f51b57672cb77",
+    "docs/verification/verify-repository/features/promotion-recommendation.md": "6745f3ee6af263728c2c07664ce90fa0742176874b1b99f7c42fe60c0480dd47",
+    "docs/manual/promotion.json": "6396b64229c73d6081bb366e3800be741202baddb673f248fd4c7ed01af577fa",
+    "docs/map/workflow.json": "ea27feb2d2b3daac82534945ec8037467adfd1a16715af0fa2bb7e8f87f7cb51",
+    "docs/verification/verify-repository/scripts/check-workflow.cjs": "92c74c4314d6adb89fdb0047cf6948e1abcf810c3c06a267d1672dc6c38f2998",
+    "docs/decisions/evaluation-accounting.md": "71191b929650e6b4c00bad46bec960dfb1a26ea271c5022eee354494fcacd831"
   },
   "images": {
     "promotion-map.png": "6a81125ea44eef44d25db3f34ed257e377fc54390e4f05030d279e45e9523e65",
     "promotion-result.png": "b502c5433e31609cd9ec4fa215ea57c89546c7764abaedb28ac699eff0c3eeca"
   },
-  "pdf_sha256": "2cea2963c72e689b255a7630d58e2de3877a3c2d57e3b3011bfff4a593e1021d",
+  "pdf_sha256": "3bf945bb9684a2d12a3211be5c488670988a5cd6e6a7c833814cc66610e9ee70",
   "pdf_pages": 2,
   "pdf_text_checked": true,
   "all_rendered_pages_visually_checked": true,
   "notes": [
     "Actual local catalog screenshot and browser-rendered actual synthetic CLI output; no native model execution.",
-    "Both rendered PDF pages visually inspected by root: readable content, no cropping or private material.",
-    "Positive arithmetic remains operationally inconclusive; no source delivery or holdout qualification."
+    "Both freshly rendered PDF pages personally visually inspected after parent refresh: readable content, captions and pagination; no private material.",
+    "Positive arithmetic remains operationally inconclusive; external unmerged PR35 producer dependency remains explicit, with no source delivery or holdout qualification."
   ]
 }

@@ -237,7 +237,7 @@ def usage_summary(rows, missing):
 
 def compare(experiment, completions, current_spec):
     require(keys(experiment, 'schema_version spec spec_digest trials experiment_digest'), 'experiment_fields')
-    require(experiment == freeze(experiment['spec']), 'experiment_tampered')
+    require(encoded(experiment) == encoded(freeze(experiment['spec'])), 'experiment_tampered')
     require(isinstance(completions, list) and len(completions) <= 30000 and len(encoded(completions)) <= MAX_BYTES, 'completion_limit')
     spec = experiment['spec']
     stale = digest(current_spec) != experiment['spec_digest'] or spec['identities']['grader'] != source_hash()
@@ -261,6 +261,7 @@ def compare(experiment, completions, current_spec):
                       live_eligible=False)
         criteria = spec['checks'][t['case_id']][t['variant']]['criteria']
         if qualified and not stale:
+            counted_critical_digests = set()
             for row in rows:
                 if (keys(row, 'trial_id experiment_digest binding_digest status model evidence_kind artifacts observations usage latency_ms')
                         and row['experiment_digest'] == experiment['experiment_digest']
@@ -271,7 +272,10 @@ def compare(experiment, completions, current_spec):
                     checks = [dict(id=c['id'], dimension=c['dimension'], critical=c['critical'],
                                    verdict=grade_check(c, row)) for c in criteria]
                     result['completion_checks'].append({'completion_digest': digest(row), 'checks': checks})
-                    result['critical_violations'] += sum(c['critical'] and c['verdict'] == 'fail' for c in checks)
+                    completion_digest = digest(row)
+                    if completion_digest not in counted_critical_digests:
+                        result['critical_violations'] += sum(c['critical'] and c['verdict'] == 'fail' for c in checks)
+                        counted_critical_digests.add(completion_digest)
         if stale:
             result.update(verdict='blocked', reason='stale_experiment')
         elif not qualified:

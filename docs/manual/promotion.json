@@ -1,6 +1,6 @@
 {
   "title": "Review development recommendations",
-  "scenario": "Python 3.11+, frozen synthetic development evidence and an unchanged source identity. No credentials, model calls or installation.",
+  "scenario": "Python 3.11+, supplied synthetic development evidence and the current grader identity. The export producer remains an unmerged PR #35 dependency. No credentials, model calls or installation.",
   "steps": [
     {
       "title": "Bind evidence before source review",
