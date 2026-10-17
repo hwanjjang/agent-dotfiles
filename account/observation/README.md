@@ -4,7 +4,7 @@ This is the private storage foundation of the [account improvement loop](../../d
 It implements a local store, a synthetic adapter and a manual maintenance CLI.
 The optional [native adapters](native.md) reuse this store with separate
 project consent and installer registration. Task feedback and comparative evaluation
-remain later work. Codex collection still needs native-client qualification. The store never inspects transcripts,
+remain later work. Fresh macOS Codex qualification is bound to corrected runtime hashes; Linux, subagent and complete-delivery qualification remain open ([matrix](native.md#native-platform-evidence--2026-10-18)). The store never inspects transcripts,
 runs models, changes skills, registers hooks or writes installer state.
 
 Use Python 3.11+ on a local POSIX filesystem, matching the [account installer](../README.md).
