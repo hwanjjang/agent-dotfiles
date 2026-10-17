@@ -5,7 +5,8 @@ Status: design for [issue #9](https://github.com/hwanjjang/agent-dotfiles/issues
 [synthetic observation store and manual CLI](../../account/observation/README.md).
 The first native slice now provides an opt-in [Claude metadata adapter](../../account/observation/native.md)
 and installer registration, qualified on a disposable configuration on 2026-10-18.
-Codex collection, task feedback, experiments and promotion interfaces remain planned;
+Explicit task binding and feedback are available through the manual CLI.
+Codex collection, reviewed case export, experiments and promotion interfaces remain planned;
 large-ledger performance targets are unmeasured. No persistent real-account collection
 or scheduled work was activated.
 
@@ -49,7 +50,7 @@ this design, not additional state-machine stages or installed capabilities.
 | Step | Present capability and boundary |
 | --- | --- |
 | 1. Observe | Synthetic store/CLI and opt-in Claude hook delivery exist; Codex collection remains planned. |
-| 2. Reproduce | Case design is documented; task binding and triage automation are planned. |
+| 2. Reproduce | Explicit task binding and feedback are implemented; reviewed case export and triage automation remain planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
 | 4. Eval | Frozen comparisons, isolation and qualified grading are designed; the model runner is not implemented. |
 | 5. Review | Existing independent review methods apply; the automated promotion gate is planned. |
@@ -141,8 +142,9 @@ content; it owns normalization, the final epoch check and durable persistence.
 | Evaluator owner | Maintained synthetic checks plus separately controlled holdouts | Grading contracts, qualification and promotion recommendation; the updater cannot write these during an experiment |
 | Existing installer | `scripts/setup_account.py`, `scripts/account_storage.py` | Runtime delivery, selected hook registration, source revision, transaction recovery and rollback |
 
-The observation library and synthetic maintenance CLI now occupy the first two
-locations; triage and evaluation remain unimplemented. The installer includes
+The observation library and synthetic maintenance CLI occupy the first two
+locations, including immutable task selections and explicit feedback. Reviewed case
+export, automated triage and evaluation remain unimplemented. The installer includes
 `account/` source but excludes `scripts/` from its bundle; maintenance CLIs run
 from the checkout. A later installer change must explicitly own any new observation entry
 point and opt-in registration, preserving other hooks. Observation data is never
@@ -415,7 +417,8 @@ These are implementation boundaries, not newly published child issues. Slice 1
 is implemented and qualified with synthetic data as described in its
 [guide](../../account/observation/README.md). Slice 2 has the Claude-first implementation
 and qualification described in the native guide; Codex and large-ledger performance
-qualification remain open. Slices 3–5 remain planned. Each slice depends
+qualification remain open. Slice 3 has explicit task selections and feedback; reviewed case export and
+automated triage remain planned. Slices 4–5 remain planned. Each slice depends
 on the previous contract; expensive model trials begin after deterministic
 collection and isolation qualification.
 

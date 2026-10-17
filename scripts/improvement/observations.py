@@ -7,7 +7,7 @@ import sys
 import sqlite3
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from account.observation.store import BATCH_LIMIT, EVENT_LIMIT, InvalidEvent, Store
+from account.observation.store import BATCH_LIMIT, EVENT_LIMIT, TASK_INPUT_LIMIT, InvalidEvent, Store, decode, require
 from account.observation.files import BusyStore
 
 
@@ -32,6 +32,10 @@ def parser():
             command.add_argument('--offset', type=int, required=True)
     commands.add_parser('rebuild-index')
     commands.add_parser('prune')
+    commands.add_parser('task-bind', help='Bind explicit event selections; bounded JSON on stdin')
+    for name in ('feedback-add', 'task-show'):
+        command = commands.add_parser(name)
+        command.add_argument('--task', required=True)
     return result
 
 
@@ -62,6 +66,18 @@ def main(argv=None):
             output = store.revoke(args.registration)
         elif args.command == 'rebuild-index':
             output = {'indexed_events': store.rebuild_index()}
+        elif args.command in {'task-bind', 'feedback-add'}:
+            raw = sys.stdin.buffer.read(TASK_INPUT_LIMIT + 1)
+            require(len(raw) <= TASK_INPUT_LIMIT, 'task_input_size')
+            body = decode(raw)
+            allowed = ({'selections', 'goal', 'request_id', 'task_id'} if args.command == 'task-bind'
+                       else {'symptom', 'correction', 'evidence_ids', 'contrary_evidence_ids',
+                             'suspected_cause', 'confidence', 'author', 'request_id', 'revision_id'})
+            required = {'selections', 'goal', 'request_id'} if args.command == 'task-bind' else {'symptom', 'request_id'}
+            require(isinstance(body, dict) and required <= set(body) <= allowed, 'task_input_fields')
+            output = store.bind_task(**body) if args.command == 'task-bind' else store.add_feedback(args.task, **body)
+        elif args.command == 'task-show':
+            output = store.task(args.task)
         else:
             output = {'purged_registrations': store.prune()}
     except InvalidEvent as error:

@@ -41,8 +41,9 @@ server or account configuration is installed.
    source/hook entries must state that they do not establish native activation.
    Inspect **Self-improvement & eval (1-6)** as a separate numbered cycle:
    observation, reproduction, candidate, eval, review and deployment. Check each
-   node's source and capability boundary: synthetic storage and installer exist;
-   native collection, model comparison and automatic promotion remain planned.
+   node's source and capability boundary: synthetic storage, explicit task feedback,
+   opt-in Claude metadata and the installer exist; Codex collection, reviewed case
+   export, model comparison and automatic promotion remain planned.
    Search `eval` and confirm the comparison node stays visible. These nodes must
    not add mandatory PR state-machine stages.
 3. Zoom with +/-, Fit, drag the canvas and drag a node. Camera and node placement

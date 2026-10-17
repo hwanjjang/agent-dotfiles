@@ -17,6 +17,9 @@ EVENT_LIMIT = 16384
 BATCH_LIMIT = 65536
 MAX_BATCH_EVENTS = 128
 MAX_RECORDS = 4096
+TASK_INPUT_LIMIT = 65536
+MAX_TASKS = 256
+MAX_TASK_RECORDS = 128
 TOKEN = re.compile(r'[A-Za-z0-9_.:@-]{1,160}\Z')
 KEY = re.compile(r'[a-f0-9]{64}\Z')
 EPOCH = re.compile(r'[a-f0-9]{32}\Z')
@@ -42,6 +45,12 @@ def token(value):
 
 def integer(value):
     return type(value) is int and 0 <= value <= 2**63 - 1
+
+
+def feedback_text(value, *, optional=False):
+    require(optional and value is None or isinstance(value, str)
+            and bool(value.strip()) and len(value.encode('utf-8')) <= 8192, 'feedback_text')
+    return value
 
 
 def decode(body):
@@ -294,8 +303,185 @@ class Store:
         except FileNotFoundError:
             return []
 
+    def _task_records(self, files, task_id, *, active=True):
+        require(isinstance(task_id, str) and KEY.fullmatch(task_id), 'task_id')
+        names = files.names(('tasks', task_id))
+        require(len(names) <= MAX_TASK_RECORDS, 'task_capacity')
+        records = []
+        for name in names:
+            if not re.fullmatch(r'[a-f0-9]{64}\.json', name):
+                continue
+            row = files.read(('tasks', task_id, name), TASK_INPUT_LIMIT * 2)
+            require(isinstance(row, dict) and row.get('schema_version') == 1
+                    and row.get('task_id') == task_id and row.get('record_id') == name[:-5]
+                    and row.get('kind') in {'task', 'feedback'}
+                    and integer(row.get('sequence')) and isinstance(row.get('registrations'), list)
+                    and 0 < len(row['registrations']) <= 16, 'corrupt_task')
+            for ref in row['registrations']:
+                require(isinstance(ref, dict) and isinstance(ref.get('epoch'), str)
+                        and EPOCH.fullmatch(ref['epoch']), 'corrupt_task')
+                if active:
+                    try:
+                        grant = self._grant(files, ref.get('registration_id'), ref['epoch'])
+                    except FileNotFoundError:
+                        grant = None
+                    require(grant is not None, 'task_inactive')
+            records.append(row)
+        records.sort(key=lambda row: row['sequence'])
+        require(len({r['sequence'] for r in records}) == len(records), 'corrupt_task')
+        return records
+
+    def _task_retry(self, files, task_id, rows, kind, request_id, request):
+        require(token(request_id), 'request_id')
+        require(len(encoded(request)) <= TASK_INPUT_LIMIT, 'task_input_size')
+        ident = digest([kind, request_id])
+        previous = next((r for r in rows if r['record_id'] == ident), None)
+        if previous:
+            require(previous['request_hash'] == digest(request), 'request_conflict')
+            # A prior rename may have succeeded before directory fsync failed.
+            with files.directory(('tasks', task_id)) as directory:
+                os.fsync(directory)
+        return ident, previous
+
+    @staticmethod
+    def _task_receipt(row, status):
+        if row['kind'] == 'task':
+            return dict(status=status, task_id=row['task_id'], revision_id=row['record_id'])
+        return dict(status=status, task_id=row['task_id'], feedback_id=row['record_id'],
+                    revision_id=row['revision_id'], evidence_status=row['evidence_status'])
+
+    def _select_task_events(self, files, selections):
+        require(isinstance(selections, list) and 0 < len(selections) <= 16, 'task_selections')
+        resolved, registrations, selected_ids = [], {}, set()
+        for selection in selections:
+            require(isinstance(selection, dict) and set(selection) <= {
+                'registration_id', 'epoch', 'session_id', 'actor_id', 'event_ids',
+                'start_sequence', 'end_sequence'}, 'task_selection')
+            registration, epoch = selection.get('registration_id'), selection.get('epoch')
+            require(isinstance(epoch, str) and EPOCH.fullmatch(epoch), 'epoch')
+            grant = self._grant(files, registration, epoch)
+            require(grant is not None, 'task_inactive')
+            session, actor = selection.get('session_id'), selection.get('actor_id')
+            require(token(session) and (actor is None or token(actor)), 'task_selection')
+            events = [e for r in self._records(files, grant) for e in r['events']
+                      if e['session_id'] == session and (actor is None or e['actor_id'] == actor)]
+            if 'event_ids' in selection:
+                ids = selection['event_ids']
+                require('start_sequence' not in selection and 'end_sequence' not in selection
+                        and isinstance(ids, list) and 0 < len(ids) <= 128
+                        and all(token(i) for i in ids) and len(set(ids)) == len(ids), 'task_selection')
+                events = [e for e in events if e['event_id'] in ids]
+                require({e['event_id'] for e in events} == set(ids), 'event_not_selected')
+                basis = 'explicit_event_ids'
+            else:
+                start, end = selection.get('start_sequence'), selection.get('end_sequence')
+                require(integer(start) and integer(end) and start <= end, 'task_interval')
+                events = [e for e in events if start <= e['sequence'] <= end]
+                basis = 'synthetic_receipt_interval'
+            require(bool(events), 'empty_selection')
+            selected_ids.update(e['event_id'] for e in events)
+            require(len(selected_ids) <= 128, 'task_event_limit')
+            # An overlapping selection cannot duplicate the selected event.
+            already = {e['event_id'] for s in resolved for e in s['events']}
+            events = [e for e in events if e['event_id'] not in already]
+            if events:
+                resolved.append(dict(registration_id=registration, epoch=epoch, session_id=session,
+                    basis=basis, events=[{key: e[key] for key in (
+                        'event_id', 'sequence', 'actor_id', 'parent_actor_id', 'turn_id', 'gaps')}
+                        for e in sorted(events, key=lambda e: (e['sequence'], e['event_id']))]))
+            registrations[registration] = dict(registration_id=registration, epoch=epoch)
+        return resolved, list(registrations.values())
+
+    def bind_task(self, *, selections, goal, request_id, task_id=None):
+        """Append an immutable explicit selection; no current-task or history discovery."""
+        feedback_text(goal)
+        require(token(request_id), 'request_id')
+        request = dict(selections=selections, goal=goal, task_id=task_id)
+        require(len(encoded(request)) <= TASK_INPUT_LIMIT, 'task_input_size')
+        selected_task = task_id or digest(['task', request_id])
+        with self._locked() as files:
+            rows = self._task_records(files, selected_task)
+            require(task_id is None or bool(rows), 'task_not_found')
+            ident, previous = self._task_retry(files, selected_task, rows, 'task', request_id, request)
+            if previous:
+                return self._task_receipt(previous, 'duplicate')
+            resolved, registrations = self._select_task_events(files, selections)
+            require(len(rows) < MAX_TASK_RECORDS - 1, 'task_capacity')
+            require(bool(rows) or len(files.names(('tasks',))) < MAX_TASKS, 'task_capacity')
+            row = dict(schema_version=1, kind='task', task_id=selected_task, record_id=ident,
+                       sequence=len(rows) + 1, request_hash=digest(request), goal=goal,
+                       registrations=registrations, selections=resolved)
+            files.write(('tasks', selected_task, ident + '.json'), row)
+            return self._task_receipt(row, 'recorded')
+
+    def add_feedback(self, task_id, *, symptom, correction=None, evidence_ids=None,
+                     contrary_evidence_ids=None, suspected_cause=None, confidence='unknown',
+                     author='user', request_id, revision_id=None):
+        """Record selected feedback as an observation, never a verified diagnosis."""
+        for value, optional in [(symptom, False), (correction, True), (suspected_cause, True)]:
+            feedback_text(value, optional=optional)
+        require(token(author), 'feedback_author')
+        require(confidence in {'unknown', 'low', 'medium', 'high'}, 'feedback_confidence')
+        evidence_ids = [] if evidence_ids is None else evidence_ids
+        contrary_evidence_ids = [] if contrary_evidence_ids is None else contrary_evidence_ids
+        for ids in (evidence_ids, contrary_evidence_ids):
+            require(isinstance(ids, list) and len(ids) <= 128 and all(token(i) for i in ids)
+                    and len(set(ids)) == len(ids), 'feedback_evidence')
+        request = dict(symptom=symptom, correction=correction, evidence_ids=evidence_ids,
+                       contrary_evidence_ids=contrary_evidence_ids, suspected_cause=suspected_cause,
+                       confidence=confidence, author=author, revision_id=revision_id)
+        with self._locked() as files:
+            rows = self._task_records(files, task_id)
+            require(bool(rows), 'task_not_found')
+            ident, previous = self._task_retry(files, task_id, rows, 'feedback', request_id, request)
+            if previous:
+                return self._task_receipt(previous, 'duplicate')
+            revisions = [r for r in rows if r['kind'] == 'task']
+            revision = next((r for r in revisions if r['record_id'] == revision_id), None) if revision_id else revisions[-1]
+            require(revision is not None, 'task_revision')
+            selected = {e['event_id'] for s in revision['selections'] for e in s['events']}
+            require(set(evidence_ids + contrary_evidence_ids) <= selected, 'evidence_not_selected')
+            require(len(rows) < MAX_TASK_RECORDS - 1, 'task_capacity')
+            row = dict(request, schema_version=1, kind='feedback', task_id=task_id,
+                       record_id=ident, sequence=len(rows) + 1, request_hash=digest(request),
+                       registrations=revision['registrations'],
+                       evidence_status='reported_correction' if correction else 'insufficient_claim_evidence')
+            row['revision_id'] = revision['record_id']
+            files.write(('tasks', task_id, ident + '.json'), row)
+            return self._task_receipt(row, 'recorded')
+
+    def task(self, task_id):
+        try:
+            with self._locked() as files:
+                rows = self._task_records(files, task_id)
+                if not rows:
+                    return {'status': 'disabled'}
+                return dict(status='ok', task_id=task_id,
+                            revisions=[r for r in rows if r['kind'] == 'task'],
+                            feedback=[r for r in rows if r['kind'] == 'feedback'])
+        except FileNotFoundError:
+            return {'status': 'disabled'}
+        except InvalidEvent as error:
+            if str(error) == 'task_inactive':
+                return {'status': 'disabled'}
+            raise
+
+    def _delete_tasks(self, files, registration_id):
+        for task_id in files.names(('tasks',)):
+            if not KEY.fullmatch(task_id):
+                continue
+            # No writer can be active under our store guard. An interrupted
+            # unpublished revision may reference a grant absent from older rows.
+            for name in files.names(('tasks', task_id)):
+                if name.startswith('.pending-'):
+                    files.unlink(('tasks', task_id, name))
+            rows = self._task_records(files, task_id, active=False)
+            if not rows or any(ref['registration_id'] == registration_id for row in rows for ref in row['registrations']):
+                files.clear(('tasks', task_id))
+
     def _delete_evidence(self, files, registration_id):
         files.clear(('records', registration_id))
+        self._delete_tasks(files, registration_id)
         # Cache has no authority and may contain other registrations: discard all.
         files.unlink(('index.sqlite',))
         for name in files.names(()):

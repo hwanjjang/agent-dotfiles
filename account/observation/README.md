@@ -3,7 +3,8 @@
 This is the private storage foundation of the [account improvement loop](../../docs/decisions/account-improvement-loop.md).
 It implements a local store, a synthetic adapter and a manual maintenance CLI.
 The optional [Claude native adapter](native.md) reuses this store with separate
-project consent and installer registration. Codex collection, task feedback and
+project consent and installer registration. Explicit task selections and feedback
+are available through the manual CLI. Codex collection, reviewed case export and
 comparative evaluation remain later work. The store never inspects transcripts,
 runs models, changes skills, registers hooks or writes installer state.
 
@@ -166,11 +167,85 @@ entire registration expires together; rolling retention and experiment holds
 remain future work. Native originals, backups and forensic erasure are outside
 this store's ownership.
 
-## Verification and next slice
+## Bind selected observations to a task
+
+`task-bind` accepts bounded JSON on stdin. Select exact `event_ids` from `events`,
+or an inclusive `start_sequence`/`end_sequence` interval in one registration,
+epoch and session. Intervals use collector receipt order, not inferred native
+turns. An optional `actor_id` must match observed actors; omitted actors and
+unknown turn IDs stay unresolved. Multiple explicitly selected sessions and
+independently granted projects can belong to one task.
+
+```sh
+python3.11 scripts/improvement/observations.py --home /path/to/disposable-home \
+  task-bind < selected-task.json
+```
+
+The input has this shape; replace the synthetic IDs with the actual local grant
+and selected event IDs:
+
+```json
+{
+  "request_id": "bind-export-1",
+  "goal": "Check whether export verification actually ran",
+  "selections": [{
+    "registration_id": "<registration-id>",
+    "epoch": "<grant-epoch>",
+    "session_id": "session-1",
+    "event_ids": ["<selected-event-id>"]
+  }]
+}
+```
+
+The receipt returns `task_id` and `revision_id`. To revise a task, supply that
+`task_id` and a new `request_id`; the prior revision remains immutable. A revision
+contains the exact resolved event selection, so later observations never expand
+it. Repeating an identical request returns `duplicate`; changing a request with
+the same ID rejects with `request_conflict`. Replays must use the same input,
+including whether `task_id` was omitted on the initial bind.
+
+`feedback-add --task <task-id>` accepts JSON on stdin with required `request_id`
+and `symptom`; optional fields are `author` (opaque ID, default `user`),
+`correction`, `evidence_ids`, `contrary_evidence_ids`, `suspected_cause`,
+`confidence` (`unknown`, `low`, `medium`, `high`) and `revision_id`. Evidence IDs
+must belong to the selected revision. Without `revision_id`, the first submission
+binds the latest revision; retrying the same request keeps that original binding.
+`task-show --task <task-id>` returns private revisions and feedback, or `disabled`
+when absent, expired or revoked. Treat its output as private evidence, not a
+sanitized export.
+
+Submitting feedback explicitly permits local storage of those supplied fields;
+it does not permit transcript reads, model transmission or publication. A failed
+tool event without a correction is `insufficient_claim_evidence`. A supplied
+correction is `reported_correction`, not a verified diagnosis. Cause/confidence
+remain separate from symptoms and contrary evidence. The library exposes
+`Store.bind_task`, `Store.add_feedback` and `Store.task`; write refusals raise
+`InvalidEvent` with fixed reasons, which the CLI converts to JSON rejection.
+
+Task records live under `tasks/<task-id>/<record-id>.json` in the same private
+store, with the existing guard and durable-write boundary. Each read and write
+rechecks all referenced grant epochs. Revoking or expiring **any** participating
+registration disables the entire composite task and purges its revisions and
+feedback, even when another registration remains active. The existing `prune`
+command completes interrupted deletion. Copied old-epoch records cannot restore
+access. Uncommitted task temporary files are removed during purge. There are no
+retention holds, case exports or inferred task completion in this slice.
+
+Limits: 64 KiB CLI input, 8 KiB UTF-8 per text field, 16 selections and 128 distinct
+events per revision, 256 task directories, and at most 127 committed records per
+task. Selection and purge scan this bounded store; no large-ledger latency claim
+is made. Task records are not included in the optional event SQLite index.
+
+The [task-feedback walkthrough](../../docs/manual/task-feedback.pdf) shows an actual
+synthetic CLI journey. Its [verification recipe](../../docs/verification/verify-repository/features/task-feedback.md)
+owns repeatable scenario checks; this guide remains the command and privacy authority.
+
+## Verification
 
 ```sh
 python3.11 -m unittest discover -s tests -p 'test_observation_store.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_cli.py' -v
+python3.11 -m unittest discover -s tests -p 'test_observation_feedback*.py' -v
 ```
 
 Tests use temporary homes and synthetic records. They cover scope isolation,

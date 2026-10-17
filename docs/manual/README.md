@@ -101,3 +101,26 @@ pages were rendered and visually checked, with text and page count checked too.
 The [native guide](../../account/observation/native.md) owns commands and limits;
 the [recipe](../verification/verify-repository/features/native-observation.md)
 owns repeatable verification. No real-account collection was activated by this guide.
+
+## Explicit task feedback walkthrough
+
+The [two-page walkthrough](task-feedback.pdf) covers selecting observations, recording
+feedback, inspecting immutable task revisions and revoking private state. Its
+[editable source](task-feedback.json), [map image](task-feedback-map.png),
+[CLI result image](task-feedback-result.png) and [capture manifest](task-feedback-capture.json)
+are maintained together. The 2026-10-18 capture uses a candidate based on `48b854b`.
+The CLI image is a labeled browser-rendered summary of an actual disposable
+synthetic run, not a terminal screenshot. Both PDF pages were rendered and visually
+checked, including readable labels, complete images and page text.
+
+These screenshots and PDF retain their original capture identity. Integration onto
+Claude parent `5b99061` adds the inherited native process-project check before input
+reads. A fresh synthetic feedback CLI journey and 175 focused tests passed on that
+integrated candidate; the manifest distinguishes these checks from the historical
+capture. This does not extend the screenshots to new native delivery evidence.
+
+The [observation guide](../../account/observation/README.md) remains authoritative;
+the [task-feedback recipe](../verification/verify-repository/features/task-feedback.md)
+owns repeatable checks. Rebuild with the screenshot-manual scripts above, replacing
+the source name with task-feedback.json. This slice does not implement reviewed
+case export, native Codex collection or comparative evaluation.
