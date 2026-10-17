@@ -15,6 +15,7 @@
 /.aws/
 /.ssh/
 /.gnupg/
+/.agents/agent-dotfiles/observations/
 
 # Secret files and private key material; public examples use synthetic values
 /secrets/

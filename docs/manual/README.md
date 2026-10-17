@@ -67,3 +67,12 @@ Both PDF pages were rendered with PDFium and visually checked for readable text,
 complete screenshots, margins and captions. Text and page count were checked with
 pypdf. Regenerate with the screenshot-manual scripts above, substituting
 `account-source.json`; recapture when either documented dialog changes.
+
+## Complete English and Korean user guides
+
+The [English guide](user-guide/manual-en.pdf) and [Korean guide](user-guide/manual-ko.pdf)
+cover installation, AK SDLC navigation, private synthetic observations, the proposed
+eval workflow and recovery in 18 pages each. See the [source and capture notes](user-guide/README.md),
+[English editable text](user-guide/manual-en.md) and [Korean editable text](user-guide/manual-ko.md).
+The six-step improvement cycle is documented with explicit implemented/planned status.
+Actual native collection and comparative model evaluation remain future work.

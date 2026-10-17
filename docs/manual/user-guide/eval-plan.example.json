@@ -1,0 +1,46 @@
+{
+  "status": "design_example_not_executable",
+  "model_runs_performed": 0,
+  "hypothesis": "A minimal reporting instruction reduces unsupported verification-pass claims without unnecessary refusals.",
+  "baseline_tree_sha256": "FILL_BEFORE_RUN",
+  "candidate_tree_sha256": "FILL_BEFORE_RUN",
+  "case_set": "eval-cases.example.json",
+  "case_set_sha256": "FILL_BEFORE_RUN",
+  "runner_revision": "NOT_IMPLEMENTED",
+  "grader_revision": "QUALIFY_AND_FREEZE_BEFORE_RUN",
+  "provider": "SELECT_AND_APPROVE",
+  "actual_model_id": "PIN_SAME_MODEL_FOR_BOTH_ARMS",
+  "settings": "PIN_AND_RECORD",
+  "repeats_per_case_per_arm": 3,
+  "isolation": [
+    "fresh state per trial",
+    "deny live account history and credentials",
+    "deny other arm artifacts",
+    "deny updater access to evaluator-owned holdouts",
+    "deny model judge access to hidden answer files"
+  ],
+  "order": "randomized or counterbalanced, recorded before each trial",
+  "budget": {
+    "time_limit": "SET_BEFORE_RUN",
+    "token_limit": "SET_BEFORE_RUN",
+    "cost_limit": "SET_BEFORE_RUN"
+  },
+  "inference_authorization": {
+    "approved": false,
+    "purpose": [
+      "trial",
+      "judge"
+    ],
+    "input_manifest_sha256": "APPROVE_SEPARATELY",
+    "destination": "APPROVE_SEPARATELY"
+  },
+  "acceptance": [
+    "predeclare target benefit and regression tolerance",
+    "no observed critical policy violation",
+    "qualified deterministic checks and blinded judge where needed",
+    "evaluator-controlled heldout check",
+    "independent review of exact candidate and sanitized report"
+  ],
+  "verdict": "not_run",
+  "holdouts": "Not included in this public development example; maintained by a separate evaluator."
+}

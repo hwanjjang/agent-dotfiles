@@ -45,6 +45,28 @@ and reviewer launch diagnostics. These are supporting sources, not extra SDLC
 stages or installed account features. Their dialogs link to the authoritative
 guides; the account selection comparison is linked from the account guide.
 
+## Self-improvement and eval
+
+The Anytime band includes **Self-improvement & eval (1-6)**. Read its numbered
+nodes in order: observe, reproduce a case, prepare a candidate, compare through
+eval, review promotion evidence, then deploy and observe again. Open the group
+header for the cycle and each node for its status, handoff and source. Search
+`eval` or bookmark `workflow.html#skill-improvement-eval`.
+
+This is a separate improvement cycle, not six new mandatory stages in the PR
+state machine. Synthetic observation storage and the account installer exist;
+case preparation and candidate editing can use existing manual methods. Native
+collection, comparative model trials and automatic promotion remain planned.
+The catalog's **available** status means the linked guide exists, not that every
+described runtime is implemented. Node subtitles and details state these limits.
+
+Use the [improvement design](../decisions/account-improvement-loop.md) as the
+behavior authority and the [observation guide](../../account/observation/README.md)
+for today's runnable synthetic example. An improvement candidate can enter the
+ordinary investigation/specification/build/review route when appropriate; eval
+adds a behavioral comparison and does not replace project tests or independent
+review. Collection consent does not authorize inference, publication or deployment.
+
 ## Source and maintenance
 
 [Stage-to-skill routing](../../skills/sdlc/references/skill-routing.md) owns method
