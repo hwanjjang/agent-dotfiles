@@ -7,6 +7,10 @@ The sections below retain the broader design rationale; names not in the skill
 catalog remain proposed, not installed commands. Full target-client and
 multi-provider orchestration still require runtime validation.
 
+The [spec extraction](spec-extraction.md) now makes specification synthesis
+independently usable as `to-spec`. Remaining stage coordination stays in SDLC;
+the design below is not a mandate to create a wrapper skill for every stage.
+
 Investigated: 2026-10-17. This proposal combines public upstream patterns with
 the requested direction: stronger preparation, parallel implementation, and
 independently usable stages. It does not reproduce a private implementation.

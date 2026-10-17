@@ -16,6 +16,11 @@ absolutes below, including historical originals. Explicit alternatives need real
 coverage and honest limits; unavailable required checks remain blocked. Existing
 authority, reviewer independence, iteration limits and endpoint gates still apply.
 
+The collection's [to-spec skill](../../../to-spec/SKILL.md) owns specification
+method and content, replacing the embedded spec checklist and conflicting
+historical source wording. SDLC owns its stage inputs, canonical artifact location,
+receipt and readiness decision; it does not maintain a second specification method.
+
 The collection's [PR workflow policy](../../../../policies/pr-workflow.md) owns
 review and merge boundaries. It supersedes the historical one-task/one-PR
 equation below and in the preserved source; task ownership is not a PR count.
@@ -40,7 +45,7 @@ Distinguish **instruction** from **enforcement**: `AGENTS.md`, skills, and promp
 ## Stage gates
 
 1. **Intent** — every meaningful change starts from a normalized `intent.md` (Problem, Desired Outcome, Affected users/systems, Constraints, Out of Scope, Acceptance Criteria, Risks, Open Questions, Source ID). The owner (AK) approves it: first human gate. No build without intent (Rule 1).
-2. **Spec** — read intent, policies, and relevant code; produce `spec.md` (requirements, architecture, interfaces, data model, security, UX, failure behavior, migration, observability, testing strategy, alternatives, risks) **without modifying source code**. Security/architecture/UX/compliance policies apply at spec time, not after implementation.
+2. **Spec** — use the method selected in [stage routing](../skill-routing.md); assess the canonical specification and its receipt before the applicable downstream stage.
 3. **Plan** — no coding before an approved `plan.md` for non-trivial changes (Rule 2): files to change/add/delete, order, dependencies, tests, migration, rollback, risks, blast radius; and answer explicitly: what could this break, what is the riskiest part, what alternative was rejected, how will the implementation be proven.
 4. **Build** — 1 task = 1 agent session = 1 worktree = 1 branch = 1 PR. Agents write to branches, never main (Rule 6). Do not run two agents on overlapping files without coordination; split large features via a dependency graph.
 5. **Self-verification** — a builder may not declare "done" without feedback from tests/build/runtime/browser (Rule 3): unit → integration → lint/typecheck → build → runtime → artifact comparison. Bug fixes follow reproduce → failing test → confirm failure → fix → pass → regression tests. UI changes verify via a browser/screenshot loop.

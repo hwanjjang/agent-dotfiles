@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/mattpocock/skills",
+  "revision": "49dd158d1076134a641b33efb035946536778336",
+  "path": "skills/engineering/to-spec",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088"
+  },
+  "additional_sources": [
+    {
+      "upstream": "https://github.com/mattpocock/skills",
+      "revision": "49dd158d1076134a641b33efb035946536778336",
+      "path": "docs/engineering/to-spec.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "f623ea0bbe94e9b314657dd0c9da4c4b7dbb71830cba78af7c2bb70ca79ffa90",
+      "role": "Upstream explanation inspected; not an independent community evaluation."
+    }
+  ],
+  "local_sources": [
+    {
+      "path": "skills/sdlc/assets/stage-deliverables.md",
+      "revision": "7795b44134019debf3080bfdce6452e74f7b946e",
+      "sha256": "3af850eac5252b358517a75ba78060ae1e0ae584d8539596f97a5d6976383928",
+      "license": "MIT",
+      "license_path": "LICENSE"
+    },
+    {
+      "path": "skills/sdlc/references/policy/sdlc-playbook.md",
+      "revision": "7795b44134019debf3080bfdce6452e74f7b946e",
+      "sha256": "1676c5b2a4092c2219aaf5e7b59acc5b474037b9692746bf581d33168e431f84",
+      "license": "MIT",
+      "license_path": "LICENSE"
+    }
+  ],
+  "adaptations": [
+    "Extracted the AK SDLC specification method and content contract into one standalone package; SDLC keeps routing, state, artifact identity and readiness.",
+    "Reuses existing requirements authority and acceptance IDs; records relevant retained/changed/added behavior.",
+    "Preserves settled decisions; consequential gaps remain explicit instead of routine re-interview or invented readiness.",
+    "Removes automatic tracker publication, setup and label dependencies, exhaustive stories, fixed test-boundary counts and explicit-only invocation metadata.",
+    "Uses proportionate artifact content, caller-selected paths or task-local fallback, and no-write inline output.",
+    "Keeps planning, ticket creation, implementation and external writes with their existing owners."
+  ],
+  "skill_dependencies": [],
+  "policy_dependencies": [
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "Read access to the supplied requirements and relevant source; a writable authorized spec destination only for file output. No required tracker, MCP or SDLC state runtime."
+  ],
+  "validation": "Strict metadata, source/license hashes, relative links and dependency closure passed. Independent bounded application covered an existing-spec update and an incomplete inline-only draft; fixture source remained unchanged. Map browser checks passed. See docs/client-verification.md. Native discovery, automatic selection, authenticated publication and full SDLC execution remain unverified."
+}

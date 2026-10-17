@@ -12,6 +12,7 @@ Do not copy this repository's root AGENTS.md as a shared policy.
 | Capability | Packages |
 | --- | --- |
 | Intent and language | grill-me, grilling, grill-with-docs, domain-modeling |
+| Specification | to-spec |
 | Investigation and design | how, architect, arena, diagnosing-bugs |
 | Planning and execution | planning-and-task-breakdown, planning-with-files, swarm, sdlc |
 | Verification construction and maintenance | create-verification-skill, maintain-verification-skill |
@@ -25,6 +26,11 @@ corrections. SDLC selects methods through its
 [stage routing](sdlc/references/skill-routing.md); its provenance lists the full
 skill dependency group, whose transitive resources must remain available.
 All declared packages are present. Only applicable methods run on a given task.
+
+`to-spec` owns specification synthesis and its content contract. AK SDLC passes
+stage inputs and assesses the returned artifact; standalone use needs no SDLC
+state or tracker. The [extraction decision](../docs/decisions/spec-extraction.md)
+records the source comparison and removed duplicate checklists.
 
 `planning-and-task-breakdown` owns the task graph and PR boundaries. `to-tickets`
 consumes that plan and uses `issue-writing` for bodies; `make-pr-easy-to-review`

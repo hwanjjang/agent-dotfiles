@@ -1309,6 +1309,59 @@
         "research",
         "adoption"
       ]
+    },
+    {
+      "id": "to-spec",
+      "title": "Synthesize a specification",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/to-spec/SKILL.md",
+      "summary": "Turn settled requirements and source evidence into one behavior specification.",
+      "when": [
+        "You need a standalone spec draft or update, or SDLC reaches its spec stage."
+      ],
+      "usage": "Read the agreed intent, existing spec and relevant source; preserve decisions and write to the caller-selected destination or return an inline draft.",
+      "behavior": [
+        "Owns specification method and content; SDLC retains stage state and readiness.",
+        "Preserves existing behavior and acceptance identities, with unresolved decisions explicit.",
+        "Stops at the spec without starting tickets, implementation or publication."
+      ],
+      "outputs": [
+        "Canonical spec or qualified draft, source references, acceptance and remaining decisions."
+      ],
+      "tags": [
+        "to-spec",
+        "spec",
+        "requirements",
+        "standalone"
+      ]
+    },
+    {
+      "id": "spec-extraction",
+      "title": "Standalone spec extraction",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/spec-extraction.md",
+      "summary": "Why specification synthesis moved out of SDLC into one reusable method.",
+      "when": [
+        "Maintaining spec authoring or the boundary between skills and orchestration."
+      ],
+      "usage": "Read source comparisons, community reports and the extraction ownership before changing spec guidance.",
+      "behavior": [
+        "Records Matt source and the existing AK contract, plus excluded upstream behavior.",
+        "Keeps comparison references and user reports separate from validation claims."
+      ],
+      "outputs": [
+        "Source-backed ownership and qualification limits."
+      ],
+      "tags": [
+        "spec",
+        "adoption",
+        "research",
+        "ssot"
+      ]
     }
   ],
   "relationships": [
@@ -1691,6 +1744,41 @@
       "from": "overview",
       "to": "pr-workflow-decision",
       "label": "Explains reviewable PR adoption"
+    },
+    {
+      "from": "sdlc",
+      "to": "to-spec",
+      "label": "Invokes the canonical spec method"
+    },
+    {
+      "from": "to-spec",
+      "to": "policy-evidence",
+      "label": "Uses truthful evidence claims"
+    },
+    {
+      "from": "to-spec",
+      "to": "policy-security",
+      "label": "Applies security at spec time"
+    },
+    {
+      "from": "to-spec",
+      "to": "spec-extraction",
+      "label": "Explains extraction and adaptations"
+    },
+    {
+      "from": "spec-extraction",
+      "to": "matt-pocock",
+      "label": "Selects focused specification synthesis"
+    },
+    {
+      "from": "modular-sdlc",
+      "to": "spec-extraction",
+      "label": "Records implemented standalone spec method"
+    },
+    {
+      "from": "overview",
+      "to": "to-spec",
+      "label": "Introduces standalone specification"
     }
   ]
 }

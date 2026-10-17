@@ -11,6 +11,7 @@
     "Single pstack-derived tdd method; explicit alternative evidence and no-refactor reuse are validated without weakening smoke or publication gates.",
     "Routes verification setup and drift maintenance to the portable pstack pair; project recipes feed existing evidence gates.",
     "Routes requested ticket materialization through the existing plan and author-side PR preparation before independent review; no additional lifecycle stage.",
+    "Extracted spec method/content to to-spec; routing, workflow, template and normative policy link to it without a second checklist. Stage state and receipt schema unchanged.",
     "Made the PR workflow policy authoritative over the historical one-task/one-PR equation."
   ],
   "skill_dependencies": [
@@ -32,7 +33,8 @@
     "create-verification-skill",
     "maintain-verification-skill",
     "to-tickets",
-    "make-pr-easy-to-review"
+    "make-pr-easy-to-review",
+    "to-spec"
   ],
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
