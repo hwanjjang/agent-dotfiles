@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preview/install/update/uninstall an owned account bundle (POSIX, Python 3.11+)."""
+"""Manage, diagnose and verify an owned account bundle (POSIX, Python 3.11+)."""
 import argparse
 import io
 import json
@@ -329,8 +329,15 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             require(not source.is_relative_to(destination) and not destination.is_relative_to(source),
                     'Source and delivery overlap: ' + name)
     prerequisites = [exe for exe in ('codex', 'claude', 'git', 'sh', 'node', 'rg', 'gh') if shutil.which(exe) is None]
+    hook_review = [dict(event=event, matcher=group.get('matcher'), command=handler['command'],
+                       definition_sha256=digest(encoded(dict(event=event, group=group, handler=handler))))
+                   for event, groups in receipt['hooks'].get('.codex/hooks.json', {}).items()
+                   for group in groups for handler in group['hooks']]
     plan = dict(version=1, action=action, home=str(home), source_revision=sha,
                 hermes=hermes, planning_hooks=hooks, mcp=mcp, skills=skills,
+                hook_activation=dict(codex=hook_review, runs_outside_sandbox=True,
+                                     trust_persists=True, trust_changed_by_installer=False,
+                                     next_action='Review the listed definitions in native /hooks; activate only within explicit authority.'),
                 conflicts=sorted(set(conflicts)), missing_executables=prerequisites,
                 before=before, after=after, changes=list(changes))
     return plan, changes
@@ -338,7 +345,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('install', 'update', 'uninstall', 'status', 'rollback'))
+    parser.add_argument('action', choices=('install', 'update', 'uninstall', 'status', 'rollback', 'doctor'))
     parser.add_argument('--home', type=Path, default=Path.home(), help='Target account; tests use a disposable directory without changing HOME')
     parser.add_argument('--repo', type=Path, default=ROOT)
     parser.add_argument('--revision', default='HEAD', help='Committed local Git revision; never fetches or uses dirty worktree files')
@@ -353,12 +360,42 @@ def main(argv=None):
     group.add_argument('--without-hooks', dest='hooks', action='store_false')
     parser.add_argument('--mcp', help='Comma-separated opt-in selection: github,context7,playwright; none to remove managed registrations')
     parser.add_argument('--transaction', help='Backup ID for guarded rollback')
+    parser.add_argument('--json', action='store_true', help='Machine-readable doctor report')
+    parser.add_argument('--native', action='store_true', help='Doctor: query native clients without model requests')
+    parser.add_argument('--client', choices=('codex', 'claude'), help='Doctor: select one native/model client')
+    parser.add_argument('--model-smoke', action='store_true', help='Doctor: opt in to a real, potentially billable model scenario')
+    parser.add_argument('--model', help='Doctor: exact model ID; required for a model smoke, never silently replaced')
+    parser.add_argument('--scenario', choices=('spec', 'routing'), default='spec', help='Doctor model scenario: explicit spec or natural skill routing and planning')
+    parser.add_argument('--with-paseo', action='store_true', help='Doctor: include optional local Paseo checks')
+    parser.add_argument('--evidence-dir', type=Path, help='Doctor model smoke: new private evidence directory')
+    parser.add_argument('--timeout', type=int, default=90, help='Doctor subprocess deadline in seconds (1–300)')
     args = parser.parse_args(argv)
     try:
+        require(args.action == 'doctor' or not (args.json or args.native or args.client or args.model_smoke
+                or args.model or args.with_paseo or args.evidence_dir or args.timeout != 90 or args.scenario != 'spec'),
+                'Diagnostic options require the doctor action')
         require(os.name == 'posix', 'Only POSIX accounts are supported')
         home = args.home.expanduser().absolute()
         require(home.exists() and home.is_dir() and not home.is_symlink(), 'Target home must be an existing real directory')
         home = home.resolve()
+        if args.action == 'doctor':
+            require(not args.apply and not args.approve_plan and not args.legacy_receipt
+                    and not args.transaction and args.hermes is None and args.hooks is None
+                    and args.mcp is None,
+                    'Doctor does not accept installation or mutation flags')
+            require(1 <= args.timeout <= 300, 'Timeout must be between 1 and 300 seconds')
+            require(not args.model_smoke or (args.client and args.model and args.evidence_dir),
+                    'Model smoke requires --client, --model and a new --evidence-dir')
+            require(args.model_smoke or not args.model, '--model requires --model-smoke')
+            require(args.model_smoke or not args.evidence_dir, '--evidence-dir requires --model-smoke')
+            require(args.scenario == 'spec' or (args.model_smoke and not args.with_paseo),
+                    'Routing requires --model-smoke and currently supports native clients only')
+            from account_doctor import diagnose, render
+            result = diagnose(home, native=args.native, client=args.client,
+                              model=args.model if args.model_smoke else None,
+                              paseo=args.with_paseo, evidence=args.evidence_dir, timeout=args.timeout, scenario=args.scenario)
+            print(json.dumps(result, indent=2) if args.json else render(result))
+            return 1 if result['status'] in ('fail', 'blocked') else 0
         repo = args.repo.expanduser().resolve()
         require(not repo.is_relative_to(home / BUNDLE) and not (home / BUNDLE).is_relative_to(repo), 'Source and delivery overlap')
         if args.action == 'status':
@@ -377,7 +414,8 @@ def main(argv=None):
             return 0
         mcp = None if args.mcp is None else ([] if args.mcp == 'none' else sorted(set(args.mcp.split(','))))
         def run():
-            plan, changes = prepare(home, repo, args.revision, args.action, args.hermes, args.hooks, mcp, args.legacy_receipt)
+            plan, changes = prepare(home, repo, args.revision, args.action, args.hermes, args.hooks,
+                                    mcp, args.legacy_receipt)
             if args.apply:
                 require(not plan['conflicts'] or (args.approve_plan and json.loads(args.approve_plan.read_bytes()) == plan),
                         'Conflicts require review of saved preview and --approve-plan with that exact file')

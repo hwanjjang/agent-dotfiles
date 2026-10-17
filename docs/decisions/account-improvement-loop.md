@@ -295,6 +295,41 @@ grading contract, read held-out answers or install the candidate on the live acc
 
 ## Comparative evaluation contract
 
+### Account qualification and reuse
+
+The [account doctor](../../account/README.md#diagnose-and-exercise-the-installation)
+provides setup qualification before an experiment and affected-client checks after
+deployment. Its offline ownership checks, native discovery/trust probes and
+opt-in model scenarios are implemented. Its JSON identifies
+`evidence_kind: account_qualification` and `comparison.status: not_run`;
+`comparison.promotion_eligible: false` applies even when every selected check passes.
+These fields describe the report, not an implemented promotion gate.
+
+Keep the [verification recipe](../verification/verify-repository/features/account-verification.md)
+as the owner of runnable checks. The comparison contract below remains the owner
+of improvement claims. The future runner may reuse qualified transport parsing,
+actual model identity and artifact checks from the doctor, but must supply its own
+frozen trials, enforced isolation, comparison accounting and qualified graders.
+The doctor runs against a mutable installed account; read-only tools and fresh
+temporary projects do not establish the isolation required below.
+
+The `spec` scenario names a skill and checks adherence. The `routing` scenario
+observes native selection on one positive spec-to-plan task; neither scenario
+measures catalog-wide routing precision/recall, Korean/English coverage or a
+current-versus-candidate gain. Their public fixtures can seed development cases,
+never unseen holdouts. Keep source exposure separate from achieved outcomes.
+
+A doctor failure is a triage input: distinguish account/auth/client defects,
+grader mistakes and skill behavior before proposing a source change. Preserve
+the original failed run when correcting a grader; record a regrade separately.
+Convert only reviewed, sanitized evidence into a reproduction through the case
+workflow above. Doctor logs are not ingested into the synthetic observation
+store, and doctor does not grant or activate collection. Installer lifecycle and
+doctor coexistence are checked against existing synthetic records and grants;
+this does not qualify native collection or concurrent native hooks.
+
+### Frozen comparison
+
 Before running, freeze the cases, fixtures, grader/runner revisions, arms,
 repetitions, model/provider/client/adapter versions, reasoning settings, tool
 versions, permissions, time/token budgets, primary metric, regression margins
@@ -397,7 +432,7 @@ declared reference machine, tested with concurrent writers and 10,000 synthetic
 events. Record the actual distribution and durability cost; this is a target,
 not an availability promise. Bound every payload/batch and report dropped fields.
 
-The next implementation step is slice 1, using synthetic records only. Native
+The next implementation step is slice 2, native observation adapters. Native
 activation, model-budget selection and any recurring analysis are later explicit
 operations. Open qualification questions are exact installed-client event coverage,
 safe model authentication inside the trial sandbox and supported project-filtered

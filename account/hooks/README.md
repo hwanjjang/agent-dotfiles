@@ -49,7 +49,11 @@ an explicit adapter. Never change the real home to test this package.
 Run the repository's isolated tests with
 `python3 -m unittest discover -s tests -p 'test_account_hooks.py'`.
 They use disposable delivery layouts, synthetic plans and isolated caches.
-Then, on an authorized target client, inspect effective registrations, confirm the
+Then run `sh scripts/setup-account.sh doctor --native --client codex` and the
+corresponding `--client claude` check on an authorized target account. The doctor
+reports modified/untrusted Codex hooks as blocked and never auto-trusts them.
+It checks Claude SessionStart recovery with synthetic data; it does not certify
+every lifecycle event. On the target client, inspect effective registrations, confirm the
 delivered source revision, and exercise session recovery and each claimed event.
 Test project/account overlap and opt-out. JSON parsing or a direct script run alone
 does not establish native hook activation or user-facing model behavior.
