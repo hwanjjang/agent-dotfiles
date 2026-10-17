@@ -150,6 +150,11 @@ Codex collection and comparative model evaluation remain future work. The implem
 qualifies setup and bounded model behavior before experiments or after deployment;
 its PASS does not establish improvement over a baseline.
 
+Offline development comparison is available through
+[deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
+It freezes and grades supplied synthetic evidence; it does not execute models or
+establish holdout or promotion eligibility.
+
 ## Principles
 
 - **Keep shared instructions small.** Put durable defaults in policies and load

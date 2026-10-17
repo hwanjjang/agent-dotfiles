@@ -1,0 +1,20 @@
+{
+  "title": "Compare reviewed development cases",
+  "scenario": "Python 3.11+. Generate and explicitly review synthetic cases with the in-tree Store, then freeze and report supplied observations. Four English/Korean development cases; no credentials or model calls.",
+  "steps": [
+    {
+      "title": "Freeze reviewed public exports",
+      "instruction": "Prepare a synthetic case with evidence-bound instruction triage, review its exact digest, and export the detached public v1 JSON. Run evaluation.py qualify, then freeze a reviewed spec with both arms, reproduction/counterpart inputs, identities, repetitions and declared budgets. The producer and evaluator are in this checkout.",
+      "screenshot": "evaluation-map.png",
+      "caption": "Actual upper portion of the current catalog dialog; its source link opens the complete contract.",
+      "expected": "One frozen inventory binds all scheduled trials. Private feedback and lineage are excluded. Unknown or changed export fields are refused."
+    },
+    {
+      "title": "Inspect every matched pair",
+      "instruction": "Run evaluation.py report with the unchanged spec and supplied synthetic completions. Read counts and coverage, then paired_summary.overall and paired_summary.dimensions[primary_metric]. Missing, duplicate, blocked and inconclusive evidence stays unresolved. Retain separate routing, adherence and MCP dimensions.",
+      "screenshot": "evaluation-result.png",
+      "caption": "Browser-rendered summary from the actual 30-call disposable CLI workflow; not a terminal capture.",
+      "expected": "All 16 scheduled trials remain visible. Eight pairs: one improved, one regressed, one both-pass, one both-fail and four unresolved. Unknown tokens remain null; live eligibility is false and promotion is inconclusive."
+    }
+  ]
+}

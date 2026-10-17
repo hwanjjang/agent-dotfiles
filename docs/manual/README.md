@@ -159,3 +159,14 @@ cases remain development data. Automated diagnosis remains planned. Both current
 PDF pages were rendered and individually viewed, with required text/page count
 checked. Rebuild using the existing screenshot-manual commands with
 reviewed-cases.json and recapture after workflow changes.
+
+## Offline development evaluation
+
+[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The current actual 30-call CLI journey prepares and reviews four English/Korean development cases with the in-tree producer, then retains all 16 scheduled trials. Eight matched pairs comprise one improved, one regressed, one both-pass, one both-fail and four unresolved. Missing and duplicate evidence stays visible. This qualifies deterministic integration/accounting; native model execution and independent holdout qualification remain unavailable. Earlier eight-trial captures remain historical in Git history.
+
+Both evaluation pages were rendered with PDFium and visually checked for readable
+headings, complete intended capture regions, captions and pagination. PDF text and
+page count were checked with pypdf. The first image is an actual catalog dialog;
+the second explicitly renders the actual synthetic CLI result in a browser. Neither
+image demonstrates native model execution. Rebuild with the screenshot-manual
+scripts above using `evaluation.json`; refresh its capture manifest after changes.
