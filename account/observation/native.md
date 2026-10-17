@@ -163,6 +163,7 @@ source has focused or synthetic checks.
 | --- | --- | --- |
 | macOS, Codex 0.163.0 / GPT-6-Luna low, corrected runtime | Fresh native turn: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; eleven reviewed definitions trusted | One synthetic task; no delivery-completeness, subagent or environment-exposure claim |
 | Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, historical pre-guard | Actual callbacks: session start 1, tool starts 4, tool ends 2, response end 1; planning marker present; eleven definitions trusted | Full fixture blocked by `bwrap: Failed RTM_NEWADDR`; apply_patch failed and intended exit 3 was not reached; sandbox was not weakened |
+| Linux aarch64, Codex 0.163.0, later offline prerequisite check | Native workspace read/write passed; outside write denied (EROFS 30), IPv4/IPv6 denied (EPERM 1); deliberate exit 3 preserved after an approved temporary vendor prerequisite | No authentication, model, hook or child run; [separate prerequisite qualification](#linux-offline-sandbox-prerequisite) does not requalify the historical collector fixture |
 | Linux aarch64, Claude Code 2.1.302, historical pre-guard | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
 | macOS, optional Paseo 0.11.4 / Codex 0.163.0 / GPT-6-Luna low, source `70ec2e9` | Baseline: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; native shell exits 0, 0, 3 | PostToolUse outcomes remain unknown; this bounded task does not establish effective exposure or complete delivery |
 | Same Paseo agent, planned interruption at source `70ec2e9` | Native `turn_aborted` with reason `interrupted`; one additional PreToolUse, no corresponding PostToolUse or Stop | The shell continued after the turn aborted and exited 0 with its finished marker; cancellation is not process-kill proof, and missing callbacks remain visible |
@@ -223,6 +224,73 @@ or trust were enabled, and no real model/provider request occurred. This qualifi
 that synthetic transport/tool boundary; it does not replace the earlier approved
 live fixture's bubblewrap blocker or qualify observer delivery, subscription
 transport, holdout efficacy or promotion.
+
+### Linux offline sandbox prerequisite
+
+A later 2026-10-18 check isolated the historical Linux startup blocker from
+collector delivery. It used Ubuntu 24.04.4 LTS, Linux 6.8.0-117-generic on aarch64,
+and the official Codex 0.163.0 binary. Before the repair, native `codex sandbox`
+failed with `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`;
+the bounded kernel audit recorded `net_admin` and `setpcap` denials under
+`unprivileged_userns`. The short-lived denied process was not captured in the
+parent map, so no exact parent-PID join is claimed.
+
+Following the [official sandbox prerequisites](https://learn.chatgpt.com/docs/sandboxing#prerequisites)
+and [Ubuntu AppArmor guidance](https://documentation.ubuntu.com/security/security-features/privilege-restriction/apparmor/),
+a separately approved guest-only trial installed Ubuntu `bubblewrap`
+`0.9.0-1ubuntu0.3` and temporarily loaded the exact `bwrap-userns-restrict`
+vendor profile extracted from `apparmor-profiles`
+`4.0.1really4.0.1-0ubuntu0.24.04.9`. The latter package was **not installed**;
+unrelated profiles were not activated. Ubuntu InRelease signatures, Packages
+index hashes and package hashes were verified before using these bytes. The
+profile parsed with the existing AppArmor
+`4.0.1really4.0.1-0ubuntu0.24.04.6` parser without an AppArmor upgrade.
+
+| Qualified input | SHA256 |
+| --- | --- |
+| Official Codex 0.163.0 aarch64 binary | `8a96f66d059d653e68bfd5f3c79337e6f1d7d170d80bf705eb7d0249b34c0ece` |
+| Ubuntu bubblewrap 0.9.0-1ubuntu0.3 arm64 package | `dce3a2e5f0302eab717a64fe9c9411fe2d40469e2a7946e0f2ce1420a61025c3` |
+| Ubuntu apparmor-profiles 4.0.1really4.0.1-0ubuntu0.24.04.9 package, extraction only | `90b02aa006eea7702cd4e851343e469e41365dda42145a3cb035de1d6c773b8c` |
+| Extracted bwrap-userns-restrict profile | `11d39094f044f0cda0febb3ad517b830301da6b2ce929664af09ee9e4dd264f9` |
+
+The guest-wide executable profile permits `/usr/bin/bwrap` to create its user
+namespace and stacks child execution under a capability-denying profile. It is
+not a grant limited to one task. Codex's inner sandbox and its normal
+[workspace permission profile](https://learn.chatgpt.com/docs/permissions)
+remained enabled; `kernel.apparmor_restrict_unprivileged_userns` remained 1.
+The bubblewrap package's maintainer script reapplied
+`kernel.unprivileged_userns_clone=1`, which was already the guest's value; this
+was an approved sysctl write, not a claim of zero security-setting operations.
+No generic profile installer or automatic account repair was added.
+
+Exactly one approved apply/check/remove invocation ran the actual native
+`codex sandbox -P :workspace` command without authentication. Its synthetic probe
+read and wrote the workspace, failed to overwrite an outside sentinel with
+EROFS (30), and received EPERM (1) for both IPv4 and IPv6 connection attempts.
+The all-passing probe deliberately returned exit 3; the wrapper verified these
+observations and returned 0. These are actual offline tool-boundary results,
+not a model judgment or direct-dispatcher callback simulation. No observer,
+planning hook, model or provider-created child ran in this check.
+
+Guarded removal and an independent coordinator check confirmed that the added
+package, executable, sysctl file and loaded/file profile were absent. The full
+package/profile/sysctl inventory matched its pre-apply state; owned temporary
+files and processes were absent, Docker context remained unchanged, and both
+verification guests were confirmed stopped after cleanup. This restores the
+checked runtime state, not a forensic disk snapshot: package-manager logs,
+audit records and cache metadata can remain. The earlier failed receipts and
+historical model/callback counts were preserved. A fresh authenticated collector
+run after the prerequisite repair is still unqualified.
+
+The pinned [Codex Bubblewrap selection implementation](https://github.com/openai/codex/blob/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/sandboxing/src/bwrap.rs)
+was inspected alongside the vendor bytes. A
+[firsthand Ubuntu 24.04 workflow](https://github.com/drivelineresearch/autoresearch-claude-code/blob/6b0115b2405857c050f7b567f74ac24fe18d7d24/docs/codex-sandbox.md)
+reports selective vendor-profile extraction with Codex 0.153.4;
+[other reports](https://github.com/openai/codex/issues/14919) include compatibility
+failures affecting other Bubblewrap users. Those different clients and versions
+do not establish universal compatibility or community consensus. The bounded
+trial supports this exact guest setup; broader community validation remains
+limited.
 
 Native-child coverage is still untried. Codex's pinned tool-hook schemas can name
 an emitting agent but do not provide a parent edge. This adapter never populates

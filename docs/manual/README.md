@@ -119,7 +119,8 @@ are maintained together. The two result images are browser renderings of selecte
 actual qualification evidence, not terminal captures. The macOS result is a fresh
 corrected parent-native runtime run, before later capacity/attribution changes;
 Linux results remain historical pre-guard partial
-coverage and do not qualify the corrected Linux runtime.
+coverage and do not qualify the corrected Linux runtime. The later offline Linux
+prerequisite result is recorded in the native guide, not these historical captures.
 The native guide owns exact source revisions and coverage; the earlier Claude
 walkthrough retains its historical capture and is not a current Codex map. The
 observation dialog text has changed since these captures; their editable source
