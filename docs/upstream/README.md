@@ -67,6 +67,12 @@ pin upstream source and distinguish local extensions from original methods.
 The single tdd method replaces duplicated method prose; SDLC retains executable
 evidence validation, additional smoke and existing authority gates.
 
+The [verification pair](../decisions/verification.md) adopts pstack generation and
+maintenance with all feature-map examples and MIT notices. Local adaptations
+remove hardcoded client paths and implied publication, preserve requested coverage
+and distinguish product defects from documentation drift. Optional tooling stays
+a reference; no additional MCP server is enabled.
+
 ## Update procedure
 
 1. Inspect the pinned origin and local adaptations before selecting a new revision.

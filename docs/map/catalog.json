@@ -1081,6 +1081,130 @@
         "discovery",
         "mcp"
       ]
+    },
+    {
+      "id": "create-verification-skill",
+      "title": "Create project verification",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/create-verification-skill/SKILL.md",
+      "summary": "Build a project-local verifier and user-facing feature recipes.",
+      "when": [
+        "You need repeatable feature verification or its maintenance."
+      ],
+      "usage": "Read the skill, inspect the target and qualify Launch, Doctor, Drive, Evidence and Cleanup on a real journey.",
+      "behavior": [
+        "Uses existing tools and runtime; does not install or enable servers.",
+        "A seed map is not complete product verification."
+      ],
+      "outputs": [
+        "Scoped procedures, linked evidence and explicit coverage limits."
+      ],
+      "tags": [
+        "verification",
+        "feature-map",
+        "create-verification-skill"
+      ]
+    },
+    {
+      "id": "maintain-verification-skill",
+      "title": "Maintain project verification",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/maintain-verification-skill/SKILL.md",
+      "summary": "Compare recipes with source and live behavior; repair drift within scope.",
+      "when": [
+        "You need repeatable feature verification or its maintenance."
+      ],
+      "usage": "Read the target verifier, select audit or authorized repair, then exercise the declared feature scope.",
+      "behavior": [
+        "Separates document drift, harness gaps and product regressions.",
+        "Preserves assertions, failed evidence and task-owned cleanup."
+      ],
+      "outputs": [
+        "Scoped procedures, linked evidence and explicit coverage limits."
+      ],
+      "tags": [
+        "verification",
+        "feature-map",
+        "maintain-verification-skill"
+      ]
+    },
+    {
+      "id": "verification-adoption",
+      "title": "Verification adoption",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/verification.md",
+      "summary": "Source choices, ownership and limitations for project verification.",
+      "when": [
+        "You need repeatable feature verification or its maintenance."
+      ],
+      "usage": "Read before extending verification methods or adding browser dependencies.",
+      "behavior": [
+        "Retains existing TDD and SDLC evidence authorities."
+      ],
+      "outputs": [
+        "Scoped procedures, linked evidence and explicit coverage limits."
+      ],
+      "tags": [
+        "verification",
+        "feature-map",
+        "verification-adoption"
+      ]
+    },
+    {
+      "id": "repository-verifier",
+      "title": "Verify this repository",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/verification/verify-repository/SKILL.md",
+      "summary": "Run catalog UI and map CLI checks in a disposable browser.",
+      "when": [
+        "You need repeatable feature verification or its maintenance."
+      ],
+      "usage": "Read prerequisites and run the documented helper with a new local evidence directory.",
+      "behavior": [
+        "Checks search, usage/source links and map freshness.",
+        "Repository maintenance only; no account or MCP validation."
+      ],
+      "outputs": [
+        "Scoped procedures, linked evidence and explicit coverage limits."
+      ],
+      "tags": [
+        "verification",
+        "feature-map",
+        "repository-verifier"
+      ]
+    },
+    {
+      "id": "repository-feature-map",
+      "title": "Repository feature map",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/verification/verify-repository/features/README.md",
+      "summary": "Find user journeys, expected outcomes and verification recipes.",
+      "when": [
+        "You need repeatable feature verification or its maintenance."
+      ],
+      "usage": "Select a feature recipe and use the repository verifier for shared setup and execution.",
+      "behavior": [
+        "Recipes own user paths and expected results.",
+        "Runtime evidence stays separate from the maintained map."
+      ],
+      "outputs": [
+        "Scoped procedures, linked evidence and explicit coverage limits."
+      ],
+      "tags": [
+        "verification",
+        "feature-map",
+        "repository-feature-map"
+      ]
     }
   ],
   "relationships": [
@@ -1353,6 +1477,46 @@
       "from": "overview",
       "to": "client-verification",
       "label": "Adoption checks"
+    },
+    {
+      "from": "sdlc",
+      "to": "create-verification-skill",
+      "label": "creates missing target checks"
+    },
+    {
+      "from": "sdlc",
+      "to": "maintain-verification-skill",
+      "label": "routes drift audits"
+    },
+    {
+      "from": "create-verification-skill",
+      "to": "maintain-verification-skill",
+      "label": "maintains generated recipes"
+    },
+    {
+      "from": "verification-adoption",
+      "to": "create-verification-skill",
+      "label": "selects"
+    },
+    {
+      "from": "verification-adoption",
+      "to": "maintain-verification-skill",
+      "label": "selects"
+    },
+    {
+      "from": "verification-adoption",
+      "to": "repository-verifier",
+      "label": "qualifies locally"
+    },
+    {
+      "from": "repository-verifier",
+      "to": "repository-feature-map",
+      "label": "executes recipes"
+    },
+    {
+      "from": "repository-feature-map",
+      "to": "screenshot-manual",
+      "label": "links user journeys"
     }
   ]
 }

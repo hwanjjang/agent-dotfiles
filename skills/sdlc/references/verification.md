@@ -64,6 +64,18 @@ installed skills or other projects.
 The executable rubric fixture only checks encoded decisions; it does not demonstrate
 that a model follows prose, establish product correctness or replace PR review.
 
+## Project verification procedures
+
+Use the [stage routing](skill-routing.md) to resolve a project-local verifier and
+feature recipes. Plans link affected feature IDs to scenario IDs and acceptance
+criteria; execution uses the verifier’s actual launch, doctor, drive and cleanup.
+Keep its results in this contract’s existing candidate-bound evidence records.
+A seed map or one qualification journey does not establish full product coverage.
+Run the full maintenance audit only when requested or needed to resolve drift;
+ordinary changes exercise affected paths plus integrated smoke. Test auto-repair
+must preserve expected behavior. A required skipped, unreachable or failed path
+remains a gap; never convert it into success by changing assertions.
+
 ## Test design and execution
 
 Use [the smoke template](../assets/smoke-scenario.md) before implementation. Map every AC to actual test layers and applicable scenario IDs. Cover success and relevant errors, authorization/boundaries, retries/duplicates, transitions and concurrency. State prerequisite environment/data, actions, observable success, explicit failure, executable command or reproducible procedure, required status, side effects and cleanup. Use approved facilities for external side effects.

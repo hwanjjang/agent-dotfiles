@@ -1,0 +1,21 @@
+# Repository feature verification map
+
+This is the authoritative recipe index for the repository verifier's declared
+pilot scope. It maps user-visible behavior, not package implementation internals.
+Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup.
+
+| Feature / scenario ID | User goal | Surface | Recipe |
+| --- | --- | --- | --- |
+| catalog-search | Find a verification capability and recover from an empty search | Local HTML UI | [Search](catalog-search.md) |
+| catalog-source | Read usage and reach the corresponding maintained source | Local HTML UI and file links | [Usage and source](catalog-source.md) |
+| map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
+
+Evidence is per run, outside this source. No last-run status is stored in the map;
+source availability is not runtime success. Link IDs to SDLC scenarios when this
+verifier is used in that workflow. Screenshots may feed the existing manual process.
+The collection's [interactive map](../../../map/index.html) links these recipes;
+it is a navigation view, not a second copy of their expected behavior.
+
+Unmapped: theme, zoom, keyboard navigation, responsive layouts, all filter
+combinations, PDF generation, installation, MCP and constituent skill behavior.
+These require their own checks when affected; this seed does not certify them.

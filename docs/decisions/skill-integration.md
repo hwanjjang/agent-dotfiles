@@ -69,6 +69,7 @@ for the separately recorded discovery and runtime boundaries.
 
 No additional mandatory policy or MCP server is needed. GitHub's read-only profile
 remains read-only; authorized issue/PR writes can use the registered `gh` capability.
-The product verification-skill pair remains deferred until a concrete app can
-validate its generated harness. This change does not install hooks, enable servers,
+The product verification-skill pair is now adopted in the
+[verification decision](verification.md), with a bounded repository pilot. Other
+projects still qualify their generated verifier on their own runtime. This change does not install hooks, enable servers,
 create PRs or grant deployment authority.

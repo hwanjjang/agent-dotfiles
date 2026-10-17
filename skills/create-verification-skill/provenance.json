@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+  "path": "pstack/skills/create-verification-skill",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "references/feature-map-example/search.md": "6e87b9e7f2791a7776ba1bb83f371cd285c306c67f19d245cc4dd6ca3015c823",
+    "references/feature-map-example/README.md": "cb7bd782cf89968a4ba3d58a5151db837430db92d19a6f52a906973b77b516ba",
+    "SKILL.md": "d353973547bf8ad8977eca645f4cd4feaed0d32f4b43d1448f906b0a76c4d694",
+    "references/feature-map-example/create-note.md": "644a44c74f35d38c2feb7cd05a0121fdebbb623e8dc376c185b565a581d1ccf7"
+  },
+  "adaptations": [
+    "Portable discovery and source paths; removed Cursor-only explicit-invocation metadata.",
+    "Preserved launch/doctor/drive/evidence/cleanup and feature-map method.",
+    "Scoped writes, delegation, publication and runtime access to existing task authority.",
+    "Explicit partial coverage, blocked/not-run outcomes and assertion-preserving repairs.",
+    "Linked shared policies and existing TDD/SDLC/manual owners; browser and claim tools remain optional."
+  ],
+  "skill_dependencies": [
+    "tdd",
+    "maintain-verification-skill"
+  ],
+  "policy_dependencies": [
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "Target project build/runtime and an available UI, CLI, API or library verification tool; no mandatory MCP."
+  ],
+  "validation": "Strict metadata, resource/link checks and repository pilot passed; docs/client-verification.md records exact runtime and forward-check scope. Native discovery of this package and general model adherence remain unverified."
+}

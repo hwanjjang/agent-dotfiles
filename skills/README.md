@@ -14,6 +14,7 @@ Do not copy this repository's root AGENTS.md as a shared policy.
 | Intent and language | grill-me, grilling, grill-with-docs, domain-modeling |
 | Investigation and design | how, architect, arena, diagnosing-bugs |
 | Planning and execution | planning-and-task-breakdown, planning-with-files, swarm, sdlc |
+| Verification construction and maintenance | create-verification-skill, maintain-verification-skill |
 | Verification, review and issues | tdd, code-review-and-quality, issue-writing |
 | Instruction authoring | writing-for-agents |
 | Diagrams and user manuals | archify, screenshot-manual |
@@ -43,7 +44,7 @@ Some upstream frontmatter uses Claude-specific fields such as
 preserve upstream invocation behavior. Codex's strict skill-creator validator
 rejects those extensions; do not claim uniform client compatibility from the
 common name/description schema. Matt's supplied agents/openai.yaml files retain
-its Codex invocation policies. Codex 0.159.2 discovered all 18 packages in a temporary project; see
+its Codex invocation policies. Codex 0.159.2 previously discovered the initial 18 packages in a temporary project; see
 [client verification](../docs/client-verification.md). Hook activation, automatic
 selection, other clients and end-to-end provider execution remain unverified.
 

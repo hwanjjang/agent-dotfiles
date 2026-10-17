@@ -12,10 +12,10 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 18 skill packages, seven portable policies,
+**Status:** Initial content collection: 20 skill packages, seven portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
-focused checks are documented. Codex 0.159.2 discovered all 18 packages in a
+focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
 temporary project; account installation and end-to-end client behavior are not
 claimed. See [client verification](docs/client-verification.md) for exact limits,
 and browse [skills](skills/README.md), [policies](policies/README.md),
@@ -31,6 +31,11 @@ Detailed design guidance is optional and used when the task needs it.
 The [issue workflow policy](policies/issue-workflow.md) defines issue creation,
 updates, comments, handoff and closure. Use it directly or through issue-writing
 and SDLC; see the [selection and community evidence](docs/decisions/issue-workflow.md).
+
+The [verification adoption](docs/decisions/verification.md) adds project-local
+verification generation and maintenance. The [repository feature map](docs/verification/verify-repository/features/README.md)
+connects this checkout’s catalog journeys to a runnable verifier; it does not claim
+account installation or MCP connectivity.
 
 ## Repository structure
 

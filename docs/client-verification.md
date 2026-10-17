@@ -5,7 +5,7 @@ checks. This collection does not install account configuration or enable servers
 
 ## Observed checks — 2026-10-17
 
-- All 18 source packages were discovered by the installed Codex CLI 0.159.2 app-server through
+- The initial 18 source packages were discovered by the installed Codex CLI 0.159.2 app-server through
   `skills/list` in a temporary project's `.agents/skills/` directory, with zero
   source-package discovery errors. The temporary copies were removed afterwards.
   No model turn, hook activation or persistent skill installation was performed.
@@ -24,6 +24,30 @@ checks. This collection does not install account configuration or enable servers
   unverified. Existing direct browser checks are not MCP connection evidence.
 
 Reference: [Codex app-server skill discovery](https://learn.chatgpt.com/docs/app-server).
+
+## Verification pair and repository pilot — 2026-10-17
+
+Two added portable packages bring the source total to 20. Their metadata and the
+repository-only verifier pass the strict skill validator. The new pair has not
+been exercised through native client discovery or independently measured for
+model adherence; the earlier 18-package discovery result does not cover it.
+
+The repository verifier was executed with Playwright 1.64.1 and isolated Chrome
+155.0.8059.82: map freshness, search/no-results/recovery and usage/source links
+passed. Captures were visually inspected; the browser closed and evidence survived.
+A deliberately broken recovery in an isolated source-consistent fixture produced
+a failed search scenario and not-run downstream scenario, with browser cleanup.
+An unavailable browser failed qualification; an existing evidence directory was
+refused without overwriting its report. Six map tests cover source validation and
+stale/missing generated output rejection without mutation. The 52 SDLC tests remain
+green. These are scoped checks, not all-feature, MCP or account-installation proof.
+
+A separate read-only agent applied the maintenance skill to source and existing
+evidence under an explicit no-browser limit. It preserved audit-only authority,
+reported live coverage blocked and identified harness reporting/assertion gaps
+that were corrected. This is one bounded forward check, not a benchmark or proof
+that every client/model follows the skills. Raw runs stay local; maintained recipes
+and the [adoption decision](decisions/verification.md) document the reusable method.
 
 ## Scoped adoption checks
 

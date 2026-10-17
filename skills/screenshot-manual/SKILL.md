@@ -11,7 +11,10 @@ sanitized screenshots, PDF, and a verification summary. Do not publish implicitl
 
 ## Capture and author
 
-1. Walk through each user scenario on the actual product. Use an available browser
+1. When a project verifier exists, reuse its stable feature/scenario IDs and
+   maintained user paths; link recipes instead of copying their verification rules.
+   Previously captured evidence is reusable only when revision and scenario match.
+   Walk through each user scenario on the actual product. Use an available browser
    or native capture tool within the task's authority. Capture screenshots at the
    points where users need to identify a control or recognize the result. An image
    proves only the state it shows; verify the behavior separately.

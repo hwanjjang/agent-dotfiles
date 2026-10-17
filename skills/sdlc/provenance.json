@@ -8,7 +8,8 @@
     "Retained historical source language as author-provided reference; current English amendments govern.",
     "Use policies/issue-workflow.md as the shared authority for issue lifecycle and publication rules; keep skill-specific body or stage rules here.",
     "Connected existing stages to focused skills through references/skill-routing.md; skills remain independently usable.",
-    "Single pstack-derived tdd method; explicit alternative evidence and no-refactor reuse are validated without weakening smoke or publication gates."
+    "Single pstack-derived tdd method; explicit alternative evidence and no-refactor reuse are validated without weakening smoke or publication gates.",
+    "Routes verification setup and drift maintenance to the portable pstack pair; project recipes feed existing evidence gates."
   ],
   "skill_dependencies": [
     "planning-with-files",
@@ -25,7 +26,9 @@
     "swarm",
     "tdd",
     "diagnosing-bugs",
-    "code-review-and-quality"
+    "code-review-and-quality",
+    "create-verification-skill",
+    "maintain-verification-skill"
   ],
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."

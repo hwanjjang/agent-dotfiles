@@ -101,6 +101,18 @@
       "requirements": "skills/screenshot-manual/requirements.txt",
       "runtime": "Python >=3.9; suitable TTF font for non-ASCII text.",
       "validation": "English sample PDF generated, text/images checked, and raster visually inspected."
+    },
+    {
+      "id": "playwright-library",
+      "kind": "optional-library",
+      "purpose": "Repository-only catalog verifier; use an existing local Playwright installation.",
+      "source": "https://playwright.dev/",
+      "license": "Apache-2.0",
+      "package": "playwright",
+      "version_policy": "Use the target project lockfile and record the actual version in verification evidence.",
+      "runtime": "Node.js and a compatible Chromium browser; no MCP connection required.",
+      "entrypoint": "docs/verification/verify-repository/scripts/check.cjs",
+      "validation": "Requires an actual target run; source presence does not establish browser availability."
     }
   ]
 }

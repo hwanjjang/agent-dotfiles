@@ -7,7 +7,9 @@
     "https://pypdf.readthedocs.io/",
     "https://pypdfium2.readthedocs.io/"
   ],
-  "adaptations": [],
+  "adaptations": [
+    "Reuse project verifier feature/scenario IDs and revision-matched captures; keep PDF visual verification separate."
+  ],
   "skill_dependencies": [],
   "runtime_requirements": [
     "Python >=3.9",
