@@ -11,10 +11,13 @@ pstack, Matt and Addy and records rejected additions. The planning skill pin is
 unchanged; its selected POSIX runtime files and license match pinned upstream
 SHA-256 records. No private account settings or permission exceptions are imported.
 
-Eight isolated account-hook tests pass with Python 3.11 and the system Python on macOS. They check
+Ten isolated account-hook tests pass with Python 3.11 and the system Python on macOS. They check
 upstream hashes, template route validity, no-plan execution, selected-plan recovery
 for both clients with space-containing paths, refusal to fall back from a broken
-selector, opt-out, event-scoped project precedence, and invalid inputs/routes.
+selector, opt-out, event-scoped project precedence, invocation matchers and invalid
+inputs/routes. The review correction reproduced missing resume/clear/compact
+recovery under a startup-only project registration in both clients before fixing
+it. Tool/compaction filters and unsupported or missing matcher input are covered.
 Tests use disposable delivery layouts and caches; HOME and real account settings
 are not changed. These are direct script checks, not native client activation.
 

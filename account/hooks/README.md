@@ -25,7 +25,12 @@ payload validation, effective project working directory and child exit propagati
 A future installer must merge the selected entries into the client's hook settings,
 resolve supported paths and interpreter, and remove only the replaced owned route.
 Do not overwrite entire settings files or register both plugin and standalone hooks.
-The dispatcher suppresses the recognized project route; it cannot discover every
+The dispatcher suppresses the recognized project route only when its matcher
+covers the current invocation: session `source`, compaction `trigger`, or
+`tool_name`. Omitted, empty and `*` matchers cover all invocations; Codex ignores
+matchers for UserPromptSubmit and Stop. Missing matcher input or a pattern the
+adapter cannot parse does not establish project coverage. It uses Python regex
+matching and cannot reproduce every client-specific regex or discover every
 third-party plugin registration. Inspect the client's effective hook list too.
 
 Codex uses seven lifecycle events. Claude's account template supplies SessionStart

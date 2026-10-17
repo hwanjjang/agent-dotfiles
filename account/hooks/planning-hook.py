@@ -7,6 +7,7 @@ separate pinned upstream assets; this entry point does not install anything.
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -29,7 +30,26 @@ EVENTS = dict(zip(
 ))
 
 
-def project_owns_route(project, host, args):
+def group_matches(group, event, payload):
+    # These events filter on the documented invocation field in both clients.
+    field = {"SessionStart": "source", "PreCompact": "trigger",
+             "PreToolUse": "tool_name", "PostToolUse": "tool_name",
+             "PermissionRequest": "tool_name"}.get(event)
+    pattern = group.get("matcher", "")
+    # Codex ignores matchers for UserPromptSubmit and Stop.
+    if field is None or pattern in ("", "*"):
+        return True
+    value = payload.get(field)
+    if not isinstance(pattern, str) or not isinstance(value, str):
+        return False
+    try:
+        return re.search(pattern, value) is not None
+    except re.error:
+        # An unrecognized pattern is not evidence that the project will run.
+        return False
+
+
+def project_owns_route(project, host, args, payload):
     if host == "codex":
         # Match the established standalone planning route, not any hook file.
         config = project / ".codex/hooks.json"
@@ -41,6 +61,7 @@ def project_owns_route(project, host, args):
             ".codex/hooks/" in hook.get("command", "")
             and all(part in hook.get("command", "") for part in args)
             for group in data.get("hooks", {}).get(EVENTS[tuple(args)], [])
+            if group_matches(group, EVENTS[tuple(args)], payload)
             for hook in group.get("hooks", [])
         )
     config = project / ".claude/settings.json"
@@ -50,6 +71,7 @@ def project_owns_route(project, host, args):
     return any(
         "planning-with-files.sh" in hook.get("command", "")
         for group in data.get("hooks", {}).get("SessionStart", [])
+        if group_matches(group, "SessionStart", payload)
         for hook in group.get("hooks", [])
     )
 
@@ -73,7 +95,7 @@ def main():
         raise ValueError("Hook payload must be an object")
     cwd = payload.get("cwd") or os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
     project = Path(cwd).resolve()
-    if project_owns_route(project, host, args):
+    if project_owns_route(project, host, args, payload):
         return 0
     env = os.environ.copy()
     if host == "codex":

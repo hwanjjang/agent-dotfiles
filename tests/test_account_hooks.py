@@ -135,6 +135,68 @@ class AccountHooksTests(unittest.TestCase):
             self.assertEqual(result.stdout, "")
             self.assertIn("Planning hook unavailable:", result.stderr)
 
+    def test_session_project_matcher_preserves_uncovered_recovery(self):
+        self.plan("chosen", "SELECTED_SYNTHETIC_PLAN")
+        for host, route, config_name, command in [
+            ("codex", ("run_sh.py", "session-start.sh"), "hooks.json",
+             "python3 .codex/hooks/run_sh.py session-start.sh"),
+            ("claude", ("session-start",), "settings.json",
+             "sh .claude/hooks/planning-with-files.sh session-start"),
+        ]:
+            folder = self.project / ("." + host)
+            (folder / "hooks").mkdir(parents=True)
+            if host == "codex":
+                (folder / "hooks/run_sh.py").write_text("# Recognized project route\n")
+            config = {"hooks": {"SessionStart": [{"matcher": "^startup$", "hooks": [
+                {"type": "command", "command": command}]}]}}
+            (folder / config_name).write_text(json.dumps(config))
+            for source in ["startup", "resume", "clear", "compact"]:
+                with self.subTest(host=host, source=source):
+                    payload = json.dumps({"cwd": str(self.project), "source": source,
+                                          "session_id": "synthetic-" + source})
+                    result = self.run_hook(host, *route, raw=payload, PLAN_ID="chosen")
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    if source == "startup":
+                        self.assertEqual(result.stdout, "")
+                    else:
+                        self.assertIn("SELECTED_SYNTHETIC_PLAN", result.stdout)
+
+    def test_codex_project_matchers_cover_only_current_invocation(self):
+        folder = self.project / ".codex/hooks"
+        folder.mkdir(parents=True)
+        (folder / "run_sh.py").write_text("# Recognized project route\n")
+        cases = [
+            (("pre_tool_use.py",), "tool_name", "^Bash$", "Bash", "Edit"),
+            (("post_tool_use.py",), "tool_name", "^(Edit|Write)$", "Write", "Bash"),
+            (("permission_request.py",), "tool_name", "^Bash$", "Bash", "Edit"),
+            (("run_sh.py", "pre-compact.sh"), "trigger", "^auto$", "auto", "manual"),
+        ]
+        for route, field, matcher, matching, nonmatching in cases:
+            # Observable dispatcher boundary; full real runtime is exercised above.
+            (self.delivery / ".codex/hooks" / route[0]).write_text("print('ACCOUNT_RUNTIME')\n")
+            for pattern, value, suppressed in [(matcher, matching, True),
+                                               (matcher, nonmatching, False),
+                                               ("*", nonmatching, True),
+                                               ("", nonmatching, True),
+                                               ("[", matching, False),
+                                               (matcher, None, False)]:
+                with self.subTest(route=route, pattern=pattern, value=value):
+                    config = {"hooks": {dispatcher.EVENTS[route]: [{"matcher": pattern,
+                        "hooks": [{"type": "command", "command":
+                                   "python3 .codex/hooks/" + " ".join(route)}]}]}}
+                    (folder.parent / "hooks.json").write_text(json.dumps(config))
+                    payload = json.dumps({"cwd": str(self.project), field: value})
+                    result = self.run_hook("codex", *route, raw=payload)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(result.stdout, "" if suppressed else "ACCOUNT_RUNTIME\n")
+        for route in [("run_sh.py", "user-prompt-submit.sh"), ("stop.py",)]:
+            (self.delivery / ".codex/hooks" / route[0]).write_text("print('ACCOUNT_RUNTIME')\n")
+            config = {"hooks": {dispatcher.EVENTS[route]: [{"matcher": "ignored-by-client",
+                "hooks": [{"type": "command", "command":
+                           "python3 .codex/hooks/" + " ".join(route)}]}]}}
+            (folder.parent / "hooks.json").write_text(json.dumps(config))
+            self.assertEqual(self.run_hook("codex", *route).stdout, "")
+
 
 if __name__ == "__main__":
     unittest.main()
