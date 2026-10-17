@@ -436,3 +436,7 @@ validation and rests on task fit, source inspection and the qualification plan.
 No live task traces were ingested and no comparative model benchmark was run for
 this design. Source inspection, architecture review and documentation checks do
 not establish native capture, effective isolation or improved task performance.
+
+### Offline accounting implementation
+
+The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. Actual isolated model execution, authenticated evidence and independent holdout custody remain separate incomplete requirements; diagnostic reports cannot authorize promotion.

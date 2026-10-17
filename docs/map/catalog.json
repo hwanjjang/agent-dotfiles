@@ -2628,19 +2628,20 @@
       "kind": "guide",
       "group": "start",
       "status": "available",
-      "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Planned: compare current and candidate behavior through isolated trials and qualified graders.",
+      "source": "docs/decisions/evaluation-accounting.md",
+      "summary": "Freeze and grade development comparisons offline; actual model execution and holdout qualification remain unavailable.",
       "when": [
-        "A candidate needs evidence of task improvement and regression limits before promotion."
+        "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting."
       ],
-      "usage": "Freeze case, model, environment, runner and grader identities plus budget and acceptance rules before running either arm. The comparison runner is not implemented.",
+      "usage": "Run evaluation.py qualify, freeze a reviewed synthetic case/spec, then report every scheduled completion. This tool launches no model or command.",
       "behavior": [
-        "Separate outcome, process and exposure checks; test native routing independently of forced invocation.",
-        "Use deterministic checks first; qualify blinded model judges against known-good, bad and missing-evidence examples.",
-        "Preserve failed, blocked and inconclusive trials; protect holdouts and require separate bounded inference authorization."
+        "Freeze case and counterpart, both arms, model/tools/environment identities, repetitions and time/token/request budgets.",
+        "Calibrate deterministic checks; separate outcome, routing, adherence, exposure and MCP dimensions.",
+        "Keep every missing, failed, duplicate and blocked trial in the denominator; unknown usage never becomes zero.",
+        "Reject stale or forged qualification claims. Diagnostic results cannot authorize promotion or installation."
       ],
       "outputs": [
-        "A candidate-bound comparison report; no model benchmark or automatic pass is claimed."
+        "Frozen trial inventory and deterministic development report with explicit live_eligible=false and promotion=inconclusive."
       ],
       "tags": [
         "self-improvement",

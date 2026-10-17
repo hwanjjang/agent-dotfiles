@@ -131,6 +131,11 @@ Its first slice provides a [private synthetic observation store](account/observa
 with scoped grants, durable records, batch replay and revocation. Native collection
 and model evaluation remain future work; ordinary account sessions are not collected.
 
+Offline development comparison is available through
+[deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
+It freezes and grades supplied synthetic evidence; it does not execute models or
+establish holdout or promotion eligibility.
+
 ## Principles
 
 - **Keep shared instructions small.** Put durable defaults in policies and load

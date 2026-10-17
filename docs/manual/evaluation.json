@@ -1,0 +1,20 @@
+{
+  "title": "Compare development evidence",
+  "scenario": "Offline evaluation accounting with Python 3.11+, no credentials or model calls. Inputs and grades are public development evidence, never unseen holdouts.",
+  "steps": [
+    {
+      "title": "Freeze the complete comparison",
+      "instruction": "Open the improvement-eval map entry. Run evaluation.py qualify, then freeze a reviewed spec containing both arms, reproduction/counterpart cases, repetitions, exact identities and time/token/request budgets. Save the frozen JSON before collecting completions.",
+      "screenshot": "evaluation-map.png",
+      "caption": "Actual upper portion of the local catalog dialog; follow its source link for the full contract.",
+      "expected": "One stable inventory identifies every scheduled trial. No agent or command is launched."
+    },
+    {
+      "title": "Retain failures and unknowns",
+      "instruction": "Run evaluation.py report with the frozen experiment, unchanged current spec and supplied synthetic completions. Inspect trial rows, missing/duplicate counts, critical violations and unknown usage before reading aggregate scores.",
+      "screenshot": "evaluation-result.png",
+      "caption": "Browser-rendered summary from the actual synthetic CLI smoke; not a terminal capture.",
+      "expected": "Eight scheduled trials remain visible: four pass, one fail, two blocked and one inconclusive. Unknown tokens remain null. Live eligibility is false and promotion is inconclusive."
+    }
+  ]
+}

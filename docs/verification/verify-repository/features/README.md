@@ -10,6 +10,7 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | catalog-source | Read usage and reach the corresponding maintained source | Local HTML UI and file links | [Usage and source](catalog-source.md) |
 | workflow-map | Follow SDLC stages and find cross-stage methods | Separate local HTML UI | [Workflow map](workflow-map.md) |
 | account-installation | Install, update, remove and recover owned account content | Python CLI / disposable accounts | [Account lifecycle](account-installation.md) |
+| evaluation-accounting | Freeze development evidence and account for every scheduled trial | Offline Python CLI | [Evaluation accounting](evaluation-accounting.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;

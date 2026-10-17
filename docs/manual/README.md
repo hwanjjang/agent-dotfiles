@@ -76,3 +76,14 @@ eval workflow and recovery in 18 pages each. See the [source and capture notes](
 [English editable text](user-guide/manual-en.md) and [Korean editable text](user-guide/manual-ko.md).
 The six-step improvement cycle is documented with explicit implemented/planned status.
 Actual native collection and comparative model evaluation remain future work.
+
+## Offline development evaluation
+
+[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The actual offline CLI journey retains all eight scheduled synthetic trials, including failure, timeout, duplicate and missing evidence. It qualifies deterministic accounting only; no native model, unseen holdout or promotion claim.
+
+Both evaluation pages were rendered with PDFium and visually checked for readable
+headings, complete intended capture regions, captions and pagination. PDF text and
+page count were checked with pypdf. The first image is an actual catalog dialog;
+the second explicitly renders the actual synthetic CLI result in a browser. Neither
+image demonstrates native model execution. Rebuild with the screenshot-manual
+scripts above using `evaluation.json`; refresh its capture manifest after changes.
