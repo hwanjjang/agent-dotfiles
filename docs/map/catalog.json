@@ -61,7 +61,7 @@
       ],
       "usage": "Follow AGENTS.md while maintaining this repository.",
       "behavior": [
-        "Requires active external research for design work, with three priority references.",
+        "Requires active primary-source and individual-workflow community research; maintainer preference is a tie-breaker.",
         "Keeps repository maintenance instructions separate from distributed policy content.",
         "Requires verification appropriate to the change."
       ],
@@ -128,24 +128,23 @@
     },
     {
       "id": "modular-sdlc",
-      "title": "AK SDLC proposal",
+      "title": "AK SDLC design",
       "kind": "guide",
       "group": "start",
       "status": "available",
       "source": "docs/decisions/modular-sdlc.md",
-      "summary": "Proposed independent stages and parallel implementation, with initial building blocks now included.",
+      "summary": "Implemented stage-to-skill routing with independently usable methods; broader design rationale retained.",
       "when": [
         "You are designing an SDLC skill or its orchestration.",
         "You need the proposed input, output, and parallel implementation contracts."
       ],
-      "usage": "Read the proposal and skill catalog. The complete modular integration remains future work.",
+      "usage": "Read the design and the linked SDLC routing contract. Runtime multi-provider execution remains unverified.",
       "behavior": [
-        "Defines independently usable stage boundaries and a thin coordinator.",
-        "Describes decision-tree preparation, parallel design selection, and dependency-aware implementation.",
-        "Records public user feedback, deliberate adaptations, and future acceptance checks."
+        "Routes existing stages to focused methods.",
+        "Distinguishes implemented source contracts from future extensions."
       ],
       "outputs": [
-        "A reviewable proposal for future workflow skills and their composition."
+        "Stage routing, design rationale and implementation boundaries."
       ],
       "tags": [
         "sdlc",
@@ -497,13 +496,13 @@
       "when": [
         "The task matches this skill's description and its prerequisites are available."
       ],
-      "usage": "Read skills/issue-writing/SKILL.md. Source presence does not attest client discovery.",
+      "usage": "Read skills/issue-writing/SKILL.md and the shared issue workflow policy. Preserve linked policy resources when distributing the skill.",
       "behavior": [
-        "Follows its packaged workflow and supporting resources.",
+        "Defines concise issue bodies; delegates lifecycle and publication rules to the shared issue workflow policy.",
         "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
       ],
       "outputs": [
-        "The artifact or report defined by the skill, with actual checks and gaps."
+        "An implementation-ready issue draft or verified authorized update."
       ],
       "tags": [
         "issue-writing",
@@ -597,10 +596,12 @@
       "when": [
         "The task matches this skill's description and its prerequisites are available."
       ],
-      "usage": "Read skills/sdlc/SKILL.md and its current policy amendments. State the requested route and endpoint; required dependencies are planning-with-files, archify, and screenshot-manual for applicable stages.",
+      "usage": "Read skills/sdlc/SKILL.md and references/skill-routing.md. Select applicable methods and the authorized endpoint; do not initialize PR management for ordinary local work.",
       "behavior": [
+        "Applies the shared issue workflow policy through stage update assessments; keeps PR review requirements in SDLC.",
         "Follows its packaged workflow and supporting resources.",
-        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits.",
+        "Uses one tdd method with explicitly validated alternative evidence and separate smoke."
       ],
       "outputs": [
         "The artifact or report defined by the skill, with actual checks and gaps."
@@ -638,21 +639,24 @@
     },
     {
       "id": "policy-architecture",
-      "title": "Architecture Policy",
+      "title": "Agent-friendly architecture",
       "kind": "policy",
       "group": "content",
       "status": "available",
       "source": "policies/architecture.md",
-      "summary": "Portable guidance with explicit scope and source attribution.",
+      "summary": "Three minimum principles: findable code, clear responsibilities, and verifiable changes.",
       "when": [
-        "Selecting shared behavioral rules for a destination project."
+        "Designing or changing code in a destination project.",
+        "Repeated navigation, modification, or verification difficulty suggests a structural improvement."
       ],
-      "usage": "Read this policy and preserve destination instructions and task authority.",
+      "usage": "Read policies/architecture.md. Preserve working project conventions and apply the three principles to the affected change.",
       "behavior": [
-        "Defines scoped expectations; installation and deterministic enforcement are separate."
+        "Keeps related code discoverable and public interfaces and state ownership clear.",
+        "Uses practical checks suited to the change and adequate existing verification.",
+        "Prescribes no fixed folder layout, file size, layer count, or tool; deeper design references are optional."
       ],
       "outputs": [
-        "A selected shared rule with a clear application boundary."
+        "A change that is easier to locate, reason about, and verify."
       ],
       "tags": [
         "architecture",
@@ -725,6 +729,64 @@
       ],
       "tags": [
         "security",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-logging",
+      "title": "Logging",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/logging.md",
+      "summary": "Consistent diagnostic levels and structured events, with cleanup of temporary debug probes.",
+      "when": [
+        "You add or review application, service, CLI, or agent-tool logging.",
+        "You instrument a bug and need to remove temporary diagnostics before completion."
+      ],
+      "usage": "Read policies/logging.md. Apply its levels and structured fields using the destination logger; tag and remove task-owned temporary probes, and inspect actual output.",
+      "behavior": [
+        "Combines Addy severity and structured-event rules with Matt temporary debug-log cleanup.",
+        "Preserves correlation and entry-point context, excludes sensitive fields, and keeps CLI/MCP diagnostic streams separate.",
+        "Requires relevant output checks; policy presence does not prove runtime compliance."
+      ],
+      "outputs": [
+        "Reviewable logging changes and explicit verification results or gaps."
+      ],
+      "tags": [
+        "logging",
+        "debug",
+        "structured",
+        "correlation",
+        "policy"
+      ]
+    },
+    {
+      "id": "policy-issue-workflow",
+      "title": "Issue workflow",
+      "kind": "policy",
+      "group": "content",
+      "status": "available",
+      "source": "policies/issue-workflow.md",
+      "summary": "When agents create, update, comment on, hand off and close issues, with clear ownership and evidence.",
+      "when": [
+        "Working from an issue or managing its work records.",
+        "Resuming or handing off tracked work across agents or sessions."
+      ],
+      "usage": "Read policies/issue-workflow.md directly or through issue-writing/SDLC. Check current tracker context and task authority; use the actual available tracker tool.",
+      "behavior": [
+        "Separates agreed requirements, decision history and current handoff state.",
+        "Defines material update triggers, coordinator writes, conflict handling and uncertain-result reconciliation.",
+        "Ties closure to actual completion and authority; the included GitHub MCP template remains read-only."
+      ],
+      "outputs": [
+        "A useful work record with verified publication or an explicitly unposted draft."
+      ],
+      "tags": [
+        "issue",
+        "workflow",
+        "handoff",
+        "comments",
         "policy"
       ]
     },
@@ -873,6 +935,152 @@
         "licenses",
         "upstream"
       ]
+    },
+    {
+      "id": "issue-workflow-decision",
+      "title": "Issue workflow selection",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/issue-workflow.md",
+      "summary": "Why the common issue policy uses selected upstream practices and what community evidence can establish.",
+      "when": [
+        "Reviewing the issue policy design or updating its upstream guidance."
+      ],
+      "usage": "Read the decision note alongside the authoritative issue workflow policy.",
+      "behavior": [
+        "Records adaptations, firsthand reports, conflicting feedback and evidence limits.",
+        "Treats repository preference as a tie-breaker and source availability separately from live behavior."
+      ],
+      "outputs": [
+        "A traceable selection rationale with provisional community validation."
+      ],
+      "tags": [
+        "issues",
+        "research",
+        "community",
+        "decision"
+      ]
+    },
+    {
+      "id": "tdd",
+      "title": "Test-first behavior",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/tdd/SKILL.md",
+      "summary": "Single pstack-derived testing method with honest alternatives.",
+      "when": [
+        "A bug fix or test-first feature has a focused check."
+      ],
+      "usage": "Read skills/tdd/SKILL.md and its declared dependencies. Use independently or through applicable SDLC routing.",
+      "behavior": [
+        "Single pstack-derived testing method with honest alternatives.",
+        "Preserves task scope and reports verification limits."
+      ],
+      "outputs": [
+        "Before/after evidence or a justified alternative and its limits."
+      ],
+      "tags": [
+        "tdd",
+        "workflow"
+      ]
+    },
+    {
+      "id": "diagnosing-bugs",
+      "title": "Diagnose difficult bugs",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/diagnosing-bugs/SKILL.md",
+      "summary": "Reproduce, test hypotheses and hand verified causes to tdd.",
+      "when": [
+        "The cause of a difficult or intermittent failure is uncertain."
+      ],
+      "usage": "Read skills/diagnosing-bugs/SKILL.md and its declared dependencies. Use independently or through applicable SDLC routing.",
+      "behavior": [
+        "Reproduce, test hypotheses and hand verified causes to tdd.",
+        "Preserves task scope and reports verification limits."
+      ],
+      "outputs": [
+        "Supported diagnosis, scoped correction and cleaned-up probes."
+      ],
+      "tags": [
+        "diagnosing-bugs",
+        "workflow"
+      ]
+    },
+    {
+      "id": "writing-for-agents",
+      "title": "Write agent instructions",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/writing-for-agents/SKILL.md",
+      "summary": "Author precise triggers, focused methods and observable completion.",
+      "when": [
+        "You are maintaining skills, policies or agent instruction entry points."
+      ],
+      "usage": "Read skills/writing-for-agents/SKILL.md and its declared dependencies. Use independently or through applicable SDLC routing.",
+      "behavior": [
+        "Author precise triggers, focused methods and observable completion.",
+        "Preserves task scope and reports verification limits."
+      ],
+      "outputs": [
+        "A focused instruction source with checked references and behavior."
+      ],
+      "tags": [
+        "writing-for-agents",
+        "workflow"
+      ]
+    },
+    {
+      "id": "skill-integration",
+      "title": "Focused skill adoption",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/skill-integration.md",
+      "summary": "Selection, adaptations, single TDD ownership and verification limits.",
+      "when": [
+        "Reviewing the focused additions or SDLC integration."
+      ],
+      "usage": "Read the decision, then the authoritative stage routing.",
+      "behavior": [
+        "Records source pins and limited community evidence."
+      ],
+      "outputs": [
+        "A reviewable adoption rationale."
+      ],
+      "tags": [
+        "tdd",
+        "routing",
+        "adoption"
+      ]
+    },
+    {
+      "id": "client-verification",
+      "title": "Client verification",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/client-verification.md",
+      "summary": "Observed Codex discovery and explicit remaining execution/MCP limits.",
+      "when": [
+        "Adopting packages in a target client."
+      ],
+      "usage": "Read the observed checks and perform only the scoped adoption checks needed.",
+      "behavior": [
+        "Distinguishes source checks, discovery and runtime behavior."
+      ],
+      "outputs": [
+        "A truthful verification boundary for each client."
+      ],
+      "tags": [
+        "client",
+        "discovery",
+        "mcp"
+      ]
     }
   ],
   "relationships": [
@@ -985,6 +1193,166 @@
       "from": "overview",
       "to": "source-adoption",
       "label": "Documents imported content and update limits"
+    },
+    {
+      "from": "policy-logging",
+      "to": "addy-osmani",
+      "label": "Adapts severity and structured-event guidance"
+    },
+    {
+      "from": "policy-logging",
+      "to": "matt-pocock",
+      "label": "Adapts temporary debug-probe cleanup"
+    },
+    {
+      "from": "policy-logging",
+      "to": "policy-security",
+      "label": "Uses shared secret-handling rules"
+    },
+    {
+      "from": "issue-writing",
+      "to": "policy-issue-workflow",
+      "label": "Uses lifecycle and publication rules"
+    },
+    {
+      "from": "sdlc",
+      "to": "policy-issue-workflow",
+      "label": "Assesses material updates at each stage"
+    },
+    {
+      "from": "policy-issue-workflow",
+      "to": "policy-security",
+      "label": "Uses shared disclosure boundaries"
+    },
+    {
+      "from": "policy-issue-workflow",
+      "to": "mcp-github",
+      "label": "Documents the read-only connection boundary"
+    },
+    {
+      "from": "policy-issue-workflow",
+      "to": "issue-workflow-decision",
+      "label": "Explains sources and community evidence"
+    },
+    {
+      "from": "issue-workflow-decision",
+      "to": "pstack",
+      "label": "Assesses scoped ownership and evidence"
+    },
+    {
+      "from": "issue-workflow-decision",
+      "to": "matt-pocock",
+      "label": "Assesses triage and requirements briefs"
+    },
+    {
+      "from": "issue-workflow-decision",
+      "to": "addy-osmani",
+      "label": "Assesses maintained handoff state"
+    },
+    {
+      "from": "sdlc",
+      "to": "issue-writing",
+      "label": "Uses body composition for issue writing"
+    },
+    {
+      "from": "policy-architecture",
+      "to": "architect",
+      "label": "Offers optional design red flags"
+    },
+    {
+      "from": "maintenance",
+      "to": "writing-for-agents",
+      "label": "Authoring guidance"
+    },
+    {
+      "from": "diagnosing-bugs",
+      "to": "tdd",
+      "label": "Uses for corrections"
+    },
+    {
+      "from": "diagnosing-bugs",
+      "to": "policy-logging",
+      "label": "Uses shared probe cleanup"
+    },
+    {
+      "from": "tdd",
+      "to": "policy-evidence",
+      "label": "Reports actual checks"
+    },
+    {
+      "from": "modular-sdlc",
+      "to": "sdlc",
+      "label": "Implemented routing"
+    },
+    {
+      "from": "skill-integration",
+      "to": "tdd",
+      "label": "Single testing method"
+    },
+    {
+      "from": "sdlc",
+      "to": "grill-me",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "grill-with-docs",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "how",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "architect",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "arena",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "planning-and-task-breakdown",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "swarm",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "tdd",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "diagnosing-bugs",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "code-review-and-quality",
+      "label": "Routes applicable stage"
+    },
+    {
+      "from": "sdlc",
+      "to": "client-verification",
+      "label": "Runtime verification limits"
+    },
+    {
+      "from": "skill-integration",
+      "to": "client-verification",
+      "label": "Observed discovery"
+    },
+    {
+      "from": "overview",
+      "to": "client-verification",
+      "label": "Adoption checks"
     }
   ]
 }

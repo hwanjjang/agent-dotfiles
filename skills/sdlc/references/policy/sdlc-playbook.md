@@ -6,6 +6,16 @@
   (based on Anthropic's [AI-Native SDLC Playbook](https://claude.com/blog/the-ai-native-sdlc-playbook), adapted to be model-agnostic).
   The source file is kept in Korean as an intentional exception to the English-artifact rule: it is AK's authoritative input, and translation could introduce drift. This file is the normative English artifact; later dated amendments in this normative file supersede the corresponding historical source rules; for other unresolved conflicts, ask AK.
 
+## Current modular routing and verification amendment — 2026-10-17
+
+The [stage-to-skill routing](../skill-routing.md) owns skill selection within
+existing stages. The collection's [tdd skill](../../../tdd/SKILL.md) owns testing
+methods and practical exceptions; the [verification contract](../verification.md#tdd-method-and-alternative-evidence)
+owns SDLC evidence and integrated smoke. These supersede conflicting test-first
+absolutes below, including historical originals. Explicit alternatives need real
+coverage and honest limits; unavailable required checks remain blocked. Existing
+authority, reviewer independence, iteration limits and endpoint gates still apply.
+
 ## Core principle
 
 The center of the SDLC is not any model or agent harness. It is the loop

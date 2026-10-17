@@ -1,8 +1,11 @@
-# Modular AK SDLC proposal
+# Modular AK SDLC design
 
-Status: Proposed overall workflow design. Initial skill packages are now included;
-see the skill catalog. The complete modular SDLC integration and target-client
-orchestration remain unverified.
+Status: Stage-to-skill source integration implemented. The authoritative
+[routing contract](../../skills/sdlc/references/skill-routing.md) maps existing
+stages to reusable packages, with one tdd method and checked evidence modes.
+The sections below retain the broader design rationale; names not in the skill
+catalog remain proposed, not installed commands. Full target-client and
+multi-provider orchestration still require runtime validation.
 
 Investigated: 2026-10-17. This proposal combines public upstream patterns with
 the requested direction: stronger preparation, parallel implementation, and

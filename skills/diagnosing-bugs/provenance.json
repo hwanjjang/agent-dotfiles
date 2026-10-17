@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/mattpocock/skills",
+  "revision": "49dd158d1076134a641b33efb035946536778336",
+  "path": "skills/engineering/diagnosing-bugs",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-17",
+  "upstream_files": {
+    "SKILL.md": "849198df88cdb65fd0d97236604c1fca7ff2f22d2f705f9724a800d0266b118d"
+  },
+  "adaptations": [
+    "Bounded to difficult defects; removed fixed hypothesis count and ban on useful source analysis.",
+    "Reuses tdd for corrections and shared logging/security policies.",
+    "Removed optional upstream HITL script dependency; use existing host interaction."
+  ],
+  "skill_dependencies": [
+    "tdd"
+  ],
+  "policy_dependencies": [
+    "policies/logging.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [],
+  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. SDLC evidence-mode and existing state/reviewer tests: 52 passed. No model-adherence, live MCP authentication or multi-provider lifecycle claim."
+}

@@ -4,12 +4,37 @@
 
 | Change kind | Required approach |
 | --- | --- |
-| behavior | Expected-behavior/regression test before implementation; intended failure, minimal fix, green/post-refactor checks; then separate local functional smoke before commit. |
+| behavior | Use the single tdd method; retain test-first evidence or the explicit alternative contract below, then separate local functional smoke before commit. |
 | refactor | Establish existing passing behavior tests before edit and keep them green; then additional affected local smoke. Never break correct code to manufacture Red. |
 | non-executable | Proportionate content/link/schema/format checks. Runtime smoke and artificial TDD are not applicable. |
-| configuration | Active skills, prompts, hooks, instructions and CI change behavior even in Markdown. Run relevant test-first behavioral evaluations or executable checks and separate functional verification; product smoke only when product runtime is affected. |
+| configuration | Active skills, prompts, hooks, instructions and CI change behavior even in Markdown. Use tdd or an explicit alternative for relevant behavioral evaluations/executable checks, with separate functional verification; product smoke only when product runtime is affected. |
 
 Mixed changes apply the appropriate checks to each part. Missing credentials/environment/dependencies means blocked or not-run, not not-applicable. Reuse adequate existing scenarios and repository tooling; create only coverage that is missing.
+
+## TDD method and alternative evidence
+
+Read [tdd](../../tdd/SKILL.md) for the method and practical exceptions. It is the
+single TDD authority; this section owns only SDLC evidence and integration gates.
+This contract supersedes conflicting test-first absolutes in historical imported
+policy text. Target-project requirements and essential checks remain binding.
+
+- `verification_mode: tdd` (default for existing records): retain intended `red`,
+  `green`, applicable `post-refactor`, then separate `smoke` executions. Declare
+  `refactor_performed: false` only when no edits followed Green; otherwise a
+  current passing post-change check is required. Omitting that field preserves
+  legacy mandatory post-refactor evidence.
+- `verification_mode: alternative`: when test-first is impractical under tdd,
+  record `tdd_exception.reason`, `attempted`, and `limitation`. Run focused
+  `alternative` checks against the real behavior, each tied to a scenario; cover
+  every acceptance criterion, then run separate integrated `smoke`. Do not include
+  fabricated Red/Green phases or call the result TDD. A reason alone cannot pass.
+- A missing required environment, unresolved failure or unobservable promised
+  behavior is blocked/not-run, not an alternative success. Review the semantic
+  adequacy of the checks; the validator cannot determine whether prose is true.
+
+Refactors and non-executable changes retain their own classification above.
+The scope of smoke follows the changed capability: an isolated skill evaluation
+can exercise instruction behavior; product runtime checks apply only when affected.
 
 ## Intent and side-effect decision rubric
 
@@ -43,7 +68,7 @@ that a model follows prose, establish product correctness or replace PR review.
 
 Use [the smoke template](../assets/smoke-scenario.md) before implementation. Map every AC to actual test layers and applicable scenario IDs. Cover success and relevant errors, authorization/boundaries, retries/duplicates, transitions and concurrency. State prerequisite environment/data, actions, observable success, explicit failure, executable command or reproducible procedure, required status, side effects and cleanup. Use approved facilities for external side effects.
 
-For behavior fixes, setup failure is not intended Red. Retain separate Red, Green, post-refactor and smoke executions. Additional smoke verifies integrated functionality/runtime wiring beyond the TDD checks; rerunning the same unit test under a smoke label is insufficient. HTTP 200, process startup or screenshot existence alone does not prove behavior. If smoke reveals a defect, return to a failing regression test and TDD correction before rerunning smoke.
+For behavior fixes, setup failure is not intended Red. Retain actual executions under the selected verification mode above. Additional smoke verifies integrated functionality/runtime wiring beyond the TDD checks; rerunning the same unit test under a smoke label is insufficient. HTTP 200, process startup or screenshot existence alone does not prove behavior. If smoke reveals a defect, return to the tdd method and renew affected evidence before rerunning smoke.
 
 Before retrying a full suite, reconcile the prior process identity, current
 status, result and cleanup. Wait for it or stop only a task-owned process within
@@ -93,7 +118,7 @@ Finding schema:
 
 Severity is BLOCKER, HIGH, MEDIUM, LOW, or NIT. BLOCKER/HIGH are Must Fix; lower-severity requirement or policy violations are also Must Fix. Recommended findings may be left unselected with a concise reason in the review record. Do not create follow-up issues, owners, reminders or separate tracking. Include NITs, if useful, under Recommended. Review verdicts are PASS, CHANGES_REQUIRED, or NEEDS_HUMAN, distinct from stage HOTL decisions. PASS requires no unresolved mandatory finding or missing mandatory verification.
 
-Publish an actual PR review/comment only within the authorized workflow and link its stable ID/URL in `R/pr-review.md`. Publish concise findings grouped under **Required / Recommended**, execution blockers and a final readiness result. Include each stable finding ID, location, problem and requested action. Keep full schemas, model receipts and repeated logs in linked reports. At every applicable stage, check whether the issue needs a material update and publish when useful; avoid duplicate comments. The issue is the progress/decision record and the PR holds code review results. Local output is not a published review; tool success and absent replies are not PASS. Separately honor repository approval requirements and unresolved human change requests.
+Publish an actual PR review/comment only within the authorized workflow and link its stable ID/URL in `R/pr-review.md`. Publish concise findings grouped under **Required / Recommended**, execution blockers and a final readiness result. Include each stable finding ID, location, problem and requested action. Keep full schemas, model receipts and repeated logs in linked reports. Use the [issue workflow integration](workflow.md#issue-workflow-integration) for stage issue records; keep detailed code review results on the PR. Local output is not a published review; tool success and absent replies are not PASS. Separately honor repository approval requirements and unresolved human change requests.
 
 The author responds to every finding with an application decision, evidence-based rebuttal or a reason for leaving a recommendation unselected. Only reviewer resolution can close/downgrade a Must Fix finding; escalate unresolved disagreement. The author applies selected changes, renews affected tests/smoke, pushes and requests reviewer examination of the changed candidate. Repeat until the reviewer returns PASS and the author has no remaining selected changes. Preserve old receipts and record reuse rationale for unaffected evidence. Re-entry consumes the applicable stage's remaining iteration allowance.
 

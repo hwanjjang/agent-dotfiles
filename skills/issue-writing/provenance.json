@@ -5,9 +5,14 @@
   "adaptations": [
     "Removed private source links and project-specific attribution.",
     "Made external publication authority task-specific.",
-    "Retained historical source language as author-provided reference; current English amendments govern."
+    "Retained historical source language as author-provided reference; current English amendments govern.",
+    "Use policies/issue-workflow.md as the shared authority for issue lifecycle and publication rules; keep skill-specific body or stage rules here."
   ],
   "skill_dependencies": [],
   "runtime_requirements": [],
-  "validation": "Imported baseline; executable checks and portability review pending."
+  "validation": "Issue-policy integration: links, dependency closure, common frontmatter and tabletop scenarios reviewed. Strict Codex validation rejects the retained Claude user-invocable field. Authenticated tracker execution and installed-client loading remain unverified.",
+  "policy_dependencies": [
+    "policies/issue-workflow.md",
+    "policies/security.md"
+  ]
 }

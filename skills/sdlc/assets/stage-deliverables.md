@@ -76,7 +76,7 @@ Every deliverable begins with:
 - Mandatory user scenarios: stable ID, user, goal, prerequisites, ordered steps, expected results and relevant failure paths; map to ACs/tests and manual sections. Retain a user-scenarios output using [the JSON template](user-scenarios.json).
 - Files to add/change/delete and why; boundaries that must stay intact.
 - Ordered implementation steps, dependencies and owner.
-- Existing adequate checks to reuse with coverage/freshness rationale; missing tests to write/run, expected Red cause, additional local smoke, checks and artifact verification.
+- Existing adequate checks to reuse with coverage/freshness rationale; missing tests to write/run, expected Red cause or justified alternative, additional local smoke, checks and artifact verification.
 - Migration, rollback and blast radius.
 - What could break; riskiest part; rejected alternative and reason; proof of correctness.
 - Parallel lanes, if any: disjoint files, dependencies/conflicts and combined-candidate verification.
@@ -102,13 +102,13 @@ Every deliverable begins with:
 - Plan-step-to-diff mapping and changed files with purpose.
 - Candidate identity and author/provider/context.
 - Deviations, reasons and upstream amendments.
-- Distinct intended Red, Green and post-refactor execution IDs/results/evidence; refactor or non-executable applicability rationale when appropriate.
+- Actual execution IDs/results/evidence under the selected tdd or alternative verification mode; applicable post-change checks and refactor/non-executable rationale.
 - Documentation/observability updates; applicable user manual source, screenshots and rendered PDF; remaining risks.
 
 ## Self verification: reports/sdlc/TASK/self-verification.md
 
 - Exact tested candidate/base, environment and dependencies.
-- TDD/regression executions distinct from additional local functional smoke and other checks.
+- Focused verification/regression executions distinct from additional local functional smoke and other checks.
 - Scenario required/total/executed/pass/fail/blocked/not-run/not-applicable counts, consistent with machine-readable results.
 - Commands/procedures, timestamps, exit codes, actual observations and durable evidence.
 - Mock boundaries versus actual integration; failures and corrections.

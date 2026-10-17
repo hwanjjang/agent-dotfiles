@@ -9,6 +9,11 @@ user-invocable: true
 Write issues that contain only what an implementer needs. A first-time reader must
 understand what to do and why without asking follow-up questions.
 
+For creation, body updates, comments, handoff or closure, follow the shared
+[issue workflow policy](../../policies/issue-workflow.md). It owns lifecycle,
+publication authority and conflict handling; this skill owns body composition.
+Keep the linked policy resources available when distributing this skill.
+
 ## Structure
 
 ```markdown
@@ -70,5 +75,5 @@ Before creating or updating the issue, reread the whole issue and confirm:
 2. An implementer can start without extra explanation.
 3. Every checklist item passes the checklist rules above.
 
-Revise until all three hold. Submit only when the user authorized creating or
-updating the external issue; otherwise return the finished draft.
+Revise until all three hold. Publish or return the finished draft according to
+the shared policy's authority and publication rules.

@@ -263,13 +263,41 @@ def validate_results(data, change_kind, candidate, criteria):
         require(any(r['phase'] == 'smoke' and r.get('scenario_id') == s['id'] for r in runs), 'Required smoke not run')
     require('smoke' in phases, 'Missing extra smoke')
     if change_kind in ('behavior', 'configuration'):
-        require(all(p in phases for p in ('red', 'green', 'post-refactor')), 'Missing TDD evidence')
-        require(phases.index('red') < phases.index('green') < phases.index('post-refactor') < phases.index('smoke'),
-                'Expected Red -> Green -> post-refactor -> additional smoke')
+        mode = data.get('verification_mode', 'tdd')
+        require(mode in ('tdd', 'alternative'), 'Unknown verification mode')
+        if mode == 'tdd':
+            require('alternative' not in phases, 'Mixed TDD and alternative claims')
+            refactored = data.get('refactor_performed', True)
+            require(type(refactored) is bool, 'Refactor applicability must be boolean')
+            ordered = ['red', 'green']
+            if refactored or 'post-refactor' in phases:
+                ordered.append('post-refactor')
+            ordered.append('smoke')
+            require(all(p in phases for p in ordered), 'Missing TDD evidence')
+            require(all(phases.index(a) < phases.index(b) for a, b in zip(ordered, ordered[1:])),
+                    'Expected Red -> Green -> applicable post-refactor -> additional smoke')
+            focused = {'red', 'green', 'post-refactor'}
+        else:
+            exception = data.get('tdd_exception')
+            require(isinstance(exception, dict) and all(nonempty(exception.get(k))
+                    for k in ('reason', 'attempted', 'limitation')), 'Missing TDD exception evidence')
+            require(not {'red', 'green', 'post-refactor'}.intersection(phases), 'Alternative is not TDD')
+            require('alternative' in phases and all(i < phases.index('smoke')
+                    for i, phase in enumerate(phases) if phase == 'alternative'),
+                    'Alternative check must precede additional smoke')
+            checked = set()
+            for run in runs:
+                if run['phase'] != 'alternative':
+                    continue
+                require(run.get('execution_kind') == 'real' and run.get('scenario_id') in ids,
+                        'Alternative needs a real scenario check')
+                checked.add(next(s['requirement'] for s in scenarios if s['id'] == run['scenario_id']))
+            require(set(criteria) <= checked, 'Alternative checks do not cover acceptance criteria')
+            focused = {'alternative'}
         # A reused evidence file would let a single execution impersonate two layers.
-        tdd = {r['evidence'] for r in runs if r['phase'] in ('red', 'green', 'post-refactor')}
+        method = {r['evidence'] for r in runs if r['phase'] in focused}
         smoke = {r['evidence'] for r in runs if r['phase'] == 'smoke'}
-        require(not tdd.intersection(smoke), 'TDD and smoke need distinct retained execution evidence')
+        require(not method.intersection(smoke), 'Focused verification and smoke need distinct retained execution evidence')
     else:
         require('regression' in phases and phases.index('regression') < phases.index('smoke'),
                 'Refactor requires regression before extra smoke')

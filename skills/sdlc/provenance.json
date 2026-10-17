@@ -5,15 +5,33 @@
   "adaptations": [
     "Removed private source links and project-specific attribution.",
     "Made external publication authority task-specific.",
-    "Retained historical source language as author-provided reference; current English amendments govern."
+    "Retained historical source language as author-provided reference; current English amendments govern.",
+    "Use policies/issue-workflow.md as the shared authority for issue lifecycle and publication rules; keep skill-specific body or stage rules here.",
+    "Connected existing stages to focused skills through references/skill-routing.md; skills remain independently usable.",
+    "Single pstack-derived tdd method; explicit alternative evidence and no-refactor reuse are validated without weakening smoke or publication gates."
   ],
   "skill_dependencies": [
     "planning-with-files",
     "archify",
-    "screenshot-manual"
+    "screenshot-manual",
+    "issue-writing",
+    "grill-me",
+    "grill-with-docs",
+    "how",
+    "architect",
+    "arena",
+    "planning-and-task-breakdown",
+    "swarm",
+    "tdd",
+    "diagnosing-bugs",
+    "code-review-and-quality"
   ],
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
   ],
-  "validation": "40 packaged state/reviewer tests passed; full provider and PR lifecycle not exercised."
+  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. SDLC evidence-mode and existing state/reviewer tests: 52 passed. No model-adherence, live MCP authentication or multi-provider lifecycle claim.",
+  "policy_dependencies": [
+    "policies/issue-workflow.md",
+    "policies/security.md"
+  ]
 }

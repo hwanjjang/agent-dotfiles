@@ -6,7 +6,7 @@ Read this before delegating. The main agent owns authority decisions, the artifa
 | --- | --- | --- |
 | plan | Specification, architecture, risks, Archify, implementation planning | No implementation-code edits. Return separate stage-ordered Spec/Plan and applicable diagram evidence, assumptions and unresolved decisions. |
 | research | Bounded source/API/dependency or failure-path investigation | No product edits. Return verified facts with locations/sources, uncertainty and impact in assigned evidence record. |
-| dev | Implementation and corrections | Only assigned files/worktree. No scope/AC changes or self-approval. Return diff, build record, distinct test-first and additional local-smoke evidence. |
+| dev | Implementation and corrections | Only assigned files/worktree. No scope/AC changes or self-approval. Return diff, build record, distinct tdd/alternative and additional local-smoke evidence. |
 | qa: required PR review | Actual PR/diff and evidence review | Must satisfy ordered provider fallback eligibility in [host adapters](host-adapters.md). Return complete configuration receipt and fixed-schema review; publication only within assigned authority. |
 
 Roles do not mandate a fixed agent count. Main may handle optional planning/research/test design/build directly if delegation adds no value, recording its builder role. The builder cannot become its own reviewer by changing labels. There is no separate independent-verification assignment/report in the revised PR route.
