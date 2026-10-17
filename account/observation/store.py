@@ -199,7 +199,10 @@ class Store:
             if grant is None:
                 return {'status': 'disabled'}
             require((grant['client'] == 'synthetic') == (native_stream is None), 'adapter_mismatch')
-            # Grant checked before decoding any event content.
+            # Scope is checked before ledger scans or reading hook input.
+            if native_stream is not None:
+                from .native import validate_process_scope
+                validate_process_scope(grant)
             limit = EVENT_LIMIT if offset is None else BATCH_LIMIT
             records = self._records(files, grant)
             existing = {event['event_id']: event for record in records for event in record['events']}

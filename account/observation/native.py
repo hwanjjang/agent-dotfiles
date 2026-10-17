@@ -9,9 +9,13 @@ EVENTS = {'SessionStart': 'session_start', 'PreToolUse': 'tool_start',
           'PostToolUse': 'tool_end', 'PostToolUseFailure': 'tool_end', 'Stop': 'response_end'}
 
 
-def adapt(stream, grant, existing):
+def validate_process_scope(grant):
     require(grant['client'] == 'claude' and grant['profile'] == 'default'
             and grant['source'] == 'claude-hooks-v1', 'unsupported_adapter')
+    require(str(Path.cwd().resolve(strict=True)) == grant['project_root'], 'project_scope')
+
+
+def adapt(stream, grant, existing):
     raw = stream.read(PAYLOAD_LIMIT + 1)
     require(isinstance(raw, bytes) and len(raw) <= PAYLOAD_LIMIT, 'payload_size')
     value = decode(raw)

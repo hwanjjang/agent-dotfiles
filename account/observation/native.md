@@ -80,7 +80,7 @@ The project path stays in its private grant; records use a project digest. Tool
 names become `shell`, `file`, `mcp` or `other`; private MCP names are not retained.
 Prompts, tool arguments/results, assistant messages and transcript paths are
 discarded and never dereferenced. Raw hook payloads are not written to disk or sent
-over the network. Grant validation precedes reading/parsing the bounded stdin.
+over the network. Grant validation and exact process working-directory validation precede ledger scans and reading/parsing bounded stdin. The payload cwd is checked again afterward. Moving into a subdirectory or another worktree fails closed until that exact project is separately granted. See the [official hook directory contract](https://code.claude.com/docs/en/hooks#reference-scripts-by-path); the session-start project variable alone is insufficient after a directory change.
 
 Tool callback identity combines registration, epoch, session, event name and tool
 ID, so duplicate routes sharing that scope deduplicate. Start/end/failure callbacks
@@ -129,3 +129,5 @@ shell exit status; one reply describes stale output and wrong-package checks, an
 the author acknowledges the coverage limitation. These are useful failure cases,
 not independent validation of this collector or a reason to copy its permission
 rewrites. Community validation of this implementation remains provisional.
+
+The installed callback pins the Python interpreter used by setup. If that executable moves or is removed, reinstall/update with a supported Python 3.11+ interpreter; callbacks may otherwise stop silently. Native re-consent after a corrupt ledger with an unknown frontier is currently unsupported. Do not remove a revocation tombstone to bypass that refusal.
