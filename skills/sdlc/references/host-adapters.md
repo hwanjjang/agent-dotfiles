@@ -15,7 +15,7 @@ If required file/tool boundaries cannot be represented, use supported isolation;
 ## Required PR reviewer selection
 
 The additional Grok/Gemini list has its own [optional-review contract](optional-reviewers.md),
-including named model/high overrides and non-blocking skip behavior. The selection
+including shared-assignment selection, model/effort defaults and non-blocking skip behavior. The selection
 and mandatory provider/model/effort receipts below govern the existing required
 reviewer. Existing permissions and read-only isolation apply to all reviewers; mode configuration is optional.
 
@@ -24,7 +24,7 @@ At review creation:
 1. Record actual implementation author provider/context and contributing authors. Assign reviewer 1 and reviewer 2 from providers different from the builder. When both cannot proceed, permit reviewer 3 from the builder provider in a separate context. For mixed-provider authorship record independence from the contributing author contexts.
 2. Inspect available authenticated alternate providers and current model catalogs. Select the latest generally available model of the actual selected provider. Use authoritative provider information with date/source when catalog data cannot establish recency. Do not substitute a remembered or preview model or infer recency from an account/profile label.
 3. Prefer a configured eligible review provider. Otherwise use documented review-evaluation quality, then provider identifier order as a tie-breaker.
-4. Resolve and observe the intent-derived reasoning effort (`medium` by default). Permission-mode configuration is optional. Prefer a supported session setting within existing permissions; if it is omitted, unsupported, mismatched or fails, continue with a verified read-only boundary as described below. Do not change global settings or escalate access to satisfy a mode label. Keep the author branch read-only and generated checks isolated.
+4. Before dispatch, reconcile the roster using [one assignment per reviewer](optional-reviewers.md#one-assignment-per-reviewer), including any required fallback. Resolve and observe the selected effort under that contract and the intent authority; the ordinary default remains `medium`. Permission-mode configuration is optional. Prefer a supported session setting within existing permissions; if it is omitted, unsupported, mismatched or fails, continue with a verified read-only boundary as described below. Do not change global settings or escalate access to satisfy a mode label. Keep the author branch read-only and generated checks isolated.
 5. Inspect resolved settings, execute the reviewer and preserve a receipt containing author/reviewer providers and contexts, exact model, effort, mode, selection source/timestamp, host/tool configuration, isolation, base/head, actual review record ID, scope, findings and verdict.
 
 A personal/team account label is not a model provider. Resolve the executing provider and model even when a named profile is used. If required selection/execution or a required check cannot be performed, retain the exact gap and try the next reviewer. Permit the author provider only after both earlier alternate-provider reviewers cannot proceed. Never label the builder context independent or silently weaken required configuration. Pin verified settings for the correction cycle; recheck availability and record changes before replacement execution.
@@ -66,4 +66,4 @@ Inability to run required checks advances the chain just like a rate limit. Carr
 
 ## 2026-10-03 reviewer effort authority amendment
 
-Default reviewer effort remains medium. An explicit task-scoped AK instruction may override it through the latest successful intent output described in [the state contract](state-contract.md#reviewer-effort-authority). This supersedes literal medium requirements in earlier amendments; preserve their historical execution records. Resolve and observe the authorized value without relabeling runtime evidence. Unsupported host effort leaves review incomplete; no account, permission or launch authority is added.
+Use [effort authority](state-contract.md#reviewer-effort-authority) and [shared-review records](state-contract.md#shared-review-records) for current selection and receipt requirements. Preserve historical execution settings; do not relabel observations or infer new launch authority.

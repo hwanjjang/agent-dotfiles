@@ -37,6 +37,11 @@ coherent. Planning owns task and PR boundaries; [to-tickets](skills/to-tickets/S
 materializes tickets, and [make-pr-easy-to-review](skills/make-pr-easy-to-review/SKILL.md)
 prepares reviewer guidance. See the [source comparison and adaptations](docs/decisions/pr-workflow.md).
 
+SDLC [shares matching required and additional reviewers](skills/sdlc/references/optional-reviewers.md#one-assignment-per-reviewer)
+through one assignment and result; distinct reviewers remain independent. Each
+selected reviewer uses [code-review-and-quality](skills/code-review-and-quality/SKILL.md)
+inside that context; the method also works standalone.
+
 [to-spec](skills/to-spec/SKILL.md) turns settled requirements into a standalone
 specification. AK SDLC uses the same method; its former spec checklist now links
 to that authority. See the [extraction decision](docs/decisions/spec-extraction.md).

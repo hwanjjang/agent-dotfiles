@@ -12,7 +12,9 @@
     "Routes verification setup and drift maintenance to the portable pstack pair; project recipes feed existing evidence gates.",
     "Routes requested ticket materialization through the existing plan and author-side PR preparation before independent review; no additional lifecycle stage.",
     "Extracted spec method/content to to-spec; routing, workflow, template and normative policy link to it without a second checklist. Stage state and receipt schema unchanged.",
-    "Made the PR workflow policy authoritative over the historical one-task/one-PR equation."
+    "Made the PR workflow policy authoritative over the historical one-task/one-PR equation.",
+    "AK 2026-10-17 amendment: one assignment/result/publication for matching required and additional reviewers; shared high default with explicit effort precedence and provider-checked receipt support.",
+    "Required and additional reviewers apply the existing code-review-and-quality method inside their assigned context through the canonical skill-routing table; no second review orchestrator."
   ],
   "skill_dependencies": [
     "planning-with-files",
@@ -39,7 +41,7 @@
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
   ],
-  "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. SDLC evidence-mode and existing state/reviewer tests: 52 passed. No model-adherence, live MCP authentication or multi-provider lifecycle claim.",
+  "validation": "Strict skill metadata and local dependency/link/map checks passed. Codex CLI 0.159.2 previously discovered this source package in a temporary project. SDLC state/reviewer tests: 56 passed, including shared-review effort/provider/authority regressions and an isolated CLI completion scenario. Receipt validation does not launch or deduplicate host calls. Current roster selection and native deployment remain unverified.",
   "policy_dependencies": [
     "policies/issue-workflow.md",
     "policies/security.md",

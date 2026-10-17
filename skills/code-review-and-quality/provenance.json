@@ -11,7 +11,8 @@
   },
   "adaptations": [
     "Bundled checklist resources and replaced unavailable specialist-skill references.",
-    "Isolated optional experiments, review-only boundary, no implicit issue writes, honest execution gaps."
+    "Isolated optional experiments, review-only boundary, no implicit issue writes, honest execution gaps.",
+    "Explicit standalone/assigned-review method: consume pinned scope and evidence, retain requirement/standard distinctions, use coordinator finding schema, and never spawn another reviewer."
   ],
   "skill_dependencies": [],
   "runtime_requirements": [],

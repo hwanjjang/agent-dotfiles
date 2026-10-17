@@ -45,8 +45,8 @@ Use `begin` before a renewed stage attempt, `finish` with its evidence receipt, 
 - Read [verification and review](references/verification.md) before test design, implementation, or review. Use the single `tdd` skill for behavior checks and its practical exceptions; verification defines candidate-bound receipts and **additional local functional smoke**. Record alternatives explicitly instead of manufacturing Red or silently waiving checks. Non-executable changes receive appropriate content checks; active agent/configuration changes need meaningful behavior evaluation.
 - The plan must include user scenarios (user, goal, prerequisites, ordered actions, expected result and relevant failure path), mapped to acceptance criteria and test coverage.
 - Remove the separate independent-verification stage from PR implementation. After self-verification, review the PR and evidence in a separate reviewer context. Try reviewer 1, then reviewer 2, each from a provider different from the builder. When both cannot proceed, use an independent reviewer of the same provider if available. Rate limits, unavailable tools and inability to perform required checks advance this chain; disagreement with findings does not. See [review/fallback and handoff rules](references/verification.md).
-- In addition to that required review, attempt **Grok 4.7 high** and **Gemini 3.8 high** as [optional review-only contexts](references/optional-reviewers.md). Main publishes their attributed PR comments; they never implement fixes. Skip limits, outages or unsupported configuration with an observed reason; optional availability does not block readiness or erase real findings.
-- Preserve verified latest GA model selection and authorized effort (medium by default). Permission-mode settings are optional: continue in verified read-only isolation under existing permissions if setting or observing a mode fails; never relabel an unknown mode as auto/full. Carry stable finding IDs, unresolved findings, author responses, fixes and available evidence to every replacement reviewer. No available reviewer means incomplete review, never an invented PASS.
+- Plan the required and additional reviewers together under [one assignment per reviewer](references/optional-reviewers.md#one-assignment-per-reviewer). A matching required reviewer shares its result with the additional role; dispatch only uncovered Grok/Gemini reviewers. Publish each distinct result once. Reviewers never implement fixes; record actual unavailability without erasing findings or waiving required review.
+- Preserve verified latest GA model selection and authorized effort (medium by default; shared-review selection follows the linked contract). Permission-mode settings are optional: continue in verified read-only isolation under existing permissions if setting or observing a mode fails; never relabel an unknown mode as auto/full. Carry stable finding IDs, unresolved findings, author responses, fixes and available evidence to every replacement reviewer. No available reviewer means incomplete review, never an invented PASS.
 - Publish concise **Required / Recommended** findings in the PR. The builder assesses each finding, selects and applies changes, verifies and pushes; repeat review until PASS and no author-selected change remains. Unselected recommendations end in the review record: no follow-up issue, owner, reminder or separate tracking.
 - For new features or UX/UI changes, update the user manual with actual scenario screenshots and deliver a visually checked PDF plus editable source. Use the installed `screenshot-manual` skill for screenshot-based PDFs and an available PDF/document skill where applicable. Before completion, check affected manuals, README/API/operations docs and diagrams; update them and renew affected checks/review before final PASS.
 
@@ -73,7 +73,7 @@ Source: AK confirmed issue updates, mandatory planning scenarios, removal of the
 
 ## 2026-10-03 reviewer effort authority amendment
 
-Default reviewer effort remains medium. An explicit task-scoped AK instruction may override it through the latest successful intent output described in [the state contract](references/state-contract.md#reviewer-effort-authority). This supersedes literal medium requirements in earlier amendments; preserve their historical execution records. Resolve and observe the authorized value without relabeling runtime evidence. Unsupported host effort leaves review incomplete; no account, permission or launch authority is added.
+Use [effort authority](references/state-contract.md#reviewer-effort-authority) and [shared-review records](references/state-contract.md#shared-review-records) for current selection and receipt requirements. Preserve historical execution settings; do not relabel observations or infer new launch authority.
 
 ## 2026-10-15 optional permission-mode amendment
 
@@ -81,3 +81,10 @@ Source: AK requested optional reviewer permission-mode configuration and continu
 
 Public distribution follows the scope amendment in the normative policy. Package
 provenance is recorded in [provenance.json](provenance.json).
+
+## 2026-10-17 shared reviewer amendment
+
+AK requested one review when the required and additional reviewer are the same.
+The [shared-review selection](references/optional-reviewers.md#one-assignment-per-reviewer)
+supersedes earlier separate-context and literal-medium requirements for that case.
+All required eligibility, evidence and finding-resolution gates remain.

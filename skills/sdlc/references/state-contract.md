@@ -79,7 +79,7 @@ Only legacy independent-verification receipts additionally contain `verifier`: `
 
 ## PR review and merge
 
-PR receipts include `review` with author_provider, provider, model, context_id, independent, model_selection_source/time, latest_ga_model_verified, requested_effort, effort, effort_verified, requested_mode, mode, mode_verified, candidate, head, base, verdict, findings, record_url and record_id. Reviewer slots 1 and 2 use a provider different from the author; slot 3 may use the author provider after both prior reviewers cannot proceed. In all cases context differs from the builder; requested/effective effort equals the intent-derived value (medium by default) and permission-mode configuration is optional; new receipts require `read_only_verified: true` and nonempty `read_only_evidence`. Requested/observed mode fields may be omitted, null or default and must reflect actual observations. PASS has no unresolved Must Fix. Findings have severity/category/location/finding/evidence/impact/verification/requirement/confidence/disposition and reviewer_resolution when required. For revised PR tasks, use stable finding `id`, `classification` (required/recommended), `author_action` (applied/rebutted/not-selected) and nonempty `author_response`. PASS additionally requires `author_changes_remaining: []`; applied changes need reviewer confirmation, Required findings need reviewer resolution, and unselected recommendations need no follow-up record. See [review policy](verification.md) for semantics and provider selection. Native tool/profile names are not proof.
+PR receipts include `review` with author_provider, provider, model, context_id, independent, model_selection_source/time, latest_ga_model_verified, requested_effort, effort, effort_verified, requested_mode, mode, mode_verified, candidate, head, base, verdict, findings, record_url and record_id. Reviewer slots 1 and 2 use a provider different from the author; slot 3 may use the author provider after both prior reviewers cannot proceed. In all cases context differs from the builder; requested/effective effort follows intent authority and the [shared-review default](#shared-review-records) (otherwise medium) and permission-mode configuration is optional; new receipts require `read_only_verified: true` and nonempty `read_only_evidence`. Requested/observed mode fields may be omitted, null or default and must reflect actual observations. PASS has no unresolved Must Fix. Findings have severity/category/location/finding/evidence/impact/verification/requirement/confidence/disposition and reviewer_resolution when required. For revised PR tasks, use stable finding `id`, `classification` (required/recommended), `author_action` (applied/rebutted/not-selected) and nonempty `author_response`. PASS additionally requires `author_changes_remaining: []`; applied changes need reviewer confirmation, Required findings need reviewer resolution, and unselected recommendations need no follow-up record. See [review policy](verification.md) for semantics and provider selection. Native tool/profile names are not proof.
 
 Pre-merge additionally requires [merge-gate.json](../assets/merge-gate.json), freshly populated from actual repository/provider observations. Head/base match the reviewed SHAs, candidate matches tested content, authority and protections are satisfied, required CI passed, human requests resolved, production_trigger is `none`, and remote_state_verified is true. Include authority source, timestamp, remote record and hashed retained observation evidence. **Refresh this immediately before mutation**; the helper does not fetch GitHub or detect remote drift by itself. Pass expected head to the actual merge API/tool and honor merge queue protections.
 
@@ -131,9 +131,9 @@ Completion requires `documentation_final_checked: true` and `author_changes_rema
 
 This schema describes the required reviewer. Record [additional optional
 reviews](optional-reviewers.md) separately in the PR-review index, including skipped
-outcomes and publication references. Do not submit their pinned model/high settings
-as a mandatory reviewer receipt or change the intent-derived required effort for
-them. Consolidate actual findings into the required review/correction record. A
+outcomes and publication references. Separate optional-only runs do not become
+mandatory reviewer receipts; shared roles use the [shared-review record](#shared-review-records)
+below. Consolidate actual findings into the required review/correction record. A
 Required finding arriving after PASS suspends readiness: renew the required review
 with that stable ID and reviewer resolution. The CLI cannot observe late optional
 returns; main must reconcile all returned/skipped assignments before readiness.
@@ -150,7 +150,7 @@ Mode discovery evidence must distinguishunknown metadata from verified execution
 
 ## Reviewer effort authority
 
-The medium default applies without an override, including existing schema-1 histories. The main/host adapter first authenticates and interprets an explicit task-scoped AK user instruction. Only then may the latest successful, complete persisted intent receipt include one additional output of kind `reviewer-effort-authority`. No new CLI command, launch setting or permission grant is introduced. Structural checks do not authenticate a user: a JSON flag or source-kind label alone is not authorization.
+The medium default applies without an override or a new shared-review selection; existing schema-1 histories remain valid under their recorded configuration. The main/host adapter first authenticates and interprets an explicit task-scoped AK user instruction. Only then may the latest successful, complete persisted intent receipt include one additional output of kind `reviewer-effort-authority`. No new CLI command, launch setting or permission grant is introduced. Structural checks do not authenticate a user: a JSON flag or source-kind label alone is not authorization.
 
 That hashed, repository-relative JSON has this exact required structure (extra fields grant no authority):
 
@@ -170,9 +170,35 @@ That hashed, repository-relative JSON has this exact required structure (extra f
 
 Recognized values are `low`, `medium`, `high`, `xhigh`, `max`, and `ultra`; a value's recognition does not establish actual host support. Both authority and source must exist, remain nonempty and match their recorded hashes without escaping the repository. Missing or invalid source, multiple outputs, wrong task, non-AK/nonexplicit authorization, and unknown effort reject the gate. Intent submission itself checks this structure; the latest successful complete intent selects the value, never arbitrary review fields such as `authorized_effort` or `expected_effort`.
 
-For every active PR review and legacy verifier readiness check, `requested_effort` and the actually observed `effort` must both equal the derived value and `effort_verified` must be true. The optional review field `reviewer_effort_authority` is null/absent by default or repeats the exact consumed output reference; it cannot select another artifact or create an override. Preserve model/provider, independence, fallback, read-only isolation, account and authority checks. If the host cannot resolve/observe the authorized value, use the existing unavailable-reviewer path without relabeling it.
+For every active PR review and legacy verifier readiness check, `requested_effort` and the actually observed `effort` must both equal the derived value (with the shared default below when applicable) and `effort_verified` must be true. The optional review field `reviewer_effort_authority` is null/absent by default or repeats the exact consumed output reference; it cannot select another artifact or create an override. Preserve model/provider, independence, fallback, read-only isolation, account and authority checks. If the host cannot resolve/observe the authorized value, use the existing unavailable-reviewer path without relabeling it.
 
 Revalidating a current review rechecks the nested instruction source hash. Changing authority requires assessed intent re-entry through existing begin/finish operations, which invalidates downstream stages without rewriting history or resetting counters. Earlier literal-medium amendments are superseded for current authority resolution only; historical receipts remain unchanged.
+
+## Shared-review records
+
+The [additional-reviewer contract](optional-reviewers.md#one-assignment-per-reviewer)
+owns selection and reuse. For a newly selected shared run, set
+`review.shared_optional_review` to `grok` or `gemini` in the existing required
+receipt. The validator checks its actual provider (`xai` or `google`), using
+known provider aliases, and expects high effort unless the consumed explicit
+intent authority selects another effort. A launcher such as `antigravity` does
+not identify a model provider; resolve it through the host. Unknown/mismatched
+roles are rejected. This selection is a policy default, not fabricated user
+instruction evidence or a new fallback slot.
+
+Keep the required context, candidate, exact head/base, model, slot, findings and
+publication reference. The additional-review index links to that same receipt
+and records `shared`; it is not a second independent verdict or comment. An
+optional-only isolation exception cannot satisfy required eligibility. Explicit
+effort overrides, model/independence/read-only checks, unavailable-provider records
+and fresh PASS evidence remain mandatory.
+
+Absent/null `shared_optional_review` preserves the existing effort behavior. Do
+not rewrite old receipts or attach this field to a completed medium run to claim
+high execution. Reusing an earlier valid result is recorded in the additional
+index with its actual settings and remaining limitations. The validator checks
+recorded configuration; the host still owns dispatch deduplication and must verify
+that a reused result covers the current candidate and required scope.
 
 ## 2026-10-15 optional permission-mode/read-only fallback
 

@@ -349,7 +349,8 @@
       "usage": "Read skills/code-review-and-quality/SKILL.md. Source presence does not attest client discovery.",
       "behavior": [
         "Follows its packaged workflow and supporting resources.",
-        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits."
+        "See provenance.json for origin, local adaptations, runtime requirements, and verification limits.",
+        "Runs standalone or inside an assigned reviewer context; returns evidence-backed findings without spawning reviewers."
       ],
       "outputs": [
         "The artifact or report defined by the skill, with actual checks and gaps."
@@ -601,7 +602,9 @@
         "Applies the shared issue workflow policy through stage update assessments; keeps PR review requirements in SDLC.",
         "Follows its packaged workflow and supporting resources.",
         "See provenance.json for origin, local adaptations, runtime requirements, and verification limits.",
-        "Uses one tdd method with explicitly validated alternative evidence and separate smoke."
+        "Uses one tdd method with explicitly validated alternative evidence and separate smoke.",
+        "Shares one assignment and result when required and additional reviewers match; dispatches only uncovered reviewers.",
+        "Routes each selected reviewer to code-review-and-quality in the same context; SDLC owns selection and finding lifecycle."
       ],
       "outputs": [
         "The artifact or report defined by the skill, with actual checks and gaps."

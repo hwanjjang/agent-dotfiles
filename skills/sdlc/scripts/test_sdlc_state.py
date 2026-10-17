@@ -243,6 +243,12 @@ class WorkflowTests(unittest.TestCase):
         return json.loads(result.stdout if success else result.stderr)
 
     def test_cli_premerge_smoke_without_independent_verification(self):
+        self.cli_premerge_smoke()
+
+    def test_cli_shared_review_smoke(self):
+        self.cli_premerge_smoke(shared=True)
+
+    def cli_premerge_smoke(self, shared=False):
         self.cli('init', '--mode', 'implementation', '--change-kind', 'non-executable',
                  '--endpoint', 'pre-merge', '--criteria', 'AC1')
         self.cli('skip', '--stage', 'design', '--reason', 'No structural change in fixture')
@@ -290,7 +296,10 @@ class WorkflowTests(unittest.TestCase):
         blocked.update(decision='BLOCKED', reason='Reviewer cannot complete required check')
         finish('pr-review', blocked)
         self.cli('begin', '--stage', 'pr-review', '--objective', 'Independent fallback reviews carried finding')
-        review = dict(reviewer(3, 'openai'), candidate='candidate', head='head', base='base', verdict='PASS',
+        config = reviewer(2, 'xai') if shared else reviewer(3, 'openai')
+        if shared:
+            config.update(shared_optional_review='grok', requested_effort='high', effort='high')
+        review = dict(config, candidate='candidate', head='head', base='base', verdict='PASS',
                       record_url='https://example.test/pr/1#review', record_id='fixture-review',
                       mode='default', requested_mode='auto', mode_verified=False,
                       read_only_verified=True, read_only_evidence='Observed isolated read-only fixture execution',
@@ -303,7 +312,7 @@ class WorkflowTests(unittest.TestCase):
 
         authority = json.loads((Path(s.__file__).parent.parent/'assets/pre-merge-authority.json').read_text())
         authority.update(task_id='task', repository='fixture/repo', source='Test fixture authority',
-            accounts=[dict(id='builder', provider='openai'), dict(id='reviewer', provider='openai')])
+            accounts=[dict(id='builder', provider='openai'), dict(id='reviewer', provider=config['provider'])])
         gate = json.loads((Path(s.__file__).parent.parent/'assets/merge-ready.json').read_text())
         for key in ('merge_ready', 'push_verified', 'pr_verified', 'mergeable', 'required_ci_passed',
                     'protections_satisfied', 'human_requests_resolved', 'remote_state_verified'):

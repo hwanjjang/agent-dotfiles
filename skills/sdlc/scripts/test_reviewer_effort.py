@@ -46,6 +46,38 @@ class EffortTests(unittest.TestCase):
         ref = self.authority()
         self.check(dict(reviewer(), requested_effort='high', effort='high', reviewer_effort_authority=ref))
 
+    def test_shared_reviewer_uses_high_once(self):
+        for provider, role in [('xai', 'grok'), ('grok', 'grok'),
+                               ('google', 'gemini'), ('gemini', 'gemini')]:
+            with self.subTest(provider=provider):
+                shared = dict(reviewer(), provider=provider, shared_optional_review=role,
+                              requested_effort='high', effort='high')
+                self.check(shared)
+                with self.assertRaises(s.GateError):
+                    self.check(dict(shared, requested_effort='medium', effort='medium'))
+        # Old receipts are not retroactively reclassified as shared reviews.
+        self.check(dict(reviewer(), provider='xai'))
+
+    def test_shared_role_requires_matching_provider(self):
+        for provider, role in [('anthropic', 'grok'), ('xai', 'gemini'),
+                               ('google', 'grok'), ('antigravity', 'gemini'),
+                               ('xai', 'unknown'), ('xai', ['grok'])]:
+            with self.subTest(provider=provider, role=role), self.assertRaises(s.GateError):
+                self.check(dict(reviewer(), provider=provider, shared_optional_review=role))
+
+    def test_shared_review_honors_explicit_effort_and_existing_gates(self):
+        authority = self.authority(effort='low')
+        shared = dict(reviewer(), provider='xai', shared_optional_review='grok',
+                      requested_effort='low', effort='low', reviewer_effort_authority=authority,
+                      read_only_verified=True, read_only_evidence='Offline tool/isolation fixture')
+        self.check(shared)
+        for change in ({'requested_effort':'high', 'effort':'high'},
+                       {'effort_verified':False}, {'latest_ga_model_verified':False},
+                       {'context_id':'build-context'}, {'read_only_verified':False},
+                       {'author_provider':'grok'}, {'reviewer_slot':2}):
+            with self.subTest(change=change), self.assertRaises(s.GateError):
+                self.check(dict(shared, **change))
+
     def test_review_cannot_grant_or_replace_authority(self):
         for extra in ({}, {'authorized_effort':'high'}, {'expected_effort':'high'}, {'effort_authorized':True}):
             with self.subTest(extra=extra), self.assertRaises(s.GateError):
