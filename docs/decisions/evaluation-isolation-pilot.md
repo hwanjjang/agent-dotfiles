@@ -97,7 +97,8 @@ Prerequisites: Python 3.12+, an accessible existing Docker context, the official
 Codex 0.163.0 linux-arm64 musl package, and the pinned linux/arm64 Python image
 already present. Obtain the package from the
 [official release](https://github.com/openai/codex/releases/tag/rust-v0.163.0).
-The verifier checks its release digest and extracted binary digest before execution;
+The verifier copies the archive into a private open temporary file, verifies that
+copy, and extracts from the same object. It checks the extracted binary digest before execution;
 it rejects other versions and architectures. The pinned image is
 `python@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83`.
 Dependency download and VM lifecycle remain explicit operator actions.
@@ -125,7 +126,12 @@ Inspect `receipt.json` for the reason; do not retry with broader permissions.
 The outer container has network `none`, a readonly root, nonroot uid/gid, all
 capabilities dropped, no-new-privileges, and PID/memory/CPU limits. Only bounded
 `/work` and `/tmp` tmpfs paths are writable. The verifier inspects the actual Docker
-configuration before startup. The whole native process and descendants share this
+configuration before startup, including exact image ID, `runc`, private IPC/cgroup
+namespaces, default private UTS/user namespace mode, no added devices or sysctls,
+and swap disabled by a memory-swap limit equal to memory. The probe also requires
+observed seccomp filter mode 2, no-new-privileges and zero effective capabilities.
+This qualifies those observed fields, not every daemon/kernel security property.
+The whole native process and descendants share this
 boundary. It uses the official app-server `externalSandbox` contract on
 `command/exec` and `turn/start`, avoiding a redundant inner namespace sandbox;
 that API field alone does not establish isolation.
@@ -139,9 +145,12 @@ collapsed into a success inferred from process exit alone. The requested model i
 `synthetic-model`; mock token usage is not real usage or model-quality evidence.
 
 Synthetic sentinels outside the mounts remain unreachable, including symlink and
-child-process attempts; root writes return EROFS, and IPv4/IPv6 egress returns
-ENETUNREACH. Only loopback is visible. The mock owns both loopback address families
-on one port, has no upstream implementation and accepts only the synthetic model.
+child-process attempts; root writes return EROFS, and both IPv4/IPv6 TCP preflight
+and native-tool UDP egress must return ENETUNREACH (a timeout is not denial proof). Only loopback is visible. The mock owns both loopback address families
+on one port; its bound addresses and accepted request count are observed. It has
+no upstream implementation and accepts only the synthetic model. The receipt
+labels live requests structurally disabled by network-none and the fixed mock;
+it does not present a literal zero as measured provider traffic.
 Its placement inside the executor is suitable only for this credential-free test.
 An authenticated production broker must remain outside that executor and receive
 its own qualified transport and budget enforcement.
@@ -155,9 +164,15 @@ inference, complete malicious-process escape resistance and promotion remain
 outside this qualification.
 
 The parent caps transport output and wall time; the container caps memory, CPUs and
-PIDs. Cleanup force-removes only the uniquely named container and deletes its owned
-staging child. If container removal fails, the result is blocked and the staging
-path is retained for operator cleanup. Existing images, Docker contexts and VM
+PIDs. Cleanup queries the unique per-run ownership label, checks each exact
+container ID, name and label, and only then removes it. Successful removal deletes
+the owned staging child. Cleanup failure keeps the primary failure reason, records
+a separate cleanup reason, blocks qualification and retains staging. If create
+times out or transport output is cut off, a daemon could finish creation after the
+bounded cleanup query: the receipt explicitly reports uncertain cleanup and keeps
+staging even when that query is empty. Inspect only the receipt's exact ownership
+label before later operator cleanup; never remove other runs' containers. Probe
+files have explicit container-readable modes even when the operator uses umask 077. Existing images, Docker contexts and VM
 state are unchanged by the verifier. Keep receipts and raw native records private.
 
 ### Verified scope and sources
@@ -185,3 +200,14 @@ different launch context. It is not proof of an identical cause or an adopted fi
 Community evidence for this exact container workflow remains limited; selection is
 provisional with respect to community validation and rests on the documented
 contract plus the actual scoped checks above.
+
+The review correction was separately rerun with umask 077, exact image/runtime/
+namespace/swap checks, observed seccomp mode and TCP errno checks. The original
+qualification records remain historical. This PR adds both the macOS Python
+canary lane and the Linux native synthetic lane relative to its base.
+
+Boundary flag semantics were checked against Docker's [run reference](https://docs.docker.com/reference/cli/docker/container/run/),
+[seccomp guidance](https://docs.docker.com/engine/security/seccomp/) and
+[resource constraints](https://docs.docker.com/engine/containers/resource_constraints/)
+on 2026-10-18. These configuration checks and the local smoke establish this
+fixed workflow only, not general container escape resistance.

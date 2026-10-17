@@ -20,6 +20,9 @@ canary['status']=[l for l in pathlib.Path('/proc/self/status').read_text().split
 canary['interfaces']=os.listdir('/sys/class/net');canary['pid1']=pathlib.Path('/proc/1/comm').read_text().strip();canary['fixture_read']=(W/'fixture.txt').read_text()
 print(json.dumps({'preflight':canary}),flush=True)
 assert all(v!='UNEXPECTED_READ' and v!='UNEXPECTED_CONNECT' and v!='UNEXPECTED_WRITE' for v in canary.values())
+assert canary['network_2']['errno']==101 and canary['network_10']['errno']==101
+assert dict(l.split(':',1) for l in canary['status'])['Seccomp'].strip()=='2'
+assert dict(l.split(':',1) for l in canary['status'])['NoNewPrivs'].strip()=='1'
 assert canary['interfaces']==['lo'];assert any(l.startswith('CapEff:') and l.endswith('0000000000000000') for l in canary['status'])
 requests=[]
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -94,7 +97,7 @@ try:
  thread=rpc(4,'thread/start',{'model':'synthetic-model','cwd':str(W),'approvalPolicy':'never','ephemeral':True})['thread']['id']
  rpc(5,'turn/start',{'threadId':thread,'input':[{'type':'text','text':'Return the synthetic fixture acknowledgement.'}],'sandboxPolicy':policy,'approvalPolicy':'never'})
  terminal=until(lambda x:x.get('method')=='turn/completed',20)
- print(json.dumps({'summary':{'terminal':terminal,'requests':len(requests),'tool_positive':(W/'tool-positive.txt').read_text(),'tool_canaries':json.loads((W/'native-tool-canaries.json').read_text()),'dual_family_broker':True,'live_model_calls':0}}),flush=True)
+ print(json.dumps({'summary':{'terminal':terminal,'requests':len(requests),'tool_positive':(W/'tool-positive.txt').read_text(),'tool_canaries':json.loads((W/'native-tool-canaries.json').read_text()),'broker_bindings':[list(s4.server_address),list(s6.server_address)]}}),flush=True)
 finally:
  os.killpg(p.pid,signal.SIGTERM)
  try:p.wait(3)

@@ -29,3 +29,10 @@ usage. This recipe does not qualify live subscription authentication, grader or
 holdout custody, routing efficacy, promotion, Windows/WSL, or every container
 escape class. The [walkthrough](../../../manual/native-isolation.pdf) shows how to
 find this guide; its screenshot is not execution evidence.
+
+Run the focused native isolation tests for malformed records, exact ownership
+cleanup, uncertain timed-out creation, archive replacement and umask 077. In the
+actual receipt, verify image ID and namespace/resource settings; in the preflight
+record, require seccomp mode 2 and TCP errno 101 for both IP families. A constant
+zero is not a provider traffic measurement. Retain primary and cleanup reasons
+separately; uncertain cleanup must never qualify the run.
