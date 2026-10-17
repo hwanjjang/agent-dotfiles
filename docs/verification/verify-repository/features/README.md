@@ -25,3 +25,5 @@ search; those checks do not certify the original catalog viewer.
 Unmapped for the original viewer: theme, zoom, keyboard navigation, responsive layouts, all filter
 combinations, PDF generation, native client activation, MCP and constituent skill behavior.
 These require their own checks when affected; this seed does not certify them.
+
+- [Promotion recommendation](promotion-recommendation.md): deterministic evidence binding and refusal paths.

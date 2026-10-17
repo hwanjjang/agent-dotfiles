@@ -1,0 +1,20 @@
+{
+  "title": "Review development recommendations",
+  "scenario": "Python 3.11+, frozen synthetic development evidence and an unchanged source identity. No credentials, model calls or installation.",
+  "steps": [
+    {
+      "title": "Bind evidence before source review",
+      "instruction": "Open improvement-review in the map. Pass experiment, report, completions, current_spec and source_diff_digest to promotion.py recommend on stdin. Keep the experiment and current spec unchanged.",
+      "screenshot": "promotion-map.png",
+      "caption": "Actual local catalog dialog, cropped through the usage instructions.",
+      "expected": "The gate recomputes the report and binds its exact review references. It launches no model or command."
+    },
+    {
+      "title": "Read the limits before acting",
+      "instruction": "Inspect recommendation and reasons before aggregate metrics. Missing evidence remains inconclusive; forged/stale evidence or critical failures reject. Ordinary source review is still required.",
+      "screenshot": "promotion-result.png",
+      "caption": "Browser-rendered summary of the actual synthetic CLI result, not a terminal capture.",
+      "expected": "Even when synthetic arithmetic is eligible, the recommendation is inconclusive. Promotion, merge and installation remain unauthorized."
+    }
+  ]
+}

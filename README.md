@@ -272,3 +272,5 @@ Technical references:
 ## License
 
 [MIT](LICENSE).
+
+Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
