@@ -369,7 +369,7 @@
     {
       "id": "improvement",
       "title": "Self-improvement and eval",
-      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, opt-in Claude collection and the installer exist; Codex collection, model comparison and automatic promotion remain planned. Available means the source guide exists, not that its runtime is implemented.",
+      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, reviewed synthetic case export, opt-in Claude collection and the installer exist; Codex collection, model comparison and automatic promotion remain planned. Available means the source guide exists, not that its runtime is implemented.",
       "items": [
         "observation-store",
         "improvement-case",
@@ -414,7 +414,7 @@
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
     "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting.",
     "observation-store": "Step 1: collect opted-in observations, bind selected events to a task, record feedback and revoke private evidence. Codex collection remains planned.",
-    "improvement-case": "Task binding and explicit feedback exist; reviewed case export and triage automation remain planned.",
+    "improvement-case": "Step 2: prepare explicit synthetic inputs from selected task feedback, inspect the counterpart, review the exact digest and export a development case. Automatic triage remains planned.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
     "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",
     "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
@@ -517,7 +517,7 @@
     "planning-hooks": "selected-plan lifecycle hooks",
     "reviewer-runtime": "reuse routes and diagnose failures",
     "observation-store": "1. Observe / task feedback",
-    "improvement-case": "2. Case / planned export",
+    "improvement-case": "2. Case / reviewed export",
     "improvement-candidate": "3. Candidate / manual",
     "improvement-eval": "4. Eval / planned",
     "improvement-review": "5. Review / planned gate",

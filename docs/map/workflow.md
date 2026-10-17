@@ -56,8 +56,8 @@ header for the cycle and each node for its status, handoff and source. Search
 
 This is a separate improvement cycle, not six new mandatory stages in the PR
 state machine. Synthetic storage, explicit task binding/feedback, opt-in Claude collection and the
-installer exist. Reviewed case export remains planned; reproduction and candidate
-editing can use existing manual methods. Codex
+installer exist. Explicit reviewed synthetic case export is available; automatic
+triage remains planned and candidate editing uses existing manual methods. Codex
 collection, comparative model trials and automatic promotion remain planned.
 The catalog's **available** status means the linked guide exists, not that every
 described runtime is implemented. Node subtitles and details state these limits.
@@ -66,7 +66,9 @@ Use the [improvement design](../decisions/account-improvement-loop.md) as the
 behavior authority and the [observation guide](../../account/observation/README.md)
 for today's runnable synthetic example and task-bind/feedback-add/task-show commands.
 The [task-feedback recipe](../verification/verify-repository/features/task-feedback.md)
-and [walkthrough](../manual/task-feedback.pdf) cover the explicit selection journey. An improvement candidate can enter the
+and [walkthrough](../manual/task-feedback.pdf) cover the explicit selection journey.
+Then follow the [reviewed-case recipe](../verification/verify-repository/features/reviewed-cases.md)
+and [case walkthrough](../manual/reviewed-cases.pdf) for prepare/show/review/export. An improvement candidate can enter the
 ordinary investigation/specification/build/review route when appropriate; eval
 adds a behavioral comparison and does not replace project tests or independent
 review. Collection consent does not authorize inference, publication or deployment.

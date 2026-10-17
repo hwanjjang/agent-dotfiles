@@ -1,0 +1,43 @@
+{
+  "captured": "2026-10-18",
+  "baseline": "48b854b",
+  "status": "historical_premerge_capture",
+  "scenario": "reviewed-cases",
+  "source_sha256": {
+    "account/observation/store.py": "2d34d53dc9ff38a8b61bede7be10d2cbf1de53c936b9b96f76c5c321c3aad7bb",
+    "account/observation/files.py": "bbab8cbee0131350719851a6f3eb126c33037aa9292eec6acad93ab0ac08ce3e",
+    "account/observation/cases.py": "2dedc5d2abfe7cdf3f6b6c054b534bf24bee0624c72ed46365a46ffa6322d095",
+    "scripts/improvement/cases.py": "8960985697e67324a1fd6abb7b905d7b17470e05c599eb55555e4169d8846add",
+    "tests/fixtures/improvement/cases/development.json": "3a2c47a3fea11e4974239a6a9d97002384bf11c1e25a3a2646f08265ad032a5d",
+    "docs/map/catalog.json": "c773c1d35b4520e76a585ff3b0e57f1a414c6cc7ace191ecd4fb627c75193833",
+    "docs/map/workflow.json": "95c791e056b4691e94859b2398de368e5441547e895e12e710bb7015fe480634"
+  },
+  "images": {
+    "reviewed-cases-map.png": "e8fe88f56116cba754fa5a5dc4c6925e666133ae8fbece011b9b9688d79e4e4f",
+    "reviewed-cases-result.png": "5097f58df5d4373ea5c84e42d8a605a82e2cedb253edabe3242bbcf8bcd54191"
+  },
+  "notes": [
+    "Actual workflow map screenshot and explicitly labeled browser-rendered summary of actual synthetic CLI results, not a terminal capture.",
+    "Four bilingual positive/adjacent-negative exports, insufficient correction, pre-review refusal, post-revoke refusal, private purge and detached synthetic artifact preservation checked.",
+    "Both final PDF pages rendered and individually viewed; text/page count checked. No model or native client run."
+  ],
+  "integration_verification": {
+    "parent_commit": "16fa81fd920a7269b321c8840a90d4803c249efc",
+    "verified": "2026-10-18",
+    "scope": "Fresh disposable prepare/show/review/export journey on the integrated candidate: four bilingual cases, missing correction, pre-review refusal, exact public digest, executable successful counterpart, revoke/purge and blocked late export. Retained screenshots/PDF depict the earlier capture and were not recaptured or relabeled as current native evidence.",
+    "source_sha256": {
+      "account/observation/store.py": "6ffb64d5a6c6ec911601790937ec21646ff06032b5cd93117ee7c5962d13b9bd",
+      "account/observation/files.py": "bbab8cbee0131350719851a6f3eb126c33037aa9292eec6acad93ab0ac08ce3e",
+      "account/observation/cases.py": "2dedc5d2abfe7cdf3f6b6c054b534bf24bee0624c72ed46365a46ffa6322d095",
+      "scripts/improvement/cases.py": "8960985697e67324a1fd6abb7b905d7b17470e05c599eb55555e4169d8846add",
+      "tests/fixtures/improvement/cases/development.json": "3a2c47a3fea11e4974239a6a9d97002384bf11c1e25a3a2646f08265ad032a5d",
+      "docs/map/catalog.json": "c773c1d35b4520e76a585ff3b0e57f1a414c6cc7ace191ecd4fb627c75193833",
+      "docs/map/workflow.json": "95c791e056b4691e94859b2398de368e5441547e895e12e710bb7015fe480634"
+    },
+    "changed_capture_source": [
+      "account/observation/store.py"
+    ],
+    "change_scope": "Inherited native process-project consent check runs before hook input reads and ledger scans. Case preparation/review/export behavior is unchanged.",
+    "result": "12 case tests, 75 observation tests, 27 installer tests, 54 account tests and 19 map tests passed; separate actual case CLI journey passed. No native/model run in this verification."
+  }
+}

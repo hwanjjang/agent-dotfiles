@@ -32,6 +32,37 @@ def check_private(fd, directory=False):
         raise UnsafeStore('unsafe_store_object')
 
 
+def export_new(destination, value):
+    """Publish a new local artifact without following links or replacing a file.
+
+    The caller holds the observation guard through this operation. The existing
+    destination directory is explicit; no directory is created or traversed by link.
+    """
+    path = Path(destination)
+    if not path.is_absolute() or any(part in {'.', '..'} for part in path.parts):
+        raise UnsafeStore('export_path')
+    parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
+    temporary = '.case-export-' + uuid.uuid4().hex
+    try:
+        for name in path.parts[1:-1]:
+            child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            os.close(parent); parent = child
+        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=parent)
+        try:
+            with os.fdopen(fd, 'wb', closefd=False) as stream:
+                stream.write(encoded(value)); stream.flush(); os.fsync(fd)
+            # Hard-link publication is atomic and refuses every existing target,
+            # including symlinks; no overwrite race is possible.
+            os.link(temporary, path.name, src_dir_fd=parent, dst_dir_fd=parent, follow_symlinks=False)
+            os.fsync(parent)
+        finally:
+            os.close(fd)
+            os.unlink(temporary, dir_fd=parent)
+            os.fsync(parent)
+    finally:
+        os.close(parent)
+
+
 class Files:
     def __init__(self, fd):
         self.fd = fd

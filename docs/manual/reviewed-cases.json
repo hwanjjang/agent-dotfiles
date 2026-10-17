@@ -1,0 +1,20 @@
+{
+  "title": "Review and export a synthetic case",
+  "scenario": "Scenario: reviewed-cases / workflow-map. Candidate based on main 48b854b, captured 2026-10-18. Use Python 3.11+, a disposable home, selected task feedback and explicitly supplied synthetic inputs. No model call is required.",
+  "steps": [
+    {
+      "title": "Inspect the case boundary",
+      "instruction": "Open docs/map/workflow.html and choose 2. Case / reviewed export. Expand its details. Follow Sources to the improvement design and the authoritative observation guide for cases.py request fields.",
+      "screenshot": "reviewed-cases-map.png",
+      "caption": "Actual map dialog: explicit case export is implemented; automatic triage and model evaluation remain planned.",
+      "expected": "A case binds one task revision and selected correction feedback. Supply the synthetic reproduction, outcome contract and successful or contrary counterpart yourself."
+    },
+    {
+      "title": "Review exact bytes, export, then revoke",
+      "instruction": "Run prepare --task with the selected revision, feedback IDs and synthetic payload, then show --task --case. Inspect every field and the counterpart. Review the exact digest with both confirmation flags; export to a new absolute path. Revoke the grant after the disposable check.",
+      "screenshot": "reviewed-cases-result.png",
+      "caption": "Selected results of actual English/Korean positive and adjacent-negative CLI runs, rendered in a browser. Not a terminal screenshot or live efficacy result.",
+      "expected": "Missing correction stays insufficient and export before review is refused. Export contains only synthetic development fields and hashes. Revoke purges private lineage and blocks later export; already detached synthetic artifacts remain."
+    }
+  ]
+}

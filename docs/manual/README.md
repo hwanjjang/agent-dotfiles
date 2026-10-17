@@ -124,3 +124,28 @@ the [task-feedback recipe](../verification/verify-repository/features/task-feedb
 owns repeatable checks. Rebuild with the screenshot-manual scripts above, replacing
 the source name with task-feedback.json. This slice does not implement reviewed
 case export, native Codex collection or comparative evaluation.
+
+## Reviewed synthetic case walkthrough
+
+The [two-page case walkthrough](reviewed-cases.pdf) follows prepare/show/review/export
+and revoke using explicit synthetic development inputs. Its
+[editable source](reviewed-cases.json), [map image](reviewed-cases-map.png),
+[CLI result image](reviewed-cases-result.png) and [capture manifest](reviewed-cases-capture.json)
+are maintained together. Captured 2026-10-18 on the candidate based on `48b854b`,
+the results image is explicitly a browser rendering of selected actual disposable
+CLI output. It is not a terminal screenshot or a native/model comparison.
+
+The retained images and PDF keep that historical capture identity. Integration onto
+feedback parent `16fa81f` preserves the corrected native pre-read consent guard;
+a fresh case CLI journey and 187 focused tests passed on the integrated candidate.
+The capture manifest records this separate verification without treating the old
+images as evidence of a new native session.
+
+The [Store guide](../../account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
+owns commands and privacy limits; the [case recipe](../verification/verify-repository/features/reviewed-cases.md)
+owns repeatable checks. Review assertions do not guarantee sanitization. Public
+cases remain development data, and automatic triage remains planned. The earlier
+task-feedback manual preserves its dated slice boundary; this case walkthrough
+documents the next slice. Both final case PDF pages were rendered and individually
+viewed, with required text/page count checked. Rebuild using the existing
+screenshot-manual commands with reviewed-cases.json and recapture after changes.

@@ -76,3 +76,8 @@ owns invocation, privacy, quota and native trust requirements.
 corrections, immutable revisions and revoke/purge through a disposable synthetic
 CLI journey. Run its separate recipe; the browser helper checks navigation only.
 The observation guide owns privacy and command fields. No model call is needed.
+
+[Reviewed cases](features/reviewed-cases.md) extends that manual journey with exact
+revision/feedback selection, explicit synthetic inputs, digest review and a
+whitelisted local export. Run the case CLI recipe separately; it does not qualify
+automatic triage, native routing, a model comparison or unseen holdout custody.

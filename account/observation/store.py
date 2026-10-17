@@ -11,7 +11,7 @@ import stat
 import time
 import uuid
 
-from .files import BusyStore, Files, ROOT, encoded
+from .files import BusyStore, Files, ROOT, encoded, export_new
 
 EVENT_LIMIT = 16384
 BATCH_LIMIT = 65536
@@ -314,7 +314,7 @@ class Store:
             row = files.read(('tasks', task_id, name), TASK_INPUT_LIMIT * 2)
             require(isinstance(row, dict) and row.get('schema_version') == 1
                     and row.get('task_id') == task_id and row.get('record_id') == name[:-5]
-                    and row.get('kind') in {'task', 'feedback'}
+                    and row.get('kind') in {'task', 'feedback', 'case', 'case_review'}
                     and integer(row.get('sequence')) and isinstance(row.get('registrations'), list)
                     and 0 < len(row['registrations']) <= 16, 'corrupt_task')
             for ref in row['registrations']:
@@ -465,6 +465,82 @@ class Store:
             if str(error) == 'task_inactive':
                 return {'status': 'disabled'}
             raise
+
+    def prepare_case(self, task_id, *, revision_id, feedback_ids, synthetic_case, request_id):
+        """Freeze explicit feedback lineage separately from caller-supplied synthetic data."""
+        from .cases import public_case
+        require(isinstance(feedback_ids, list) and 0 < len(feedback_ids) <= 16
+                and all(token(i) for i in feedback_ids) and len(set(feedback_ids)) == len(feedback_ids), 'case_feedback')
+        with self._locked() as files:
+            rows = self._task_records(files, task_id)
+            revision = next((r for r in rows if r['kind'] == 'task' and r['record_id'] == revision_id), None)
+            require(revision is not None, 'task_revision')
+            feedback = [r for r in rows if r['kind'] == 'feedback' and r['record_id'] in feedback_ids]
+            require({r['record_id'] for r in feedback} == set(feedback_ids), 'case_feedback')
+            require(all(r['revision_id'] == revision_id for r in feedback), 'case_feedback_revision')
+            if not any(r['correction'] for r in feedback):
+                return {'status': 'insufficient', 'reason': 'claim_evidence_missing'}
+            projected = public_case(synthetic_case)
+            request = dict(revision_id=revision_id, feedback_ids=feedback_ids, public_case=projected)
+            ident, previous = self._task_retry(files, task_id, rows, 'case', request_id, request)
+            if previous:
+                return dict(status='duplicate', case_id=ident, case_digest=previous['case_digest'])
+            require(len(rows) < MAX_TASK_RECORDS - 1, 'task_capacity')
+            row = dict(schema_version=1, kind='case', task_id=task_id, record_id=ident,
+                       sequence=len(rows) + 1, request_hash=digest(request),
+                       registrations=revision['registrations'], **request, case_digest=digest(projected))
+            files.write(('tasks', task_id, ident + '.json'), row)
+            return dict(status='prepared', case_id=ident, case_digest=row['case_digest'])
+
+    def _case(self, files, task_id, case_id, expected_digest=None):
+        rows = self._task_records(files, task_id)
+        row = next((r for r in rows if r['kind'] == 'case' and r['record_id'] == case_id), None)
+        require(row is not None, 'case_not_found')
+        require(digest(row['public_case']) == row['case_digest']
+                and (expected_digest is None or expected_digest == row['case_digest']), 'case_digest_mismatch')
+        # Reconstruct the projection: stored extra fields must never reach export.
+        from .cases import public_case
+        public = row['public_case']
+        projected = public_case({key: public[key] for key in (
+            'case_id', 'language', 'purpose', 'inputs', 'outcome_contract', 'counterpart')})
+        require(public == projected, 'case_projection_mismatch')
+        return rows, row
+
+    def case(self, task_id, case_id):
+        """Preview precisely the synthetic payload to review, without private lineage."""
+        with self._locked() as files:
+            _, row = self._case(files, task_id, case_id)
+            return dict(status='prepared', case_digest=row['case_digest'], public_case=row['public_case'])
+
+    def review_case(self, task_id, case_id, *, expected_digest, reviewer,
+                    synthetic_data_confirmed=False, privacy_reviewed=False):
+        require(token(reviewer), 'case_reviewer')
+        require(synthetic_data_confirmed is True and privacy_reviewed is True, 'case_review_required')
+        with self._locked() as files:
+            rows, case = self._case(files, task_id, case_id, expected_digest)
+            request = dict(case_id=case_id, expected_digest=expected_digest, reviewer=reviewer,
+                           synthetic_data_confirmed=True, privacy_reviewed=True)
+            ident, previous = self._task_retry(files, task_id, rows, 'case_review', digest(request), request)
+            if not previous:
+                require(len(rows) < MAX_TASK_RECORDS - 1, 'task_capacity')
+                row = dict(request, schema_version=1, kind='case_review', task_id=task_id,
+                           record_id=ident, sequence=len(rows) + 1, request_hash=digest(request),
+                           registrations=case['registrations'])
+                files.write(('tasks', task_id, ident + '.json'), row)
+            return dict(status='duplicate' if previous else 'reviewed', case_id=case_id, case_digest=expected_digest)
+
+    def export_case(self, task_id, case_id, *, expected_digest, destination):
+        with self._locked() as files:
+            rows, case = self._case(files, task_id, case_id, expected_digest)
+            require(any(r['kind'] == 'case_review' and r['case_id'] == case_id
+                        and r['expected_digest'] == expected_digest
+                        and r['synthetic_data_confirmed'] is True and r['privacy_reviewed'] is True
+                        for r in rows), 'case_not_reviewed')
+            destination = Path(destination)
+            require(not destination.resolve(strict=False).is_relative_to(self.root), 'export_private_store')
+            # Keep consent validation and publication under the same store guard.
+            export_new(destination, dict(case['public_case'], case_digest=expected_digest))
+            return dict(status='exported', case_digest=expected_digest)
 
     def _delete_tasks(self, files, registration_id):
         for task_id in files.names(('tasks',)):

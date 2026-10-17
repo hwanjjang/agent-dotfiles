@@ -37,5 +37,6 @@ that summary as a terminal capture or automatic privacy review. The
 
 In both generated maps, open Private observations. Usage must name task-bind,
 feedback-add and task-show; sources must reach the maintained guide. The reproduction
-node must distinguish implemented task feedback from planned case export. Codex
-collection and comparative evaluation remain planned in this branch.
+node must distinguish implemented task feedback and reviewed synthetic case export
+from planned automatic triage. Codex collection and comparative evaluation remain
+planned in this branch.

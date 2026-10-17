@@ -13,6 +13,7 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | account-verification | Diagnose setup and exercise installed sources through an actual model; optional Paseo | CLI / native clients | [Account verification](account-verification.md) |
 | native-observation | Opt in one project, verify native metadata and revoke it | Observation CLI / installer / Claude hooks | [Native observations](native-observation.md) |
 | task-feedback | Bind selected observations, record feedback and revoke private task state | Synthetic CLI / disposable home | [Task feedback](task-feedback.md) |
+| reviewed-cases | Prepare, inspect, review and export a synthetic development case | Case CLI / disposable home | [Reviewed cases](reviewed-cases.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;

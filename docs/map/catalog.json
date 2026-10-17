@@ -2468,7 +2468,7 @@
         "Bind exact events or inclusive receipt-sequence ranges across explicitly selected sessions; later events do not expand the revision.",
         "Keep symptoms, corrections, suspected causes and contrary evidence separate. Feedback is not a verified diagnosis.",
         "Revoke or expire any referenced grant to disable and purge the entire composite task and feedback.",
-        "Codex collection, reviewed case export and comparative evaluation remain planned."
+        "Reviewed synthetic case export uses the same task consent and purge owner; Codex collection and comparative evaluation remain planned."
       ],
       "outputs": [
         "Private observations, immutable task revisions and explicit feedback with evidence status; no inferred task success or improvement claim."
@@ -2588,23 +2588,30 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Task selection and feedback are available. Planned: reviewed synthetic case export and triage automation.",
+      "summary": "Explicit reviewed synthetic case prepare/show/review/export is available. Planned: automatic triage and model evaluation.",
       "when": [
         "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration."
       ],
-      "usage": "Use the observation guide task-bind, feedback-add and task-show commands before manual reproduction. Read From a recorded failure to a candidate for the proposed case boundary; no automatic diagnosis or case export is implemented in this slice.",
+      "usage": "Follow account/observation/README.md: cases.py prepare --task binds an exact task revision and selected feedback; show inspects the supplied synthetic payload; review records its exact digest; export writes a new development artifact. A selected correction and successful/contrary counterpart are required.",
       "behavior": [
-        "Separate symptoms, missing evidence and suspected causes; user feedback is not a verified diagnosis.",
-        "Include positive, adjacent-negative and bilingual cases; keep evaluator-owned holdouts separate."
+        "Keep symptoms, missing evidence and suspected causes separate; feedback is not a diagnosis. Without a selected correction, prepare returns insufficient and writes no case.",
+        "Supply synthetic inputs and outcome contracts explicitly. Inspect the exact payload and counterpart, then confirm synthetic data and privacy review against its digest.",
+        "Export only whitelisted synthetic fields and hashes; never copy private task goals, feedback, event IDs or lineage. Review flags are assertions, not automatic sanitization or identity proof.",
+        "Reject unreviewed or changed digests, existing destinations and symlink traversal. Revocation removes private case state and blocks later exports.",
+        "Public English/Korean positives and adjacent negatives remain development cases, never unseen holdouts. Existing detached synthetic exports survive private observation purge."
       ],
       "outputs": [
-        "A reviewed synthetic case and outcome contract; no automated triage claim."
+        "A locally reviewed synthetic development case with counterpart, outcome contracts and hashes; no publication, automatic diagnosis or live efficacy claim."
       ],
       "tags": [
         "self-improvement",
         "eval",
         "account",
-        "design"
+        "design",
+        "synthetic",
+        "case",
+        "review",
+        "export"
       ]
     },
     {
