@@ -227,10 +227,10 @@ transport, holdout efficacy or promotion.
 
 ### Linux offline sandbox prerequisite
 
-A later 2026-10-18 check isolated the historical Linux startup blocker from
-collector delivery. It used Ubuntu 24.04.4 LTS, Linux 6.8.0-117-generic on aarch64,
-and the official Codex 0.163.0 binary. Before the repair, native `codex sandbox`
-failed with `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`;
+A later check on 2026-10-18 KST (2026-10-17 UTC) isolated the historical Linux
+startup blocker from collector delivery. It used Ubuntu 24.04.4 LTS, Linux
+6.8.0-117-generic on aarch64, and the official Codex 0.163.0 binary. Before the
+repair, native `codex sandbox` failed with `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`;
 the bounded kernel audit recorded `net_admin` and `setpcap` denials under
 `unprivileged_userns`. The short-lived denied process was not captured in the
 parent map, so no exact parent-PID join is claimed.
@@ -258,9 +258,10 @@ namespace and stacks child execution under a capability-denying profile. It is
 not a grant limited to one task. Codex's inner sandbox and its normal
 [workspace permission profile](https://learn.chatgpt.com/docs/permissions)
 remained enabled; `kernel.apparmor_restrict_unprivileged_userns` remained 1.
-The bubblewrap package's maintainer script reapplied
-`kernel.unprivileged_userns_clone=1`, which was already the guest's value; this
-was an approved sysctl write, not a claim of zero security-setting operations.
+The bubblewrap package's maintainer script invoked a sysctl reapplication of
+`kernel.unprivileged_userns_clone=1`. The observed value stayed 1 before and after
+installation. This was an approved attempt; the script tolerates command failure,
+so a successful sysctl write was not independently observed.
 No generic profile installer or automatic account repair was added.
 
 Exactly one approved apply/check/remove invocation ran the actual native
