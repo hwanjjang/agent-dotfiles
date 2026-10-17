@@ -57,8 +57,8 @@ entry point. Local links, declared skill/policy dependencies, pinned upstream
 hashes and license notices were checked. These packages have not been tested
 through native client discovery or authenticated tracker/PR operations.
 
-The generated map contains 51 entries and 76 relationships. Its six regression
-tests and freshness check passed. The repository browser verifier passed again
+At that adoption, the generated map contained 51 entries and 76 relationships.
+Its six regression tests and freshness check passed. The browser verifier passed again
 with Playwright 1.64.1 and Chrome 155.0.8059.82. A focused browser check also searched
 and opened all four new entries, checked usage/source links and cleared the search.
 Both new skill detail captures were visually inspected; the isolated browsers
@@ -79,6 +79,37 @@ This was bounded simulated application, not a benchmark or native invocation.
 Actual history reordering/splitting, per-merge-unit execution, tree equivalence,
 remote leases, tracker publication and full SDLC orchestration were not exercised.
 No account installation, external publication or live ref mutation occurred.
+
+## Standalone specification — 2026-10-17
+
+`to-spec` brings the source total to 23. Its metadata and the SDLC entry point
+pass the strict skill validator. The extracted content contract replaces the
+SDLC spec checklist in the stage template and normative gate; the handoff and
+routing link to it. Source hashes, license bytes, relative links and declared
+policy/skill dependencies were checked. State scripts and receipt schemas did
+not change; earlier state tests are historical evidence, not a new execution.
+
+The map now contains 53 entries and 83 relationships. Six generator tests and
+freshness passed. The existing repository verifier passed with Playwright 1.64.1
+and Chrome 155.0.8059.82; a focused check covered both added entries' search,
+usage, type/status filtering, source links and search recovery. The skill screenshot
+was visually inspected and isolated browsers closed. These checks do not establish
+native skill discovery, automatic selection, tracker access or a full SDLC run.
+
+A separate agent applied `to-spec` to two synthetic requests without reading the
+research or decision note. It updated an existing fixture spec in place, retaining
+acceptance IDs and an operational note while adding the agreed date-filter change.
+It distinguished inspected source from reported behavior and left missing date
+contracts explicit. The second request produced an inline-only incomplete draft;
+it preserved the undecided recipient policy instead of inventing implementation
+readiness. No source code, tracker or SDLC state was changed. Parent inspection
+confirmed the fixture source/README hashes and reviewed the actual artifacts.
+
+This is a bounded forward check, not a general model benchmark. The evaluator
+noted that the threshold between asking and delivering a qualified draft still
+requires task judgment; both supplied requests allowed useful drafting with
+explicit gaps. No correction was needed from these cases. Full orchestrator
+execution, native discovery and external publication remain unverified.
 
 ## Scoped adoption checks
 

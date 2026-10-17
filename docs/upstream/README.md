@@ -80,6 +80,12 @@ retains one body authority, and makes source-commitment coverage explicit.
 Per-package provenance lists additional pinned method sources and their hashes.
 No stack runtime, setup skill, MCP or fixed tracker vocabulary is introduced.
 
+The [spec extraction](../decisions/spec-extraction.md) combines Matt's focused
+`to-spec` synthesis with the existing AK specification contract. The spec method
+and content checklist moved into one standalone skill; SDLC now links to it.
+Automatic issue publication, fixed labels and exhaustive story templates were
+not adopted. Current discovery and behavioral limits remain separately recorded.
+
 ## Update procedure
 
 1. Inspect the pinned origin and local adaptations before selecting a new revision.

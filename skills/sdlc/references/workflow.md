@@ -78,7 +78,7 @@ The [stage templates](../assets/stage-deliverables.md) define minimum content. R
 | triage | `R/triage.md`: source, mode, repository/base, existing changes, facts, limits, applicability → intent. |
 | intent | Canonical intent: problem, outcome, scope/exclusions, constraints, observable AC IDs, source/authority, risks/questions, revision/gate → investigation/spec and final assessment. |
 | investigation | `R/investigation.md`: question, facts versus hypotheses, code/source locations, checks/results, unknowns, implications → spec or review-only completion. |
-| spec | Canonical spec: requirements, interfaces/data, security/UX, normal/failure behavior, observability/migration, alternatives and verification strategy → design/plan/review. |
+| spec | Canonical spec produced with [to-spec](../../to-spec/SKILL.md), linked to the consumed intent/investigation revisions; assess readiness and unresolved decisions → design/plan/review. |
 | design | `R/design/`: selected architect/arena design and rationale, plus applicable Archify JSON and delivered HTML with deterministic, browser, visual-review evidence and spec/code traceability → plan/review. |
 | plan | Canonical plan plus user-scenarios JSON: user, goal, prerequisites, steps, expected/failure results, AC mapping; file operations, ordered work/dependencies, test commands, migration/rollback, blast radius, risks/rejected alternative/proof → builder/reviewer. |
 | test-design | `R/test-plan.md` and introduced test sources: AC-to-layer/scenario map, prerequisites, expected/failure outcomes, applicability and cleanup → build/self-verification. |

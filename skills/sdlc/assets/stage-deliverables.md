@@ -53,14 +53,10 @@ Every deliverable begins with:
 
 ## Specification: specs/TASK.md
 
-- Intent reference/revision and AC-to-requirement mapping.
-- Normal and failure behavior, UX and interfaces/contracts.
-- Architecture and data model; authorization/security/data handling.
-- Retries, fallbacks, external effects and relevant state/concurrency boundaries.
-- Migration/compatibility and observability (cause, action, outcome, trace identity).
-- Proportionate verification strategy and applicable test layers: reuse adequate checks, retaining essential authority, transaction-safety and critical-capability evidence; constrain unsupported capability or report it blocked.
-- Alternatives, chosen approach/reason, constraints and risks.
-- Explicit reasons for non-applicable sections; no implementation changes at this stage.
+Use [to-spec's content contract](../../to-spec/SKILL.md#content-contract) for the
+canonical specification; do not maintain a separate SDLC spec template here.
+The stage handoff records its path/revision, consumed intent/investigation
+revisions, unresolved decisions and readiness under the existing receipt contract.
 
 ## Design: reports/sdlc/TASK/design/
 
