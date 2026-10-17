@@ -1,0 +1,215 @@
+{
+  "reference_repository": "https://github.com/EricTechPro/super-board",
+  "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+  "license": "MIT",
+  "license_file": "vendor/super-board/LICENSE",
+  "reviewed": "2026-10-17",
+  "scope": "Explanatory catalog summaries for every skill. Reference maps inform the presentation; individual source records distinguish map comparisons, adopted upstream methods and local originals. Local SKILL.md files remain authoritative. Examples are illustrative, not execution evidence.",
+  "same_name_exception": "tdd appears in both reference maps. Only pstack-derived behavior is used; Matt TDD is not adopted.",
+  "entries": [
+    {
+      "id": "how",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+      "adopted_path": "pstack/skills/how",
+      "local_skill_sha256": "cfbb23ba7ae2269585dd1a06c7dbf6e27496b5e00e4f3f371b84b5c51ae017a5"
+    },
+    {
+      "id": "architect",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+      "adopted_path": "pstack/skills/architect",
+      "local_skill_sha256": "82fbc8f20caf25341283f1e11dc8376912a7bead01f3568389b1bae6b3d42ec6"
+    },
+    {
+      "id": "arena",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+      "adopted_path": "pstack/skills/arena",
+      "local_skill_sha256": "a878d8deacd161cb14631e3f9b8b78ad11df9da5824c0c34ca75ddcc2a9958bf"
+    },
+    {
+      "id": "swarm",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
+      "adopted_path": "pstack/skills/swarm",
+      "local_skill_sha256": "44a25ad4a0070d44b2427a0e9fb835cddb0ef9cb934c17d3a1b5b73f08ca4665"
+    },
+    {
+      "id": "tdd",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "09d06eb4b97a1020ab31e84030e38baf1099c7dc",
+      "adopted_path": "pstack/skills/tdd",
+      "local_skill_sha256": "8f8d5b5fee876aff9adcd37020ecf59a8f89e117dd3d8e79060ae8c3ec290d88"
+    },
+    {
+      "id": "create-verification-skill",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+      "adopted_path": "pstack/skills/create-verification-skill",
+      "local_skill_sha256": "8497a67b1ccfc3fa3d6cd2da9fd47fb8e914adaf601e398feedadae738a4875c"
+    },
+    {
+      "id": "maintain-verification-skill",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+      "adopted_path": "pstack/skills/maintain-verification-skill",
+      "local_skill_sha256": "33573a3ac687ef5c2c17204454034d4570e920b017d9f7a5a4cf4e016f788c8b"
+    },
+    {
+      "id": "make-pr-easy-to-review",
+      "reference_map": "pstack",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "101b274dd991f694e1f7024be2157e5f3adf07de",
+      "adopted_path": "cursor-team-kit/skills/make-pr-easy-to-review",
+      "local_skill_sha256": "15a4f757feae5629cacdbe739fbf54db45e0ca0f4694977b7ac53fe284c05432"
+    },
+    {
+      "id": "diagnosing-bugs",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/engineering/diagnosing-bugs",
+      "local_skill_sha256": "1d29fa7e197edac763be7f8e33da7e09430b471edd9a24e340d576907ea21789"
+    },
+    {
+      "id": "domain-modeling",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/engineering/domain-modeling",
+      "local_skill_sha256": "7b925d7b1e341a2eeae33ad68a8a8c0ab889a38ddd22a7598e4c240e5a7556a3"
+    },
+    {
+      "id": "grill-me",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/productivity/grill-me",
+      "local_skill_sha256": "5d77f1188568aedc19c5bca47e04229e2d0e6c05cce1ac0149fabb036a38e844"
+    },
+    {
+      "id": "grill-with-docs",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/engineering/grill-with-docs",
+      "local_skill_sha256": "62a982597f7f4672eeb8f084ab2fc41a25fa3711e28ac430f9a126d3d9aca439"
+    },
+    {
+      "id": "grilling",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/productivity/grilling",
+      "local_skill_sha256": "4c7dc99549e083b47989321f95d1e5f7aa62223cd06b793f95e4bd22bd7fe40f"
+    },
+    {
+      "id": "to-spec",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/engineering/to-spec",
+      "local_skill_sha256": "ca742706b121daf8eb7a720f7a1921fa631578bc9d8371356bf28c9f2e3e0019"
+    },
+    {
+      "id": "to-tickets",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/engineering/to-tickets",
+      "local_skill_sha256": "9d1d378e91e408a4a891f1ae1080038fb2e44e3a95c50373fd39d5e39edf0415"
+    },
+    {
+      "id": "writing-for-agents",
+      "reference_map": "mattpocock",
+      "reference_revision": "7d848f7555875e0f75768c9216cc3f5efbfc88f1",
+      "adopted_upstream": "https://github.com/mattpocock/skills",
+      "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
+      "adopted_path": "skills/productivity/writing-for-agents",
+      "local_skill_sha256": "abec1fdf426adc0653c4780473aaacc699b5ce06c45a2d66bb5044424e0a6b9f"
+    },
+    {
+      "id": "archify",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "66dfe99b35d7ceff95bcbdb00f138b8b3ec8094629acf69efba1eeda1013aaf3",
+      "adopted_upstream": "https://github.com/tt-a1i/archify",
+      "adopted_revision": "d5a1333d7447c866a765adac7d4d062f2f02e4d2",
+      "adopted_path": "archify"
+    },
+    {
+      "id": "code-review-and-quality",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "13c0161cef1aeb1e45234cf6b6573f0b371ec17774b411dfe3b37028bd4d8769",
+      "adopted_upstream": "https://github.com/addyosmani/agent-skills",
+      "adopted_revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+      "adopted_path": "skills/code-review-and-quality"
+    },
+    {
+      "id": "issue-writing",
+      "source_basis": "local-original",
+      "local_skill_sha256": "73663f670b8a95c7924e0bcd20c638a34475b0836b316fcdf825e5d993e43263",
+      "supporting_sources": {
+        "policies/issue-workflow.md": "77870b85dc7798f949c8069a08cdd780ba51b67fb9834c742e8ee0f52ee6e5e1"
+      }
+    },
+    {
+      "id": "planning-and-task-breakdown",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "7f4ccd39af9e818f1a3cacd0bc116f31ed854c7a4517b64f62ccc154d1256641",
+      "adopted_upstream": "https://github.com/addyosmani/agent-skills",
+      "adopted_revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+      "adopted_path": "skills/planning-and-task-breakdown",
+      "supporting_sources": {
+        "policies/pr-workflow.md": "ae3c507a4480a203a2029864691112091c88e506b0c1a8e7783c011179c4caf3"
+      }
+    },
+    {
+      "id": "planning-with-files",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "eee1b89110b84ed9500f1bfdc379daa63d11554aae3bcd28ffa2038bd8511357",
+      "adopted_upstream": "https://github.com/OthmanAdi/planning-with-files",
+      "adopted_revision": "dab9d16fbd9314448b319d112e99f497d7638d89",
+      "adopted_path": ".agents/skills/planning-with-files"
+    },
+    {
+      "id": "screenshot-manual",
+      "source_basis": "local-original",
+      "local_skill_sha256": "3aef8c9d3daf3bd623549a7a633e4d469d74c1278e5918c924e3b5269dee99b2",
+      "supporting_sources": {
+        "skills/screenshot-manual/assets/manual.example.json": "64eecd80aae92c8fbb4429b295f62454a31e287b225d1e90f40eab70437f790f"
+      }
+    },
+    {
+      "id": "sdlc",
+      "source_basis": "local-original",
+      "local_skill_sha256": "e337895e585a7fab41d24f4fd342062ca95918cd7072449f1937c35822bb2ef1",
+      "supporting_sources": {
+        "skills/sdlc/references/skill-routing.md": "e37e1e49784a7b14c5413da4ec84e4e385b80cfddfc0b10c80f55c983fb4d2b6",
+        "skills/sdlc/references/verification.md": "17179cf97c068699e93cbcc7f822157bfc26515b452099795315a5dcba4dfe8d"
+      }
+    }
+  ]
+}

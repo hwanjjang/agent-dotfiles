@@ -55,7 +55,8 @@ async function main() {
     assert.equal(await page.locator('[data-id]').count(), 0);
     await page.locator('#search').fill('create-verification-skill');
     await page.locator('[data-id="create-verification-skill"]').click();
-    assert.match(await page.locator('#detail .usage').innerText(), /Launch|launch/);
+    assert.equal(await page.locator('#detail .usage').innerText(),
+      catalog.entries.find(e => e.id === 'create-verification-skill').usage);
     await page.screenshot({path: path.join(output, 'verification-search.png'), fullPage: true});
     await page.locator('#search').fill('');
     assert.equal(await page.locator('[data-id]').count(), catalog.entries.length);

@@ -120,6 +120,9 @@ def validate(catalog, root):
                 prefix = {"policy": "policies", "skill": "skills", "mcp": "mcp"}[entry["kind"]]
                 require(Path(entry["source"]).parts[0] == prefix, f"{entry['id']}: source does not match its kind")
     require(not payload - registered, "unmapped reusable content: " + ", ".join(sorted(payload - registered)))
+    for entry in entries:
+        if "explanation" in entry:
+            validate_explanation(entry["explanation"], ids, root)
     seen = set()
     for relation in relationships:
         require(isinstance(relation, dict), "relationship: expected an object")
@@ -128,6 +131,39 @@ def validate(catalog, root):
         require(pair not in seen, "relationship: duplicate endpoints")
         seen.add(pair)
         text(relation.get("label"), "relationship.label")
+
+
+def validate_explanation(explanation, ids, root):
+    """Optional rich explanations share the catalog's public-source boundary."""
+    require(isinstance(explanation, dict), "explanation: expected an object")
+    example = explanation.get("example")
+    require(isinstance(example, dict), "explanation.example: expected an object")
+    for key in ("situation", "youType", "youGet"):
+        text(example.get(key), "explanation.example." + key)
+    for values in (example.get("whatHappens"), explanation.get("adaptation_notes")):
+        require(isinstance(values, list) and values, "explanation: expected nonempty text list")
+        for value in values:
+            text(value, "explanation text")
+    calls = explanation.get("calls")
+    require(isinstance(calls, list), "explanation.calls: expected a list")
+    require(all(isinstance(key, str) and key in ids for key in calls), "explanation: unknown called item")
+    flows = explanation.get("flows")
+    require(isinstance(flows, list) and flows, "explanation.flows: expected nonempty list")
+    for flow in flows:
+        require(isinstance(flow, list) and flow, "explanation.flow: expected nonempty list")
+        for step in flow:
+            text(step, "explanation.flow step")
+            require(not step.startswith("@") or step[1:] in ids, "explanation: unknown flow item")
+    sources = explanation.get("sources")
+    require(isinstance(sources, list) and sources, "explanation.sources: expected nonempty list")
+    for source in sources:
+        require(isinstance(source, dict), "explanation.source: expected an object")
+        text(source.get("label"), "explanation.source.label")
+        require(("source" in source) != ("url" in source), "explanation.source: provide one path or URL")
+        if "url" in source:
+            public_url(source["url"])
+        else:
+            require(source_path(root, source["source"]).is_file(), "explanation.source: expected file")
 
 
 def render(catalog, template, root):

@@ -1,0 +1,20 @@
+{
+  "title": "Choose a skill with the AK SDLC map",
+  "scenario": "Scenario: workflow-map. Open docs/map/workflow.html locally in a browser. No server or installed skill is needed to explore.",
+  "steps": [
+    {
+      "title": "Follow a stage and choose a method",
+      "instruction": "Find the Intent column in the canvas. Use + or wheel zoom if needed. Choose grill-me for a lightweight interview, or grill-with-docs when domain documents are needed. Open the chosen node.",
+      "screenshot": "workflow-stage.png",
+      "caption": "The actual grill-me detail dialog from the shared super-board map engine.",
+      "expected": "When to use it explains the trigger. Expand How it works for usage, results and AK adaptations; Example for a concrete request; Sources for the authoritative skill. Escape closes the dialog."
+    },
+    {
+      "title": "Find a skill by its trigger",
+      "instruction": "Search for glossary. Matching nodes remain bright while other nodes dim. Open domain-modeling in the Anytime band. Clear search to restore the full map.",
+      "screenshot": "workflow-trigger.png",
+      "caption": "The actual domain-modeling detail dialog. This method can be used across stages.",
+      "expected": "The dialog explains its trigger. Expand Sources to reach skills/domain-modeling/SKILL.md. A direct bookmark is workflow.html#skill-domain-modeling."
+    }
+  ]
+}
