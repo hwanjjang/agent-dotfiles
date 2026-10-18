@@ -369,10 +369,13 @@ links identify the next consumers; they do not describe implemented commands.
 | Same-host held-out evaluation and recommendation | [#56](https://github.com/hwanjjang/agent-dotfiles/issues/56) supplies frozen case/exposure evidence to [#28](https://github.com/hwanjjang/agent-dotfiles/issues/28) |
 | Disposable delivery mechanics and accepted-source proof | [#57](https://github.com/hwanjjang/agent-dotfiles/issues/57) verifies mechanics; [#29](https://github.com/hwanjjang/agent-dotfiles/issues/29) requires an actually eligible, reviewed and accepted committed candidate |
 
-The runner currently retains typed execution/usage/cleanup facts, not general task
-answers or result artifacts. Its `completed_ungraded` status is not an evaluator
-completion. Collection and trusted admission must connect those components before
-an actual comparison can pass. Changed runtime sources require renewed affected
+The runner retains typed execution/usage/cleanup facts and, when explicitly
+declared, bounded artifact metadata/hashes with present or missing observations.
+The [collection guide](../native-trials.md#declare-bounded-output-collection) owns
+that implemented contract and its current source-bound limits. No artifact bodies
+or general final-answer text are retained. `completed_ungraded` is not an evaluator
+completion; trusted actual-evidence admission must still connect the components
+before an actual comparison can pass. Changed runtime sources require renewed affected
 qualification; historical qualification cannot be relabeled as current evidence.
 
 The development pilot must use the requested and observed native-client model selection,

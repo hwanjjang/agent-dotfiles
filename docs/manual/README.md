@@ -256,3 +256,25 @@ boundary and an actual synthetic Store export -> freeze -> prepare journey. Imag
 are browser renderings of sanitized CLI summaries, not terminal or model captures.
 The [preparation guide](../decisions/frozen-trial-dispatch.md) owns the contract;
 actual trial execution and evidence admission remain separate.
+
+## Optional native outcome collection walkthrough
+
+The [two-page walkthrough](native-outcome-collection.pdf),
+[editable source](native-outcome-collection.json) and
+[capture manifest](native-outcome-collection-capture.json) cover the optional
+trial-only declaration, actual check refusals and three credential-free native
+collection cases. The [check image](native-outcome-collection-check.png) and
+[result image](native-outcome-collection-result.png) are actual browser renders
+of sanitized recorded results, not terminal or model-performance captures.
+Source bytes match checkpoint `1d831bf6e62e`; the native runs occurred before
+that commit and were independently matched afterwards. Earlier trial manuals
+retain their own historical qualification boundaries.
+
+Both PDF pages were rendered with PDFium and visually inspected; text and page
+count were checked with pypdf. The initial clipped summary capture was corrected
+and both final browser captures passed overflow checks. No authentication, model
+inference, evaluator admission or account activation was performed by this
+documentation workflow. The [native guide](../native-trials.md) owns commands
+and limits; the [verification recipe](../verification/verify-repository/features/native-trials.md)
+owns repeatable checks. Rebuild with the screenshot-manual scripts above using
+`native-outcome-collection.json`, and recapture when the documented behavior changes.

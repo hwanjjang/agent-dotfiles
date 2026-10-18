@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "kind": "native-outcome-collection-qualification",
+  "observed_date": "2026-10-18",
+  "status": "credential_free_collection_verified",
+  "status_authority": "private coordinator attestation; public native fixture statuses retained separately",
+  "profile": "codex-0.163-macos-arm64-linux-arm64-v1",
+  "source_digests": {
+    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "d592eaacc73ab515ba4918543994e363063ccb3b5011b1ab811864896f3d5287",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "9c57754e45fe72229811734bb2bef07ac7c6289e42ab70a1064315fbed0a2ccd",
+    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+  },
+  "runtime_digests": {
+    "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
+    "codex": "8813367285524ac798dd96d1b071aea30d58708c7226fd236cd275cf1cfdee31",
+    "docker": "5a7f2e9607d759d0ec5c35810c9548b67e1d78daa44861516e47037d7ac3bfcd",
+    "executor_archive": "9d8ecf2d19d3e184877983902d6c85de48b3888dcb72c382a8a0c975845927fb"
+  },
+  "image_digest": "sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
+  "cases": [
+    {
+      "case": "present-missing",
+      "manifest_digest": "6584e629c888ac79e7cb9bad8a550679138ef3864df899b1fb557c8705e8551b",
+      "expected_runtime_behavior_observed": true,
+      "native_fixture_status": "mock_complete",
+      "native_terminal_completed": true,
+      "initial_turn_requests_attempted": 1,
+      "initial_turns_acknowledged": 1,
+      "collection_status": "captured",
+      "collection_reason": null,
+      "snapshot": {
+        "files": [
+          {
+            "bytes": 23,
+            "path": "result.txt",
+            "sha256": "098ccfb09158f6e33cdcfd02c7977eb97f3c76dc0473daac926721e2962db260",
+            "status": "present"
+          },
+          {
+            "bytes": null,
+            "path": "missing.txt",
+            "sha256": null,
+            "status": "missing"
+          }
+        ],
+        "kind": "bounded_artifact_snapshot",
+        "quiescent_state_verified": false,
+        "reason": null,
+        "schema_version": 1,
+        "status": "captured"
+      },
+      "protected_owner_files_unchanged": true,
+      "cleanup_and_fixture_root_absent": true,
+      "independent_process_groups_containers_volumes_control_absent": true,
+      "vm_restored_stopped": true,
+      "private_artifact_digests": {
+        "coordinator": "d7ae602d6c3f5ce14d6325b5cac1de9acca19ca0e7beec51191fed8e53b5c21b",
+        "bridge": "809dd70bc49a9f4c12de2bb868e7e69d3e603476a4cf6ea8b8cdbab1be77ad73",
+        "manifest": "539f42185ce76c7889ce415e5a31ec3e4824d14635779b8d93e6b0fc402e9e82",
+        "scope": "5357982c64004dbc2e56a81f7b65fccc06f1eff6d1c45729a3110a00af6fde76",
+        "outer_audit": "064314e0ede5873469fc8cb5c8b298754f260376fc379e262901718cf8159256",
+        "inner_receipt": "3dd1b34ebec27b56dee962d26cda0eaef029e2d127d7e6496c51f2d36d9eb083",
+        "collection_receipt": "7ec1e3f4c72853c9de3839ae65e01ce4041b17381da0a7e76e9958130dad8d7b"
+      }
+    },
+    {
+      "case": "unsafe",
+      "manifest_digest": "af59c770e659f098bff9798a00cae677dda46f5dda483e49db7a099d4e06cd59",
+      "expected_runtime_behavior_observed": true,
+      "native_fixture_status": "mock_complete",
+      "native_terminal_completed": true,
+      "initial_turn_requests_attempted": 1,
+      "initial_turns_acknowledged": 1,
+      "collection_status": "blocked",
+      "collection_reason": "unsafe_path",
+      "snapshot": {
+        "files": [],
+        "kind": "bounded_artifact_snapshot",
+        "quiescent_state_verified": false,
+        "reason": "unsafe_path",
+        "schema_version": 1,
+        "status": "blocked"
+      },
+      "protected_owner_files_unchanged": true,
+      "cleanup_and_fixture_root_absent": true,
+      "independent_process_groups_containers_volumes_control_absent": true,
+      "vm_restored_stopped": true,
+      "private_artifact_digests": {
+        "coordinator": "d7ae602d6c3f5ce14d6325b5cac1de9acca19ca0e7beec51191fed8e53b5c21b",
+        "bridge": "64d3099d3897e2e70f332a081797e0cc79c550f0e1c4155321f78f29b090e844",
+        "manifest": "887f1b3471789a7a06332d4988135877b44b568274f4ef4d5b4c3b8e6b16f8d1",
+        "scope": "8365a4da3cd08f1b523ae8dcbd091f74da5db8e38fea5fce8db71a4385ccd432",
+        "outer_audit": "452963127b8eec074be74db7b25457577d44c7fe03de2db087ea84812eca1580",
+        "inner_receipt": "d4006898e80701c4a81500887dd4ee5cfc1c5eb6c3f6efa0be4fd1cf3e408a11",
+        "collection_receipt": "cc57988961d865cf8402c6b4e5a7645a2619c372c65b4e35e7ea1cda4b885b06"
+      }
+    },
+    {
+      "case": "interrupted",
+      "manifest_digest": "59900b855aa8c4f6d0786d881a60516ccdf36e45673fdf7bcd26c6e3312ee0f1",
+      "expected_runtime_behavior_observed": true,
+      "native_fixture_status": "blocked",
+      "native_terminal_completed": false,
+      "initial_turn_requests_attempted": 1,
+      "initial_turns_acknowledged": 1,
+      "collection_status": "captured",
+      "collection_reason": null,
+      "snapshot": {
+        "files": [
+          {
+            "bytes": 23,
+            "path": "result.txt",
+            "sha256": "098ccfb09158f6e33cdcfd02c7977eb97f3c76dc0473daac926721e2962db260",
+            "status": "present"
+          },
+          {
+            "bytes": null,
+            "path": "missing.txt",
+            "sha256": null,
+            "status": "missing"
+          }
+        ],
+        "kind": "bounded_artifact_snapshot",
+        "quiescent_state_verified": false,
+        "reason": null,
+        "schema_version": 1,
+        "status": "captured"
+      },
+      "protected_owner_files_unchanged": true,
+      "cleanup_and_fixture_root_absent": true,
+      "independent_process_groups_containers_volumes_control_absent": true,
+      "vm_restored_stopped": true,
+      "private_artifact_digests": {
+        "coordinator": "d7ae602d6c3f5ce14d6325b5cac1de9acca19ca0e7beec51191fed8e53b5c21b",
+        "bridge": "437db0f77d2c6b49367fb163381ada338da50a3c0b7bda4cb24db2732aef2c0a",
+        "manifest": "9a3493bf1b0b711b47b8100552854f1bed81f9c45dd74a1705b4fa1a1746f913",
+        "scope": "6cce50189097ce95162d0b89387c00644e0fc3cb848cf998d9d665102702c262",
+        "outer_audit": "541f6b26f555d411dd7ecab9e17a14b3a237c6b10b637143851617dc05c57d40",
+        "inner_receipt": "af551885b872ee733cf7e7b5cacfee453aa200a6e711be96a8540cc39e914123",
+        "collection_receipt": "310cc1fcfffa5d19beda0e98e66ce7f5345abc54479878bb82e29bd6c146cdcd"
+      }
+    }
+  ],
+  "collection_contract": {
+    "schema_version": 1,
+    "paths": [
+      "result.txt",
+      "missing.txt"
+    ],
+    "max_file_bytes": 65536,
+    "max_total_bytes": 262144
+  },
+  "execution": {
+    "model_calls": 0,
+    "authentication_read_or_copied": false,
+    "actual_inference": false,
+    "authenticated_current_sources_qualified": false,
+    "live_eligible": false,
+    "backend_model_identity_verified": false
+  },
+  "boundary": {
+    "tested": "remote fixed native task and explicit child, then fixed collector in same owned executor",
+    "trusted_host_controller_and_scorer_access": "retained",
+    "no_new_host_account_custodian_environment": true,
+    "actual_collector_executable": "/usr/local/bin/python3 -I -S",
+    "native_only_declared_paths_maximum": 8,
+    "capture_seconds_maximum": 5,
+    "remaining_cleanup_seconds_reserved": 20,
+    "capture_requires_remaining_cleanup_seconds": 25,
+    "quiescent_state_verified": false
+  },
+  "failure_history": [
+    "An older3-case preparation was superseded before execution after collector review; no native result claimed.",
+    "First corrected-source bridge attempt failed before setup/native launch because it appended text to bytes. Owned control was removed, no native process/container/volume was created and VM restored Stopped. That blocked record is retained; fixed ASCII-byte bridge uses a new frozen schedule."
+  ],
+  "limits": [
+    "Fixed synthetic task writes an artifact through an actual native tool call; no paid model performance or answer correctness is established.",
+    "Observed missing file is distinct from unavailable capture; interrupted task can still have a captured file and must remain blocked for task success.",
+    "All snapshots are bounded per-file observations, not atomic/quiescent final state.",
+    "Public fixed boundary fixture remains mock_complete or blocked; outer ownership/cleanup is a separate private attestation, not a public qualification status.",
+    "Exact12-source credential-free profile only. Earlier11-source authenticated qualification is historical and does not qualify these changes.",
+    "Task-outcome evaluator admission, aggregate execution reservation, natural routing, held-out comparison and promotion remain separate."
+  ],
+  "source_checkpoint": "1d831bf6e62e5656ca091cb5d8af1588e7480b3c",
+  "source_checkpoint_note": "Source bytes were exercised before this checkpoint commit; all 12 runtime digests were independently matched afterwards. This is not a claim that the smoke ran at that Git HEAD."
+}
