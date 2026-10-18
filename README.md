@@ -166,6 +166,8 @@ p95 latency and its reference-host limit. Delivery identity never implies exact 
   future work. Prefer a structural fix or an executable check when it can prevent
   a recurring mistake.
 
+[Pull request CI](.github/README.md) documents the repository checks and their scope.
+
 ## Working loop
 
 ```text
