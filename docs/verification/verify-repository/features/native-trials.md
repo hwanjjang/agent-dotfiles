@@ -152,10 +152,17 @@ collection gating is unit-tested, not covered end to end by that native fixture.
 
 Use the [single routing/model contract](../../../decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 for plan catalogs, natural versus forced mode, finalized record order and admission.
-Run `test_native_routing.py` and `test_trial_admission.py` with the existing
-unit-test runner. These synthetic stream/journal checks cover receiver completion,
+Run `test_native_routing.py`, `test_native_routing_metadata.py` and
+`test_trial_admission.py` with the existing unit-test runner. These synthetic stream/journal checks cover receiver completion,
 healthy-none versus unknown, model selection and source/profile binding; they are
 not current native qualification. Before an authorized actual run, preserve the
 frozen catalog, exact source/runtime profile and explicit scope. A first-page read
 signal is not all-page reading, semantic adherence or outcome correctness. Keep
 historical evidence tied to its original bytes; no changed-source proof is implied.
+
+Verify owned-group signaling is attempted before leader reap even after graceful
+EOF; EOF alone cannot establish descendant absence. Retain signal errors and the
+primary stop reason. Exercise descendant-held pipes, bounded drain/stream failures
+and unsupported frontmatter grammar with those focused tests. The
+[source-backed routing workflow](../../../architecture/native-routing-workflow.html)
+pins its inspected source revision; its browser checks do not qualify native execution.
