@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>SDLC native execution excerpt</title><style>body{background:#f4f6fa;color:#17243b;font:20px/1.5 system-ui;margin:36px}h1{font-size:28px}small{color:#53647d}pre{white-space:pre-wrap;background:white;border:1px solid #ccd6e4;padding:22px;border-radius:10px;font:17px/1.55 ui-monospace,monospace}</style><h1>Clarify a request before dependent implementation</h1><small>Actual native run excerpt · Claude Sonnet 5.5 · 2026-10-18 · local synthetic project</small><h2>Request</h2><pre>Use sdlc to handle issue.md. Prepare what is needed next; implementation is authorized only for settled requirements.</pre><h2>Observed answer (excerpt)</h2><pre>I read the issue, the code and the intake and routing rules, and I&#x27;m now at the intent stage. The issue leaves the requirements open, so I&#x27;m not implementing yet.
+
+**Findings**
+- `taskboard.py` has only `select_tasks(tasks, status=None)`. It returns a copy of the list and ignores `status`.
+- The one existing test checks that a copy is returned.
+- Tasks in the tests are dicts like `{&quot;id&quot;: 1, &quot;status&quot;: &quot;open&quot;}`. There are no priority, due-date or other fields to define &quot;important&quot; from.
+- There is no `docs/spec.md` or `docs/plan.md`.
+- The issue says &quot;important&quot; and the default ordering are undecided, and the code can&#x27;t settle either. Implementation is therefore not authorized yet.
+- I haven&#x27;t run the tests. The shell blocked the compound command, so I didn&#x27;t retry it.
+
+**Stage:** intent (grill-me, via the grilling skill). Endpoint is local, plan-only until these are settled. Nothing was written or persisted.</pre>
