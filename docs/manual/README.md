@@ -170,3 +170,7 @@ page count were checked with pypdf. The first image is an actual catalog dialog;
 the second explicitly renders the actual synthetic CLI result in a browser. Neither
 image demonstrates native model execution. Rebuild with the screenshot-manual
 scripts above using `evaluation.json`; refresh its capture manifest after changes.
+
+## Development recommendation
+
+[promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive.

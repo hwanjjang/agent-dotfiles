@@ -369,7 +369,7 @@
     {
       "id": "improvement",
       "title": "Self-improvement and eval",
-      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, opt-in Claude/Codex collection, offline evaluation accounting and the installer exist; live model comparison and automatic promotion remain planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
+      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, opt-in Claude/Codex collection, offline evaluation accounting, diagnostic recommendations and the installer exist; live model comparison and automatic promotion remain planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
       "items": [
         "observation-store",
         "improvement-case",
@@ -418,7 +418,7 @@
     "improvement-case": "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration. Planned: turn bounded observations and feedback into a synthetic reproducible case.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
     "improvement-eval": "Offline accounting is available for supplied synthetic completions; a live runner and independent holdout qualification remain planned.",
-    "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
+    "improvement-review": "Diagnostic recommendations are available for development reports; the live promotion gate and operational eligibility remain unavailable.",
     "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned.",
     "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement.",
     "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted container."
@@ -522,7 +522,7 @@
     "improvement-case": "2. Case / planned",
     "improvement-candidate": "3. Candidate / manual",
     "improvement-eval": "4. Eval / offline",
-    "improvement-review": "5. Review / planned gate",
+    "improvement-review": "5. Review / diagnostic",
     "improvement-deploy": "6. Deploy / installer exists",
     "account-doctor": "Account doctor",
     "native-isolation": "Native isolation / synthetic"

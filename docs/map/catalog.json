@@ -2666,18 +2666,21 @@
       "kind": "guide",
       "group": "start",
       "status": "available",
-      "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Existing review methods support a planned promotion gate for skill improvements.",
+      "source": "docs/decisions/promotion-recommendations.md",
+      "summary": "Recompute development evidence and return a bounded source-review recommendation; operational eligibility remains unavailable.",
       "when": [
-        "A comparison proposes changing the source used by future account tasks."
+        "A frozen development comparison needs a reproducible reject/inconclusive recommendation before source review."
       ],
-      "usage": "Use independent review of the exact candidate and sanitized comparison evidence; the automated promotion gate is not implemented.",
+      "usage": "Run promotion.py recommend with experiment, report, completions, current_spec and source_diff_digest. It never merges or installs.",
       "behavior": [
-        "Require the predeclared target benefit, no observed critical violations and qualified holdout evidence.",
-        "Unclear results retain the current version; changed candidate or evaluator inputs invalidate corresponding evidence."
+        "Recompute the complete evaluation report and bind baseline/candidate/experiment/report/source-diff references.",
+        "Apply the frozen primary metric, per-case regression margin and explicit token/time rule; candidate critical failures reject despite aggregate gain.",
+        "Expose critical counts by arm: baseline defects remain diagnostic when the candidate fixes them; only candidate critical violations reject.",
+        "Unknown usage and incomplete trials remain inconclusive. Currency is required only when the frozen rule explicitly declares it.",
+        "A positive synthetic arithmetic result does not establish live evidence or independent holdout custody; promotion_eligible, merge_authorized and install_authorized stay false."
       ],
       "outputs": [
-        "A reviewed recommendation bound to the tested identity, not permission to merge or deploy."
+        "Reject or inconclusive recommendation with fixed reasons and canonical source/evidence references."
       ],
       "tags": [
         "self-improvement",
