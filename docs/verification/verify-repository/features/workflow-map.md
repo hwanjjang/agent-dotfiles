@@ -42,8 +42,9 @@ server or account configuration is installed.
    Inspect **Self-improvement & eval (1-6)** as a separate numbered cycle:
    observation, reproduction, candidate, eval, review and deployment. Check each
    node's source and capability boundary: synthetic storage, explicit task feedback,
-   reviewed synthetic case export and installer exist; Claude/Codex collection has
-   separate consent/native-trust boundaries. Automatic triage, model comparison and
+   reviewed synthetic case export, offline evaluation accounting, diagnostic recommendations
+   and the installer exist; Claude/Codex collection is available with separate
+   consent/native-trust boundaries; automatic triage, live model comparison and
    automatic promotion remain planned.
    Search `eval` and confirm the comparison node stays visible. These nodes must
    not add mandatory PR state-machine stages.

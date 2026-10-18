@@ -27,11 +27,11 @@ The caller supplies the current spec; this pure program does not inspect Git or
 prove that a self-declared tree hash matches a checkout. A trusted operational
 verifier is still required before real eligibility can be supported.
 
-The inherited evaluation contract explicitly identifies its export producer as
-an out-of-tree, unmerged PR #35 dependency. This recommendation slice does not
-land that producer or complete its integration prerequisite. It consumes supplied
-development evidence only; see the linked contract for the pinned source revision
-and compatibility limits.
+The in-tree evaluation contract consumes the reviewed Store export from PR #35,
+integrated by PR #40. This pure recommendation slice still consumes supplied
+development evidence only. Producer integration does not establish authenticated
+live evidence, independent holdout custody or operational eligibility; see the
+linked contract for producer validation and compatibility limits.
 
 ## CLI refusal contract
 

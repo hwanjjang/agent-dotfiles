@@ -74,8 +74,8 @@ four Codex observer commands; Codex requires native trust of its new definitions
 The selection enables one client per account; `--observation-registration none` removes
 only that delivery. Grants and records remain under the observation CLI's ownership.
 The [native qualification matrix](observation/native.md#qualification-and-references)
-separates macOS callback proof from Linux tool/authentication blockers. Comparative
-evaluation is not implemented.
+owns per-client, source-bound callback results, interruption limits and remaining
+platform gaps. Comparative evaluation is not implemented.
 
 ```sh
 # Opt in only if Hermes is already installed on this host.

@@ -56,11 +56,12 @@ header for the cycle and each node for its status, handoff and source. Search
 
 This is a separate improvement cycle, not six new mandatory stages in the PR
 state machine. Synthetic storage, explicit task binding/feedback, opt-in Claude/Codex
-collection and the installer exist. Evidence-bound caller triage and reviewed
-synthetic case export are available; candidate editing uses existing manual methods.
-Codex adds four separately trusted observer definitions; the native guide owns
-platform proof and blockers. Automated diagnosis, comparative model trials and
-automatic promotion remain planned.
+collection, offline evaluation accounting, diagnostic recommendations and the installer
+exist. Evidence-bound caller triage and reviewed synthetic case export are available;
+reproduction and candidate editing can use existing manual methods. Codex adds four
+separately trusted observer definitions; the native guide owns platform proof and
+blockers. Automated diagnosis, live comparative model trials and automatic promotion
+remain planned.
 The catalog's **available** status means the linked guide exists, not that every
 described runtime is implemented. Node subtitles and details state these limits.
 

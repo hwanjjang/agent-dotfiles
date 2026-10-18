@@ -3,11 +3,11 @@
 This is the private storage foundation of the [account improvement loop](../../docs/decisions/account-improvement-loop.md).
 It implements a local store, a synthetic adapter and a manual maintenance CLI.
 The optional [native adapters](native.md) reuse this store with separate
-project consent and installer registration. Explicit task selections, feedback and
-reviewed synthetic development-case exports are available through the manual CLI.
-The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
+project consent and installer registration. Explicit task selections and feedback
+are available through the manual CLI, with explicit reviewed synthetic case export.
+Live comparative evaluation remains later work. The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
 owns source-bound results and remaining environment, subagent and delivery gaps.
-Comparative model execution remains planned. The store never inspects transcripts,
+The store never inspects transcripts,
 runs models, changes skills, registers hooks or writes installer state.
 
 Use Python 3.11+ on a local POSIX filesystem, matching the [account installer](../README.md).
