@@ -68,17 +68,20 @@ Public cases remain development data. For unseen-by-author evaluation use the
 Historical manuals/diagrams retain their capture/source provenance; they do not
 establish current authenticated qualification or these additional predicates.
 
-## Next consumer: evaluation
+## Offline artifact admission
 
-The [implementation handoff](decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
-tracks bounded task-result collection and trusted evaluator admission separately.
-With an explicit optional collection declaration, receipts now retain selected
-artifact metadata and byte hashes. They contain no artifact bodies or general final
-answer text. Collection is not a graded completion and cannot be relabeled as
-synthetic comparison evidence; trusted actual-evidence admission remains pending.
-The development pilot's identity requirement covers observed native-client model
-selection and reroute checks; it does not change this runner's explicit unknown
-backend identity or qualify natural routing.
+The [admission contract](decisions/evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
+connects exact recorded artifact collections to the existing evaluator through
+`trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
+the reader checks frozen attempt, dispatch, source, collection and maintained
+qualification bindings. Current authenticated qualification has not been renewed
+for the collection sources, so real admission remains blocked. The reader does
+not execute or recover trials; preserve failed attempts and unknown costs.
+
+Matching artifact bytes do not establish natural routing, exposure or general task
+correctness. Source-guarded protocol evidence is not an exported selected-model
+observation. Explicit observed-model export and serial launch reservations remain
+separate work before actual comparisons. Backend identity remains unknown.
 
 ## Prepare a frozen plan
 
