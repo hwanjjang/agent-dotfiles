@@ -167,6 +167,9 @@ source has focused or synthetic checks.
 | Linux aarch64, Claude Code 2.1.302, historical pre-guard | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
 | macOS, optional Paseo 0.11.4 / Codex 0.163.0 / GPT-6-Luna low, source `70ec2e9` | Baseline: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; native shell exits 0, 0, 3 | PostToolUse outcomes remain unknown; this bounded task does not establish effective exposure or complete delivery |
 | Same Paseo agent, planned interruption at source `70ec2e9` | Native `turn_aborted` with reason `interrupted`; one additional PreToolUse, no corresponding PostToolUse or Stop | The shell continued after the turn aborted and exited 0 with its finished marker; cancellation is not process-kill proof, and missing callbacks remain visible |
+| Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, source `329dd76` | Authenticated baseline: SessionStart 1, PreToolUse 2, PostToolUse 2, Stop 1; synthetic read/write and native exits 0 and 3; planning marker injected | Two tool-end statuses remain unknown; one bounded task after a separately approved temporary prerequisite, not complete delivery or efficacy |
+| Same Linux source, separate interruption session | Native `turn_aborted` with reason `interrupted`; SessionStart 1 and PreToolUse 1, no PostToolUse or Stop | The command continued and wrote its finished marker after abort; its final process exit was not observed; an additional read of owned distributed instructions is disclosed below |
+| Linux aarch64, Claude Code 2.1.302, source `329dd76` | Credential-free initialization and one SessionStart; fresh auth check after the approved file copy returned `loggedIn=false` | No Haiku model invocation, tool or Stop qualification; no authentication retry, new login or Keychain extraction |
 | Native provider-created subagents, any client | No actual native-child collection scenario has run | Actor/parent remain unknown; do not infer parentage from nearby records or Paseo's worker ownership |
 | WSL | No test host was available | Unverified; no WSL native collection claim |
 
@@ -202,7 +205,7 @@ and installed-dispatcher checks separately exercise rejection outside that root.
 The earlier macOS fixture `92ced4083df43a79098f220a087ef3a114d3a3b7` and Linux
 fixture `c94143ba41b050bd52701a59b1b9f167e17366c9` predate that guard. The Linux
 results remain historical partial coverage, not qualification of corrected Linux
-runtime. None of these runs automatically qualifies later capacity or attribution
+runtime; the separate source `329dd76` qualification below does not rewrite them. None of these runs automatically qualifies later capacity or attribution
 changes. The fresh macOS intentional shell exit 3 still produced unknown observer
 tool-end status; nested execution IDs were not joined into per-tool proof. Linux's
 unequal start/end counts remain visible instead of being labeled full coverage.
@@ -280,8 +283,8 @@ files and processes were absent, Docker context remained unchanged, and both
 verification guests were confirmed stopped after cleanup. This restores the
 checked runtime state, not a forensic disk snapshot: package-manager logs,
 audit records and cache metadata can remain. The earlier failed receipts and
-historical model/callback counts were preserved. A fresh authenticated collector
-run after the prerequisite repair is still unqualified.
+historical model/callback counts were preserved. This offline check did not qualify
+authenticated collection; the later source-bound run below provides separate evidence.
 
 The pinned [Codex Bubblewrap selection implementation](https://github.com/openai/codex/blob/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/sandboxing/src/bwrap.rs)
 was inspected alongside the vendor bytes. A
@@ -292,6 +295,54 @@ failures affecting other Bubblewrap users. Those different clients and versions
 do not establish universal compatibility or community consensus. The bounded
 trial supports this exact guest setup; broader community validation remains
 limited.
+
+### Linux authenticated collector qualification
+
+A separate run on 2026-10-18 KST/UTC exercised committed source
+`329dd76749b4bfa50e3ed066d8177b73204bd71d` in an exclusive Ubuntu guest with
+host mounts disabled. The earlier package/profile identities above were rechecked
+against signed Ubuntu metadata. A fresh credential-free native canary reproduced
+the startup failure on this guest before the separately approved temporary
+prerequisite was applied. After application, the offline read/write and denial
+canaries passed, and the authenticated Codex baseline ran with its native
+workspace-write sandbox and tool network disabled. Actual session context recorded
+`gpt-6-luna` with low reasoning; native tool results recorded exits 0 and 3.
+The planning marker was present in injected context, and six collector records
+arrived. Both PostToolUse records retained unknown outcome despite the native
+trace's known exit codes.
+
+The second planned CLI invocation used a separate session. After its synthetic
+start marker appeared, SIGINT was sent to the native CLI. Its recorded terminal
+was `turn_aborted` with reason `interrupted`, and CLI exit was 1. The tool continued
+after that abort and wrote a finished marker. Its final process exit was not
+observed; the marker does not prove exit 0. Only SessionStart and PreToolUse were
+collected for this session, leaving the tool outcome and response boundary
+unresolved. The tool also prefixed the requested command with a read of the
+disposable installation's distributed account instructions. This departed from
+the requested command-only fixture; no credential or external-file read appeared
+in the preserved native tool call. No model retry or additional turn followed.
+
+Before these two model invocations, native startup refused the initial fixture
+layout because CODEX_HOME was inside the CLI package. The supported global
+`--no-daemon` option was verified with pinned help and credential-free startup,
+then applied as a reviewed launch-only correction. The original failure remains
+recorded; neither the home paths nor the eleven approved hook definitions changed.
+Those definitions were trusted through the native Hooks UI and checked again by
+native discovery. No trust store was edited directly. Claude's separate native
+initialization succeeded, but its approved existing-file authentication copy was
+unusable, so no Claude model invocation was made.
+
+The final Codex ledger contained eight records across the two sessions. Actor and
+parent fields stayed null with not-observed gaps; no provider-created child ran.
+Both grants were revoked, old callbacks returned neutral output with zero records,
+and both disposable installations and authentication copies were removed.
+The temporary package/profile were removed, and the full package/profile/sysctl
+inventory matched its pre-apply snapshot. All three owned fixture/repair roots and
+native processes were absent. An independent coordinator check confirmed the
+inventory and absence checks, then stopped the dedicated guest. This is checked
+runtime cleanup, not forensic disk rollback. Native discovery, direct post-revoke checks and actual model/tool traces
+remain distinct evidence; no comparative efficacy or later-source qualification
+is implied. The existing screenshot manuals retain their historical capture scope.
 
 Native-child coverage is still untried. Codex's pinned tool-hook schemas can name
 an emitting agent but do not provide a parent edge. This adapter never populates
