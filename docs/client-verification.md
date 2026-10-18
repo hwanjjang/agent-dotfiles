@@ -25,13 +25,18 @@ and remaining gaps. Read its result and source boundary together: actual callbac
 usable tools, authenticated model behavior and interruption are separate checks.
 A historical native run does not requalify a later collector revision. The matrix
 links both the offline Linux prerequisite check and a separate authenticated
-Codex baseline/interruption at source `329dd76`. Claude authentication was still
-unavailable. The offline and container mock checks remain distinct; cancellation
-does not prove process termination, and no result qualifies later source changes.
+Codex baseline/interruption at source `329dd76`, where Claude authentication was
+unavailable. A later Ubuntu x86_64 run at `7ada8e2` authenticated both clients,
+exercised normal/failure/interruption and one native child per client, and added
+optional Paseo results. See the [source-bound execution record](decisions/linux-x86-native-qualification.md).
+Native parent relationships were observed separately; collector actor/parent stay
+null and child lifecycle delivery remains incomplete. The offline and container
+mock checks remain distinct; cancellation does not prove process termination,
+and no result qualifies later source changes.
 
 The [historical Codex walkthrough](manual/codex-observation.pdf) retains its original
 macOS/Linux captures. New platform status documentation supplements that evidence;
-it does not rewrite the older receipts or imply WSL/native-child coverage.
+it does not rewrite the older receipts or imply WSL or child-scoped collector coverage.
 
 ## Doctor review corrections — 2026-10-18
 
