@@ -232,6 +232,56 @@ def validate_collection(value, mode):
     return value
 
 
+def validate_routing(value, selected):
+    """Bind a small complete declared catalog; no expected target or case code."""
+    fields(value, 'mode observer catalog_scope catalog_digest catalog', 'routing_fields')
+    require(value['mode'] in ('natural', 'forced_entrypoint')
+            and value['observer'] == 'implicit-stderr-json-v1'
+            and value['catalog_scope'] == 'declared_experiment_subset', 'routing_profile')
+    rows = value['catalog']
+    require(isinstance(rows, list) and 3 <= len(rows) <= 5
+            and value['catalog_digest'] == digest(rows), 'routing_catalog')
+    names, paths = set(), set()
+    for slot, row in enumerate(rows):
+        fields(row, 'slot name main_resource main_sha256 description_sha256', 'routing_fields')
+        require(type(row['slot']) is int and row['slot'] == slot and token(row['name'])
+                and row['name'] not in names and is_digest(row['description_sha256'])
+                and is_digest(row['main_sha256']), 'routing_catalog')
+        name = str(relative(row['main_resource']))
+        require(name.startswith('skills/') and name.endswith('/SKILL.md') and name not in paths,
+                'routing_catalog')
+        data = selected.get(('bundle', name))
+        require(data is not None and hashlib.sha256(data).hexdigest() == row['main_sha256'],
+                'routing_catalog')
+        try:
+            header = data.decode('utf-8').split('---\n')
+            require(len(header) >= 3 and header[0] == '', 'routing_metadata')
+            metadata = {}
+            for line in header[1].splitlines():
+                require(not line[:1].isspace(), 'routing_metadata')
+                if line.startswith('disable-model-invocation:'):
+                    require(line.split(':', 1)[1].strip() == 'false', 'routing_metadata')
+                if line.startswith(('name:', 'description:')):
+                    key, raw = line.split(':', 1)
+                    require(key not in metadata, 'routing_metadata')
+                    raw = raw.strip()
+                    quoted = raw.startswith('"')
+                    require(quoted or not any(mark in raw for mark in ('#', ': ', '&', '*', '!')),
+                            'routing_metadata')
+                    text = json.loads(raw) if quoted else raw
+                    require(isinstance(text, str) and text and not text.startswith(('>', '|', "'"))
+                            and not any(c in text for c in ('\n', '\r')), 'routing_metadata')
+                    metadata[key] = text
+            require(metadata.get('name') == row['name'] and
+                    hashlib.sha256(metadata['description'].encode()).hexdigest() ==
+                    row['description_sha256'], 'routing_metadata')
+        except (ValueError, UnicodeError, KeyError, TypeError):
+            raise Refusal('routing_metadata') from None
+        names.add(row['name']); paths.add(name)
+    require(paths == {name for kind, name in selected if kind == 'bundle'
+                      and PurePosixPath(name).name == 'SKILL.md'}, 'routing_catalog')
+
+
 def load_plan(path):
     """Validate a selected plan and materialize <=4MiB of frozen input bytes.
 
@@ -246,10 +296,15 @@ def load_plan(path):
     except (ValueError, UnicodeError, RecursionError):
         raise Refusal('plan_json') from None
     names = 'schema_version profile mode identity inputs prompt runtime limits sources state_root'
+    require(isinstance(value, dict) and type(value.get('schema_version')) is int
+            and value['schema_version'] in (1, 2), 'plan_version')
+    routed = value['schema_version'] == 2
+    if routed:
+        names += ' routing'
     fields(value, names + (' collection' if isinstance(value, dict) and 'collection' in value else ''),
            'plan_fields')
-    require(type(value['schema_version']) is int and value['schema_version'] == 1, 'plan_version')
     require(value['profile'] == PROFILE and value['mode'] in ('trial', 'qualification'), 'plan_profile')
+    require(not routed or value['mode'] == 'trial', 'routing_mode')
     if 'collection' in value:
         validate_collection(value['collection'], value['mode'])
     identity = value['identity']
@@ -290,9 +345,10 @@ def load_plan(path):
                                owner=False, retain=False)
         require(observed == expected, 'runtime_changed')
     inputs = value['inputs']
-    fields(inputs, 'root entrypoint files', 'input_fields')
+    natural = routed and isinstance(value['routing'], dict) and value['routing'].get('mode') == 'natural'
+    fields(inputs, 'root files' if natural else 'root entrypoint files', 'input_fields')
     input_root = absolute(inputs['root'], 'input_root')
-    entrypoint = str(relative(inputs['entrypoint']))
+    entrypoint = None if natural else str(relative(inputs['entrypoint']))
     require(isinstance(inputs['files'], list) and 1 <= len(inputs['files']) <= MAX_FILES, 'input_files')
     selected = {}
     total = 0
@@ -310,7 +366,9 @@ def load_plan(path):
         total += len(content)
         require(total <= MAX_INPUT_BYTES, 'input_size')
         selected[key] = content
-    require(('bundle', entrypoint) in selected, 'entrypoint_missing')
+    if routed:
+        validate_routing(value['routing'], selected)
+    require(natural or ('bundle', entrypoint) in selected, 'entrypoint_missing')
     if value['mode'] == 'qualification':
         require(selected == QUALIFICATION_FILES and entrypoint == 'skills/assigned/SKILL.md', 'qualification_fixture')
     state_root = absolute(value['state_root'], 'state_unsafe')

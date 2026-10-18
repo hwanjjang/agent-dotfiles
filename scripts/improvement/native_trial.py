@@ -34,6 +34,21 @@ DIRECT_PROFILE = native_execution.PROFILE.split('[model_providers.fixture]')[0].
     'cli_auth_credentials_store="file"\nforced_login_method="chatgpt"')
 
 
+def trial_prompt(data):
+    if data.get('routing', {}).get('mode') == 'natural':
+        return data['prompt']
+    return 'Use only the selected remote executor. First read the selected arm entrypoint at ' \
+        + json.dumps('/runtime/arm/' + data['inputs']['entrypoint']) \
+        + '. Then perform this task:\n' + data['prompt']
+
+
+def routing_profile(data):
+    if 'routing' not in data:
+        return DIRECT_PROFILE, {}
+    return DIRECT_PROFILE + '\n[otel]\nexporter="none"\ntrace_exporter="none"\nmetrics_exporter="none"\nlog_user_prompt=false\nlog_agent_responses=false\nlog_guardian_assessments=false\n[otel.tool_result]\nmax_bytes=0\n', {
+        'RUST_LOG': 'off,codex_otel.log_only=info', 'LOG_FORMAT': 'json'}
+
+
 def private_write(path, payload):
     """Write an exclusively created supervisor file; no arbitrary overwrite."""
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -916,7 +931,8 @@ class Controller:
         self.auth_copy_succeeded = True
         self.journal.save('native_home_owner', {'identity': list(self.home.identity)})
         codehome = self.home.root
-        private_write(codehome / 'config.toml', DIRECT_PROFILE.encode())
+        config, logging_env = routing_profile(self.data)
+        private_write(codehome / 'config.toml', config.encode())
         transport = self.docker + ['exec', '-i', '--env', 'CODEX_HOME=/work/codex',
             '--env', 'HOME=/work/home', self.ids['executor'],
             '/runtime/bin/codex', 'exec-server', '--listen', 'stdio']
@@ -925,16 +941,19 @@ class Controller:
         private_write(codehome / 'environments.toml', environment.encode())
         env = {'HOME': str(home), 'CODEX_HOME': str(codehome), 'LANG': 'C.UTF-8',
                'PATH': str(Path(self.runtime['codex']).parent) + ':/usr/bin:/bin'}
+        env.update(logging_env)
         self.archive = protocol.CounterArchive()
         self.live = protocol.NativeSession(self.archive, self.deadline)
+        if 'routing' in self.data:
+            profile_digest = plan.digest({'config': config, 'env': logging_env,
+                                          'sources': self.data['sources']})
+            self.live.routing = protocol.RoutingObserver(self.data['routing'], profile_digest)
         self.journal.save('native_launch_intent', {'executable': self.runtime['codex'], 'launch': 1})
         self.launch_called = True
         self.live.start([self.runtime['codex'], 'app-server', '--listen', 'stdio://'],
                         str(project), env, self.on_launch)
         if prompt is None:
-            entrypoint = '/runtime/arm/' + self.data['inputs']['entrypoint']
-            prompt = 'Use only the selected remote executor. First read the selected arm entrypoint at ' \
-                + json.dumps(entrypoint) + '. Then perform this task:\n' + self.data['prompt']
+            prompt = trial_prompt(self.data)
         self.observation = protocol.observe(self.live, prompt=prompt, project=str(project), codehome=str(codehome),
             metadata_check=self.metadata, soft_total=self.data['limits']['soft_total_tokens'],
             soft_output=self.data['limits']['soft_output_tokens'],
@@ -1011,7 +1030,10 @@ class Controller:
         close = None
         if self.live is not None:
             try:
+                if self.data.get('routing'):
+                    self.live.cleanup_deadline = self.cleanup_deadline
                 close = self.live.close()
+                self.routing_drain = close.get('routing_drain')
                 result['native_reaped'] = close.get('process_reaped') is True
                 result['group_signal_uncertain'] = bool(close.get('group_signal_error'))
             except Exception:
@@ -1123,8 +1145,26 @@ class Controller:
     def finish(self, cleanup, protected):
         observed = self.observation or {}
         qualification = self.qualification.summary() if self.qualification is not None else None
+        if self.data.get('routing') is not None:
+            observer = getattr(self.live, 'routing', None)
+            ready = cleanup.get('complete') is True and observed.get('status') == 'completed_ungraded' \
+                and observed.get('reason') is None and not self.capture_failed
+            routing = observer.finish(ready, getattr(self, 'routing_drain', None)) if observer else {
+                'status': 'blocked', 'reason': 'routing_unavailable', 'activation': 'unknown'}
+            observed['routing_observation'] = routing
+            try:
+                if observer:
+                    routing['transport']['projected_records_written'] = 1
+                self.journal.save('routing_observation', routing, cleanup=True)
+            except Exception:
+                self.capture_failed = True
+                routing.update(status='blocked', reason='routing_capture', activation='unknown')
+                if observer:
+                    routing['transport']['projected_records_written'] = 0
         good = self.primary is None and cleanup.get('complete') is True and not self.capture_failed \
             and observed.get('status') == 'completed_ungraded'
+        if self.data.get('routing') is not None:
+            good = good and observed['routing_observation']['status'] == 'observed'
         collection = getattr(self, 'collection_result', None)
         if self.data.get('collection') is not None:
             good = good and isinstance(collection, dict) and collection.get('status') == 'captured'
