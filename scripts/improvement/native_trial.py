@@ -1213,10 +1213,12 @@ class Controller:
             self.lock_fd = None
 
 
-def run(path, *, auth_source=None, fixture=False):
+def run(path, *, auth_source=None, fixture=False, expected_manifest_digest=None):
     if fixture and auth_source is not None:
         raise plan.Refusal('fixture_auth_forbidden')
     selected = plan.load_plan(path)
+    if expected_manifest_digest is not None:
+        plan.require(selected.digest == expected_manifest_digest, 'reserved_manifest_changed')
     if fixture:
         raise plan.Refusal('credential_free_fixture_is_separate')
     if auth_source is None:

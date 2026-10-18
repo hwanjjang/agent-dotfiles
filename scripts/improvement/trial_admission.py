@@ -133,10 +133,13 @@ def load_context(experiment, current_spec, context_path):
     for name in native_grader_sources():
         guard.read(p.SOURCE / name, 2 * 1024 * 1024, retain=False)
     data = guard.json(context_path, private=True)
-    require(ev.keys(data, 'schema_version kind experiment_digest arms runtime qualification_refs collection_by_trial')
+    require((ev.keys(data, 'schema_version kind experiment_digest arms runtime qualification_refs collection_by_trial')
+             or ev.keys(data, 'schema_version kind experiment_digest arms runtime qualification_refs collection_by_trial execution_root'))
             and type(data['schema_version']) is int and data['schema_version'] == 1
             and data['kind'] == 'native_artifact_admission_context_v1'
             and data['experiment_digest'] == experiment['experiment_digest'], 'context_fields')
+    if 'execution_root' in data:
+        guard.directory(p.absolute(data['execution_root'], 'execution_root'))
     rt = data['runtime']
     require(ev.keys(rt, 'profile source_digests runtime_digests image_digest metadata_digest')
             and rt['profile'] == p.PROFILE and isinstance(rt['source_digests'], dict)
@@ -241,11 +244,15 @@ class NativeBatch:
         self.context, self.rows, self.attempts, self.locks = context, [], [], []
         self.guard = Guard()
         self.seal, self.closed = None, False
+        self.execution = self.execution_lease = self.execution_guard = None
+        self.execution_error = False
 
     def close(self):
-        for fd in self.locks:
+        for fd in reversed(self.locks):
             os.close(fd)
         self.locks.clear()
+        if self.execution_lease is not None:
+            self.execution_lease.close()
         self.closed = True
 
     @staticmethod
@@ -254,9 +261,11 @@ class NativeBatch:
 
     def valid(self, experiment, spec):
         return (not self.closed and same(experiment, self.context.experiment) and same(spec, self.context.spec)
-                and self.seal == ev.digest([self.rows, self.attempts])
+                and self.seal == ev.digest([self.rows, self.attempts, self.execution])
                 and self.context.digest == ev.digest(self.context.data)
-                and self.context.guard.check() and self.guard.check())
+                and self.context.guard.check() and self.guard.check() and not self.execution_error
+                and (self.execution_lease is None or (self.execution_lease.check()
+                     and self.execution_guard.check())))
 
     def usage(self, rows, missing):
         selected = {ev.digest(r) for r in rows}
@@ -278,7 +287,34 @@ class NativeBatch:
                 'submissions': len(rows), 'wire_requests': None, 'billing_usage': None}
 
 
-def _read_attempt(batch, ref, row, info):
+def bind_manifest(ctx, manifest):
+    require(manifest.get('routing', {}).get('mode') != 'natural', 'natural_admission_unavailable')
+    identity = manifest['identity']
+    selected = trial_dispatch.prepare(ctx.experiment, ctx.spec, identity['trial_id'], identity['attempt_id'])
+    trial = selected['binding']['trial']
+    require(same(identity, {**trial, 'attempt_id': identity['attempt_id'], 'experiment_digest': ctx.experiment['experiment_digest']})
+            and manifest['mode'] == 'trial', 'trial_binding')
+    arm = ctx.data['arms'][trial['arm']]
+    inputs = selected['executor_input']
+    files = [{'kind': 'case', 'path': name, 'sha256': hashlib.sha256(value.encode()).hexdigest()} for name, value in sorted(inputs['files'].items())]
+    files += [dict(f, kind='bundle') for f in arm['files']]
+    require(manifest['prompt'] == inputs['request'] and manifest['inputs']['entrypoint'] == arm['entrypoint']
+            and sorted(manifest['inputs']['files'], key=lambda f: (f['kind'], f['path'])) == sorted(files, key=lambda f: (f['kind'], f['path'])), 'input_binding')
+    require(same(manifest['collection'], ctx.data['collection_by_trial'][identity['trial_id']]), 'collection_binding')
+    if 'execution_root' in ctx.data:
+        require(manifest['state_root'] == ctx.data['execution_root'], 'execution_root')
+    return trial, files
+
+
+def cleanup_complete(cleanup):
+    return (cleanup['complete'] is True and cleanup['processes_stopped'] is True
+            and cleanup['control_absent'] is True and cleanup['volume_absent'] is True
+            and cleanup['native_home']['home_absent'] is True and cleanup['native_home']['auth_absent'] is True
+            and cleanup['process_query_uncertain'] is False and cleanup['watch_uncertain'] is False
+            and cleanup.get('protected_synthetic_files_unchanged_after_shutdown') in (None, True))
+
+
+def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_digest=None, expected_limits=None):
     ctx, guard = batch.context, batch.guard
     path = p.absolute(ref['attempt_path'], 'attempt_path')
     guard.directory(path)
@@ -293,6 +329,8 @@ def _read_attempt(batch, ref, row, info):
     batch.locks.append(lock)
     manifest = guard.json(path / 'manifest.json', private=True)
     identity, rt = manifest['identity'], ctx.data['runtime']
+    require(expected_manifest_digest is None or p.digest(manifest) == expected_manifest_digest, 'reserved_manifest_changed')
+    require(expected_limits is None or same(manifest['limits'], expected_limits), 'reservation_limits')
     require(identity['trial_id'] == ref['trial_id'] and identity['attempt_id'] == ref['attempt_id']
             and path == Path(manifest['state_root']) / ref['trial_id'] / ref['attempt_id'], 'attempt_binding')
     require(manifest['sources'] == rt['source_digests'] and manifest['profile'] == rt['profile']
@@ -323,17 +361,9 @@ def _read_attempt(batch, ref, row, info):
                 initial_turn_requests_attempted=observation.get('initial_turn_requests_attempted')
                     if type(observation.get('initial_turn_requests_attempted')) is int
                     and observation['initial_turn_requests_attempted'] in (0, 1) else None)
-    selected = trial_dispatch.prepare(ctx.experiment, ctx.spec, ref['trial_id'], ref['attempt_id'])
-    trial = selected['binding']['trial']
-    require(same(identity, {**trial, 'attempt_id': ref['attempt_id'], 'experiment_digest': ctx.experiment['experiment_digest']})
-            and manifest['mode'] == 'trial' and receipt['mode'] == 'trial', 'trial_binding')
+    trial, files = bind_manifest(ctx, manifest)
+    require(receipt['mode'] == 'trial', 'trial_binding')
     row['binding_digest'] = trial['binding_digest']
-    arm = ctx.data['arms'][trial['arm']]
-    inputs = selected['executor_input']
-    files = [{'kind': 'case', 'path': name, 'sha256': hashlib.sha256(value.encode()).hexdigest()} for name, value in sorted(inputs['files'].items())]
-    files += [dict(f, kind='bundle') for f in arm['files']]
-    require(manifest['prompt'] == inputs['request'] and manifest['inputs']['entrypoint'] == arm['entrypoint']
-            and sorted(manifest['inputs']['files'], key=lambda f: (f['kind'], f['path'])) == sorted(files, key=lambda f: (f['kind'], f['path'])), 'input_binding')
     boundary = _one(records, 'executor_boundary')
     for kind in ('case', 'bundle'):
         expected = p.digest([{'path': f['path'], 'sha256': f['sha256']} for f in files if f['kind'] == kind])
@@ -343,6 +373,20 @@ def _read_attempt(batch, ref, row, info):
             and boundary['uid'] == 65532 and boundary['cap_eff'] == '0000000000000000'
             and boundary['no_new_privs'] == '1' and boundary['seccomp'] == '2'
             and boundary['loopback_only'] is True and boundary['runtime_digest'] == nt.EXECUTOR_SHA256, 'boundary_unverified')
+    if cost_only:
+        labels = [f.name.split('-', 1)[1][:-5] for f in ordered]
+        sequence = ['native_launch_complete', 'observation', 'cleanup', 'receipt']
+        require(all(labels.count(k) == 1 for k in sequence)
+                and [labels.index(k) for k in sequence] == sorted(labels.index(k) for k in sequence), 'cost_order')
+        info['cost_bound'] = True
+        info['complete'] = (observation['status'] == 'completed_ungraded'
+            and observation['terminal_completed'] is True and observation['reason'] is None
+            and type(observation['initial_turns']) is int and observation['initial_turns'] == 1
+            and info['initial_turn_requests_attempted'] == 1 and observation['usage']['stop'] is None
+            and observation['model_requested'] == ctx.spec['runtime']['model']
+            and observation['auth_chatgpt_observed'] is True and cleanup_complete(cleanup)
+            and receipt['protected_synthetic_files_unchanged'] in (None, True))
+        return
     declaration = ctx.data['collection_by_trial'][ref['trial_id']]
     collection = _one(records, 'collection_result')
     require(same(manifest['collection'], declaration) and same(collection, receipt['collection'])
@@ -363,12 +407,7 @@ def _read_attempt(batch, ref, row, info):
             and observation['usage']['stop'] is None and observation['model_requested'] == ctx.spec['runtime']['model']
             and ctx.spec['runtime']['model'] == 'gpt-6-luna' and observation['auth_chatgpt_observed'] is True,
             'native_incomplete')
-    require(cleanup['complete'] is True and cleanup['processes_stopped'] is True
-            and cleanup['control_absent'] is True and cleanup['volume_absent'] is True
-            and cleanup['native_home']['home_absent'] is True and cleanup['native_home']['auth_absent'] is True
-            and cleanup['process_query_uncertain'] is False and cleanup['watch_uncertain'] is False
-            and receipt['protected_synthetic_files_unchanged'] in (None, True)
-            and cleanup.get('protected_synthetic_files_unchanged_after_shutdown') in (None, True), 'cleanup_incomplete')
+    require(cleanup_complete(cleanup) and receipt['protected_synthetic_files_unchanged'] in (None, True), 'cleanup_incomplete')
     require(info['counters'] is not None and collection['status'] == 'captured', 'collection_unavailable')
     snapshot = nt.validate_snapshot({'exit': 0, 'stop_reason': None, 'stderr': '', 'stdout': json.dumps(collection['snapshot'])}, declaration)
     require(snapshot['status'] == 'captured', 'collection_unavailable')
@@ -376,10 +415,46 @@ def _read_attempt(batch, ref, row, info):
     info['reason'] = None
 
 
+def read_cost_facts(context, row, guard):
+    """Read bound attempt cost independently of artifact success; no lifecycle calls."""
+    batch = NativeBatch(context)
+    batch.guard = guard
+    info = {}
+    ref = {k: row[k] for k in ('trial_id', 'attempt_id')}
+    ref['attempt_path'] = str(Path(context.data['execution_root']) / row['trial_id'] / row['attempt_id'])
+    try:
+        _read_attempt(batch, ref, {}, info, cost_only=True, expected_manifest_digest=row['manifest_digest'],
+                      expected_limits=row['limits'])
+        require(guard.check(), 'cost_changed')
+    except (OSError, ValueError, KeyError, TypeError, RecursionError):
+        info['complete'] = False
+    finally:
+        batch.close()
+    counters = info.get('counters') if info.get('cost_bound') else None
+    return {'known_tokens': counters['totalTokens'] if counters is not None else None,
+            'complete': info.get('complete') is True and counters is not None,
+            'initial_turn_requests_attempted': info.get('initial_turn_requests_attempted'),
+            'receipt_digest': info.get('receipt_digest')}
+
+
 def read_attempts(context, refs):
     require(type(context) is NativeContext and isinstance(refs, list) and len(refs) <= 64, 'attempt_refs')
     batch = NativeBatch(context)
     try:
+        if 'execution_root' in context.data:
+            if __package__:
+                from . import trial_reservation as reservation
+            else:
+                import trial_reservation as reservation
+            try:
+                batch.execution_lease = reservation.Lease(context)
+                batch.execution, batch.execution_guard, _ = reservation.audit(batch.execution_lease)
+            except (OSError, ValueError, KeyError, TypeError, RecursionError):
+                batch.execution_error = True
+                batch.execution = {'status': 'unavailable', 'total_tokens': None}
+                if batch.execution_lease is not None:
+                    batch.execution_lease.close()
+                    batch.execution_lease = None
         cache = {}
         for ref in refs:
             require(ev.keys(ref, 'trial_id attempt_id attempt_path') and ev.sha(ref['trial_id']) and p.token(ref['attempt_id']), 'attempt_ref')
@@ -400,7 +475,7 @@ def read_attempts(context, refs):
                 pass  # Closed blocked projection; never expose paths or raw error strings.
             batch.rows.append(row); batch.attempts.append(info)
             cache[key] = (row, info)
-        batch.seal = ev.digest([batch.rows, batch.attempts])
+        batch.seal = ev.digest([batch.rows, batch.attempts, batch.execution])
         return batch
     except BaseException:
         batch.close(); raise
