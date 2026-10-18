@@ -1,0 +1,20 @@
+{
+  "title": "Review development recommendations",
+  "scenario": "Python 3.11+, supplied synthetic development evidence and the current grader identity. The export producer remains an unmerged PR #35 dependency. No credentials, model calls or installation.",
+  "steps": [
+    {
+      "title": "Bind evidence before source review",
+      "instruction": "Open improvement-review in the map. Pass experiment, report, completions, current_spec and source_diff_digest to promotion.py recommend on stdin. Keep the experiment and current spec unchanged.",
+      "screenshot": "promotion-map.png",
+      "caption": "Actual local catalog dialog, cropped through the usage instructions.",
+      "expected": "The gate recomputes the report and binds its exact review references. It launches no model or command."
+    },
+    {
+      "title": "Read the limits before acting",
+      "instruction": "Inspect recommendation, rule_result reasons and critical_violations_by_arm. Baseline-only critical defects do not reject a successful fix; candidate critical failures reject even with aggregate gain. Exit 0 alone is not eligibility; follow the source for both refusal shapes.",
+      "screenshot": "promotion-result.png",
+      "caption": "Browser-rendered summary of the actual synthetic CLI result, not a terminal capture.",
+      "expected": "The fixture exposes four baseline critical violations and zero candidate violations. Arithmetic is eligible, but the recommendation remains inconclusive; promotion, merge and installation stay unauthorized."
+    }
+  ]
+}

@@ -280,6 +280,13 @@ future work. Events carry an unknown manifest; no account probe, attribution or
 model inference is implied. The implemented API and CLI in the linked guide are
 a narrower runnable surface than the future interface sketches above.
 
+The subsequent [native capacity/attribution slice](../../account/observation/capacity.md)
+adds durable sequence reservations and bounded session/response-boundary delivery
+snapshots. Its 10,000 installed-callback subprocess run qualifies synthetic
+capacity/recovery on the recorded host; the capacity guide records the final
+p95 result and distinguishes earlier measurements. The PostToolUse-only workload
+excludes boundary probes and does not establish mixed-workload latency. Receipt identity still does not establish effective model exposure.
+
 ## From a recorded failure to a candidate
 
 Consider a task where a test command fails to start but the assistant reports

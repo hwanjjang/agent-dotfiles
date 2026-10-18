@@ -48,7 +48,7 @@ selections and local feedback. See the [task-feedback walkthrough](docs/manual/t
 and [verification recipe](docs/verification/verify-repository/features/task-feedback.md).
 [Reviewed synthetic case export](account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
 is available with an [exact-digest review walkthrough](docs/manual/reviewed-cases.pdf).
-Evidence-bound caller triage is available; automatic diagnosis, Codex collection and comparative evaluation remain planned.
+Evidence-bound caller triage is available; automatic diagnosis and comparative model execution remain planned.
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
@@ -144,16 +144,26 @@ The [account improvement loop](docs/decisions/account-improvement-loop.md) conne
 private observations to reviewed cases, comparative evaluation and account updates.
 Its first slice provides a [private synthetic observation store](account/observation/README.md)
 with scoped grants, durable records, batch replay and revocation. Optional
-[Claude native collection](account/observation/native.md) now uses explicit
-project consent and installer registration; default installations collect nothing.
-Codex collection and comparative model evaluation remain future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
+[Claude and Codex native collection](account/observation/native.md) use explicit
+project consent and one selected client registration; default installations collect
+nothing. Codex requires native trust for four observer definitions. The
+[native platform matrix](account/observation/native.md#native-platform-evidence--2026-10-18)
+separates source-bound native results, historical Linux tool/auth blockers, a
+later offline Linux prerequisite check and untried environments. Comparative model evaluation remains future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
 qualifies setup and bounded model behavior before experiments or after deployment;
 its PASS does not establish improvement over a baseline.
+The [collector capacity guide](account/observation/capacity.md) records bounded
+delivery attribution and 10,000 synthetic callback recovery, including the measured
+p95 latency and its reference-host limit. Delivery identity never implies exact model exposure.
 
 Offline development comparison is available through
 [deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
 It freezes and grades supplied synthetic evidence; it does not execute models or
 establish holdout or promotion eligibility.
+
+The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md)
+provides macOS Python canaries and a guarded Linux native synthetic workflow.
+A passing native fixture does not enable live provider access or promotion.
 
 ## Principles
 
@@ -291,3 +301,5 @@ Technical references:
 ## License
 
 [MIT](LICENSE).
+
+Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
