@@ -34,6 +34,16 @@ class ObservationCliTests(unittest.TestCase):
                                      capture_output=True, timeout=10)
             self.assertEqual(json.loads(revoked.stdout)['status'], 'revoked')
 
+    def test_codex_grant_cli_selects_native_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run([sys.executable, str(CLI), '--home', directory, 'grant',
+                                     '--client', 'codex', '--project', directory],
+                                    capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            grant = json.loads(result.stdout)
+            record = Path(directory) / '.agents/agent-dotfiles/observations/grants' / (grant['registration_id'] + '.json')
+            self.assertEqual(json.loads(record.read_text())['source'], 'codex-hooks-v1')
+
     def test_manual_synthetic_lifecycle(self):
         with tempfile.TemporaryDirectory(prefix='observation CLI ') as directory:
             base = Path(directory).resolve()

@@ -4,6 +4,35 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Collector capacity and boundary snapshots — 2026-10-18
+
+The later [capacity qualification](../account/observation/capacity.md) executed
+10,000 installed dispatcher subprocesses with four writers, verified all expected
+records, preserved replay identity and recovered an interrupted reservation. It
+passed capacity/recovery and the p95 under 50 ms target (48.16 ms observed) on one
+PostToolUse-only reference-host run, excluding boundary probes. Before review
+corrections, the prior version-2 run measured 48.04 ms; the version-1 candidate measured 64.71 ms; that
+historical miss remains documented rather than being relabeled as a pass.
+Two synthetic installed boundary probes also captured delivery snapshots; exact
+effective exposure remains false. These results qualify their frozen collector
+runtime and synthetic fixture, not a new native model run or all platforms.
+
+## Native observation platform coverage — 2026-10-18
+
+The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
+is the single source of truth for per-platform results, source revisions, cleanup
+and remaining gaps. Read its result and source boundary together: actual callbacks,
+usable tools, authenticated model behavior and interruption are separate checks.
+A historical native run does not requalify a later collector revision. The matrix
+links both the offline Linux prerequisite check and a separate authenticated
+Codex baseline/interruption at source `329dd76`. Claude authentication was still
+unavailable. The offline and container mock checks remain distinct; cancellation
+does not prove process termination, and no result qualifies later source changes.
+
+The [historical Codex walkthrough](manual/codex-observation.pdf) retains its original
+macOS/Linux captures. New platform status documentation supplements that evidence;
+it does not rewrite the older receipts or imply WSL/native-child coverage.
+
 ## Doctor review corrections — 2026-10-18
 
 The corrected doctor harness was exercised with actual Codex GPT-6-Luna and

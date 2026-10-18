@@ -369,14 +369,15 @@
     {
       "id": "improvement",
       "title": "Self-improvement and eval",
-      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, opt-in Claude collection and the installer exist; Codex collection, model comparison and automatic promotion remain planned. Available means the source guide exists, not that its runtime is implemented.",
+      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, opt-in Claude/Codex collection, offline evaluation accounting, diagnostic recommendations and the installer exist; live model comparison and automatic promotion remain planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
       "items": [
         "observation-store",
         "improvement-case",
         "improvement-candidate",
         "improvement-eval",
         "improvement-review",
-        "improvement-deploy"
+        "improvement-deploy",
+        "native-isolation"
       ]
     }
   ],
@@ -413,13 +414,14 @@
     "account-source": "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts.",
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
     "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting.",
-    "observation-store": "Step 1: collect opted-in observations, bind selected events to a task, record feedback and revoke private evidence. Codex collection remains planned.",
+    "observation-store": "Step 1: opt in one approved client/project, inspect callback/platform limits, verify bounded delivery snapshots and measured collector capacity, then bind selected events to a task and record explicit feedback.",
     "improvement-case": "Task binding and explicit feedback exist; reviewed case export and triage automation remain planned.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
-    "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",
-    "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
+    "improvement-eval": "Offline accounting is available for supplied synthetic completions; a live runner and independent holdout qualification remain planned.",
+    "improvement-review": "Diagnostic recommendations are available for development reports; the live promotion gate and operational eligibility remain unavailable.",
     "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned.",
-    "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement."
+    "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement.",
+    "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted container."
   },
   "category_titles": {
     "triage": [
@@ -516,12 +518,13 @@
     "account-source": "install, update, remove, recover",
     "planning-hooks": "selected-plan lifecycle hooks",
     "reviewer-runtime": "reuse routes and diagnose failures",
-    "observation-store": "1. Observe / task feedback",
+    "observation-store": "1. Observe / native and task feedback",
     "improvement-case": "2. Case / planned export",
     "improvement-candidate": "3. Candidate / manual",
-    "improvement-eval": "4. Eval / planned",
-    "improvement-review": "5. Review / planned gate",
+    "improvement-eval": "4. Eval / offline",
+    "improvement-review": "5. Review / diagnostic",
     "improvement-deploy": "6. Deploy / installer exists",
-    "account-doctor": "Account doctor"
+    "account-doctor": "Account doctor",
+    "native-isolation": "Native isolation / synthetic"
   }
 }

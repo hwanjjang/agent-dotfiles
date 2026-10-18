@@ -68,11 +68,14 @@ ambiguous “check the hooks” request without introducing a trust-bypass optio
 ### Optional integrations
 
 [Native observations](observation/native.md) are a separate opt-in: create an
-exact-project Claude grant, then select it with `--observation-registration ID`
-on install/update. Default installations collect nothing. Preview lists the five
-independent Claude callback commands; `--observation-registration none` removes
+exact-project Claude or Codex grant, then select it with `--observation-registration ID`
+on install/update. Default installations collect nothing. Preview lists five Claude or
+four Codex observer commands; Codex requires native trust of its new definitions.
+The selection enables one client per account; `--observation-registration none` removes
 only that delivery. Grants and records remain under the observation CLI's ownership.
-Codex observation and comparative evaluation are not implemented.
+The [native qualification matrix](observation/native.md#qualification-and-references)
+owns per-client, source-bound callback results, interruption limits and remaining
+platform gaps. Comparative evaluation is not implemented.
 
 ```sh
 # Opt in only if Hermes is already installed on this host.
