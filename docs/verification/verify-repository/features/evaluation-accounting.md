@@ -64,3 +64,28 @@ Actual retained attempts with missing or mismatched current authenticated
 qualification must remain blocked. Never rewrite qualification or evidence digests
 to obtain a pass. The browser helper checks catalog navigation separately and
 does not execute this CLI recipe.
+
+## Serial reservation gate
+
+Follow the [authoritative serial contract](../../../decisions/evaluation-accounting.md#serial-native-launch-reservations)
+for `initialize`, `status`, `run-next`, frozen stdin and private-root requirements.
+Run `python3 scripts/improvement/trial_reservation.py --help` and
+`python3 -m unittest discover -s tests -p 'test_trial_reservation.py'` separately
+from the browser helper. Tests use synthetic qualifications, journals and fixed
+native-run stubs; they do not establish real native execution or authentication.
+
+In an owned synthetic CLI/process fixture, retain initialization, ordered
+reservation and status results, concurrent-lock refusal, wrong-order and extra-field
+refusal, and a crash-gap or failed attempt that blocks the next launch. Check that
+initial-turn slots and declared phase-time never refund, unknown cost remains
+unknown, and an overshoot stops later launches. Audit with omitted completion
+references: `execution_accounting` must still include every reserved attempt.
+Record actual parser/process results separately from the fixed stub's fake native
+facts. There is no public fixture-generator command or caller qualification flag.
+
+The unmodified CLI with current public qualification must refuse initialization
+when that qualification is stale; do not rewrite proof to enable a real run.
+Require `hard_provider_cap=false`, unknown wire/billing data and
+`live_eligible=false`. Preserve original failed attempts and owned cleanup evidence.
+These checks verify the cooperating-host gate, not provider hard caps, natural
+routing, comparative benefit or account activation.

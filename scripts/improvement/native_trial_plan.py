@@ -23,7 +23,7 @@ SOURCE_NAMES = frozenset((
     'native_trial_owner.py', 'native_usage.py', 'native_execution.py',
     'native_execution_catalog.py', 'native_execution_command_skills.js',
     'native_isolation.py', 'native_trial_qualification.py', 'native_execution_loader.js',
-    'native_trial_results.py',
+    'native_trial_results.py', 'trial_reservation.py',
 ))
 PROFILE = 'codex-0.163-macos-arm64-linux-arm64-v1'
 PINNED_RUNTIME = {

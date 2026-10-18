@@ -1,0 +1,364 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Serial native experiment reservations",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/architecture/native-experiment-workflow.html",
+    "repository": {
+      "url": "https://github.com/hwanjjang/agent-dotfiles",
+      "revision": "b57ea16629b10f1c20c79ff6907120d88a4ae342",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "lanes": [
+    {
+      "id": "prepare",
+      "label": "Trusted host / experiment controller and scorer"
+    },
+    {
+      "id": "execute",
+      "label": "Existing native run / owned cleanup"
+    },
+    {
+      "id": "stop",
+      "label": "Refused continuation",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "frozen",
+      "lane": "prepare",
+      "col": 0,
+      "type": "database",
+      "label": "Frozen schedule",
+      "sublabel": "Context + ordered plans",
+      "tag": "Current proof required",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 156,
+          "end_line": 180,
+          "label": "Initialize exact schedule"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 127,
+          "end_line": 213,
+          "label": "Guarded source and qualification"
+        }
+      ]
+    },
+    {
+      "id": "lease",
+      "lane": "prepare",
+      "col": 1,
+      "type": "security",
+      "label": "Experiment lock",
+      "sublabel": "One cooperating launcher",
+      "tag": "Stable / noninherited",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 29,
+          "end_line": 71,
+          "label": "Stable noninherited lease"
+        },
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 194,
+          "end_line": 219,
+          "label": "Lock surrounds fixed launch"
+        }
+      ]
+    },
+    {
+      "id": "audit",
+      "lane": "prepare",
+      "col": 2,
+      "type": "security",
+      "label": "Prior cost + bounds",
+      "sublabel": "All reservations audited",
+      "tag": "Unknown blocks next",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 113,
+          "end_line": 153,
+          "label": "Full ledger audit"
+        },
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 194,
+          "end_line": 210,
+          "label": "Next ordered plan and budget"
+        }
+      ]
+    },
+    {
+      "id": "reserve",
+      "lane": "prepare",
+      "col": 3,
+      "type": "database",
+      "label": "Durable reservation",
+      "sublabel": "Before auth or launch",
+      "tag": "Initial turn + phase time",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 211,
+          "end_line": 215,
+          "label": "Append then re-read reserve"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 147,
+          "end_line": 172,
+          "label": "Journal file and directory fsync"
+        }
+      ]
+    },
+    {
+      "id": "fixed",
+      "lane": "execute",
+      "col": 3,
+      "type": "backend",
+      "label": "Fixed native run",
+      "sublabel": "Recheck manifest first",
+      "tag": "No caller launch callback",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1176,
+          "end_line": 1188,
+          "label": "Manifest check before Controller"
+        },
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 216,
+          "end_line": 216,
+          "label": "Only fixed run boundary"
+        }
+      ]
+    },
+    {
+      "id": "cleanup",
+      "lane": "execute",
+      "col": 4,
+      "type": "security",
+      "label": "Mandatory cleanup",
+      "sublabel": "Same cleanup allowance",
+      "tag": "No budget reset",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1191,
+          "end_line": 1207,
+          "label": "Finally cleanup and receipt"
+        }
+      ]
+    },
+    {
+      "id": "settle",
+      "lane": "prepare",
+      "col": 4,
+      "type": "database",
+      "label": "Bound observed cost",
+      "sublabel": "Known subtotal retained",
+      "tag": "Unknown total stays null",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 377,
+          "end_line": 393,
+          "label": "Bound completion cost"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 418,
+          "end_line": 437,
+          "label": "Cost reader without lifecycle"
+        },
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 137,
+          "end_line": 153,
+          "label": "Permanent charges and unknowns"
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "lane": "prepare",
+      "col": 5,
+      "type": "backend",
+      "label": "Report on request",
+      "sublabel": "Audit even omitted refs",
+      "tag": "Task grade stays separate",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 440,
+          "end_line": 479,
+          "label": "Audit before attempt references"
+        },
+        {
+          "path": "scripts/improvement/evaluation.py",
+          "line": 396,
+          "end_line": 414,
+          "label": "Report accounting and late guard"
+        }
+      ]
+    },
+    {
+      "id": "blocked",
+      "lane": "stop",
+      "col": 2,
+      "type": "security",
+      "label": "No next launch",
+      "sublabel": "Changed / unknown / over",
+      "tag": "No refund or retry reset",
+      "width": 140,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 194,
+          "end_line": 215,
+          "label": "Refuse before fixed launch"
+        },
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 113,
+          "end_line": 153,
+          "label": "Outstanding attempts preserved"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "frozen-lease",
+      "from": "frozen",
+      "to": "lease"
+    },
+    {
+      "id": "lease-audit",
+      "from": "lease",
+      "to": "audit"
+    },
+    {
+      "id": "audit-reserve",
+      "from": "audit",
+      "to": "reserve",
+      "label": "Allowed",
+      "variant": "emphasis"
+    },
+    {
+      "id": "audit-stop",
+      "from": "audit",
+      "to": "blocked",
+      "label": "Refused",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "reserve-run",
+      "from": "reserve",
+      "to": "fixed"
+    },
+    {
+      "id": "run-cleanup",
+      "from": "fixed",
+      "to": "cleanup",
+      "label": "Always finally"
+    },
+    {
+      "id": "cleanup-settle",
+      "from": "cleanup",
+      "to": "settle"
+    },
+    {
+      "id": "settle-report",
+      "from": "settle",
+      "to": "report",
+      "label": "Report requested",
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "frozen",
+    "lease",
+    "audit",
+    "reserve",
+    "fixed",
+    "cleanup",
+    "settle",
+    "report"
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "frozen"
+    ],
+    "allowedTerminals": [
+      "blocked",
+      "report"
+    ],
+    "requiredEdges": [
+      {
+        "from": "audit",
+        "to": "blocked"
+      },
+      {
+        "from": "reserve",
+        "to": "fixed"
+      },
+      {
+        "from": "fixed",
+        "to": "cleanup"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "frozen",
+        "to": "report"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Conservative accounting",
+      "items": [
+        "Initial-turn reservations are not provider wire calls; all failed and missing reservations remain charged.",
+        "Declared setup, task and cleanup time is never returned. Observed cumulative tokens are post-use soft accounting."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Failure preserves evidence",
+      "items": [
+        "Crashes, incomplete cleanup and unknown or conflicting usage block further launches without refund.",
+        "A complete native run may settle cost even when its task artifact is wrong or capture failed."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Current scope",
+      "items": [
+        "A cooperating trusted-host gate, not a global account or hard provider quota. No natural-routing admission in this component.",
+        "Current qualification refuses changed sources. Positive gate checks use explicitly synthetic lifecycle journals; no actual model inference is claimed."
+      ]
+    }
+  ]
+}

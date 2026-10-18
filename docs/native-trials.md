@@ -74,14 +74,15 @@ The [admission contract](decisions/evaluation-accounting.md#admit-recorded-nativ
 connects exact recorded artifact collections to the existing evaluator through
 `trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
 the reader checks frozen attempt, dispatch, source, collection and maintained
-qualification bindings. Current authenticated qualification has not been renewed
-for the collection sources, so real admission remains blocked. The reader does
+qualification bindings. Current qualification has not been renewed for the
+reservation sources, so real admission remains blocked. The reader does
 not execute or recover trials; preserve failed attempts and unknown costs.
 
 Matching artifact bytes do not establish natural routing, exposure or general task
 correctness. Source-guarded protocol evidence is not an exported selected-model
-observation. Explicit observed-model export and serial launch reservations remain
-separate work before actual comparisons. Backend identity remains unknown.
+observation. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+now coordinates scheduled launches and audits every reserved attempt. Explicit
+observed-model export and actual comparisons remain separate work. Backend identity remains unknown.
 
 ## Prepare a frozen plan
 
@@ -200,6 +201,13 @@ Freeze and review the exact plan and sources before moving to execution; do not
 rewrite digests merely to suppress a drift refusal.
 
 ## Run one explicitly authorized attempt
+
+For a plan whose `state_root` is the frozen reservation root, use
+[`trial_reservation.py run-next`](decisions/evaluation-accounting.md#serial-native-launch-reservations).
+The direct command below is outside that gate: it does not enforce its aggregate
+allowance or take its experiment lock. Do not use it to bypass an outstanding
+reservation. Existing recovery is for owned cleanup only; it does not retry a
+reserved task, refund its allowance or make missing cost complete.
 
 ```sh
 python3 scripts/improvement/native_trial.py run \
