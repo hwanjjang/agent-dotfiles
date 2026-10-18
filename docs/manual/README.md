@@ -282,3 +282,31 @@ owns repeatable checks. Rebuild with the screenshot-manual scripts above using
 For this collection walkthrough, the private native bridge supplies the observation
 projection and its own coordinator receipt. Production setup/cleanup/capture are
 exercised; production `observe`/`finish` collection gates have unit coverage only.
+
+## Offline native artifact admission walkthrough
+
+The [two-page walkthrough](native-artifact-admission.pdf),
+[editable source](native-artifact-admission.json) and
+[capture manifest](native-artifact-admission-capture.json) explain the existing
+[evaluation-accounting contract](../decisions/evaluation-accounting.md#admit-recorded-native-artifact-snapshots).
+The [artifact summary](native-artifact-admission-check.png) and
+[duplicate/refusal summary](native-artifact-admission-result.png) are actual browser
+renders of retained collector and admission CLI results. Native journals,
+qualification records and usage are explicitly **fake fixtures**, not actual
+native execution or authentication evidence.
+
+The smoke observed one artifact pass, two fails and one unsubmitted inconclusive;
+known synthetic usage is a subtotal and total usage remains unknown. Duplicate
+submissions charge one source attempt once, caller qualification flags reject,
+and the owned disposable fixture was removed. Three grader sources and twelve
+runner sources match checkpoint `fa2ae1202398` after execution; the commit followed
+the run. The capture manifest retains those exact bindings rather than claiming
+execution at an already-existing revision.
+
+Both captures and both rendered PDF pages were visually inspected, with no
+clipping or overlap. PDF page count/text and browser overflow checks passed.
+Current real qualification remains blocked and `live_eligible` is false; no actual
+comparison, candidate benefit or full issue-26 completion is established. Follow
+the [feature recipe](../verification/verify-repository/features/evaluation-accounting.md)
+for separate CLI verification. Rebuild using the screenshot-manual commands above
+with `native-artifact-admission.json`; recapture on relevant source or behavior drift.

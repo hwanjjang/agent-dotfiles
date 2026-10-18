@@ -272,9 +272,9 @@
         "A design needs a component map, process flow, request sequence, data pipeline or state-transition diagram.",
         "A Mermaid sketch needs a polished explorable presentation, or an existing diagram candidate needs validation and delivery."
       ],
-      "usage": "Load skills/archify/SKILL.md. Supply the question, diagram scope and relevant source or Mermaid. Read the selected type’s schema and example, then run the packaged finalize command on the complete candidate; doctor is for setup diagnosis.",
+      "usage": "Load skills/archify/SKILL.md. Supply the question, diagram scope and relevant source or Mermaid. Read the selected type\u2019s schema and example, then run the packaged finalize command on the complete candidate; doctor is for setup diagnosis.",
       "behavior": [
-        "Choose architecture, workflow, sequence, dataflow or lifecycle from the question and read that type’s authoring references.",
+        "Choose architecture, workflow, sequence, dataflow or lifecycle from the question and read that type\u2019s authoring references.",
         "For a real codebase, trace the requested behavior and attach source evidence; use examples for shape rather than copying their facts.",
         "Write a complete typed JSON candidate and retain it beside the HTML in one request-specific folder. Static presentation is the default; motion is opt-in.",
         "Run finalize on the frozen candidate, including the repository root for repository-backed work. It gates schema validation, delivery, strict provenance and real-browser checks.",
@@ -339,7 +339,7 @@
         "A new API, module boundary or data shape will constrain future callers.",
         "A consequential design choice has several plausible alternatives."
       ],
-      "usage": "Load skills/architect/SKILL.md through the host’s available skill mechanism, or read the source directly. Use architect to design the import pipeline and compare meaningful alternatives. Stop at the selected design. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
+      "usage": "Load skills/architect/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use architect to design the import pipeline and compare meaningful alternatives. Stop at the selected design. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Ground the design in intended behavior and the existing subsystem; use how when context is unfamiliar.",
         "Sketch caller usage, types, signatures, state ownership and recovery behavior before filling in implementation.",
@@ -407,7 +407,7 @@
         "A design or artifact is expensive to change later and independent alternatives are useful.",
         "You need evidence for a choice rather than several variations from one ongoing conversation."
       ],
-      "usage": "Load skills/arena/SKILL.md through the host’s available skill mechanism, or read the source directly. Use arena to compare cache-key designs against the same migration and correctness constraints.",
+      "usage": "Load skills/arena/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use arena to compare cache-key designs against the same migration and correctness constraints.",
       "behavior": [
         "Freeze the brief, input revisions, acceptance gates, comparison criteria and budget.",
         "Give each candidate its own output location and the same brief; keep candidate outputs independent.",
@@ -445,7 +445,7 @@
           ]
         ],
         "adaptation_notes": [
-          "AK defines shared comparison criteria before dispatch and uses the host’s authorized capabilities; it does not require a fixed candidate count or assume cloud runners.",
+          "AK defines shared comparison criteria before dispatch and uses the host\u2019s authorized capabilities; it does not require a fixed candidate count or assume cloud runners.",
           "Selection grants no additional implementation, publication or merge authority."
         ],
         "calls": [],
@@ -481,7 +481,7 @@
         "Inspect implementation across the five review axes, including relevant bundled security/performance checklists and dependency changes.",
         "Prioritize concrete defects and structural regressions. Give each finding a location, evidence, impact and an actionable remedy; keep style preferences distinguishable from blockers.",
         "Where authorized and useful, test a defect hypothesis in an isolated disposable copy. Separate checks actually run from author-reported results and inspection-only conclusions.",
-        "Return findings, candidate identity and verification limits using the coordinator’s schema when supplied. Review does not edit the author’s work or launch another reviewer."
+        "Return findings, candidate identity and verification limits using the coordinator\u2019s schema when supplied. Review does not edit the author\u2019s work or launch another reviewer."
       ],
       "outputs": [
         "A candidate-specific review with prioritized, actionable findings and explicit verification gaps.",
@@ -495,7 +495,7 @@
       "explanation": {
         "example": {
           "situation": "A retry change passes its happy-path test but may write a payment event twice.",
-          "youType": "Use code-review-and-quality on this pinned diff. Check retry correctness and the regression coverage; return findings without modifying the author’s work.",
+          "youType": "Use code-review-and-quality on this pinned diff. Check retry correctness and the regression coverage; return findings without modifying the author\u2019s work.",
           "whatHappens": [
             "Compare the retry contract with the tests and implementation.",
             "Trace repeated requests and inspect the deduplication boundary.",
@@ -542,7 +542,7 @@
         "A domain relationship needs concrete edge-case scenarios.",
         "An agreed term or consequential decision needs a glossary entry or ADR."
       ],
-      "usage": "Load skills/domain-modeling/SKILL.md through the host’s available skill mechanism, or read the source directly. Use domain-modeling to distinguish login, customer and billing account concepts and document the agreed terms.",
+      "usage": "Load skills/domain-modeling/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use domain-modeling to distinguish login, customer and billing account concepts and document the agreed terms.",
       "behavior": [
         "Read existing vocabulary and any context map; surface conflicts instead of silently redefining terms.",
         "Challenge vague concepts with specific scenarios and cross-check claimed behavior against code.",
@@ -606,7 +606,7 @@
         "A plan or consequential decision needs a focused interview.",
         "You want clarification in the conversation rather than glossary and ADR work."
       ],
-      "usage": "Load skills/grill-me/SKILL.md through the host’s available skill mechanism, or read the source directly. Use grill-me to clarify the export feature. Keep this to an interview. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
+      "usage": "Load skills/grill-me/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use grill-me to clarify the export feature. Keep this to an interview. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Load the grilling dependency and supply the idea, constraints and decisions already settled.",
         "Ask the currently answerable decision frontier with recommendations.",
@@ -669,7 +669,7 @@
         "Clarifying a change also requires durable domain vocabulary or decision records.",
         "An interview exposes overloaded terms that should be resolved in the project glossary."
       ],
-      "usage": "Load skills/grill-with-docs/SKILL.md through the host’s available skill mechanism, or read the source directly. Use grill-with-docs to clarify team billing and preserve agreed domain terms. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
+      "usage": "Load skills/grill-with-docs/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use grill-with-docs to clarify team billing and preserve agreed domain terms. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Load grilling for the decision interview and domain-modeling for vocabulary and durable records.",
         "Ask currently answerable questions while checking factual claims against available source.",
@@ -735,7 +735,7 @@
         "You want to stress-test a plan, decision or idea.",
         "Another workflow needs the interview method without imposing a documentation wrapper."
       ],
-      "usage": "Load skills/grilling/SKILL.md through the host’s available skill mechanism, or read the source directly. Use grilling to stress-test the export plan and ask only questions whose prerequisites are settled.",
+      "usage": "Load skills/grilling/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use grilling to stress-test the export plan and ask only questions whose prerequisites are settled.",
       "behavior": [
         "Map decisions and their prerequisites so dependent questions wait for earlier answers.",
         "Ask the current frontier in a numbered round with recommended answers; a yes accepts the recommendation.",
@@ -801,7 +801,7 @@
         "You need to understand code before editing it.",
         "You need to locate the owner of an interface, state transition or subsystem boundary."
       ],
-      "usage": "Load skills/how/SKILL.md through the host’s available skill mechanism, or read the source directly. Use how to trace notification deduplication and subscriber lookups. Keep this investigation read-only.",
+      "usage": "Load skills/how/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use how to trace notification deduplication and subscriber lookups. Keep this investigation read-only.",
       "behavior": [
         "Bound the question and identify the relevant source revision.",
         "Read directly for a narrow question; use independent read-only angles only when useful delegation is supported and authorized.",
@@ -882,7 +882,7 @@
       ],
       "explanation": {
         "example": {
-          "situation": "An export bug report says only “downloads are broken,” but reproduction shows that an empty result returns an error.",
+          "situation": "An export bug report says only \u201cdownloads are broken,\u201d but reproduction shows that an empty result returns an error.",
           "youType": "Use issue-writing to draft an issue for empty exports. Include the reproduction and checkable completion criteria; keep it local.",
           "whatHappens": [
             "State the observed failure and intended empty-export behavior.",
@@ -970,7 +970,7 @@
           ]
         ],
         "adaptation_notes": [
-          "AK condenses Addy’s planning method and incorporates adopted pstack/Matt handoff ideas. Task size follows coherent behavior rather than a fixed file or line count.",
+          "AK condenses Addy\u2019s planning method and incorporates adopted pstack/Matt handoff ideas. Task size follows coherent behavior rather than a fixed file or line count.",
           "The existing task-scoped plan remains authoritative. to-tickets consumes it when requested; swarm is a later authorized execution option, not an automatic action of planning."
         ],
         "calls": [],
@@ -1003,7 +1003,7 @@
         "A task needs reliable recovery after context loss, or concurrent tasks need separate planning records.",
         "Existing planning hooks or completion checks need an explicitly selected task record."
       ],
-      "usage": "Load skills/planning-with-files/SKILL.md. Resolve the selected project and PLAN_ID, reuse that task’s records, and create only missing planning files. Hooks and optional gated modes require actual host setup; reading the package does not enable them.",
+      "usage": "Load skills/planning-with-files/SKILL.md. Resolve the selected project and PLAN_ID, reuse that task\u2019s records, and create only missing planning files. Hooks and optional gated modes require actual host setup; reading the package does not enable them.",
       "behavior": [
         "Resolve the selected task before recovery; an invalid explicit selector or ambiguous plan selection must not silently switch to another task.",
         "Maintain task_plan.md for phases and decisions, findings.md for research, and progress.md for actions, errors and verification.",
@@ -1024,13 +1024,13 @@
       "explanation": {
         "example": {
           "situation": "An investigation will span several sessions, and another task already has an unfinished plan in the repository.",
-          "youType": "Use planning-with-files to keep a separate notebook for the export investigation and resume from it next time. Preserve the other task’s plan.",
+          "youType": "Use planning-with-files to keep a separate notebook for the export investigation and resume from it next time. Preserve the other task\u2019s plan.",
           "whatHappens": [
             "Resolve or create the intended task record and establish its selection.",
             "Record phases, research and progress in their respective files.",
             "On resume, read that selected notebook and continue from the recorded next action."
           ],
-          "youGet": "Continuity for the investigation without mixing another task’s history into it."
+          "youGet": "Continuity for the investigation without mixing another task\u2019s history into it."
         },
         "flows": [
           [
@@ -1043,7 +1043,7 @@
         ],
         "adaptation_notes": [
           "The adopted package retains its upstream method. Its notebook complements task decomposition; it does not create another set of PR boundaries or replace tracker-owned status.",
-          "Host hooks, plugin commands and gated modes are installation-dependent. A tool subprocess setting PLAN_ID does not bind an already-running parent host’s hooks.",
+          "Host hooks, plugin commands and gated modes are installation-dependent. A tool subprocess setting PLAN_ID does not bind an already-running parent host\u2019s hooks.",
           "Selected pinned POSIX account hooks are delivered by the account installer; native trust and event execution still require target-client verification."
         ],
         "calls": [],
@@ -1080,8 +1080,8 @@
       "behavior": [
         "Reuse project verifier feature/scenario IDs and user paths when available; reuse captures only when their revision and scenario still match.",
         "Walk the actual product journey and capture useful controls and outcomes within authorization. Use synthetic data and inspect every screenshot for private content.",
-        "Write editable JSON with prerequisites, user actions, expected results and specific captions in the audience’s language; retain screenshots beside the source.",
-        "Build the PDF with the packaged script and a compatible font for non-ASCII content. Keep draft outputs in the destination’s local artifact area until reviewed.",
+        "Write editable JSON with prerequisites, user actions, expected results and specific captions in the audience\u2019s language; retain screenshots beside the source.",
+        "Build the PDF with the packaged script and a compatible font for non-ASCII content. Keep draft outputs in the destination\u2019s local artifact area until reviewed.",
         "Extract text and page count, render every page and visually inspect labels, cropping, layout, glyphs and captions. Repair and rerender when needed.",
         "Deliver the PDF, source and sanitized screenshots with the product revision, scenarios exercised and checks actually performed."
       ],
@@ -1247,7 +1247,7 @@
         "Ready implementation slices have isolated ownership and verified prerequisites.",
         "You want a bounded candidate race; use arena when independent judging and synthesis are needed."
       ],
-      "usage": "Load skills/swarm/SKILL.md through the host’s available skill mechanism, or read the source directly. Use swarm to check three independent packages with isolated outputs and one evidence-backed report.",
+      "usage": "Load skills/swarm/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use swarm to check three independent packages with isolated outputs and one evidence-backed report.",
       "behavior": [
         "Choose coverage, race or dependency-aware implementation and freeze the worker contract and budget.",
         "Declare inputs, owned outputs, allowed actions, acceptance checks and PASS / ISSUES / BLOCKED return evidence.",
@@ -1270,7 +1270,7 @@
           "youType": "Use swarm to check three independent packages with isolated outputs and one evidence-backed report.",
           "whatHappens": [
             "Assign independent scopes and the same acceptance contract.",
-            "Collect each worker’s result and proof.",
+            "Collect each worker\u2019s result and proof.",
             "Report supported outcomes and gaps; do not count missing workers as passes."
           ],
           "youGet": "One consolidated report; implementation variants also receive integrated verification."
@@ -1642,7 +1642,7 @@
         "A requested feature should be implemented test-first, one observable behavior at a time.",
         "For a behavior-preserving refactor, establish passing coverage before and after rather than manufacturing a failure."
       ],
-      "usage": "Load skills/tdd/SKILL.md through the host’s available skill mechanism, or read the source directly. Use tdd to reproduce the duplicate write, fix it and rerun the focused regression check.",
+      "usage": "Load skills/tdd/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use tdd to reproduce the duplicate write, fix it and rerun the focused regression check.",
       "behavior": [
         "Use the nearest existing harness and caller-visible interface; keep expected results independent of the implementation.",
         "Run the smallest failing check before implementation and confirm it fails for the intended reason.",
@@ -1678,7 +1678,7 @@
           ]
         ],
         "adaptation_notes": [
-          "This collection uses the pstack-derived TDD method only; Matt’s same-named skill is not a second installed method.",
+          "This collection uses the pstack-derived TDD method only; Matt\u2019s same-named skill is not a second installed method.",
           "AK extends the original bug-fix method to test-first features and passing-coverage refactors; it does not require fresh approval of established test boundaries."
         ],
         "calls": [],
@@ -1707,7 +1707,7 @@
         "A failure is intermittent or a regression has an uncertain cause.",
         "A performance problem needs evidence against a measured baseline."
       ],
-      "usage": "Load skills/diagnosing-bugs/SKILL.md through the host’s available skill mechanism, or read the source directly. Use diagnosing-bugs to isolate the intermittent checkout failure; report evidence before proposing a fix. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
+      "usage": "Load skills/diagnosing-bugs/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use diagnosing-bugs to isolate the intermittent checkout failure; report evidence before proposing a fix. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Build a test, command or real user journey that observes the reported symptom; separate setup failure from product failure.",
         "Reduce irrelevant inputs while preserving the original reproduction for final verification.",
@@ -1774,7 +1774,7 @@
         "You are creating or maintaining a skill, policy or instruction entry point.",
         "An always-loaded instruction file has accumulated duplicate or branch-specific material."
       ],
-      "usage": "Load skills/writing-for-agents/SKILL.md through the host’s available skill mechanism, or read the source directly. Use writing-for-agents to clarify this instruction file while preserving its authority and links.",
+      "usage": "Load skills/writing-for-agents/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use writing-for-agents to clarify this instruction file while preserving its authority and links.",
       "behavior": [
         "Find the existing authority before adding a rule; link to it rather than duplicating it.",
         "State the intended task and discriminating trigger, including cases where the instruction does not apply.",
@@ -1886,7 +1886,7 @@
         "The project has no repeatable way to verify its UI, CLI, API or public library behavior.",
         "Completion claims need repeatable checks and evidence instead of source inspection alone."
       ],
-      "usage": "Load skills/create-verification-skill/SKILL.md through the host’s available skill mechanism, or read the source directly. Use create-verification-skill to establish creating and finding a record with disposable data.",
+      "usage": "Load skills/create-verification-skill/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use create-verification-skill to establish creating and finding a record with disposable data.",
       "behavior": [
         "Inspect actual startup commands, fixtures, interfaces, available tools and isolation requirements.",
         "Write one verifier covering Launch, Doctor, Drive, Evidence, Cleanup and any justified Helpers.",
@@ -1952,7 +1952,7 @@
         "New or changed features may be missing from the feature index.",
         "A scoped verifier audit or repair has been requested."
       ],
-      "usage": "Load skills/maintain-verification-skill/SKILL.md through the host’s available skill mechanism, or read the source directly. Audit the affected verifier recipes and repair confirmed documentation or locator drift.",
+      "usage": "Load skills/maintain-verification-skill/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Audit the affected verifier recipes and repair confirmed documentation or locator drift.",
       "behavior": [
         "Identify the requested verifier and coverage; audit-only work stays read-only.",
         "Compare feature recipes with source and reconcile missing, duplicate or obsolete entries.",
@@ -2118,7 +2118,7 @@
         "A plan or spec must become small, dependency-linked implementation units.",
         "Ready work and blockers need to be explicit for another agent or reviewer."
       ],
-      "usage": "Load skills/to-tickets/SKILL.md through the host’s available skill mechanism, or read the source directly. Use to-tickets to turn the agreed plan into local ticket drafts with blockers and acceptance criteria. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
+      "usage": "Load skills/to-tickets/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use to-tickets to turn the agreed plan into local ticket drafts with blockers and acceptance criteria. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Resolve the source authority, existing task graph and requested destination.",
         "Reuse planning-and-task-breakdown to repair missing decomposition in the same plan, preserving stable task IDs.",
@@ -2190,7 +2190,7 @@
         "The description, reading order or evidence does not match the current candidate.",
         "Noisy history or overly broad merge units may need a cleanup or split proposal."
       ],
-      "usage": "Load skills/make-pr-easy-to-review/SKILL.md through the host’s available skill mechanism, or read the source directly. Use make-pr-easy-to-review to draft a review path and assess whether history cleanup is needed. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
+      "usage": "Load skills/make-pr-easy-to-review/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use make-pr-easy-to-review to draft a review path and assess whether history cleanup is needed. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Resolve the real head/base revisions, repository ownership, diff, commits and current description.",
         "Identify mixed scope, noisy history, missing evidence and stale claims; size alone does not justify a split.",
@@ -2285,7 +2285,7 @@
         "The agreed change needs a durable specification across sessions.",
         "An existing spec must be updated without losing retained behavior, constraints or acceptance."
       ],
-      "usage": "Load skills/to-spec/SKILL.md through the host’s available skill mechanism, or read the source directly. Use to-spec to capture the agreed export behavior and access constraints in the existing spec. Do not publish tickets.",
+      "usage": "Load skills/to-spec/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use to-spec to capture the agreed export behavior and access constraints in the existing spec. Do not publish tickets.",
       "behavior": [
         "Locate the current requirements authority, spec, glossary and relevant source evidence.",
         "Preserve agreed scope and distinguish retained, changed and new behavior where it matters.",
@@ -2323,7 +2323,7 @@
           ]
         ],
         "adaptation_notes": [
-          "Unlike the reference map’s tracker-centered flow, AK defaults to the existing spec location or a local/inline draft.",
+          "Unlike the reference map\u2019s tracker-centered flow, AK defaults to the existing spec location or a local/inline draft.",
           "It requires no tracker, ready-for-agent label, fixed test-seam count or routine reconfirmation; publication stays separately authorized."
         ],
         "calls": [],
@@ -2652,21 +2652,24 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Offline synthetic grading is available; the separate native runner has selected-profile qualification, while actual task-result admission and comparisons remain pending.",
+      "summary": "Offline synthetic grading and trusted recorded-artifact admission are implemented; current-source authenticated qualification, serial reservations and actual comparisons remain pending.",
       "when": [
-        "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting."
+        "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting.",
+        "Recorded native artifact snapshots need trusted offline admission without relabeling receipts as synthetic completions."
       ],
-      "usage": "Run evaluation.py qualify, freeze a reviewed synthetic case/spec, then report every scheduled completion. This tool launches no model or command.",
+      "usage": "Run evaluation.py qualify, freeze a reviewed synthetic case/spec, then report every scheduled synthetic completion. For recorded artifacts, follow the separate trial_admission.py report contract and its frozen private context. Neither route launches a model or executes task commands.",
       "behavior": [
         "Freeze case and counterpart, both arms, model/tools/environment identities, repetitions and time/token/request budgets.",
         "Calibrate deterministic checks; separate outcome, routing, adherence, exposure and MCP dimensions.",
         "Keep every missing, failed, duplicate and blocked trial in the denominator; summarize improved, regressed, concordant and unresolved pairs by dimension. Unknown usage never becomes zero.",
         "Report stale experiments as blocked; forged qualification claims cannot enable live grading. Diagnostic results cannot authorize promotion or installation.",
         "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion.",
-        "Follow the improvement-loop implementation handoff for task-result collection and protected grading; native execution receipts alone are not graded completions."
+        "Admit only source-bound owned attempt journals with matching maintained execution/grading/collection qualification; missing current authenticated proof remains blocked. Artifact hashes do not establish routing, exposure or quiescent task state.",
+        "Native attempts preserve all submissions and unknown costs, charge one observed cumulative usage total per distinct attempt, and keep failed or unassigned attempts visible."
       ],
       "outputs": [
-        "Frozen trial inventory and deterministic development report with explicit live_eligible=false and promotion=inconclusive."
+        "Frozen trial inventory and deterministic development report with explicit live_eligible=false and promotion=inconclusive.",
+        "A distinct native artifact development report with admission blockers and attempt accounting; no operational promotion claim."
       ],
       "tags": [
         "self-improvement",
@@ -2787,7 +2790,7 @@
       "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands. For the reusable app-server/remote-executor fixture, follow docs/decisions/native-execution-fixture.md and run native_execution.py with a reviewed private plan and a new private output directory. This separate fixture needs Python 3.11+ and an already isolated executor. See docs/native-trials.md for the separate fixed loader scenario and source-bound frozen-trial controller; do not reuse historical results as current-profile proof.",
       "behavior": [
         "Initializes the real client, discovers a synthetic skill and exercises a mock Responses turn and native command.",
-        "Checks the exact image/runtime/namespace/resource boundary, observed seccomp mode and IPv4/IPv6 TCP denial; cleanup targets only this run’s ownership label.",
+        "Checks the exact image/runtime/namespace/resource boundary, observed seccomp mode and IPv4/IPv6 TCP denial; cleanup targets only this run\u2019s ownership label.",
         "Requires positive fixture operations, denied outside file and IPv4/IPv6 probes, observed tool exit 3, turn completion and cleanup.",
         "Native synthetic qualification does not qualify live authentication, model quality, holdout custody or promotion.",
         "Preserves the primary failure and reports timed-out container creation as uncertain cleanup with retained staging.",
@@ -2817,7 +2820,7 @@
         "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission.",
         "A trial needs declared output hashes or explicit missing files captured before owned cleanup, without retaining arbitrary native content."
       ],
-      "usage": "Read docs/native-trials.md. Check the exact private plan without authentication or process launch; run requires a separate explicit auth-source. Recover only the original owned attempt. Use native_execution.py separately for the credential-free command-skills-loader fixture. Declare collection only for trial mode; follow the guide, source-bound collection record and screenshot walkthrough before interpreting the snapshot.",
+      "usage": "Read docs/native-trials.md. Check the exact private plan without authentication or process launch; run requires a separate explicit auth-source. Recover only the original owned attempt. Use native_execution.py separately for the credential-free command-skills-loader fixture. Declare collection only for trial mode; follow the guide, source-bound collection record and screenshot walkthrough before interpreting the snapshot. Recorded snapshots can be submitted through the separate trusted offline admission contract; current qualification must match and remains pending for authentication.",
       "behavior": [
         "Bind selected case/bundle, source/runtime/profile, trial/attempt identities and declared limits before launch; changed or duplicate inputs refuse.",
         "Keep one temporary credential copy with the trusted host client outside the remote OS executor; readonly /runtime/arm and /runtime/qualification.js are distinct from editable case files.",
