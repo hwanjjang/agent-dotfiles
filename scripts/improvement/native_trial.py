@@ -721,10 +721,15 @@ class Controller:
         self.checked(['cp', str(staged)+'/.', self.ids['stage']+':/runtime'])
         self.checked(['rm', '-f', self.ids['stage']])
         self.create_container(stage=False)
+        bundle_paths = sorted(name for kind, name in self.selected.files if kind == 'bundle')
+        # Natural routing has no selected entrypoint. This file is used only
+        # for the readonly-arm denial probe, never as a model instruction.
+        probe = (bundle_paths[0] if self.data.get('routing', {}).get('mode') == 'natural'
+                 else self.data['inputs']['entrypoint'])
         payload = {'case': [{'path': name, 'bytes': base64.b64encode(content).decode('ascii')}
                             for (kind, name), content in sorted(self.selected.files.items()) if kind == 'case'],
-                   'bundle_paths': sorted(name for kind, name in self.selected.files if kind == 'bundle'),
-                   'entrypoint': self.data['inputs']['entrypoint'],
+                   'bundle_paths': bundle_paths,
+                   'entrypoint': probe,
                    'runtime_script_sha256': hashlib.sha256(self.qualification_source).hexdigest()
                        if self.qualification_source is not None else None}
         facts = json.loads(self.checked(['exec', '-i', self.ids['executor'], 'python3', '-c', MATERIALIZE],

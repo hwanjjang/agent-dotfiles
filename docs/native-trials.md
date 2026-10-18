@@ -122,6 +122,10 @@ trial inputs cannot be relabeled as that qualification. The selected bundle is
 staged at readonly `/runtime/arm`; editable case files live at `/work/project`.
 The executor does not receive the credential or journal.
 
+For natural routing, setup probes write denial on the lexicographically first
+frozen bundle file. This probe leaves the task prompt and declared catalog
+unchanged. Explicit-entrypoint plans continue probing their declared file.
+
 The required limits may be reduced but not exceed `setup_seconds=180`,
 `wall_seconds=90`, `cleanup_seconds=45`, `soft_total_tokens=131072`,
 `soft_output_tokens=4096`, and `retained_bytes=262144` (minimum retained bytes:
