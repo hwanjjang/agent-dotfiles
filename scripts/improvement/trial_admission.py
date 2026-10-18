@@ -339,7 +339,11 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
             and manifest['runtime']['metadata_digest'] == rt['metadata_digest'], 'runtime_binding')
     for name, expected in rt['runtime_digests'].items():
         p.relative(Path(manifest['runtime'][name]).name)  # Never admit credential filenames.
-        require(guard.read(manifest['runtime'][name], 512 * 1024**2, retain=False, owner=False)[1] == expected, 'runtime_changed')
+        runtime_path = p.absolute(manifest['runtime'][name], 'runtime_path')
+        cached = guard.files.get(runtime_path)
+        if not (cost_only and cached is not None and cached ==
+                (expected, p.stamp(runtime_path.lstat()), 512 * 1024**2, False)):
+            require(guard.read(runtime_path, 512 * 1024**2, retain=False, owner=False)[1] == expected, 'runtime_changed')
     folder = path / 'records'; guard.directory(folder, names=True)
     require(type(manifest['limits']['retained_bytes']) is int
             and 65536 <= manifest['limits']['retained_bytes'] <= 262144, 'record_limit')
@@ -416,7 +420,10 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
 
 
 def read_cost_facts(context, row, guard):
-    """Read bound attempt cost independently of artifact success; no lifecycle calls."""
+    """Provisional bound cost, independent of artifacts; no lifecycle calls.
+
+    The sole caller audit must validate this shared guard after ALL rows.
+    """
     batch = NativeBatch(context)
     batch.guard = guard
     info = {}
@@ -425,7 +432,6 @@ def read_cost_facts(context, row, guard):
     try:
         _read_attempt(batch, ref, {}, info, cost_only=True, expected_manifest_digest=row['manifest_digest'],
                       expected_limits=row['limits'])
-        require(guard.check(), 'cost_changed')
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
         info['complete'] = False
     finally:
