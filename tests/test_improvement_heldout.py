@@ -207,17 +207,70 @@ class HeldoutTests(unittest.TestCase):
             self.assertEqual(result['heldout']['status'],status)
             self.assertEqual(result['heldout']['future_classification'],'development_regression')
 
-    def test_known_pack_copy_in_author_materials_is_exposure(self):
-        alias=self.f.author/'requirements-copy.json';alias.write_bytes(self.f.pack.read_bytes());alias.chmod(0o600)
-        receipt=json.loads(self.f.author_receipt.read_text())
+    def record_known_pack_copy(self, fixture):
+        alias=fixture.author/'requirements-copy.json';alias.write_bytes(fixture.pack.read_bytes());alias.chmod(0o600)
+        receipt=json.loads(fixture.author_receipt.read_text())
         receipt['materials']=[dict(kind='requirements',path=str(alias),sha256=sha(alias))]
-        save(self.f.author_receipt,receipt)
-        self.f.m['contexts']['author'][0]['sha256']=sha(self.f.author_receipt)
-        self.f.m['record_digest']=ev.digest({k:v for k,v in self.f.m.items() if k!='record_digest'})
-        save(self.f.record,self.f.m)
+        save(fixture.author_receipt,receipt)
+        fixture.m['contexts']['author'][0]['sha256']=sha(fixture.author_receipt)
+        fixture.m['freeze']=fixture.anchor(12,'2026-10-18T01:04:00Z',fixture.freeze_payload())
+        fixture.m['record_digest']=ev.digest({k:v for k,v in fixture.m.items() if k!='record_digest'})
+        save(fixture.record,fixture.m)
+        if fixture.preflight.exists():
+            preflight=json.loads(fixture.preflight.read_text())
+            preflight.update(record_digest=fixture.m['record_digest'],anchor_digest=ev.digest(fixture.comments[12]))
+            save(fixture.preflight,preflight)
+
+    def test_known_pack_copy_in_author_materials_is_exposure(self):
+        self.record_known_pack_copy(self.f)
         result=self.f.recommend();self.assertEqual(result['recommendation'],'inconclusive')
         self.assertEqual(result['heldout']['status'],'exposed')
         self.assertEqual(result['heldout']['future_classification'],'development_regression')
+
+    def test_known_pack_exposure_cannot_mask_local_tampering_or_overlap(self):
+        for fault in ('dispatch','content'):
+            with self.subTest(fault=fault):
+                other=FakeHeldout(overlap='content' if fault=='content' else None)
+                try:
+                    self.record_known_pack_copy(other)
+                    if fault=='dispatch':other.dispatch.write_bytes(other.dispatch.read_bytes()+b' ')
+                    result=other.recommend()
+                    self.assertEqual(result['recommendation'],'reject')
+                    self.assertEqual(result['heldout']['status'],'invalid')
+                    self.assertIn('heldout_cases_overlap' if fault=='content' else 'invalid_heldout_evidence',result['reasons'])
+                    self.assertEqual(result['heldout']['future_classification'],'same_host_heldout')
+                finally:other.close()
+
+    def test_known_pack_exposure_refuses_run_before_reservation(self):
+        other=FakeHeldout(execute=False)
+        try:
+            self.record_known_pack_copy(other)
+            with patch.object(heldout,'_comment',side_effect=lambda ref:other.comments[ref['comment_id']]),patch.object(reservation,'run_next') as run,patch.object(reservation,'Lease') as lease:
+                with self.assertRaisesRegex(ValueError,'heldout_exposed'):
+                    heldout.run_next(str(other.record),other.held.plans[0],Path('/synthetic-not-opened/auth.json'))
+                run.assert_not_called();lease.assert_not_called()
+            self.assertFalse(other.preflight.exists())
+        finally:other.close()
+
+    def test_final_source_uncertainty_preserves_established_rejection(self):
+        for fault in ('development','local_receipt'):
+            with self.subTest(fault=fault):
+                other=FakeHeldout()
+                try:
+                    if fault=='development':
+                        for trial,ref in zip(other.dev.f.experiment['trials'],other.refs(other.dev)):
+                            if trial['arm']=='candidate':
+                                other.dev.f.mutate(ref,'collection_result',lambda row:row['snapshot']['files'][0].update(sha256='f'*64))
+                                other.dev.f.mutate(ref,'receipt',lambda row:row['collection']['snapshot']['files'][0].update(sha256='f'*64))
+                    else:other.dispatch.write_bytes(other.dispatch.read_bytes()+b' ')
+                    with patch.object(gate,'verify_source',side_effect=[other.source,subprocess.TimeoutExpired(['git'],1)]) as verify:
+                        result=other.recommend()
+                    self.assertEqual(verify.call_count,2)
+                    self.assertEqual(result['recommendation'],'reject')
+                    self.assertIn('source_unavailable',result['reasons'])
+                    self.assertIn('critical_violation' if fault=='development' else 'invalid_heldout_evidence',result['reasons'])
+                    if fault=='local_receipt':self.assertEqual(result['heldout']['status'],'invalid')
+                finally:other.close()
 
     def test_workspace_alias_cannot_hide_pack_containment(self):
         alias=self.f.root/'workspace-alias';alias.symlink_to(self.f.area,target_is_directory=True)

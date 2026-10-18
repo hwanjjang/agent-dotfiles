@@ -340,7 +340,8 @@ def recommend_native(*, experiment, current_spec, context_path, attempts, report
                 ev.require(ad.same(source, again), 'source_changed')
             except (OSError, ValueError, KeyError, TypeError, UnicodeError, subprocess.SubprocessError) as error:
                 if not _source_unavailable(error):raise
-                outcome, reasons = 'inconclusive', reasons + ['source_unavailable']
+                if outcome != 'reject':outcome = 'inconclusive'
+                reasons.append('source_unavailable')
         if (not guard.check() or not ctx.guard.check() or not batch.guard.check()
                 or frozen_inputs != ev.digest([experiment, current_spec])
                 or (not batch.valid(experiment, current_spec) and not batch.execution_error)):

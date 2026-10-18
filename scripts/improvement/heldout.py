@@ -21,10 +21,6 @@ class Unavailable(ValueError):
     pass
 
 
-class Exposed(ValueError):
-    pass
-
-
 def _closed(value, fields):
     require(ev.keys(value, fields), 'heldout_schema')
 
@@ -91,6 +87,7 @@ def _prepare(path, source=None):
         source = gate.verify_source(ctx,repository=m['repository'],**{k:m['source'][k] for k in ('baseline_commit','candidate_commit','component_roots')})
     require(same(source,m['source']), 'heldout_source')
     authors, author_hashes = [], []
+    known_exposed = False
     require(isinstance(m['contexts']['author'],list) and 1<=len(m['contexts']['author'])<=8, 'heldout_authors')
     for ref in m['contexts']['author']:
         _closed(ref,'context_id input_evidence_path sha256'); value = _read(guard,ref['input_evidence_path'],ref['sha256'])
@@ -107,7 +104,7 @@ def _prepare(path, source=None):
                 and guard.read(material_path,p.MAX_FILE_BYTES,private=True,retain=False)[1]==material['sha256'], 'heldout_author')
             if (material_path.resolve(strict=True)==Path(m['content']['path']).resolve(strict=True)
                     or material['sha256']==m['content']['sha256']):
-                raise Exposed('heldout_exposed')
+                known_exposed = True
         authors.append(ref['context_id']);author_hashes.append(ref['sha256'])
     require(len(authors)==len(set(authors)), 'heldout_authors')
     ref = m['contexts']['preparation'];_closed(ref,'context_id input_evidence_path sha256')
@@ -161,7 +158,7 @@ def _prepare(path, source=None):
     require(not path.parent.is_relative_to(Path(ctx.data['execution_root']))
         and p.absolute(m['preflight']['path'],'preflight_path').parent==path.parent
         and p.absolute(m['exposure']['path'],'exposure_path').parent==path.parent, 'heldout_area')
-    return m,ctx,guard,helper,[(chron['candidate_freeze_anchor'],candidate_payload,candidate),(m['freeze'],payload,anchor)],authors
+    return m,ctx,guard,helper,[(chron['candidate_freeze_anchor'],candidate_payload,candidate),(m['freeze'],payload,anchor)],authors,known_exposed
 
 
 def _preflight_value(m, ctx, helper, anchor, header):
@@ -176,7 +173,7 @@ def assess(path, development, development_report, source):
         filesystem_access='unrestricted_or_unknown',unobserved_filesystem_reads='unknown',
         trust_boundary='selected_trusted_maintainer_receipts',future_classification='same_host_heldout')
     try:
-        m,ctx,guard,helper,anchors,authors = _prepare(path,source)
+        m,ctx,guard,helper,anchors,authors,known_exposed = _prepare(path,source)
         require(same(ctx.spec['identities'],development.context.spec['identities']) and same(ctx.spec['runtime'],development.context.spec['runtime'])
             and all(same(ctx.spec[k],development.context.spec[k]) for k in ('primary_metric','regression_margin','promotion_rule'))
             and ctx.data.get('execution_root')!=development.context.data.get('execution_root'), 'heldout_comparison_binding')
@@ -196,7 +193,7 @@ def assess(path, development, development_report, source):
         exposure = _read(guard,m['exposure']['path']);_closed(exposure,'schema_version kind events')
         require(type(exposure['schema_version']) is int and exposure['schema_version']==1 and exposure['kind']=='same_host_exposure_v1'
             and isinstance(exposure['events'],list) and len(exposure['events'])<=256, 'heldout_exposure')
-        exposed,unknown = False,False
+        exposed,unknown = known_exposed,False
         for event in exposure['events']:
             _closed(event,'context_id material phase')
             require(ev.text(event['context_id'],256) and event['material'] in ('pack','case','answer','pack_read','aggregate_feedback','candidate_edit','unknown_delivery')
@@ -223,8 +220,7 @@ def assess(path, development, development_report, source):
         elif blockers:result['status']='inconclusive'
         else:result.update(status='verified',claim='not_supplied_to_recorded_author_context_during_comparison')
         require(guard.check() and ctx.guard.check() and batch.guard.check(), 'heldout_changed')
-    except Exposed:
-        result.update(status='exposed',reasons=['heldout_exposed'],future_classification='development_regression')
+        if known_exposed:result['future_classification']='development_regression'
     except Unavailable as error:
         reason = str(error) if str(error) in ('anchor_unavailable','heldout_anchor_changed','heldout_anchor_order') else 'heldout_unavailable'
         result.update(status='inconclusive',reasons=[reason])
@@ -239,7 +235,8 @@ def assess(path, development, development_report, source):
 
 def run_next(record_path, plan_path, auth_source):
     """Preflight under existing lease, then delegate ONLY to the fixed serial gate."""
-    m,ctx,guard,helper,anchors,_ = _prepare(record_path)
+    m,ctx,guard,helper,anchors,_,known_exposed = _prepare(record_path)
+    require(not known_exposed, 'heldout_exposed')
     require(ctx.qualification_error is None, 'qualification_unavailable')
     path = Path(m['preflight']['path']);lease = reservation.Lease(ctx)
     try:
