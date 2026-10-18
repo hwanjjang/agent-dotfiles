@@ -1,0 +1,33 @@
+{
+  "captured": "2026-10-18",
+  "baseline": "48b854b",
+  "status": "hash_bound_candidate",
+  "scenario": "evaluation-accounting",
+  "source_sha256": {
+    "scripts/improvement/evaluation.py": "204cbc967e8b0ee71960a99bd4db00bc7fa3552f71a8688fc961614010ca8d7c",
+    "docs/map/catalog.json": "60f2618ec8e2016dd3d2daf3619dd5281bb722cac991d1937141e13955271562",
+    "docs/map/index.html": "15fdf6155acd99b77957480e2056dd0390cbe85384835a4d2136caf833fba0c0",
+    "docs/map/workflow.html": "77607464231441cd4e486d000e4aa761e072adb81dbe76bab1a05165a6abb9cb",
+    "docs/decisions/evaluation-accounting.md": "71191b929650e6b4c00bad46bec960dfb1a26ea271c5022eee354494fcacd831",
+    "docs/verification/verify-repository/features/evaluation-accounting.md": "0e12c63a3ee77c05a8931367f93cc74e568432f6766120317a08a9804f3e0cee",
+    "docs/manual/evaluation.json": "29dc4784dce64755896db2e050074106b57f17807b3e67697903432fbeb66dac",
+    "docs/map/workflow.json": "abc998c2da5e25abca2acbc05c2a6c2475ca29769486d646b40bd8c3c3bd71b3",
+    "docs/verification/verify-repository/scripts/check-workflow.cjs": "f609b1c8b9d43d0ef9844c0074323e1f98d94fcdf8a6360bbd9352dfdbe4b8b5"
+  },
+  "images": {
+    "evaluation-map.png": "1f35f28151135e6feda04fdca141d3e0577ac49a8795aaea9e94b5676161d2ea",
+    "evaluation-result.png": "d5885ae43a638e984116a34e12325857bad54873efa75f542587b473ae1269ce"
+  },
+  "notes": [
+    "Actual catalog screenshot and explicitly browser-rendered actual CLI results; synthetic data only.",
+    "Fresh captures and two rendered PDF pages visually inspected after review corrections.",
+    "Producer compatibility uses an out-of-tree unmerged PR35 snapshot at 5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1, not an in-tree prerequisite.",
+    "Source/image/PDF hashes bind this candidate; raw synthetic CLI inputs/outputs and helpers remain private reviewer evidence.",
+    "Neither image qualifies native inference, independent holdout custody or promotion."
+  ],
+  "pdf_sha256": "e0012b12685428aa2cc1475bd42bfc8b07f66db564fc85e98a9f536b175e6529",
+  "browser": "Isolated Chrome via Playwright, actual local catalog and explicitly rendered actual synthetic CLI summary",
+  "pdf_pages": 2,
+  "pdf_text_checked": true,
+  "all_rendered_pages_visually_checked": true
+}

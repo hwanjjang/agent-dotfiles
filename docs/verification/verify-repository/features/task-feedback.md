@@ -38,8 +38,9 @@ that summary as a terminal capture or automatic privacy review. The
 In both generated maps, open Private observations. Usage must name task-bind,
 feedback-add and task-show; sources must reach the maintained guide. The reproduction
 node must distinguish implemented task feedback and reviewed synthetic case export
-from planned automatic triage. Codex collection and comparative evaluation remain
-planned in this branch.
+from planned automatic triage. Opt-in Claude/Codex collection exists with the
+native guide’s source-bound trust/platform limits; comparative model execution
+remains planned.
 
 Correction checks: the focused recovery suite covers corrupt/oversized/missing-lineage/
 symlink task cleanup without following external targets, keeping unrelated active

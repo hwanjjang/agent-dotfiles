@@ -1,8 +1,8 @@
-# Opt-in Claude observations
+# Opt-in native observations
 
-The first native adapter records bounded metadata from Claude Code's ordinary
-hooks. It reuses the [private store](README.md), consent epochs and retention.
-It is disabled by default. Codex, Hermes and custom Claude profiles are not
+The adapters record bounded metadata from Claude Code and Codex lifecycle
+hooks. They reuse the [private store](README.md), consent epochs and retention.
+Collection is disabled by default. Hermes and custom client profiles are not
 supported by this collector. The existing installer still supports Codex and
 Claude for skills, policies and planning hooks.
 
@@ -12,7 +12,7 @@ Use Python 3.11+ on macOS or Linux. Start with a disposable account and project.
 For a real account, select its existing home and an explicitly approved project.
 The grant allows metadata collection for that exact canonical directory for up
 to 30 days; subdirectories, worktrees and other projects need separate consent.
-The current installer selects **one Claude registration per account**, not every
+The current installer selects **one Claude or Codex registration per account**, not every
 grant in the store. Grant creation alone does not install or run a hook.
 
 ```sh
@@ -29,12 +29,21 @@ sh scripts/setup-account.sh update --home /path/to/account \
 
 The installer uses a committed source revision; uncommitted adapter files cannot
 be installed. Preview includes the selected project, epoch and expiry plus all
-five Claude commands in `hook_activation.claude_observation`. Applying the reviewed
+five Claude commands in `hook_activation.claude_observation`, or four Codex
+commands in `hook_activation.codex_observation`. Use `grant --client codex`
+for Codex; selecting that registration switches delivery to Codex alone. Applying the reviewed
 plan registers the callback separately from planning; it does not create consent
 or grant Codex hook trust. Existing personal settings and planning groups remain.
 Hooks execute outside the model sandbox. Close client sessions before applying
 and start a fresh session afterward. The host's settings policy may disable hooks;
-verify actual delivery before claiming collection works.
+verify actual delivery before claiming collection works. For Codex, review and
+trust the four new exact definitions in native `/hooks`; prior trust of planning
+hooks does not activate observation hooks. The installer never changes trust.
+Its preview digest identifies its review input and is not Codex
+`currentHash`. `doctor --native --client codex` checks effective discovery/trust;
+it does not prove all callbacks executed. Downgrading a selected Codex observer to
+a revision without the declared adapter capability is rejected; disable delivery
+first when that downgrade is intentional.
 
 Normal updates retain the selected epoch, including after expiry or revocation;
 they never renew consent. Run `doctor` to check the selected grant and source
@@ -47,7 +56,7 @@ python3.11 scripts/improvement/observations.py --home /path/to/account \
 ```
 
 To stop and remove collected data, revoke first. The callback then returns
-silently without reading its stdin, even if its installed registration remains.
+without reading its stdin, even if its installed registration remains.
 
 ```sh
 python3.11 scripts/improvement/observations.py --home /path/to/account \
@@ -67,15 +76,19 @@ the retained frontier is carried forward automatically. Synthetic `capture` and
 
 ## What is observable
 
-| Claude callback | Stored kind | Meaning |
+| Callback | Stored kind | Meaning |
 | --- | --- | --- |
 | SessionStart | session_start | A session callback arrived; no actor identity inferred. |
 | PreToolUse | tool_start | A tool was about to run; pending, not proof of execution. |
 | PostToolUse | tool_end | A result callback arrived; status stays unknown, not a test-pass claim. |
-| PostToolUseFailure | tool_end | Claude reported a tool failure; no error text retained. |
+| PostToolUseFailure (Claude only) | tool_end | Claude reported a tool failure; no error text retained. |
 | Stop | response_end | A response boundary, never task completion. |
 
-Only bounded session/tool IDs, kind and coarse tool category survive normalization.
+Only bounded session/tool IDs, Codex turn IDs, kind and coarse tool category
+survive normalization. Codex has no `PostToolUseFailure` callback; its
+`PostToolUse` also follows nonzero shell exits and always retains unknown status.
+`apply_patch` becomes the file category. Unified-exec polling can deliver the
+original tool end later; hosted tools have no guaranteed hook coverage.
 The project path stays in its private grant; records use a project digest. Tool
 names become `shell`, `file`, `mcp` or `other`; private MCP names are not retained.
 Prompts, tool arguments/results, assistant messages and transcript paths are
@@ -83,22 +96,34 @@ discarded and never dereferenced. Raw hook payloads are not written to disk or s
 over the network. Grant validation and exact process working-directory validation precede ledger scans and reading/parsing bounded stdin. The payload cwd is checked again afterward. Moving into a subdirectory or another worktree fails closed until that exact project is separately granted. See the [official hook directory contract](https://code.claude.com/docs/en/hooks#reference-scripts-by-path); the session-start project variable alone is insufficient after a directory change.
 
 Tool callback identity combines registration, epoch, session, event name and tool
-ID, so duplicate routes sharing that scope deduplicate. Start/end/failure callbacks
+ID (plus the explicit turn ID for Codex), so duplicate routes sharing that
+scope deduplicate. Codex tool events without a turn ID retain duplicate
+uncertainty rather than inventing identity. Start/end/failure callbacks
 remain separate. Missing stable IDs, including SessionStart and Stop, retain
-`possible_duplicate`; repeated text is not identity. Actor/parent/turn, source
-event time, environment revision, effective skill exposure and task outcome remain
-unknown. These records cannot establish a false-success claim without separately
+`possible_duplicate`; repeated text is not identity. Actor/parent identity, Claude turn identity, source
+event time, effective skill exposure and task outcome remain unknown. SessionStart
+and Stop additionally capture bounded delivery snapshots: observed receipt/source
+identity, four component hashes, drift and explicit coverage gaps. Tool events do
+not inherit these snapshots; mid-turn identity remains unknown. See
+[capacity and attribution](capacity.md). These records cannot establish a false-success claim without separately
 selected feedback or evidence. Not all denied, interrupted or rejected tools emit
 the registered callbacks; do not derive task success or a complete failure rate.
 
 The adapter bounds stdin to 128 KiB, uses a three-second process alarm and a
-four-second client hook timeout, and emits no stdout/stderr or decisions on normal
-success, rejection, disabled consent or handled failure. It never rewrites tools,
+four-second client hook timeout. Claude emits no stdout/stderr; Codex emits
+only neutral `{}` JSON because its Stop output contract expects JSON. Neither
+returns decisions on success, rejection, disabled consent or handled failure. It never rewrites tools,
 approves permissions, injects context or requests continuation. Slow storage,
 malformed/oversized input, contention and crashes can lose callbacks. There is no
 background retry or delivery-loss counter; completeness is explicitly unknown.
-The existing 4,095-record cap and ledger scan remain. This is a bounded pilot,
-not the design's 10,000-event/p95 latency qualification.
+Native capture reserves sequence numbers durably before writing each immutable
+record. Interrupted reservations leave gaps and never count as events or success.
+Direct replay lookup avoids rereading the ledger. Fresh version-2 captures below
+the conservative reservation bound do not enumerate filenames; at or above that
+bound they enumerate under the same store guard. The 10,000-event subprocess qualification
+passes capacity/recovery and measured p95 48.16 ms against the proposed under-50 ms
+target on one reference-host run; this is not a cross-host latency guarantee. The hard ceiling is 16,383 records, with only 10,000 qualified by
+that run; native host scheduling and field delivery completeness remain unknown.
 
 ## Qualification and references
 
@@ -121,7 +146,214 @@ This is original MIT-licensed repository code, not imported hook middleware.
 The [Claude hook reference](https://code.claude.com/docs/en/hooks), inspected
 2026-10-18, defines event fields, failure gaps and hook behavior. The
 [Codex hook reference](https://learn.chatgpt.com/docs/hooks) documents its separate
-events and exact-definition trust; it needs independent adapter qualification.
+events and exact-definition trust. Codex fixture and disposable delivery checks
+cover normalization, one-client selection, neutral output and revocation. The
+following native results are separate from those synthetic checks.
+
+### Native platform evidence — 2026-10-18
+
+This matrix owns the collection qualification status. Read the source boundary and
+remaining limit with every result. A client initialized successfully, a native
+callback arrived, a tool ran and a model completed a turn are distinct observations;
+none establishes task success, complete delivery or cross-platform support.
+Historical evidence remains attached to its original runtime, even when later
+source has focused or synthetic checks.
+
+| Platform/client | Actual evidence | Remaining limit |
+| --- | --- | --- |
+| macOS, Codex 0.163.0 / GPT-6-Luna low, corrected runtime | Fresh native turn: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; eleven reviewed definitions trusted | One synthetic task; no delivery-completeness, subagent or environment-exposure claim |
+| Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, historical pre-guard | Actual callbacks: session start 1, tool starts 4, tool ends 2, response end 1; planning marker present; eleven definitions trusted | Full fixture blocked by `bwrap: Failed RTM_NEWADDR`; apply_patch failed and intended exit 3 was not reached; sandbox was not weakened |
+| Linux aarch64, Codex 0.163.0, later offline prerequisite check | Native workspace read/write passed; outside write denied (EROFS 30), IPv4/IPv6 denied (EPERM 1); deliberate exit 3 preserved after an approved temporary vendor prerequisite | No authentication, model, hook or child run; [separate prerequisite qualification](#linux-offline-sandbox-prerequisite) does not requalify the historical collector fixture |
+| Linux aarch64, Claude Code 2.1.302, historical pre-guard | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
+| macOS, optional Paseo 0.11.4 / Codex 0.163.0 / GPT-6-Luna low, source `70ec2e9` | Baseline: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; native shell exits 0, 0, 3 | PostToolUse outcomes remain unknown; this bounded task does not establish effective exposure or complete delivery |
+| Same Paseo agent, planned interruption at source `70ec2e9` | Native `turn_aborted` with reason `interrupted`; one additional PreToolUse, no corresponding PostToolUse or Stop | The shell continued after the turn aborted and exited 0 with its finished marker; cancellation is not process-kill proof, and missing callbacks remain visible |
+| Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, source `329dd76` | Authenticated baseline: SessionStart 1, PreToolUse 2, PostToolUse 2, Stop 1; synthetic read/write and native exits 0 and 3; planning marker injected | Two tool-end statuses remain unknown; one bounded task after a separately approved temporary prerequisite, not complete delivery or efficacy |
+| Same Linux source, separate interruption session | Native `turn_aborted` with reason `interrupted`; SessionStart 1 and PreToolUse 1, no PostToolUse or Stop | The command continued and wrote its finished marker after abort; its final process exit was not observed; an additional read of owned distributed instructions is disclosed below |
+| Linux aarch64, Claude Code 2.1.302, source `329dd76` | Credential-free initialization and one SessionStart; fresh auth check after the approved file copy returned `loggedIn=false` | No Haiku model invocation, tool or Stop qualification; no authentication retry, new login or Keychain extraction |
+| Native provider-created subagents, any client | No actual native-child collection scenario has run | Actor/parent remain unknown; do not infer parentage from nearby records or Paseo's worker ownership |
+| WSL | No test host was available | Unverified; no WSL native collection claim |
+
+The optional Paseo baseline and interruption exercised collector source
+`70ec2e9bd079566e45457477bb9eb07d124f32a7`, including the capacity/attribution
+runtime, in a disposable account/project. This is an external native qualification
+of that source, not a model run against this later documentation-only revision.
+Paseo's managed parent relationship was observed separately; stored native
+actor/parent identities remained null. Do not substitute that managed relationship
+for provider-created child lineage. The final ledger had nine records: eight from
+the baseline and one additional tool start from the interrupted turn. The latter
+is an unresolved boundary, not evidence of a successful tool or completed task.
+
+A log-format parser failed after the valid baseline; the baseline was
+not repeated, and only the planned interruption turn resumed. A cleanup assertion
+was corrected to expect revocation's purge rather than the pre-revoke count; the
+failed receipts remain preserved. Cleanup evidence confirmed the owned agent was
+archived. Archival does not establish deletion of Paseo-managed history; history
+deletion was not verified. The owned project/workspace registry entries, temporary
+project, authentication copy and native state were
+removed; the existing parent workspace was retained. The grant was revoked, its
+records purged, and a direct
+post-revoke callback returned neutral output with zero records; this was not a
+third model turn. Existing account configuration and source remained unchanged.
+
+The fresh corrected macOS payload fixture is `edf5b11ca47140602563869a1ff11bbf0c052dac`.
+Collector, store, dispatcher and installation-harness hashes match the corrected
+parent native candidate, before the later capacity/attribution changes; the public [capture manifest](../../docs/manual/codex-observation-capture.json)
+records their identity separately from the fixture commit. The native run verifies
+the pre-read process-directory guard in its normal granted-project route. Focused
+and installed-dispatcher checks separately exercise rejection outside that root.
+
+The earlier macOS fixture `92ced4083df43a79098f220a087ef3a114d3a3b7` and Linux
+fixture `c94143ba41b050bd52701a59b1b9f167e17366c9` predate that guard. The Linux
+results remain historical partial coverage, not qualification of corrected Linux
+runtime; the separate source `329dd76` qualification below does not rewrite them. None of these runs automatically qualifies later capacity or attribution
+changes. The fresh macOS intentional shell exit 3 still produced unknown observer
+tool-end status; nested execution IDs were not joined into per-tool proof. Linux's
+unequal start/end counts remain visible instead of being labeled full coverage.
+
+Each test grant was revoked and each disposable installation removed. Post-revoke
+neutral output/no-record behavior was checked by direct installed dispatchers,
+not another model turn. Owned authentication copies/state and task daemons were
+removed; the Linux guest was restored to its stopped state. No persistent host
+account collection was activated. WSL, native subagents, parent lineage and
+comparative efficacy remain unqualified. The [Codex walkthrough](../../docs/manual/codex-observation.pdf)
+shows sanitized results; its images are browser renderings, not terminal captures.
+
+A separate Linux container experiment subsequently passed actual Codex 0.163.0
+app-server/command execution and a local synthetic Responses round trip inside an
+inspected whole-client Docker boundary (network none, read-only root, nonroot, no
+account/auth mounts). Positive file operations and negative filesystem/network
+canaries ran in native tools, including a deliberate exit 3. No observation hooks
+or trust were enabled, and no real model/provider request occurred. This qualifies
+that synthetic transport/tool boundary; it does not replace the earlier approved
+live fixture's bubblewrap blocker or qualify observer delivery, subscription
+transport, holdout efficacy or promotion.
+
+### Linux offline sandbox prerequisite
+
+A later check on 2026-10-18 KST (2026-10-17 UTC) isolated the historical Linux
+startup blocker from collector delivery. It used Ubuntu 24.04.4 LTS, Linux
+6.8.0-117-generic on aarch64, and the official Codex 0.163.0 binary. Before the
+repair, native `codex sandbox` failed with `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`;
+the bounded kernel audit recorded `net_admin` and `setpcap` denials under
+`unprivileged_userns`. The short-lived denied process was not captured in the
+parent map, so no exact parent-PID join is claimed.
+
+Following the [official sandbox prerequisites](https://learn.chatgpt.com/docs/sandboxing#prerequisites)
+and [Ubuntu AppArmor guidance](https://documentation.ubuntu.com/security/security-features/privilege-restriction/apparmor/),
+a separately approved guest-only trial installed Ubuntu `bubblewrap`
+`0.9.0-1ubuntu0.3` and temporarily loaded the exact `bwrap-userns-restrict`
+vendor profile extracted from `apparmor-profiles`
+`4.0.1really4.0.1-0ubuntu0.24.04.9`. The latter package was **not installed**;
+unrelated profiles were not activated. Ubuntu InRelease signatures, Packages
+index hashes and package hashes were verified before using these bytes. The
+profile parsed with the existing AppArmor
+`4.0.1really4.0.1-0ubuntu0.24.04.6` parser without an AppArmor upgrade.
+
+| Qualified input | SHA256 |
+| --- | --- |
+| Official Codex 0.163.0 aarch64 binary | `8a96f66d059d653e68bfd5f3c79337e6f1d7d170d80bf705eb7d0249b34c0ece` |
+| Ubuntu bubblewrap 0.9.0-1ubuntu0.3 arm64 package | `dce3a2e5f0302eab717a64fe9c9411fe2d40469e2a7946e0f2ce1420a61025c3` |
+| Ubuntu apparmor-profiles 4.0.1really4.0.1-0ubuntu0.24.04.9 package, extraction only | `90b02aa006eea7702cd4e851343e469e41365dda42145a3cb035de1d6c773b8c` |
+| Extracted bwrap-userns-restrict profile | `11d39094f044f0cda0febb3ad517b830301da6b2ce929664af09ee9e4dd264f9` |
+
+The guest-wide executable profile permits `/usr/bin/bwrap` to create its user
+namespace and stacks child execution under a capability-denying profile. It is
+not a grant limited to one task. Codex's inner sandbox and its normal
+[workspace permission profile](https://learn.chatgpt.com/docs/permissions)
+remained enabled; `kernel.apparmor_restrict_unprivileged_userns` remained 1.
+The bubblewrap package's maintainer script invoked a sysctl reapplication of
+`kernel.unprivileged_userns_clone=1`. The observed value stayed 1 before and after
+installation. This was an approved attempt; the script tolerates command failure,
+so a successful sysctl write was not independently observed.
+No generic profile installer or automatic account repair was added.
+
+Exactly one approved apply/check/remove invocation ran the actual native
+`codex sandbox -P :workspace` command without authentication. Its synthetic probe
+read and wrote the workspace, failed to overwrite an outside sentinel with
+EROFS (30), and received EPERM (1) for both IPv4 and IPv6 connection attempts.
+The all-passing probe deliberately returned exit 3; the wrapper verified these
+observations and returned 0. These are actual offline tool-boundary results,
+not a model judgment or direct-dispatcher callback simulation. No observer,
+planning hook, model or provider-created child ran in this check.
+
+Guarded removal and an independent coordinator check confirmed that the added
+package, executable, sysctl file and loaded/file profile were absent. The full
+package/profile/sysctl inventory matched its pre-apply state; owned temporary
+files and processes were absent, Docker context remained unchanged, and both
+verification guests were confirmed stopped after cleanup. This restores the
+checked runtime state, not a forensic disk snapshot: package-manager logs,
+audit records and cache metadata can remain. The earlier failed receipts and
+historical model/callback counts were preserved. This offline check did not qualify
+authenticated collection; the later source-bound run below provides separate evidence.
+
+The pinned [Codex Bubblewrap selection implementation](https://github.com/openai/codex/blob/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/sandboxing/src/bwrap.rs)
+was inspected alongside the vendor bytes. A
+[firsthand Ubuntu 24.04 workflow](https://github.com/drivelineresearch/autoresearch-claude-code/blob/6b0115b2405857c050f7b567f74ac24fe18d7d24/docs/codex-sandbox.md)
+reports selective vendor-profile extraction with Codex 0.153.4;
+[other reports](https://github.com/openai/codex/issues/14919) include compatibility
+failures affecting other Bubblewrap users. Those different clients and versions
+do not establish universal compatibility or community consensus. The bounded
+trial supports this exact guest setup; broader community validation remains
+limited.
+
+### Linux authenticated collector qualification
+
+A separate run on 2026-10-18 KST/UTC exercised committed source
+`329dd76749b4bfa50e3ed066d8177b73204bd71d` in an exclusive Ubuntu guest with
+host mounts disabled. The earlier package/profile identities above were rechecked
+against signed Ubuntu metadata. A fresh credential-free native canary reproduced
+the startup failure on this guest before the separately approved temporary
+prerequisite was applied. After application, the offline read/write and denial
+canaries passed, and the authenticated Codex baseline ran with its native
+workspace-write sandbox and tool network disabled. Actual session context recorded
+`gpt-6-luna` with low reasoning; native tool results recorded exits 0 and 3.
+The planning marker was present in injected context, and six collector records
+arrived. Both PostToolUse records retained unknown outcome despite the native
+trace's known exit codes.
+
+The second planned CLI invocation used a separate session. After its synthetic
+start marker appeared, SIGINT was sent to the native CLI. Its recorded terminal
+was `turn_aborted` with reason `interrupted`, and CLI exit was 1. The tool continued
+after that abort and wrote a finished marker. Its final process exit was not
+observed; the marker does not prove exit 0. Only SessionStart and PreToolUse were
+collected for this session, leaving the tool outcome and response boundary
+unresolved. The tool also prefixed the requested command with a read of the
+disposable installation's distributed account instructions. This departed from
+the requested command-only fixture; no credential or external-file read appeared
+in the preserved native tool call. No model retry or additional turn followed.
+
+Before these two model invocations, native startup refused the initial fixture
+layout because CODEX_HOME was inside the CLI package. The supported global
+`--no-daemon` option was verified with pinned help and credential-free startup,
+then applied as a reviewed launch-only correction. The original failure remains
+recorded; neither the home paths nor the eleven approved hook definitions changed.
+Those definitions were trusted through the native Hooks UI and checked again by
+native discovery. No trust store was edited directly. Claude's separate native
+initialization succeeded, but its approved existing-file authentication copy was
+unusable, so no Claude model invocation was made.
+
+The final Codex ledger contained eight records across the two sessions. Actor and
+parent fields stayed null with not-observed gaps; no provider-created child ran.
+Both grants were revoked, old callbacks returned neutral output with zero records,
+and both disposable installations and authentication copies were removed.
+The temporary package/profile were removed, and the full package/profile/sysctl
+inventory matched its pre-apply snapshot. All three owned fixture/repair roots and
+native processes were absent. An independent coordinator check confirmed the
+inventory and absence checks, then stopped the dedicated guest. This is checked
+runtime cleanup, not forensic disk rollback. Native discovery, direct post-revoke checks and actual model/tool traces
+remain distinct evidence; no comparative efficacy or later-source qualification
+is implied. The existing screenshot manuals retain their historical capture scope.
+
+Native-child coverage is still untried. Codex's pinned tool-hook schemas can name
+an emitting agent but do not provide a parent edge. This adapter never populates
+actor/parent fields: the store writes null with `actor_id_not_observed` and
+`parent_actor_id_not_observed` gaps. It does not register SubagentStart/SubagentStop.
+Paseo ownership of a worker is not native model-created child lineage. Missing identities stay unknown.
+The synthetic capacity check that interrupts a dispatcher after reservation proves
+reservation recovery only; it is not a native provider-turn cancellation test.
+
+The versioned input schemas reviewed for Codex CLI 0.163.0 are at
+[upstream commit 8308618](https://github.com/openai/codex/tree/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/hooks/schema/generated).
 The [stale-green discussion](https://www.reddit.com/r/ChatGPTCoding/comments/1w5y7ph/codex_hooks_give_you_no_exit_status_for_a_shell/)
 was inspected with replies on 2026-10-18 (displayed as one month old; exact date
 and client version unavailable). The author promotes their tool and reports missing

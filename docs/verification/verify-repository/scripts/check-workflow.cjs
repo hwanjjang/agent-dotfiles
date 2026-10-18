@@ -154,8 +154,8 @@ async function main() {
       ['observation-store', /synthetic|Synthetic/, 'account/observation/README.md'],
       ['improvement-case', /caller triage.*are available/, 'docs/decisions/account-improvement-loop.md'],
       ['improvement-candidate', /manual|Manual/, 'docs/decisions/account-improvement-loop.md'],
-      ['improvement-eval', /comparison runner is not implemented/, 'docs/decisions/account-improvement-loop.md'],
-      ['improvement-review', /automated promotion gate is not implemented/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-eval', /This tool launches no model or command/, 'docs/decisions/evaluation-accounting.md'],
+      ['improvement-review', /It never merges or installs/, 'docs/decisions/promotion-recommendations.md'],
       ['improvement-deploy', /automatic eval-to-deployment integration remains planned/, 'docs/decisions/account-improvement-loop.md']
     ]) {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
@@ -167,6 +167,18 @@ async function main() {
         assert.match(detail, /outcome cases require an actual failed tool/);
         assert.match(detail, /Caller triage is not automated diagnosis/);
         assert.match(detail, /not automatic sanitization/);
+      }
+      if (id === 'improvement-eval') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /4\. Eval \/ offline/);
+        assert.match(detail, /Offline accounting is available/);
+        assert.match(detail, /live runner and independent holdout qualification remain planned/);
+      }
+      if (id === 'improvement-review') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /5\. Review \/ diagnostic/);
+        assert.match(detail, /Diagnostic recommendations are available/);
+        assert.match(detail, /live promotion gate and operational eligibility remain unavailable/);
       }
       assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
       await close();

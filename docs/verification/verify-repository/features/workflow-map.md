@@ -42,9 +42,10 @@ server or account configuration is installed.
    Inspect **Self-improvement & eval (1-6)** as a separate numbered cycle:
    observation, reproduction, candidate, eval, review and deployment. Check each
    node's source and capability boundary: synthetic storage, explicit task feedback,
-   opt-in Claude metadata, reviewed synthetic case export and the installer exist;
-   automatic triage, Codex collection, model comparison and automatic promotion
-   remain planned.
+   reviewed synthetic case export, offline evaluation accounting, diagnostic recommendations
+   and the installer exist; Claude/Codex collection is available with separate
+   consent/native-trust boundaries; automatic triage, live model comparison and
+   automatic promotion remain planned.
    Search `eval` and confirm the comparison node stays visible. These nodes must
    not add mandatory PR state-machine stages.
 3. Zoom with +/-, Fit, drag the canvas and drag a node. Camera and node placement

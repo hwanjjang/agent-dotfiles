@@ -55,10 +55,13 @@ header for the cycle and each node for its status, handoff and source. Search
 `eval` or bookmark `workflow.html#skill-improvement-eval`.
 
 This is a separate improvement cycle, not six new mandatory stages in the PR
-state machine. Synthetic storage, explicit task binding/feedback, opt-in Claude collection and the
-installer exist. Evidence-bound caller triage and reviewed synthetic case export
-are available. Candidate editing uses existing manual methods. Automated diagnosis,
-Codex collection, comparative model trials and automatic promotion remain planned.
+state machine. Synthetic storage, explicit task binding/feedback, opt-in Claude/Codex
+collection, offline evaluation accounting, diagnostic recommendations and the installer
+exist. Evidence-bound caller triage and reviewed synthetic case export are available;
+reproduction and candidate editing can use existing manual methods. Codex adds four
+separately trusted observer definitions; the native guide owns platform proof and
+blockers. Automated diagnosis, live comparative model trials and automatic promotion
+remain planned.
 The catalog's **available** status means the linked guide exists, not that every
 described runtime is implemented. Node subtitles and details state these limits.
 
@@ -141,3 +144,10 @@ hashes, dependencies and adaptations. The [MIT license](vendor/super-board/LICEN
 is retained alongside the source and embedded in generated HTML. Selected reference
 explanations inform locally verified summaries; the full upstream skill catalog,
 comparative rankings, author logos and plugin installation are not included.
+
+The Observe guide also links the implemented bounded delivery snapshots and the
+10,000-callback qualification. Capacity/recovery passed the measured synthetic
+PostToolUse-only workload; the capacity guide owns the final p95 and its
+reference-host limit. SessionStart/Stop boundary probes are outside that timing. Boundary receipt hashes do not
+establish exact model exposure. The native-observation recipe owns repeatable
+checks, and the capacity guide owns its limits and measurements.
