@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-18",
+  "capture_kind": "Browser-rendered sanitized actual CLI and native-result summaries; not terminal screenshots",
+  "evidence": "../verification/native-trials.json",
+  "runtime_source_digests": {
+    "native_execution.py": "8af5040e5f24041ac13c285e5d78572cb04c5be94241a0a0a17613322bb12c32",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "ec2fa02e7d670dfbdedc43d2334d74c5395aab038abf06abd394e209951bd06a",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "090991bb9d50b44992da6f71052b5019036fd186eecbaee952f1ad6537e4e312",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "1841fad7addac7514df2014330e999a9fd4f501021a4e4a61e29b334ac5baeeb",
+    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+  },
+  "browser": "Installed Google Chrome through existing Playwright",
+  "viewport": {
+    "width": 1100,
+    "height": 700,
+    "deviceScaleFactor": 2
+  },
+  "pages": 2,
+  "text_check_passed": true,
+  "every_page_rendered_and_visually_reviewed": true,
+  "visual_result": "Both renewed PDF pages visually inspected: readable, no clipping/overlaps/missing glyphs/private paths. Actual V10 aggregate16917/204 and post-shutdown protected bytes agree with selected evidence.",
+  "artifacts_sha256": {
+    "native-trials.json": "499874fda8fa6c97e54d1577f59e65d961177932e669f487b132e4c39764239a",
+    "native-trials.pdf": "6d065c5f9914cde32b52538ba7a0a608ff08db509955d6ca241309e890cf1d29",
+    "native-trials-check.html": "e293e19a65fd6e62a5ad1c0df933075853351edd5dc7158e8cc5980123014e69",
+    "native-trials-result.html": "2f8c43f5916b30e766b407e964adfd97d27010645a6b9620d4392711c1cf3472",
+    "native-trials-check.png": "0e14967f6c19950ed51bad96d47a162926e1b158c2c24acf6bb8d4e193552b29",
+    "native-trials-result.png": "00c035159e50eb905087df469b029b3920b97fdf30a52193e261ce3b9aa3dc4a"
+  },
+  "limits": [
+    "Capture summarizes recorded actual results, not independent reproduction.",
+    "No credentials, raw native traffic or challenge value included.",
+    "Profile-specific qualification; no comparison or account activation."
+  ],
+  "evidence_attempts": {
+    "credential_free": "V9 private coordinator attestation",
+    "authenticated": "V10 public native_trial.py CLI"
+  }
+}

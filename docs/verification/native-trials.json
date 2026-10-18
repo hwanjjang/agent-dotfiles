@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-18",
+  "kind": "selected-native-trial-qualification",
+  "profile": "codex-0.163-macos-arm64-linux-arm64-v1",
+  "upstream_revision": "83086188ae0614bd882818ff1aa23f3194962012",
+  "source_digests": {
+    "native_execution.py": "8af5040e5f24041ac13c285e5d78572cb04c5be94241a0a0a17613322bb12c32",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "ec2fa02e7d670dfbdedc43d2334d74c5395aab038abf06abd394e209951bd06a",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "090991bb9d50b44992da6f71052b5019036fd186eecbaee952f1ad6537e4e312",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "1841fad7addac7514df2014330e999a9fd4f501021a4e4a61e29b334ac5baeeb",
+    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+  },
+  "runtime_digests": {
+    "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
+    "codex": "8813367285524ac798dd96d1b071aea30d58708c7226fd236cd275cf1cfdee31",
+    "docker": "5a7f2e9607d759d0ec5c35810c9548b67e1d78daa44861516e47037d7ac3bfcd",
+    "executor_archive": "9d8ecf2d19d3e184877983902d6c85de48b3888dcb72c382a8a0c975845927fb"
+  },
+  "image_digest": "sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
+  "environment": {
+    "supervisor": "macOS arm64, Python 3.14",
+    "native_client": "Codex 0.163.0",
+    "executor": "Linux arm64 in a dedicated no-host-mount VM; rootless Docker container; readonly runtime named volume; network none"
+  },
+  "credential_free": {
+    "manifest_digest": "53057075636f92783d7b5cb59de80cefcdfd9d002e58577965ef3f49cd4ae798",
+    "status": "coordinator_attested_credential_free_profile",
+    "actual_inference": false,
+    "authentication_copy": false,
+    "boundary_checks": {
+      "catalog": {
+        "advertised": {
+          "count": 10,
+          "duplicates": 0,
+          "mask": 1023,
+          "unknown": 0
+        },
+        "callable": {
+          "count": 10,
+          "duplicates": 0,
+          "mask": 1023,
+          "unknown": 0
+        }
+      },
+      "command": {
+        "fixture_read": true,
+        "ipv4_tcp_errno": 101,
+        "ipv4_udp_errno": 101,
+        "ipv6_tcp_errno": 101,
+        "ipv6_udp_errno": 101,
+        "protected_enoent": 5,
+        "root_write_errno": 30,
+        "symlink_enoent": true,
+        "traversal_enoent": true
+      },
+      "globals_imports": {
+        "globals_absent": true,
+        "imports_refused": 3
+      },
+      "mcp": {
+        "foreign_server_refused": true,
+        "resources_empty": true,
+        "templates_empty": true
+      },
+      "remaining": {
+        "image_refused": true,
+        "patch_refused": true,
+        "stdin_refused": true
+      },
+      "skills": {
+        "body": true,
+        "count": 1,
+        "foreign_refused": true,
+        "reference": true,
+        "traversal_refused": true
+      }
+    },
+    "protected_synthetic_files_unchanged": true,
+    "owned_cleanup_complete": true,
+    "status_authority": "private_coordinator_attestation",
+    "public_runner": {
+      "entrypoint": "scripts/improvement/native_execution.py",
+      "operation": "run_fixture via trusted private Python bridge",
+      "scenario": "command-skills-loader",
+      "receipt_kind": "native-remote-fixture",
+      "receipt_status": "mock_complete",
+      "direct_public_cli_invocation": false,
+      "live_eligible": false,
+      "authentication_qualified": false,
+      "isolation_qualified": false
+    },
+    "private_attestation": {
+      "attempt": "V9",
+      "scope": "Private bridge combines the public runner mock_complete result with outer protected-sentinel and owned-cleanup checks; private coordinator separately checks resource absence and VM stop. coordinator_attested_credential_free_profile is not a public native_execution CLI status.",
+      "artifacts_public": false,
+      "artifact_digests": {
+        "fixture_run.py": "324a7e249ee7ff9c81a4254c01961c1fc74ebd8f1e8a5335067adc375f59cc61",
+        "coordinate_fixture.py": "f5846714d116e596fe3569ec67af4881c874d5e853693e2fb39d0b21dced38d7",
+        "release-scope.json": "92a9a89aefa10d2c97f8c2459adba56792ff613180049d6df40d8f72e3a4dabc",
+        "root-final-audit.json": "2bf5c4d61cf37de366ff2148bef5e9b8cad2ddbc104da61015d6089c28710c08",
+        "inner-receipt.json": "19a7c07b45b4ebda893bf806aa742391a77b7ca336e7c22018f300fd4ecd0a14",
+        "outer-receipt.json": "f65021ca2091b0b6ce226fc8bf0bb97465fe30b33dd81bddb312c2a7cd410090"
+      },
+      "digest_limit": "Artifact digests identify private retained bytes; they do not make the bridge public, independently reproducible or an authenticated proof."
+    },
+    "protected_synthetic_files_unchanged_after_shutdown": true
+  },
+  "authenticated": {
+    "manifest_digest": "b0881f703c214d0cca5672b8a2c5d99f1a3b6deab3529d0de512229481c91ffb",
+    "status": "qualified_current_profile",
+    "model_requested": "gpt-6-luna",
+    "reasoning_requested": "low",
+    "initial_turns": 1,
+    "matching_completed_terminal": true,
+    "qualification": {
+      "all_routes_qualified": false,
+      "boundary_checks_verified": true,
+      "boundary_header": "completed",
+      "boundary_record_matching_mask": 63,
+      "boundary_record_seen_mask": 63,
+      "call_ids_retained": false,
+      "catalog_advertised_count": 10,
+      "catalog_advertised_duplicates": 0,
+      "catalog_advertised_mask": 1023,
+      "catalog_advertised_unknown": 0,
+      "catalog_callable_count": 10,
+      "catalog_callable_duplicates": 0,
+      "catalog_callable_mask": 1023,
+      "catalog_callable_unknown": 0,
+      "challenge_output_match": true,
+      "challenge_value_retained": false,
+      "content_hashes_retained": false,
+      "custom_tool_calls": 1,
+      "failure_stage": "unknown",
+      "final_match": true,
+      "final_messages": 1,
+      "isolation_qualified": false,
+      "items_observed": 16,
+      "live_eligible": false,
+      "matched_tool_outputs": 1,
+      "raw_contents_retained": false,
+      "reason": null,
+      "schema_version": 1,
+      "script_exact": true,
+      "status": "observed",
+      "tool_outputs_observed": 1,
+      "unexpected_items": 0
+    },
+    "reported_aggregate_tokens": {
+      "cacheWriteInputTokens": 0,
+      "cachedInputTokens": 7936,
+      "inputTokens": 16713,
+      "outputTokens": 204,
+      "reasoningOutputTokens": 0,
+      "totalTokens": 16917
+    },
+    "reported_usage_is_billing": false,
+    "model_identity_verified": false,
+    "wire_attempt_count": null,
+    "auth_copy_attempted": true,
+    "auth_copy_succeeded": true,
+    "raw_native_content_or_hashes_retained": false,
+    "challenge_value_or_hash_retained": false,
+    "protected_synthetic_files_unchanged_after_shutdown": true,
+    "owned_cleanup_complete": true,
+    "private_artifact_digests": {
+      "typed-receipt.json": "49e0cd2a6942f56c2c4b753773c1a511477a1097bb62e2e9e60833c9b0403a9e",
+      "root-final-audit.json": "8eb9fd305e320ea7adaa6a20f91e176edd0f649b3185eee5f82cbe670acc0a06",
+      "current-cli-refusals.json": "ab9af71a9e5065228fd46af85c2d9441f197f1084c5580dbf4a208eca605e0fd"
+    }
+  },
+  "cleanup": {
+    "automatic_owned_cleanup_complete": true,
+    "native_home_and_auth_absent": true,
+    "control_absent": true,
+    "saved_processes_and_groups_absent": true,
+    "containers_and_volumes_independently_absent_before_vm_stop": true,
+    "dedicated_vm_stopped": true,
+    "ambient_context_preserved": true,
+    "original_work_preserved": true
+  },
+  "current_cli_refusals": {
+    "transport_refusal": {
+      "exit": 1,
+      "result": {
+        "cleanup_complete": true,
+        "live_eligible": false,
+        "manifest_digest": "ea25a29ad14726f2435cb1d435e92f0cf9a5c88ea4fa48085d73a64b8388658d",
+        "status": "blocked"
+      }
+    },
+    "duplicate_refusal": {
+      "exit": 2,
+      "result": {
+        "reason": "attempt_exists",
+        "status": "refused"
+      }
+    },
+    "source_drift_refusal": {
+      "exit": 2,
+      "result": {
+        "reason": "source_changed",
+        "status": "refused"
+      }
+    }
+  },
+  "failure_history": {
+    "preserved": true,
+    "summary": "Earlier exact-script, inventory and supervision failures remain blocked; independently reconciled owned residue was removed. Current passes do not relabel those attempts.",
+    "decision": "https://github.com/hwanjjang/agent-dotfiles/issues/25#issuecomment-6248052239"
+  },
+  "limitations": [
+    "One pinned profile on the exercised macOS/Linux arm64 topology. Other hosts/providers remain unqualified.",
+    "Exact fixed-script qualification does not establish natural routing or every future tool path.",
+    "Current selected transport refusal is pre-authentication, not an injected exec-server disconnect.",
+    "Reported aggregate usage is not billing, wire-request count or verified backend identity; token guards are post-use soft limits.",
+    "No semantic grading, comparison admission, promotion or account activation. live_eligible remains false.",
+    "Raw synthetic credential-free trace remains local; authenticated traffic content and hashes are not published.",
+    "Selected V9 credential-free status is a private-coordinator attestation; the public native_execution runner returned mock_complete through a private bridge, not a public CLI profile-qualification status.",
+    "Previous V7/V8 source-bound results remain preserved. Selected corrected sources were renewed in V9/V10; later relevant source or environment changes require renewed qualification."
+  ],
+  "evidence_scope": {
+    "credential_free_attempt": "V9",
+    "authenticated_attempt": "V10",
+    "source_binding": "Selected corrected source_digests above, verified against both frozen-source archives and maintained source at renewal.",
+    "current_corrected_source_qualified": true,
+    "renewal_status": "selected_profile_renewed",
+    "scope_limit": "Private coordinator attestation for credential-free boundaries and one authenticated fixed-script qualification; no natural routing, general grading or comparison eligibility."
+  },
+  "previous_selected_evidence": [
+    {
+      "credential_free_attempt": "V7",
+      "authenticated_attempt": "V8",
+      "source_digests": {
+        "native_execution.py": "8af5040e5f24041ac13c285e5d78572cb04c5be94241a0a0a17613322bb12c32",
+        "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+        "native_execution_command_skills.js": "ec2fa02e7d670dfbdedc43d2334d74c5395aab038abf06abd394e209951bd06a",
+        "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+        "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+        "native_trial.py": "96155a61c91a52cc8c6bef8c5950c6d13803cd08e9e3ac7a74ac0e90eedf029d",
+        "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+        "native_trial_plan.py": "1841fad7addac7514df2014330e999a9fd4f501021a4e4a61e29b334ac5baeeb",
+        "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+        "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+        "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+      },
+      "credential_free": {
+        "manifest_digest": "41ebb639b5c10589e839bcdbce9ce7f7e79273b00b9ecb94a64a0622525f11b0",
+        "status": "qualified_credential_free_profile",
+        "status_authority": "private_coordinator_attestation",
+        "public_runner": {
+          "entrypoint": "scripts/improvement/native_execution.py",
+          "operation": "run_fixture via trusted private Python bridge",
+          "scenario": "command-skills-loader",
+          "receipt_kind": "native-remote-fixture",
+          "receipt_status": "mock_complete",
+          "direct_public_cli_invocation": false,
+          "live_eligible": false,
+          "authentication_qualified": false,
+          "isolation_qualified": false
+        },
+        "private_attestation": {
+          "attempt": "V7",
+          "scope": "Preserved V7 private bridge combined the public runner mock_complete result with outer protected-sentinel and owned-cleanup checks; its private coordinator separately checked resource absence and VM stop. V7 emitted qualified_credential_free_profile as a private attestation, not a public native_execution CLI status.",
+          "artifacts_public": false,
+          "artifact_digests": {
+            "fixture_run.py": "e3fa2eb749949e44302361cd19570a23ecf183d81c80fb0be80850cdab00cecf",
+            "coordinate_fixture.py": "98c68f5d435a6ea19923d8126bf22ac2b0d46ece1a6c7aec32fbbef543a98a92",
+            "release-scope.json": "ad3bee6abb63213742665ae53311210fe55079f4a3b275145a94d7b80ab1bb9f",
+            "inner-receipt.json": "752eaba1fcc4defb5ee2b558b877a38410bb64c4294ae32b215fe56355164908",
+            "outer-receipt.json": "c0dbe4d8c83959bdde658a39003b63a218286aaf08d34c256358752a4bd7943f",
+            "root-final-audit.json": "309c74ae0da4cdb2be3b7701409a7abd165af4f1a465203251956dc3ffbc7e8c"
+          },
+          "digest_limit": "Artifact digests identify private retained bytes; they do not make the bridge public, independently reproducible or an authenticated proof.",
+          "provenance": "Retrospectively identified from retained original V7 files; these private artifacts were not part of the original public eleven-file source binding."
+        }
+      },
+      "authenticated": {
+        "manifest_digest": "1616f6fe61c3b5fb542cc9c758e6f2087f1feaf6a48c877914b90a6247bcb433",
+        "status": "qualified_current_profile",
+        "reported_aggregate_tokens": {
+          "cacheWriteInputTokens": 0,
+          "cachedInputTokens": 7936,
+          "inputTokens": 16694,
+          "outputTokens": 185,
+          "reasoningOutputTokens": 0,
+          "totalTokens": 16879
+        }
+      },
+      "cli_refusals": {
+        "transport_refusal": {
+          "exit": 1,
+          "result": {
+            "cleanup_complete": true,
+            "live_eligible": false,
+            "manifest_digest": "8ea45658098d6b1e69f417f2351ce4b1739d7609e3ae9897601a10f8a87ffc5d",
+            "status": "blocked"
+          }
+        },
+        "duplicate_refusal": {
+          "exit": 2,
+          "result": {
+            "reason": "attempt_exists",
+            "status": "refused"
+          }
+        },
+        "source_drift_refusal": {
+          "exit": 2,
+          "result": {
+            "reason": "source_changed",
+            "status": "refused"
+          }
+        }
+      },
+      "scope": "Historical selected V7/V8 source-bound results are preserved; renewed V9/V10 evidence above applies to corrected sources."
+    }
+  ]
+}

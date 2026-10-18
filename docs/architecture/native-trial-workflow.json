@@ -1,0 +1,278 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Planned frozen trial workflow",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": ".archify/issue25-workflow-20261018-164119/issue25-workflow.html"
+  },
+  "lanes": [
+    {
+      "id": "preflight",
+      "label": "Trusted host / preflight"
+    },
+    {
+      "id": "host",
+      "label": "Trusted host / credential custody"
+    },
+    {
+      "id": "remote",
+      "label": "Isolated Linux executor"
+    },
+    {
+      "id": "evidence",
+      "label": "Trusted host / evidence"
+    },
+    {
+      "id": "exceptions",
+      "label": "Trusted host / unresolved ownership",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "plan",
+      "lane": "preflight",
+      "col": 0,
+      "type": "database",
+      "label": "Frozen trial",
+      "sublabel": "Arm / case / attempt",
+      "tag": "Bound inputs",
+      "width": 169
+    },
+    {
+      "id": "guard",
+      "lane": "preflight",
+      "col": 1,
+      "type": "security",
+      "label": "Validate drift",
+      "sublabel": "Before auth or launch",
+      "tag": "Refuse unsafe inputs",
+      "width": 169
+    },
+    {
+      "id": "custody",
+      "lane": "host",
+      "col": 1,
+      "type": "security",
+      "label": "Fresh native home",
+      "sublabel": "One temporary auth copy",
+      "tag": "Trusted host custody",
+      "width": 169
+    },
+    {
+      "id": "native",
+      "lane": "host",
+      "col": 2,
+      "type": "backend",
+      "label": "Trusted native",
+      "sublabel": "One remote environment",
+      "tag": "No local fallback",
+      "width": 169
+    },
+    {
+      "id": "executor",
+      "lane": "remote",
+      "col": 2,
+      "type": "backend",
+      "label": "Isolated executor",
+      "sublabel": "Selected arm + case only",
+      "tag": "No host / creds / graders",
+      "width": 169
+    },
+    {
+      "id": "observe",
+      "lane": "evidence",
+      "col": 2,
+      "type": "messagebus",
+      "label": "Observe / stop",
+      "sublabel": "Numeric usage + terminal",
+      "tag": "No raw native content",
+      "width": 169
+    },
+    {
+      "id": "cleanup",
+      "lane": "evidence",
+      "col": 3,
+      "type": "security",
+      "label": "Owned cleanup",
+      "sublabel": "Exact process / file IDs",
+      "tag": "Uncertainty stays blocked",
+      "width": 169
+    },
+    {
+      "id": "receipt",
+      "lane": "evidence",
+      "col": 4,
+      "type": "database",
+      "label": "Typed receipt",
+      "sublabel": "Outcome + custody facts",
+      "tag": "No #26 eligibility",
+      "width": 169
+    },
+    {
+      "id": "refuse",
+      "lane": "preflight",
+      "col": 3,
+      "type": "security",
+      "label": "Preflight refusal",
+      "sublabel": "No auth copy / no launch",
+      "tag": "Preserve failed attempt",
+      "width": 169
+    },
+    {
+      "id": "residue",
+      "lane": "exceptions",
+      "col": 3,
+      "type": "security",
+      "label": "Blocked / residue",
+      "sublabel": "Keep recovery identity",
+      "tag": "Unknown shutdown: keep auth",
+      "width": 169
+    }
+  ],
+  "mainPath": [
+    "plan",
+    "guard",
+    "custody",
+    "native",
+    "executor",
+    "observe",
+    "cleanup",
+    "receipt"
+  ],
+  "edges": [
+    {
+      "id": "bind",
+      "from": "plan",
+      "to": "guard"
+    },
+    {
+      "id": "validated",
+      "from": "guard",
+      "to": "custody",
+      "label": "Valid",
+      "variant": "emphasis"
+    },
+    {
+      "id": "launch",
+      "from": "custody",
+      "to": "native",
+      "label": "Owned"
+    },
+    {
+      "id": "dispatch",
+      "from": "native",
+      "to": "executor",
+      "label": "Selected calls",
+      "variant": "emphasis"
+    },
+    {
+      "id": "observed",
+      "from": "executor",
+      "to": "observe",
+      "label": "Result / error"
+    },
+    {
+      "id": "stop",
+      "from": "observe",
+      "to": "cleanup",
+      "label": "Terminal / stop"
+    },
+    {
+      "id": "emit",
+      "from": "cleanup",
+      "to": "receipt",
+      "label": "Facts only",
+      "variant": "emphasis"
+    },
+    {
+      "id": "drift",
+      "from": "guard",
+      "to": "refuse",
+      "label": "Drift / unsafe",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "setup-failed",
+      "from": "native",
+      "to": "cleanup",
+      "label": "Failure",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "uncertain",
+      "from": "cleanup",
+      "to": "residue",
+      "label": "Unknown",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "blocked-receipt",
+      "from": "residue",
+      "to": "receipt",
+      "label": "Blocked",
+      "role": "return",
+      "variant": "security"
+    }
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "plan"
+    ],
+    "allowedTerminals": [
+      "refuse",
+      "receipt"
+    ],
+    "requiredEdges": [
+      {
+        "from": "guard",
+        "to": "refuse"
+      },
+      {
+        "from": "cleanup",
+        "to": "residue"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "plan",
+        "to": "receipt"
+      },
+      {
+        "from": "native",
+        "to": "residue"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Planned boundary",
+      "items": [
+        "The trusted host holds temporary credentials and first-party transport.",
+        "The executor has no host binds, account history, other arms or grader material."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Limits and refusal",
+      "items": [
+        "Metadata compatibility is checked before the initial model turn; unknown means stop.",
+        "Usage guards are post-use. A stop never gains another turn or renewed deadline."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Receipt is not admission",
+      "items": [
+        "Cleanup uncertainty preserves a blocked outcome and exact recovery identity.",
+        "Authentication, targeted access, isolation and later #26 admission remain distinct. No working public command is claimed."
+      ]
+    }
+  ]
+}

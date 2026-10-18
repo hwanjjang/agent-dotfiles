@@ -33,3 +33,14 @@ def gate(c):
     if set(c['nested'])-NESTED_ALLOWED:raise ValueError('unaudited nested routes')
     if not {'exec_command','apply_patch','view_image','write_stdin'}<=set(c['nested']):raise ValueError('required nested route missing')
     return True
+
+
+def boundary_gate(value):
+    """The fixed command/skills probe covers exactly this advertised inventory.
+
+    This is a profile preflight, not proof that a callable is disabled or remote.
+    """
+    gate(value)
+    if len(value['nested']) != len(NESTED_ALLOWED) or set(value['nested']) != NESTED_ALLOWED:
+        raise ValueError('boundary_inventory_incomplete_or_duplicate')
+    return True

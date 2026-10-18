@@ -38,6 +38,17 @@ explicit native opt-in, verification and revocation. The bilingual editions' nat
 collection status describes their earlier capture baseline; current support is
 documented in that guide. No screenshot here is evidence of native collection.
 
+## Current held-out design amendment — 2026-10-18
+
+The editable `eval-plan.example.json` now follows the
+[same-host held-out protocol](../../decisions/account-improvement-loop.md#same-host-held-out-evaluation):
+fresh contexts and recorded exposure on the existing host/account, with no external
+custodian or additional environment. The PDFs and design-illustration screenshots
+retain their explicitly dated 2026-10-17 capture baseline; they are not evidence
+of the revised protocol or an executed comparison. Use the linked design for
+current requirements. The capture hashes remain historical, not rewritten to
+claim a new capture. PDF source instructions and screenshots were not changed.
+
 ## Edit and rebuild
 
 `manual-en.json` and `manual-ko.json` are direct PDF inputs. Edit matching step IDs

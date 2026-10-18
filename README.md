@@ -169,9 +169,24 @@ no execution or real-evidence admission.
 The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
 receipts and selected native-route checks; authenticated comparison remains
-unqualified.
+unqualified. The [frozen native-trial operator guide](docs/native-trials.md)
+documents implemented `check/run/recover` and the separate credential-free
+`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current-source
+credential-free and authenticated qualification for the exercised pinned profile;
+these commands do not enable comparative evaluation or account activation. A
+[screenshot manual](docs/manual/native-trials.pdf) explains the results.
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
+
+The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
+links the remaining result-collection, grading, pilot, same-host held-out evaluation and delivery work.
+The [held-out protocol](docs/decisions/account-improvement-loop.md#same-host-held-out-evaluation)
+uses fresh contexts on the current host/account; additional hosts, accounts and
+external custodians are not required. It is planned, not implemented; account
+application remains deferred pending maintainer direction.
+It distinguishes a completed development experiment from an eligible candidate:
+no improvement is a valid result, and neither fixture tests nor a recommendation
+authorize account activation.
 
 ## Principles
 
