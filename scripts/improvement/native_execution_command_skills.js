@@ -34,8 +34,42 @@ emit('mcp',{resources_empty:true,templates_empty:true,foreign_server_refused:tru
 const hostPath=decodeURIComponent(HOST_URI.replace(/^file:\/\//,''));
 const parent=hostPath.slice(0,hostPath.lastIndexOf('/'));
 const protectedPaths=['host-only','history-only','credential-only','other-arm-only','evaluator-only'].map(x=>parent+'/'+x);
-const probe = `import errno,json,os,pathlib,socket,sys
+const probe = `import errno,json,os,pathlib,socket,subprocess,sys
 paths=json.loads(sys.argv[1]); result={}
+# This producer and its explicit child share the existing remote boundary.
+# The trusted local coordinator/scorer are not contained by this probe.
+io_source = """import errno,json,os,pathlib,sys
+def check_io(targets, output):
+ result={'fixture_read':pathlib.Path('/work/project/fixture.txt').read_text()=='ASSIGNED_REMOTE_FIXTURE'}
+ marker=b'SYNTHETIC_ASSIGNED_TASK_OUTPUT'
+ with open(output,'xb') as stream:stream.write(marker)
+ try:result['task_write_readback']=pathlib.Path(output).read_bytes()==marker
+ finally:pathlib.Path(output).unlink()
+ denied={}
+ for role,path in targets.items():
+  row={}
+  for operation in ('read','write','create'):
+   flags={'read':os.O_RDONLY,'write':os.O_WRONLY|os.O_TRUNC,'create':os.O_CREAT|os.O_EXCL|os.O_WRONLY}[operation]
+   name=path+'.new' if operation=='create' else path
+   try:
+    fd=os.open(name,flags,0o600);os.close(fd);value=0
+   except OSError as error:value=error.errno
+   row[operation+'_errno']=value
+  denied[role]=row
+ result['denied']=denied
+ return result
+"""
+exec(io_source)
+parent=str(pathlib.PurePosixPath(paths[0]).parent)
+targets={'grading':parent+'/evaluator-only','other_arm':parent+'/other-arm-only',
+ 'installer_receipt':parent+'/account/.agents/agent-dotfiles/state/installed.json',
+ 'installer_journal':parent+'/account/.agents/agent-dotfiles/state/transactions/synthetic/journal.json'}
+direct=check_io(targets,'/work/project/scoped-io-direct')
+child_source=io_source+"\\nprint(json.dumps(check_io(json.loads(sys.argv[1]),sys.argv[2]),separators=(',',':')))"
+child=subprocess.run([sys.executable,'-c',child_source,json.dumps(targets),'/work/project/scoped-io-child'],
+ capture_output=True,text=True,timeout=3)
+if child.returncode!=0 or child.stderr or len(child.stdout)>4096:raise RuntimeError('child_probe_failed')
+result['scoped_io']={'direct':direct,'child':json.loads(child.stdout)}
 result['fixture_read']=pathlib.Path('/work/project/fixture.txt').read_text()=='ASSIGNED_REMOTE_FIXTURE'
 def read_errno(path):
  try:
@@ -68,8 +102,9 @@ const quote=s=>"'"+s.replace(/'/g,"'\\''")+"'";
 const command=decoded(await tools.exec_command({cmd:'python3 -c '+quote(probe)+' '+quote(JSON.stringify(protectedPaths)),workdir:'/work/project',login:false,yield_time_ms:1000,max_output_tokens:1000}));
 requireTrue(command.exit_code===0&&!command.session_id&&typeof command.output==='string','command completion');
 const commandResult=JSON.parse(command.output.trim());
-const expectedCommand={fixture_read:true,protected_enoent:5,traversal_enoent:true,symlink_enoent:true,ipv4_tcp_errno:101,ipv4_udp_errno:101,ipv6_tcp_errno:101,ipv6_udp_errno:101,root_write_errno:30};
-requireTrue(Object.keys(commandResult).length===Object.keys(expectedCommand).length&&Object.entries(expectedCommand).every(([k,v])=>commandResult[k]===v),'command boundary');
+const scopedExpected={fixture_read:true,task_write_readback:true,denied:Object.fromEntries(['grading','other_arm','installer_receipt','installer_journal'].map(role=>[role,{read_errno:2,write_errno:2,create_errno:2}]))};
+const expectedCommand={fixture_read:true,protected_enoent:5,traversal_enoent:true,symlink_enoent:true,ipv4_tcp_errno:101,ipv4_udp_errno:101,ipv6_tcp_errno:101,ipv6_udp_errno:101,root_write_errno:30,scoped_io:{direct:scopedExpected,child:scopedExpected}};
+requireTrue(Object.keys(commandResult).length===Object.keys(expectedCommand).length&&Object.entries(expectedCommand).every(([k,v])=>JSON.stringify(commandResult[k])===JSON.stringify(v)),'command boundary');
 emit('command',commandResult);
 const list=decoded(await tools.skills__list({authority:{kind:'executor'}}));
 requireTrue(Array.isArray(list.skills)&&list.skills.length===1,'skill inventory');

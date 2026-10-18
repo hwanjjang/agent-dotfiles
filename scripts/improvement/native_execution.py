@@ -214,6 +214,18 @@ def actual_outputs(request):
                         yield part['text']
 
 
+# Fixed remote task/result producer and one explicit child; local coordinator
+# and scorer retain normal same-account access outside this execution boundary.
+SCOPED_IO_EXPECTED = {actor: {
+    'fixture_read': True, 'task_write_readback': True,
+    'denied': {role: {'read_errno': 2, 'write_errno': 2, 'create_errno': 2}
+               for role in ('grading', 'other_arm', 'installer_receipt', 'installer_journal')},
+} for actor in ('direct', 'child')}
+INSTALLER_CANARIES = (
+    'account/.agents/agent-dotfiles/state/installed.json',
+    'account/.agents/agent-dotfiles/state/transactions/synthetic/journal.json',
+)
+
 BOUNDARY_EXPECTED = {
     'catalog': {name: {'mask': 1023, 'count': 10, 'unknown': 0, 'duplicates': 0}
                 for name in ('advertised', 'callable')},
@@ -221,7 +233,8 @@ BOUNDARY_EXPECTED = {
     'mcp': {'resources_empty': True, 'templates_empty': True, 'foreign_server_refused': True},
     'command': {'fixture_read': True, 'protected_enoent': 5, 'traversal_enoent': True,
                 'symlink_enoent': True, 'ipv4_tcp_errno': 101, 'ipv4_udp_errno': 101,
-                'ipv6_tcp_errno': 101, 'ipv6_udp_errno': 101, 'root_write_errno': 30},
+                'ipv6_tcp_errno': 101, 'ipv6_udp_errno': 101, 'root_write_errno': 30,
+                'scoped_io': SCOPED_IO_EXPECTED},
     'skills': {'count': 1, 'body': True, 'reference': True,
                'foreign_refused': True, 'traversal_refused': True},
     'remaining': {'patch_refused': True, 'image_refused': True, 'stdin_refused': True},
@@ -598,13 +611,16 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES, 
         sentinel.write_text('synthetic host-only canary')
         protected = {}
         if scenario != 'completion':
-            for name in ('history-only', 'credential-only', 'other-arm-only', 'evaluator-only'):
-                (root/name).write_text('synthetic protected canary')
+            for name in ('history-only', 'credential-only', 'other-arm-only', 'evaluator-only', *INSTALLER_CANARIES):
+                target = root/name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text('synthetic protected canary')
             # Valid one-pixel PNG, not a malformed-image denial probe.
             (root/'host-only.png').write_bytes(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYPgPAAEDAQAIicLsAAAAAElFTkSuQmCC'))
-            for name in ('host-only', 'history-only', 'credential-only', 'other-arm-only', 'evaluator-only', 'host-only.png'):
+            for name in ('host-only', 'history-only', 'credential-only', 'other-arm-only', 'evaluator-only', 'host-only.png', *INSTALLER_CANARIES):
                 path = root/name
-                protected[path] = (path.read_bytes(), path.stat().st_ino)
+                info = path.stat()
+                protected[path] = (path.read_bytes(), info.st_ino, info.st_mode, info.st_mtime_ns, info.st_ctime_ns)
         provider = FixtureProvider(archive, deadline, sentinel.as_uri(), scenario=scenario,
                                    expected_script_bytes=expected_script_bytes)
         port = provider.start()
@@ -692,9 +708,13 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES, 
             # Check after owned process/listener shutdown, before deleting our
             # fixtures. A terminal event cannot hide a subsequent mutation.
             try:
-                unchanged = len(protected) == 6 and all(
-                    not path.is_symlink() and path.read_bytes() == value and path.stat().st_ino == inode
-                    for path, (value, inode) in protected.items())
+                unchanged = len(protected) == 6 + len(INSTALLER_CANARIES) and all(
+                    not path.is_symlink() and path.read_bytes() == value
+                    and (path.stat().st_ino, path.stat().st_mode, path.stat().st_mtime_ns, path.stat().st_ctime_ns)
+                        == (inode, mode, mtime, ctime)
+                    for path, (value, inode, mode, mtime, ctime) in protected.items())
+                unchanged = unchanged and all(not Path(str(path)+'.new').exists()
+                    and not Path(str(path)+'.new').is_symlink() for path in protected)
             except OSError:
                 unchanged = False
             receipt['protected_canaries_unchanged'] = unchanged

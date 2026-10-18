@@ -63,6 +63,28 @@ class ControllerTests(unittest.TestCase):
             c.deliver_challenge()
             self.assertEqual(c.checked.call_args.kwargs['payload'], c.challenge.encode())
 
+    def test_qualification_installer_canaries_and_late_mutations_are_verified(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        for mutation in ('bytes', 'mode', 'new_leaf'):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as folder:
+                controller = trial.Controller.__new__(trial.Controller)
+                controller.control = Path(folder).resolve()
+                controller.selected = SimpleNamespace(files=trial.plan.QUALIFICATION_FILES)
+                controller.data = {'inputs': {'entrypoint': 'skills/assigned/SKILL.md'}}
+                controller.protected = {}; controller.journal = Mock()
+                controller.prepare_qualification(credential_free=True)
+                target = controller.control/'protected'/trial.native_execution.INSTALLER_CANARIES[0]
+                self.assertTrue(target.is_file())
+                self.assertTrue(controller.verify_protected())
+                if mutation == 'bytes': target.write_bytes(b'SYNTHETIC_MUTATION')
+                elif mutation == 'mode': target.chmod(0o644)
+                else: Path(str(target)+'.new').write_bytes(b'SYNTHETIC_NEW_LEAF')
+                self.assertFalse(controller.verify_protected())
+                facts = controller.journal.save.call_args.args[1]
+                self.assertEqual(facts['tested_actor_scope'], 'remote_task_result_producer_and_child')
+                self.assertEqual(facts['trusted_local_controller_and_scorer_access'], 'retained')
+
     def test_journal_reserves_cleanup_and_final_receipt_capacity(self):
         with tempfile.TemporaryDirectory() as folder:
             journal = trial.Journal(Path(folder).resolve() / 'records', 65536)

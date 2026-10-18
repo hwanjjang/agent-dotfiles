@@ -1,10 +1,11 @@
 # Frozen native trials: operator guide
 
 The source implements `check`, `run` and guarded `recover` for one pinned native
-trial. **Selected V9/V10 evidence renews credential-free and authenticated qualification
-for the recorded corrected sources on 2026-10-18.** Those results apply only to
-their recorded source, runtime and environment; other hosts and comparative
-evaluation remain unqualified.
+trial. Historical V9/V10 credential-free and authenticated results apply only to
+their recorded sources. The current [scoped grading checks](verification/scoped-grading-integrity.json)
+have renewed credential-free native evidence; changed sources have not yet renewed
+authenticated qualification. Other hosts, natural routing and comparative evaluation
+remain unqualified.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -16,7 +17,7 @@ change Docker context, log in, compare arms, grade general tasks or promote chan
 ## Selected evidence and current limits
 
 The [selected evidence record](verification/native-trials.json) owns the sanitized
-V9/V10 source/profile bindings and results, with previous V7/V8 evidence preserved.
+historical V9/V10 source/profile bindings and results, with previous V7/V8 evidence preserved.
 V9's private Python bridge called the
 public `native_execution.run_fixture` API and received `mock_complete`. The bridge
 combined that result with outer protected-sentinel and cleanup checks; its private
@@ -38,6 +39,32 @@ affected checks on drift. The
 [screenshot manual](manual/native-trials.pdf), [editable source](manual/native-trials.json)
 and [workflow diagram](architecture/native-trial-workflow.html) retain their own
 source/capture provenance.
+
+## Scoped grading integrity
+
+The [current scoped evidence](verification/scoped-grading-integrity.json) verifies
+actual task read/write/readback and known protected grading, other-arm and synthetic
+installer receipt/journal read/write/create probes through a native command and an
+explicit Python child. The owner creates those eight synthetic protected files
+outside executor mounts and checks identity/content plus absence of new sibling
+files after owned shutdown. ENOENT is supported by actual owner-side existence and
+observed mount exclusion; a failed child or missing probe is not denial evidence.
+
+The local controller/scorer and same-account maintainer retain normal access.
+These probes cover remote task/result-producer paths, not hostile whole-account
+containment. No real account state, credentials or model inference is used.
+The existing fixed native fixture returned `mock_complete`; a private coordinator
+separately checked the outer boundary, owned cleanup and restored VM state.
+The first attempt hit the unchanged archive cap and remains blocked. The corrected
+bridge removed duplicate synthetic HTTP-body retention while retaining raw native
+events within the same combined cap. It is not a new public CLI status.
+
+The evaluator also rechecks frozen source/spec identities after grading. Drift
+blocks verdicts while preserving already observed critical counts as diagnostics.
+Public cases remain development data. For unseen-by-author evaluation use the
+[same-host protocol](decisions/account-improvement-loop.md#same-host-held-out-evaluation).
+Historical manuals/diagrams retain their capture/source provenance; they do not
+establish current authenticated qualification or these additional predicates.
 
 ## Next consumer: evaluation
 

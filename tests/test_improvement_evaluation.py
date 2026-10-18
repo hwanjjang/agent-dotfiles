@@ -102,6 +102,61 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(self.report([completion(self.plan,t,model='other')])['counts']['pass'],0)
         self.assertEqual(self.report([completion(self.plan,t,observations={})])['counts']['inconclusive'],8)
 
+    def test_already_stale_spec_keeps_stale_reason_without_late_drift_claim(self):
+        current = copy.deepcopy(self.spec)
+        current['runtime']['adapter'] = 'different-before-scoring'
+        report = ev.compare(self.plan, [completion(self.plan, t) for t in self.plan['trials']], current)
+        self.assertEqual(report['counts']['blocked'], len(self.plan['trials']))
+        self.assertTrue(all(t['reason'] == 'stale_experiment' for t in report['trials']))
+        self.assertIn('stale_experiment', report['blockers'])
+        self.assertNotIn('grading_identity_changed', report['blockers'])
+
+    def test_scoring_rejects_source_or_current_spec_drift_after_calibration(self):
+        for kind in ('source', 'spec', 'frozen_experiment'):
+            with self.subTest(kind=kind):
+                current = copy.deepcopy(self.spec)
+                original = ev.qualify
+                with patch.object(ev, 'source_hash', return_value=self.spec['identities']['grader']) as source:
+                    def mutate_after_calibration():
+                        result = original()
+                        if kind == 'source':
+                            source.return_value = 'e' * 64
+                        elif kind == 'spec':
+                            current['runtime']['adapter'] = 'changed-after-calibration'
+                        else:
+                            self.plan['spec']['runtime']['adapter'] = 'changed-frozen-input'
+                        return result
+                    with patch.object(ev, 'qualify', side_effect=mutate_after_calibration):
+                        report = ev.compare(self.plan, [completion(self.plan, t) for t in self.plan['trials']], current)
+                self.assertEqual(report['counts']['pass'], 0)
+                self.assertEqual(report['counts']['blocked'], len(self.plan['trials']))
+                self.assertIn('grading_identity_changed', report['blockers'])
+
+    def test_late_identity_drift_keeps_observed_critical_violation_counts(self):
+        rows = [completion(self.plan, t) for t in self.plan['trials']]
+        rows[0]['observations']['check'] = {'exit_code': 2, 'claim': 'passed'}
+        original_qualify, original_grade = ev.qualify, ev.grade_check
+        scoring = False
+        with patch.object(ev, 'source_hash', return_value=self.spec['identities']['grader']) as source:
+            def ready_after_calibration():
+                nonlocal scoring
+                result = original_qualify()
+                scoring = True
+                return result
+            def change_source_during_scoring(check, evidence):
+                result = original_grade(check, evidence)
+                if scoring:
+                    source.return_value = 'e' * 64
+                return result
+            with patch.object(ev, 'qualify', side_effect=ready_after_calibration), \
+                 patch.object(ev, 'grade_check', side_effect=change_source_during_scoring):
+                report = ev.compare(self.plan, rows, self.spec)
+        self.assertEqual(report['counts']['pass'], 0)
+        self.assertEqual(report['counts']['blocked'], len(self.plan['trials']))
+        self.assertIn('grading_identity_changed', report['blockers'])
+        self.assertEqual(report['trials'][0]['critical_violations'], 1)
+        self.assertEqual(report['critical_violations'], 1)
+
     def test_calibration_fault_and_injection_data(self):
         self.assertEqual(ev.qualify()['status'],'qualified')
         with patch.object(ev,'grade_check',return_value='pass'):
