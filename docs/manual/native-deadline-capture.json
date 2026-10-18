@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "capture_kind": "browser-rendered sanitized actual CLI and native result summaries",
+  "capture_time_utc": "2026-10-18T03:36:39.784Z",
+  "not_terminal_capture": true,
+  "actual_inference": false,
+  "authentication_qualified": false,
+  "disconnect_qualified": false,
+  "full_routes_qualified": false,
+  "runtime_sha256": {
+    "scripts/improvement/native_execution.py": "dc87b7207b9e871c44cc8c1a86fb39392861ace59b7adb687117512425f85d36",
+    "scripts/improvement/native_execution_catalog.py": "a0ca81202530693d01069de0c8cb06764a44e693c9fdd89b824dc7b82c57acc6",
+    "scripts/improvement/native_execution_cell.js": "d3581f3ca142910e5cd6d803121097d5a5c302dc668eba2ddafd24cb72fb86e1"
+  },
+  "guide": "../decisions/native-execution-fixture.md",
+  "native_client": "Codex 0.163.0",
+  "declared_model": "gpt-6-luna / low; synthetic responder only",
+  "native_observed": {
+    "status": "pass_targeted_native_response_deadline",
+    "inner_status": "blocked",
+    "reason": "Refusal:deadline",
+    "fault_observation": {
+      "checkpoint_reached": true,
+      "deadline_reached": true,
+      "response_withheld": true,
+      "scenario": "response-deadline-after-tools"
+    },
+    "submissions": 2,
+    "inner_elapsed_s": 15.044446,
+    "outer_elapsed_s": 19.06389583298005,
+    "retained_bytes": 195537,
+    "retained_limit_bytes": 262144,
+    "owned_resource_absence": true,
+    "exact_observed_process_absence": true
+  },
+  "source_evidence_sha256": {
+    "native_receipt": "3f46fec0a4ce7d8688483c99f68d9156bf278e9db84832f3db00231ff3f90f95",
+    "native_summary": "9c249d028729497542107f563bbdc5a139192f657cba8bce28239d30cb95e89b",
+    "independent_audit": "d1b0147c1e44e88d577aae3fd7bb16f00d0ad73a61eeb69e71910bc5befb16c0",
+    "CLI_deadline_receipt": "669e19157393dce296dfd209d47ded4d8e1e85902ea81b0c39beb22fdb01de75"
+  },
+  "historical_limit": "Earlier external deadline attempt remains NOT_INJECTED; prior normal native capture binds runtime0d09, not the current runner.",
+  "retention_denominator": "195537 bytes: retained outer command/identity/cleanup JSON plus inner event archive and receipt. Excludes frozen inputs, HTTP headers, bounded transient process queries, OS buffers, removed temporary files and later analysis. Not a wire/token limit.",
+  "scope_limits": [
+    "Expected negative result remains blocked with Refusal:deadline.",
+    "Independent checks cover exact observed processes and owned container/volume/control paths; arbitrary escaped descendants remain unqualified.",
+    "Separate VM preflight checked generated configuration and actual guest mounts; prior wire probe with wrong mount precondition stays partial.",
+    "No credentials, real inference, disconnect, full-route, billing or comparative evidence."
+  ],
+  "artifacts_sha256": {
+    "native-deadline.json": "7c9f9659c717ef4c261e4c2f8c3bb0dcc8e83fa66520b32b0753a478aa339456",
+    "native-deadline.pdf": "b66e158f4a463c1959f0f7d80c385ccf09e6f5e0886c53efd59071914a3ebee9",
+    "native-deadline-cli.png": "2fa1c2ff29bd45fea7f9d1ee58baca9f867fc9af224f083ff6f65efc42f46a27",
+    "native-deadline-native.png": "3bcbde5f5a16cfc9ebdb7d696b482fc92390152b3359ce5229880e08f6792b1a",
+    "native-deadline-summary.html": "e70fe347f0718b6e504de63d738eb29e6f143f72f4cd3158b7ee7265d0364529"
+  },
+  "verification": {
+    "browser": "155.0.8059.82",
+    "viewport": {
+      "width": 1000,
+      "height": 660,
+      "deviceScaleFactor": 2
+    },
+    "offline_and_no_overflow": true,
+    "browser_closed": true,
+    "pdf_pages": 2,
+    "text_check_passed": true,
+    "every_page_rendered_and_visually_inspected": true,
+    "visual_result": "Both pages readable; no clipping, overlap, missing glyphs or private host data.",
+    "render_method": "Existing screenshot-manual PDFium renderer; pypdf text/page checks."
+  }
+}

@@ -2781,7 +2781,7 @@
       "when": [
         "You need evidence that the whole native client and its tools stay inside an outer OS boundary."
       ],
-      "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands. For the reusable app-server/remote-executor fixture, follow docs/decisions/native-execution-fixture.md and run native_execution.py with a reviewed private plan and a new private output directory. This separate fixture needs Python 3.11+ and an already isolated executor.",
+      "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands. For the reusable app-server/remote-executor fixture, follow docs/decisions/native-execution-fixture.md and run native_execution.py with a reviewed private plan and a new private output directory. This separate fixture needs Python 3.11+ and an already isolated executor. Optional fixed scenario response-deadline-after-tools withholds the final response only after validated tool outputs; inspect fault_observation and retain expected blocked exit 1. Follow the linked fixture guide.",
       "behavior": [
         "Initializes the real client, discovers a synthetic skill and exercises a mock Responses turn and native command.",
         "Checks the exact image/runtime/namespace/resource boundary, observed seccomp mode and IPv4/IPv6 TCP denial; cleanup targets only this run’s ownership label.",
@@ -2789,7 +2789,8 @@
         "Native synthetic qualification does not qualify live authentication, model quality, holdout custody or promotion.",
         "Preserves the primary failure and reports timed-out container creation as uncertain cleanup with retained staging.",
         "The reusable remote-executor fixture retains success and blocked attempts, requires actual skill body/reference outputs and a matching native terminal, and checks selected disabled-tool routes.",
-        "One source-bound native mock qualified the selected workflow; live_eligible, authentication_qualified and isolation_qualified remain false in this reusable fixture receipt. Its supervisor owns separate OS and escaped-resource checks."
+        "The historical normal native mock qualified its recorded runtime only; the fixed deadline extension has separate evidence. All reusable fixture receipts keep live/auth/isolation eligibility false; the supervisor separately owns OS and escaped-resource checks.",
+        "The fixed post-tool deadline scenario distinguishes a reached checkpoint and original deadline from early cancellation or setup timeout; it stays blocked and does not prove external interruption or executor disconnect."
       ],
       "outputs": [
         "A private source-bound receipt and native trace; live transport and promotion remain false."

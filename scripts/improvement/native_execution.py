@@ -27,6 +27,7 @@ SOURCE = Path(__file__).resolve().parent
 PIN = '83086188ae0614bd882818ff1aa23f3194962012'
 MAX_BYTES = 262144
 RESERVE = 8192
+SCENARIOS = ('completion', 'response-deadline-after-tools')
 
 
 def encoded(value):
@@ -216,8 +217,13 @@ def actual_outputs(request):
 
 class FixtureProvider:
     """Exactly one fixed tool cell then final message; no upstream or credential input."""
-    def __init__(self, archive, deadline, host_uri):
+    def __init__(self, archive, deadline, host_uri, scenario='completion'):
+        if scenario not in SCENARIOS:
+            raise ValueError('unsupported_scenario')
         self.archive, self.deadline, self.host_uri = archive, deadline, host_uri
+        self.scenario = scenario
+        self.fault_observation = {'scenario': scenario, 'checkpoint_reached': False,
+            'response_withheld': False, 'deadline_reached': False}
         self.requests = 0
         self.error = None
         self.completed = False
@@ -260,6 +266,16 @@ class FixtureProvider:
                 for name, marker in [('assigned_body', 'ASSIGNED_REMOTE_SKILL_BODY'), ('assigned_reference', 'ASSIGNED_REMOTE_SKILL_REFERENCE')]:
                     if marker not in checks.get(name, {}).get('contents', ''):
                         raise Refusal('assigned_skill_evidence_missing')
+                if self.scenario == 'response-deadline-after-tools':
+                    self.archive.record('fault_checkpoint', {'scenario': self.scenario,
+                        'verified_tool_outputs': True, 'mock_submission': self.requests})
+                    self.fault_observation.update(checkpoint_reached=True, response_withheld=True)
+                    # Shutdown never needs self.lock. Wake on early cleanup as
+                    # well as the original deadline; never start a fresh budget.
+                    self.closing.wait(max(0, self.deadline-time.monotonic()))
+                    self.fault_observation['deadline_reached'] = time.monotonic() >= self.deadline
+                    raise Refusal('response_deadline_after_tools' if self.fault_observation['deadline_reached']
+                                  else 'response_hold_cancelled_before_deadline')
                 self.completed = True
                 items = [{'id': 'done', 'type': 'message', 'role': 'assistant', 'status': 'completed',
                           'content': [{'type': 'output_text', 'text': 'REMOTE_FIXTURE_COMPLETE', 'annotations': []}]}]
@@ -420,12 +436,14 @@ stream_idle_timeout_ms=10000
 '''
 
 
-def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
+def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES, scenario='completion'):
     """Trusted caller supplies exact executable argv; this does not create an OS boundary.
 
     No endpoint/auth overrides, retries, installation, containers or VM lifecycle.
     Caller owns executor isolation and independently verified escaped-child cleanup.
     """
+    if scenario not in SCENARIOS:
+        raise ValueError('unsupported_scenario')
     if os.name != 'posix' or not 0 < timeout <= 180 or type(limit) is not int or not RESERVE+4096 <= limit <= MAX_BYTES:
         raise ValueError('unsupported_platform_or_bounds')
     for argv in (command, executor):
@@ -442,7 +460,7 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
     session = provider = None
     temporary = None
     receipt = {'schema_version': 1, 'kind': 'native-remote-fixture', 'status': 'blocked',
-        'attempt_id': str(uuid.uuid4()),
+        'attempt_id': str(uuid.uuid4()), 'scenario': scenario,
         'started_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'reason': None, 'live_eligible': False, 'authentication_qualified': False,
         'isolation_qualified': False, 'source_revision': PIN,
@@ -452,6 +470,9 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
                    'generated_token_ceiling': None, 'dollar_ceiling': None},
         'usage': {'tokens': None, 'reason': 'Synthetic provider; no actual inference or real usage.'},
         'cleanup': {'executor_resources': 'external_owner_unverified', 'escaped_descendants': 'unverified'}}
+    if scenario == 'response-deadline-after-tools':
+        receipt['fault_observation'] = {'scenario': scenario, 'checkpoint_reached': False,
+            'response_withheld': False, 'deadline_reached': False}
     try:
         temporary = Path(tempfile.mkdtemp(prefix='native-fixture-')).resolve()
         root = temporary
@@ -464,7 +485,7 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
         (project/'AGENTS.md').write_text('HOST_PROJECT_INSTRUCTION_CANARY\n')
         sentinel = root/'host-only'
         sentinel.write_text('synthetic host-only canary')
-        provider = FixtureProvider(archive, deadline, sentinel.as_uri())
+        provider = FixtureProvider(archive, deadline, sentinel.as_uri(), scenario=scenario)
         port = provider.start()
         profile = PROFILE.replace('PORT', str(port))
         environments = 'default="trial"\ninclude_local=false\n[[environments]]\nid="trial"\nprogram='+json.dumps(executor[0])+'\nargs='+json.dumps(executor[1:])+'\n'
@@ -537,6 +558,8 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             # arrival: late excess submissions must invalidate earlier success.
             receipt['mock_submissions_observed'] = provider.requests
             receipt['provider_error'] = provider.error
+            if scenario == 'response-deadline-after-tools':
+                receipt['fault_observation'] = dict(provider.fault_observation)
             if provider.error or provider.requests != 2 or not provider.completed:
                 receipt['status'] = 'blocked'
                 receipt['reason'] = receipt['reason'] or 'final_mock_protocol_incomplete'
@@ -565,7 +588,7 @@ def main():
     parser.add_argument('--output', required=True, type=Path, help='New exclusive private evidence directory')
     args = parser.parse_args()
     plan = json.loads(args.plan.read_text())
-    if set(plan)-{'command', 'executor', 'timeout', 'limit'}:
+    if set(plan)-{'command', 'executor', 'timeout', 'limit', 'scenario'}:
         parser.error('Unknown plan fields; live/auth/provider overrides are unsupported')
     result = run_fixture(args.output, **plan)
     print(json.dumps({'status': result['status'], 'live_eligible': False, 'reason': result['reason']}))

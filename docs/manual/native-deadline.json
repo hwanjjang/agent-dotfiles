@@ -1,0 +1,20 @@
+{
+  "title": "Native response deadline: inspect the negative result",
+  "scenario": "Maintainer workflow for the fixed credential-free fixture. Requires a separately authorized isolated executor, pinned native client and new private output directory. Screenshots render sanitized actual CLI/native evidence in a browser; they are not terminal images or real model results.",
+  "steps": [
+    {
+      "title": "Select the scenario and retain the blocked receipt",
+      "instruction": "Use the fixture guide to prepare command/executor argv in a private plan. Set scenario to response-deadline-after-tools and keep a finite timeout. Run native_execution.py --plan /path/to/plan.json --output /path/to/new-evidence. Read receipt.json even when the CLI exits 1. The capture below used a local fake app-server.",
+      "screenshot": "native-deadline-cli.png",
+      "caption": "Actual public CLI with a fake process: the expected negative result is blocked with Refusal:deadline. The display is a browser-rendered summary, not terminal output.",
+      "expected": "Checkpoint, response_withheld and deadline_reached must all be true. A setup timeout or early close is insufficient. Never treat blocked as normal completion or ignore cleanup uncertainty."
+    },
+    {
+      "title": "Match the native source and independently check cleanup",
+      "instruction": "Match the runtime hash before reusing evidence. The native run below reached verified assigned skill body/reference and disabled-collaboration results, withheld the final synthetic response, then reached the original 15-second deadline. Check the three facts and exact owned-resource absence together.",
+      "screenshot": "native-deadline-native.png",
+      "caption": "Actual native negative-path summary on runtime dc87b7207b9e871c. The 195,537-byte supervisor total includes inner events/receipt and outer command/cleanup JSON; it is not a wire or token limit.",
+      "expected": "Targeted response-deadline check passed; the inner receipt remains blocked. No auth, live inference, executor-disconnect or full-route claim. Historical external deadline NOT_INJECTED evidence is unchanged."
+    }
+  ]
+}

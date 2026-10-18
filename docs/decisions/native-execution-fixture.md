@@ -3,9 +3,10 @@
 The runner in [native_execution.py](../../scripts/improvement/native_execution.py)
 prepares one fixed synthetic Codex app-server workflow. It is a reusable
 qualification fixture, not a live evaluation or authenticated-provider API.
-The corrected runner has local fake-process coverage and a source-bound actual
-native mock with Codex 0.163.0. That result covers the selected normal workflow,
-not authentication or every tool route. A separate controller-deadline probe
+The current runner adds a fixed post-tool response-deadline scenario. Local
+fake-process checks exercise it; actual native qualification is reported separately
+below. The earlier source-bound Codex 0.163.0 normal mock predates this extension
+and covers only its recorded runtime. A separate historical controller probe
 completed before injection and remains unqualified; it was not retried.
 
 ## Run and ownership
@@ -19,7 +20,9 @@ without a plugin manifest. Disabled plugins can otherwise filter that root.
 Supply a private JSON plan with `command` (absolute app-server executable plus
 `app-server --listen stdio://`), `executor` (absolute stdio transport executable
 plus its arguments), `timeout` (at most 180 seconds), and `limit` (at most 262144 bytes).
-No endpoint, provider, authentication, environment-variable or model overrides
+An optional `scenario` selects `completion` (the default) or
+`response-deadline-after-tools`; any other value is refused before archive or
+process creation. No endpoint, provider, authentication, environment-variable or model overrides
 are accepted. Commands are trusted maintainer inputs, not untrusted case content.
 The executor program is not launched directly by this script: the native client
 uses its explicit `environments.toml` transport. An argv or its hash does not
@@ -64,6 +67,28 @@ process is absent. Cleanup failure preserves the primary failure and receipt;
 uncertain harness cleanup retains its temporary root for its owner to inspect.
 No broad process scan/kill or externally supplied PID is used.
 
+## Deliberate response deadline
+
+Set `"scenario": "response-deadline-after-tools"` in the private plan to exercise
+a negative outcome after the assigned tool workflow. The provider first checks
+the second request's actual assigned skill body/reference and disabled-collaboration
+outputs. It then records `fault_checkpoint` and withholds the final HTTP response
+until the **original** absolute workflow deadline. It creates no new timeout or
+retry budget. Prompt echoes, missing evidence and setup timeouts cannot arm it.
+
+The receipt includes `scenario`; this negative case also includes
+`fault_observation` with `checkpoint_reached`, `response_withheld`, and
+`deadline_reached`. Early cancellation leaves the last field false. Read all three
+and the primary reason and cleanup, rather than treating any timeout as successful
+injection. The expected CLI result is exit 1 with `status: blocked`; the scenario
+never becomes `mock_complete` or live eligible. If native setup or another client
+timeout wins before the checkpoint, keep the attempt as an unqualified negative
+result instead of retrying or reporting deadline coverage.
+
+This exercises a held provider response, not an external interrupt, deliberate
+executor disconnection, detached-child cleanup or upstream cancellation. The
+reusable receipt still cannot prove external executor/escaped-resource absence.
+
 ## Receipt contract for downstream accounting
 
 Each attempt writes `events.jsonl` and `receipt.json` once. Both are private 0600
@@ -101,7 +126,48 @@ provider token/spend or universal wire-output ceiling. No guessed
 holdout requirement is introduced. Authentication and live limits need their
 own later qualification.
 
+## Current fixed-deadline qualification
+
+On 2026-10-18, one source-bound actual Codex 0.163.0 run of this extension
+reached the validated post-tool checkpoint, withheld its final response and
+observed the original 15-second deadline. The inner receipt remained
+`blocked`, reason `Refusal:deadline`, with exactly two synthetic submissions and
+all three `fault_observation` fields true. Inner elapsed time was 15.044446
+seconds; the separate supervisor took 19.063896 seconds. Owned listener, native
+process and temporary HOME cleanup completed. Independent checks verified the
+observed native/helper process identities and exact owned containers, volume and
+control directory absent. The reusable receipt itself still leaves external and
+escaped-resource cleanup unverified; that separate supervisor evidence applies
+only to this attempt.
+
+The supervisor retained 195,537 of 262,144 bytes, including its outer JSON plus
+the inner archive/receipt. This is distinct from the inner 220,000-byte cap.
+The denominator excludes frozen inputs, HTTP headers, bounded process queries,
+OS buffers, removed temporary state and later analysis. It is not a wire/token
+ceiling. The executor used a readonly owned volume without host bind mounts,
+network-none and the declared nonroot/capability/seccomp restrictions.
+The dedicated VM's actual mount table was checked before this invocation;
+configuration alone is insufficient. In the inspected Colima 0.10.3 source,
+`mounts: []` selects the default home share; explicit `--mount none` disables it.
+Check generated configuration and actual guest mounts separately before releasing
+a fixture, following [the pinned mount implementation](https://github.com/abiosoft/colima/blob/00f6c297e92a82c04a4ab507db0a61435650d7e8/environment/vm/lima/yaml.go).
+
+This is targeted provider-response deadline evidence, not an external interrupt,
+executor-disconnect, active-shell cancellation, normal final completion,
+authentication, model inference or full-route qualification. The older failed
+controller injection below remains `NOT_INJECTED`; this new fixed scenario does
+not rewrite it. Twenty-six focused local checks and a separate three-case public
+CLI fake-process smoke cover current default/deadline/refusal behavior. The
+[deadline walkthrough](../manual/native-deadline.json) and its capture receipt
+bind actual current source hashes and sanitized results.
+
 ## Evidence and sources
+
+The normal native and old controller results in this section are historical
+pre-extension evidence. They are not a fresh qualification of changed runner
+bytes. Current extension checks and their limits are recorded in the
+[deadline walkthrough](../manual/native-deadline.json).
+
 
 The design follows the maintained
 [app-server lifecycle](https://learn.chatgpt.com/docs/app-server) and pinned
