@@ -11,11 +11,11 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | workflow-map | Follow SDLC stages and find cross-stage methods | Separate local HTML UI | [Workflow map](workflow-map.md) |
 | account-installation | Install, update, remove and recover owned account content | Python CLI / disposable accounts | [Account lifecycle](account-installation.md) |
 | account-verification | Diagnose setup and exercise installed sources through an actual model; optional Paseo | CLI / native clients | [Account verification](account-verification.md) |
-| task-feedback | Bind selected observations, record feedback and revoke private task state | Synthetic CLI / disposable home | [Task feedback](task-feedback.md) |
-| reviewed-cases | Prepare, inspect, review and export a synthetic development case | Case CLI / disposable home | [Reviewed cases](reviewed-cases.md) |
-| evaluation-accounting | Freeze development evidence and account for every scheduled trial | Offline Python CLI | [Evaluation accounting](evaluation-accounting.md) |
 | native-observation | Opt in one project, verify metadata/attribution/capacity and revoke it | Observation CLI / installer / Claude and Codex hooks | [Native observations](native-observation.md) |
 | native-isolation | Qualify a synthetic native client and tool inside an outer OS boundary | Python CLI / existing Docker host | [Native isolation](native-isolation.md) |
+| evaluation-accounting | Freeze development evidence and account for every scheduled trial | Offline Python CLI | [Evaluation accounting](evaluation-accounting.md) |
+| task-feedback | Bind selected observations, record feedback and revoke private task state | Synthetic CLI / disposable home | [Task feedback](task-feedback.md) |
+| reviewed-cases | Prepare, inspect, review and export a synthetic development case | Case CLI / disposable home | [Reviewed cases](reviewed-cases.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;

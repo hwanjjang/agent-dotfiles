@@ -11,8 +11,8 @@ Open the `improvement-review` map dialog and follow its source link. Check the [
 Run both catalog and workflow-map browser verifiers. Step 5 must say diagnostic
 recommendations are available while live operational eligibility is unavailable,
 and link to the recommendation contract. Check canonical type tampering rejects.
-The inherited unmerged PR #35 producer dependency remains explicit; no prerequisite
-installation or live eligibility is established by this recipe.
+The in-tree reviewed producer is integrated with the evaluator; this recipe
+establishes neither prerequisite installation nor live eligibility.
 
 Exercise both CLI refusal contracts: malformed JSON/top-level fields exit 1 with
 a small rejection envelope; accepted outer fields with invalid nested evidence

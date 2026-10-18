@@ -102,6 +102,79 @@ The [native guide](../../account/observation/native.md) owns commands and limits
 the [recipe](../verification/verify-repository/features/native-observation.md)
 owns repeatable verification. No real-account collection was activated by this guide.
 
+## Codex and platform coverage walkthrough
+
+For current qualification status, use the
+[native platform matrix](../../account/observation/native.md#native-platform-evidence--2026-10-18).
+It owns source revisions, actual coverage, cleanup and unresolved gaps. The PDFs
+below retain their original evidence boundaries; a later status update does not
+requalify or rewrite their captures.
+
+The [three-page Codex walkthrough](codex-observation.pdf) follows the existing
+`native-observation` scenario: select one client, review native trust, inspect
+actual results and retain platform blockers. Its [editable source](codex-observation.json),
+[map capture at its capture revision](codex-observe.png), [macOS results](codex-native-result.png),
+[Linux matrix](linux-observation-result.png) and [capture manifest](codex-observation-capture.json)
+are maintained together. The two result images are browser renderings of selected
+actual qualification evidence, not terminal captures. The macOS result is a fresh
+corrected parent-native runtime run, before later capacity/attribution changes;
+Linux results remain historical pre-guard partial
+coverage and do not qualify the corrected Linux runtime. The later offline Linux
+prerequisite result is recorded in the native guide, not these historical captures.
+The native guide owns exact source revisions and coverage; the earlier Claude
+walkthrough retains its historical capture and is not a current Codex map. The
+observation dialog text has changed since these captures; their editable source
+and PDFs describe the recorded revision, not the current dialog.
+
+All three Codex PDF pages were rendered and visually inspected at their capture revision;
+text/page-count checks and browser navigation are recorded separately. Rebuild
+with the existing screenshot-manual scripts and recapture affected map dialogs
+when their metadata changes. No account installation or activation was performed
+by the documentation workflow.
+
+## Collector capacity and attribution supplement
+
+The [two-page supplement](collector-capacity.pdf), [editable source](collector-capacity.json)
+and [capture manifest](collector-capacity-capture.json) reuse `native-observation`.
+Its [capacity result image](collector-capacity-result.png) and
+[boundary snapshot image](collector-attribution-result.png) are browser renderings
+of selected actual synthetic benchmark/probe results, not terminal screenshots.
+Capacity/recovery and the p95 target passed one final reference-host run; the
+earlier candidate missed the target and remains historical evidence. Snapshot delivery hashes do not
+qualify exact exposure. Both PDF pages are rendered and visually inspected, with
+text and page count checked. Earlier native model results retain their own source
+boundaries; this supplement does not requalify them against the capacity runtime.
+
+## Native isolation qualification guide
+
+The [native isolation walkthrough](native-isolation.pdf), [editable source](native-isolation.json)
+and [actual map capture](native-isolation.png) show how to locate and expand the
+new synthetic qualification guide. The capture uses workflow digest `c8bcdb25297a`,
+isolated Chrome and public repository content only, on 2026-10-18. It is bound to
+that earlier map revision; the current map includes later main additions. It proves
+map navigation, not CLI execution. The separate maintained CLI smoke exercised the
+actual Linux client, mock turn, native failed tool and cleanup; scope and commands
+remain authoritative in the [qualification guide](../decisions/evaluation-isolation-pilot.md).
+The single PDF page was rendered with PDFium and visually inspected for readable
+text, complete capture, captions and margins; text and page count were checked
+with pypdf. Rebuild using the screenshot-manual commands above with
+`native-isolation.json`, and recapture when the documented dialog changes.
+
+## Offline development evaluation
+
+[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The captured pre-main 30-call CLI journey prepares and reviews four English/Korean development cases with the in-tree producer, then retains all 16 scheduled trials. Eight matched pairs comprise one improved, one regressed, one both-pass, one both-fail and four unresolved. Missing and duplicate evidence stays visible. This qualifies deterministic integration/accounting; native model execution and independent holdout qualification remain unavailable. Earlier eight-trial captures remain historical in Git history. This receipt is a historical pre-main capture, identified by its baseline and source/map hashes. [PR #40](https://github.com/hwanjjang/agent-dotfiles/pull/40) records the separate current-head CLI and map verification; the images and PDF have not been recaptured.
+
+Both evaluation pages were rendered with PDFium and visually checked for readable
+headings, complete intended capture regions, captions and pagination. PDF text and
+page count were checked with pypdf. The first image is an actual catalog dialog;
+the second explicitly renders the actual synthetic CLI result in a browser. Neither
+image demonstrates native model execution. Rebuild with the screenshot-manual
+scripts above using `evaluation.json`; refresh its capture manifest after changes.
+
+## Development recommendation
+
+[promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive. These are historical pre-main captures: their unmerged-producer wording describes the recorded baseline. The [current recommendation contract](../decisions/promotion-recommendations.md) and [in-tree producer contract](../decisions/evaluation-accounting.md#in-tree-reviewed-producer) own current availability; the receipt hashes and rendered assets are preserved.
+
 ## Explicit task feedback walkthrough
 
 The [two-page walkthrough](task-feedback.pdf) covers selecting observations, recording
@@ -159,79 +232,6 @@ cases remain development data. Automated diagnosis remains planned. Both current
 PDF pages were rendered and individually viewed, with required text/page count
 checked. Rebuild using the existing screenshot-manual commands with
 reviewed-cases.json and recapture after workflow changes.
-
-## Offline development evaluation
-
-[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The current actual 30-call CLI journey prepares and reviews four English/Korean development cases with the in-tree producer, then retains all 16 scheduled trials. Eight matched pairs comprise one improved, one regressed, one both-pass, one both-fail and four unresolved. Missing and duplicate evidence stays visible. This qualifies deterministic integration/accounting; native model execution and independent holdout qualification remain unavailable. Earlier eight-trial captures remain historical in Git history.
-
-Both evaluation pages were rendered with PDFium and visually checked for readable
-headings, complete intended capture regions, captions and pagination. PDF text and
-page count were checked with pypdf. The first image is an actual catalog dialog;
-the second explicitly renders the actual synthetic CLI result in a browser. Neither
-image demonstrates native model execution. Rebuild with the screenshot-manual
-scripts above using `evaluation.json`; refresh its capture manifest after changes.
-
-## Codex and platform coverage walkthrough
-
-For current qualification status, use the
-[native platform matrix](../../account/observation/native.md#native-platform-evidence--2026-10-18).
-It owns source revisions, actual coverage, cleanup and unresolved gaps. The PDFs
-below retain their original evidence boundaries; a later status update does not
-requalify or rewrite their captures.
-
-The [three-page Codex walkthrough](codex-observation.pdf) follows the existing
-`native-observation` scenario: select one client, review native trust, inspect
-actual results and retain platform blockers. Its [editable source](codex-observation.json),
-[map capture at its capture revision](codex-observe.png), [macOS results](codex-native-result.png),
-[Linux matrix](linux-observation-result.png) and [capture manifest](codex-observation-capture.json)
-are maintained together. The two result images are browser renderings of selected
-actual qualification evidence, not terminal captures. The macOS result is a fresh
-corrected parent-native runtime run, before later capacity/attribution changes;
-Linux results remain historical pre-guard partial
-coverage and do not qualify the corrected Linux runtime. The later offline Linux
-prerequisite result is recorded in the native guide, not these historical captures.
-The native guide owns exact source revisions and coverage; the earlier Claude
-walkthrough retains its historical capture and is not a current Codex map. The
-observation dialog text has changed since these captures; their editable source
-and PDFs describe the recorded revision, not the current dialog.
-
-All three Codex PDF pages were rendered and visually inspected at their capture revision;
-text/page-count checks and browser navigation are recorded separately. Rebuild
-with the existing screenshot-manual scripts and recapture affected map dialogs
-when their metadata changes. No account installation or activation was performed
-by the documentation workflow.
-
-## Collector capacity and attribution supplement
-
-The [two-page supplement](collector-capacity.pdf), [editable source](collector-capacity.json)
-and [capture manifest](collector-capacity-capture.json) reuse `native-observation`.
-Its [capacity result image](collector-capacity-result.png) and
-[boundary snapshot image](collector-attribution-result.png) are browser renderings
-of selected actual synthetic benchmark/probe results, not terminal screenshots.
-Capacity/recovery and the p95 target passed one final reference-host run; the
-earlier candidate missed the target and remains historical evidence. Snapshot delivery hashes do not
-qualify exact exposure. Both PDF pages are rendered and visually inspected, with
-text and page count checked. Earlier native model results retain their own source
-boundaries; this supplement does not requalify them against the capacity runtime.
-
-## Native isolation qualification guide
-
-The [native isolation walkthrough](native-isolation.pdf), [editable source](native-isolation.json)
-and [actual map capture](native-isolation.png) show how to locate and expand the
-new synthetic qualification guide. The capture uses workflow digest `7d40116c807c`,
-isolated Chrome and public repository content only, on 2026-10-18. It proves map
-navigation, not CLI execution. The separate maintained CLI smoke exercised the
-actual Linux client, mock turn, native failed tool and cleanup; scope and commands
-remain authoritative in the [qualification guide](../decisions/evaluation-isolation-pilot.md).
-The single PDF page was rendered with PDFium and visually inspected for readable
-text, complete capture, captions and margins; text and page count were checked
-with pypdf. Rebuild using the screenshot-manual commands above with
-`native-isolation.json`, and recapture when the documented dialog changes.
-
-
-## Development recommendation
-
-[promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive.
 
 ## Native executor fixture walkthrough
 
