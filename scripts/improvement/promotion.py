@@ -278,10 +278,11 @@ def verify_source(context, *, repository, baseline_commit, candidate_commit, com
 
 
 def recommend_native(*, experiment, current_spec, context_path, attempts, report_path,
-                     repository, baseline_commit, candidate_commit, component_roots):
+                     repository, baseline_commit, candidate_commit, component_roots, heldout_record_path=None):
     """Recompute a sealed native report and verify committed source; never deploy."""
     ad = _admission(); guard = ad.Guard(); batch = None
     outcome, reasons, metrics, review, gate_digest = 'inconclusive', [], None, {}, None
+    assessment = None
     try:
         gate_digest = guard.read(Path(__file__).resolve(), retain=False)[1]
         supplied = guard.json(report_path, private=True)
@@ -310,6 +311,19 @@ def recommend_native(*, experiment, current_spec, context_path, attempts, report
                 again = verify_source(ctx, repository=repository, baseline_commit=baseline_commit,
                     candidate_commit=candidate_commit, component_roots=component_roots, _deadline=deadline)
                 ev.require(ad.same(source, again), 'source_changed')
+        if heldout_record_path is not None and metrics is not None:
+            if __package__:
+                from . import heldout
+            else:
+                import heldout
+            assessment = heldout.assess(heldout_record_path,batch,report,source)
+            if assessment['status']=='invalid':outcome='reject'
+            elif assessment['status']=='verified':
+                if assessment['rule_result']['verdict']=='reject':outcome='reject'
+                elif metrics['verdict']=='eligible' and assessment['rule_result']['verdict']=='eligible':outcome='recommend'
+                if outcome=='recommend':
+                    reasons=[r for r in reasons if r not in ('diagnostic_only','same_host_heldout_unimplemented','same_host_heldout_unverified')]
+            reasons += assessment['reasons']
         if (not guard.check() or not ctx.guard.check() or not batch.guard.check()
                 or frozen_inputs != ev.digest([experiment, current_spec])
                 or (not batch.valid(experiment, current_spec) and not batch.execution_error)):
@@ -325,6 +339,7 @@ def recommend_native(*, experiment, current_spec, context_path, attempts, report
         recommendation=outcome,reasons=sorted(set(reasons)),rule_result=metrics,review=review,
         source_accepted=False,promotion_eligible=False,merge_authorized=False,install_authorized=False,
         backend_identity_verified=False,gate_digest=gate_digest)
+    if assessment is not None:result['heldout']=assessment
     result['recommendation_digest'] = ev.digest(result)
     return result
 
@@ -340,7 +355,7 @@ def main():
                           parse_constant=lambda _: (_ for _ in ()).throw(ev.Invalid('invalid_number')))
         fields = ('experiment report completions current_spec source_diff_digest' if args.command == 'recommend' else
                   'experiment current_spec context_path attempts report_path repository baseline_commit candidate_commit component_roots')
-        ev.require(ev.keys(data, fields), 'gate_fields')
+        ev.require(ev.keys(data, fields) or (args.command=='recommend-native' and ev.keys(data,fields+' heldout_record_path')), 'gate_fields')
         result = recommend(**data) if args.command == 'recommend' else recommend_native(**data)
         sys.stdout.buffer.write(ev.encoded(result))
         return 0
