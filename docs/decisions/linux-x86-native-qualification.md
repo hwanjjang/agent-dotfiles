@@ -48,8 +48,8 @@ not repeated.
 
 - Claude: after the actual start marker, SIGINT produced a native interruption
   error; the CLI itself exited 0. Only SessionStart and one tool start arrived.
-  No finish marker appeared within the 30-second observation bound and no owned
-  shell survivor was found. Exact shell exit remains unknown.
+  No finish marker was observed before cleanup and no owned shell survivor was
+  found. Exact shell exit remains unknown.
 - Codex: `turn/interrupt` after the start marker produced native turn status
   `interrupted`. The bounded command continued and wrote its finish marker. Only
   SessionStart and one tool start arrived; final process exit and PostToolUse/Stop
@@ -57,7 +57,8 @@ not repeated.
   treated as the corresponding host PID; host identity checks rejected that match.
 - Paseo's first attempt returned stoppedCount 0 because the tool yielded and the
   model finished its turn before cancellation. Its process later exited 0; the
-  attempt is retained as an unsuccessful interruption test. One corrected turn
+  attempt is retained as an unsuccessful interruption test. Its tool start also
+  had no PostToolUse although the turn reached Stop. One corrected turn
   kept the tool call waiting, returned stoppedCount 1 and recorded native
   `turn_aborted` with reason `interrupted`. The process continued and its native
   CommandExecution result recorded exit 0 after 22.172848391 seconds. That session
