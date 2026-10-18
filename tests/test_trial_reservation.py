@@ -101,7 +101,7 @@ class GateTests(unittest.TestCase):
     def test_header_allocation_cannot_differ_from_reserved_manifest(self):
         self.init();path=self.s.state/self.r.HEADER;h=json.loads(path.read_text())
         h['schedule'][0]['limits']['soft_total_tokens']=1;save(path,h)
-        with patch.object(nt,'run') as run, self.assertRaises(ValueError):
+        with patch.object(nt,'run') as run, self.assertRaisesRegex(ValueError,'^reservation_order$'):
             self.r.run_next(*self.args(),self.s.plans[0],Path('/never/open/auth.json'))
         run.assert_not_called()
 
@@ -165,24 +165,28 @@ j.save('reserve',r.reserve_record(h,0));os._exit(23)
         result=self.launch();self.assertEqual(result['known_tokens'],160);self.assertEqual(result['status'],'ready')
         self.assertEqual(self.launch(1)['reserved_initial_turns'],2)
 
-    def test_declared_and_soft_budget_edges_and_current_qualification_block(self):
+    def test_stale_budget_spec_and_current_qualification_refuse_before_launch(self):
         self.init();self.launch()
         for field,value in [('model_requests',1),('seconds',315),('tokens',131231)]:
             with self.subTest(field=field):
                 # Frozen-input tampering is not a way to replenish or change a budget.
                 spec=copy.deepcopy(self.s.f.spec);spec['budget'][field]=value
-                with self.assertRaises(ValueError):self.r.run_next(self.s.state,self.s.f.experiment,spec,self.s.f.context_path,self.s.plans[1],Path('/never/open/auth.json'))
+                with self.assertRaisesRegex(ValueError,'^stale_experiment$'):self.r.run_next(self.s.state,self.s.f.experiment,spec,self.s.f.context_path,self.s.plans[1],Path('/never/open/auth.json'))
         path=self.root/ad.QUALIFICATIONS['execution'];data=json.loads(path.read_text());data['authenticated']['status']='unqualified';save(path,data)
-        with patch.object(nt,'run') as run,self.assertRaises(ValueError):self.r.run_next(*self.args(),self.s.plans[1],Path('/never/open/auth.json'))
+        with patch.object(nt,'run') as run,self.assertRaisesRegex(ValueError,'^qualification_unavailable$'):self.r.run_next(*self.args(),self.s.plans[1],Path('/never/open/auth.json'))
         run.assert_not_called()
 
-    def test_partial_journal_unsafe_root_and_natural_mode_never_launch(self):
+    def test_partial_journal_and_natural_binding_defense_fail_closed(self):
         self.init();folder=self.s.state/self.r.RECORDS;save(folder/'001-reserve.json',{'partial':True})
-        with patch.object(nt,'run') as run,self.assertRaises(ValueError):self.r.run_next(*self.args(),self.s.plans[0],Path('/never/open/auth.json'))
+        with patch.object(nt,'run') as run,self.assertRaisesRegex(ValueError,'^reservation_records$'):self.r.run_next(*self.args(),self.s.plans[0],Path('/never/open/auth.json'))
         run.assert_not_called()
         ctx=ad.load_context(self.s.f.experiment,self.s.f.spec,self.s.f.context_path)
         m=json.loads(Path(self.s.plans[0]).read_text());m['routing']={'mode':'natural'}
-        with self.assertRaisesRegex(ValueError,'input_binding'):ad.bind_manifest(ctx,m)
+        # This schema1 plan rejects a routing extension before launch.
+        invalid=self.root/'natural-plan.json';save(invalid,m)
+        with self.assertRaisesRegex(ValueError,'^plan_fields$'):p.load_plan(invalid)
+        # Natural binding also refuses this non-routing context independently.
+        with self.assertRaisesRegex(ValueError,'^input_binding$'):ad.bind_manifest(ctx,m)
 
     def test_late_ledger_change_invalidates_report_and_retains_costs(self):
         self.init();self.launch();f=self.s.f;ctx=ad.load_context(f.experiment,f.spec,f.context_path)
@@ -281,3 +285,39 @@ j.save('reserve',r.reserve_record(h,0));os._exit(23)
             with patch.object(self.r,'selected',side_effect=mutate),patch.object(nt,'run') as run:
                 with self.assertRaisesRegex(ValueError,'aggregate_budget'):self.r.run_next(*args,s.plans[0],Path('/never/open/auth.json'))
             run.assert_not_called()
+
+
+    def test_cost_audit_hashes_each_runtime_once_then_finally_for_two_rows(self):
+        self.init();self.launch();self.launch(1)
+        paths={Path(value) for value in self.s.f.executables.values()}
+        counts=dict.fromkeys(paths,0);original=p.read_file
+        def counted(path,*args,**kwargs):
+            if Path(path) in counts:counts[Path(path)]+=1
+            return original(path,*args,**kwargs)
+        with patch.object(p,'read_file',side_effect=counted):result=self.r.status(*self.args())
+        self.assertEqual(result['known_tokens'],320);self.assertEqual(result['unknown_attempts'],0)
+        self.assertEqual(counts,dict.fromkeys(paths,2),
+            'Each runtime needs one first full hash and one unconditional final full hash, independent of cost-row count')
+
+    def test_cost_audit_final_guard_rejects_late_runtime_source_and_record_bytes(self):
+        self.init();self.launch();self.launch(1)
+        copied=self.root/'source-copy';shutil.copytree(p.SOURCE,copied,ignore=shutil.ignore_patterns('__pycache__'))
+        first=self.s.f.experiment['trials'][0]
+        receipt=next((self.s.state/first['trial_id']/'one'/'records').glob('*-receipt.json'))
+        targets=(Path(self.s.f.executables['codex']),copied/'native_usage.py',receipt)
+        original=ad.read_cost_facts
+        with patch.object(p,'SOURCE',copied):
+            for target in targets:
+                with self.subTest(target=target.name):
+                    before=target.read_bytes();calls=0
+                    def changed(*args,**kwargs):
+                        nonlocal calls
+                        facts=original(*args,**kwargs);calls+=1
+                        if calls==2:target.write_bytes(before+b'\n')
+                        return facts
+                    try:
+                        with patch.object(ad,'read_cost_facts',side_effect=changed):
+                            with self.assertRaisesRegex(ValueError,'^reservation_changed$'):
+                                self.r.status(*self.args())
+                        self.assertEqual(calls,2)
+                    finally:target.write_bytes(before)

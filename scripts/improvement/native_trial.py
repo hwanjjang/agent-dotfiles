@@ -552,6 +552,7 @@ def validate_snapshot(result, declaration):
 class Controller:
     """One selected attempt; all external actions are explicit method calls."""
     def __init__(self, selected):
+        self.started_ns = time.monotonic_ns()
         self.lock_fd = None
         try:
             self.initialize(selected)
@@ -1179,6 +1180,10 @@ class Controller:
         if self.data['mode'] == 'qualification':
             good = good and protected is True and qualification is not None \
                 and qualification.get('status') == 'observed'
+        started_ns = getattr(self, 'started_ns', None)
+        elapsed_ms = (time.monotonic_ns() - started_ns) // 1000000 if type(started_ns) is int else None
+        timing = {'clock': 'monotonic_ns', 'scope': 'controller_setup_task_cleanup',
+                  'elapsed_ms': elapsed_ms} if type(elapsed_ms) is int and 0 <= elapsed_ms <= 10**12 else None
         receipt = {
             'schema_version': 1, 'kind': 'frozen-native-trial',
             'status': ('qualified_current_profile' if self.data['mode'] == 'qualification'
@@ -1192,6 +1197,7 @@ class Controller:
             'profile': self.data['profile'], 'source_digests': self.data['sources'],
             'runtime_digests': self.runtime['hashes'], 'image_digest': self.runtime['image'],
             'mode': self.data['mode'], 'limits': self.data['limits'],
+            'controller_timing': timing,
             'auth_copy_attempted': self.auth_copy_attempted, 'auth_copy_succeeded': self.auth_copy_succeeded,
             'observation': self.observation, 'qualification': qualification,
             'protected_synthetic_files_unchanged': protected, 'cleanup': cleanup,

@@ -318,4 +318,25 @@ class RoutingCollectionTests(unittest.TestCase):
         self.assertNotIn('PRIVATE_WRITE_ERROR',json.dumps(receipt))
 
 
+class ControllerTimingTests(unittest.TestCase):
+    setUp = RoutingCollectionTests.setUp
+    controller = RoutingCollectionTests.controller
+    observer = RoutingCollectionTests.observer
+    prepared = RoutingCollectionTests.prepared
+
+    def test_clock_starts_before_controller_initialization(self):
+        with patch.object(trial.Controller, 'initialize') as initialize, \
+                patch.object(trial.time, 'monotonic_ns', return_value=1000000000):
+            c = trial.Controller(None)
+        initialize.assert_called_once_with(None)
+        self.assertEqual(c.started_ns, 1000000000)
+
+    def test_receipt_measures_controller_time_not_provider_latency(self):
+        c = self.prepared(); cleanup = c.cleanup(); c.started_ns = 1000000000
+        with patch.object(trial.time, 'monotonic_ns', return_value=3456000000):
+            receipt = c.finish(cleanup, None)
+        self.assertEqual(receipt['controller_timing'], {'clock':'monotonic_ns',
+            'scope':'controller_setup_task_cleanup', 'elapsed_ms':2456})
+
+
 if __name__=='__main__':unittest.main()

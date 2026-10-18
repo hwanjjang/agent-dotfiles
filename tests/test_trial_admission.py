@@ -144,6 +144,29 @@ class AdmissionTests(unittest.TestCase):
         r=self.report([ref]);self.assertEqual(r['counts']['pass'],0)
         self.assertIn('qualification_unavailable',r['blockers']);self.assertEqual(r['usage']['known_tokens'],160)
 
+    def test_source_clock_duration_projects_and_missing_stays_unknown(self):
+        ref = self.fixture.attempt()
+        self.fixture.mutate(ref, 'receipt', lambda r:r.update(controller_timing={
+            'clock':'monotonic_ns','scope':'controller_setup_task_cleanup','elapsed_ms':2456}))
+        report = self.report([ref])
+        self.assertEqual(report['counts']['pass'], 1)
+        self.assertEqual(report['latency'], {'known_records':1,'known_total_ms':2456,'unknown':3})
+        missing = self.report([self.fixture.attempt(attempt='missing-clock')])
+        self.assertEqual(missing['counts']['pass'],1)
+        self.assertEqual(missing['latency']['known_records'],0)
+        self.assertEqual(missing['latency']['unknown'],4)
+
+    def test_invalid_receipt_clock_cannot_become_known_latency(self):
+        for index, change in enumerate(({'elapsed_ms':True},{'elapsed_ms':-1},
+                {'scope':'provider_api_latency'},{'clock':'wall_clock'},{'verified':True})):
+            ref = self.fixture.attempt(attempt='bad-clock-'+str(index))
+            timing = {'clock':'monotonic_ns','scope':'controller_setup_task_cleanup','elapsed_ms':2}
+            timing.update(change)
+            self.fixture.mutate(ref,'receipt',lambda r:r.update(controller_timing=timing))
+            report = self.report([ref])
+            self.assertEqual(report['counts']['blocked'],1)
+            self.assertEqual(report['latency']['known_records'],0)
+
     def test_duplicate_same_attempt_does_not_double_charge(self):
         ref=self.fixture.attempt();r=self.report([ref,ref])
         self.assertEqual(r['coverage']['duplicate_trials'],1);self.assertEqual(r['usage']['known_tokens'],160)
