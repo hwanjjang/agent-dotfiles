@@ -102,7 +102,7 @@ class NativeInstallerLifecycleTests(unittest.TestCase):
         for ident in (synthetic['registration_id'],):
             with self.subTest(registration=ident):
                 before = storage.observed(self.home)
-                with self.assertRaisesRegex(ValueError, 'Select an active Claude observation grant'):
+                with self.assertRaisesRegex(ValueError, 'Select an active Claude or Codex observation grant'):
                     self.prepare(observation_registration=ident)
                 self.assertEqual(storage.observed(self.home), before)
         expires = Store(self.home).registration(native['registration_id'])['expires_at']
@@ -116,10 +116,10 @@ class NativeInstallerLifecycleTests(unittest.TestCase):
         self.assertNotIn(b'Traceback', unknown.stderr)
         self.assertEqual(storage.observed(self.home), before)
         with patch('account.observation.store.time.time', return_value=expires + 1):
-            with self.assertRaisesRegex(ValueError, 'Select an active Claude observation grant'):
+            with self.assertRaisesRegex(ValueError, 'Select an active Claude or Codex observation grant'):
                 self.prepare(observation_registration=native['registration_id'])
         Store(self.home).revoke(native['registration_id'])
-        with self.assertRaisesRegex(ValueError, 'Select an active Claude observation grant'):
+        with self.assertRaisesRegex(ValueError, 'Select an active Claude or Codex observation grant'):
             self.prepare(observation_registration=native['registration_id'])
         self.assertFalse((self.home / storage.RECEIPT).exists())
         self.assertFalse((self.home / '.agents/bin/observation-hook.py').exists())

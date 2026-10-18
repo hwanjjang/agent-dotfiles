@@ -2,10 +2,12 @@
 
 This is the private storage foundation of the [account improvement loop](../../docs/decisions/account-improvement-loop.md).
 It implements a local store, a synthetic adapter and a manual maintenance CLI.
-The optional [Claude native adapter](native.md) reuses this store with separate
+The optional [native adapters](native.md) reuse this store with separate
 project consent and installer registration. Explicit task selections and feedback
 are available through the manual CLI, with explicit reviewed synthetic case export.
-Codex collection and comparative evaluation remain later work. The store never inspects transcripts,
+Live comparative evaluation remains later work. The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
+owns source-bound results and remaining environment, subagent and delivery gaps.
+The store never inspects transcripts,
 runs models, changes skills, registers hooks or writes installer state.
 
 Use Python 3.11+ on a local POSIX filesystem, matching the [account installer](../README.md).
@@ -126,9 +128,13 @@ A stable source event ID deduplicates within registration/epoch/session. Reusing
 it with different normalized content rejects the event. Without a stable ID,
 separate callbacks receive separate local IDs and a `possible_duplicate` gap.
 Identical text is not event identity. A capture is limited to 16 KiB; an import
-to 64 KiB and 128 complete records. This qualification baseline caps each
-registration at 4,095 committed ledger files and scans its bounded ledger;
-it is not a high-volume or measured low-latency collector.
+to 64 KiB and 128 complete records. Synthetic registrations retain their earlier 4,096-entry read bound and
+4,095-record write ceiling, including batch records. Their capture/import path
+still scans the ledger and is not covered by the native benchmark. Native
+registrations have a separate 16,383-record write ceiling. Native capture uses durable sequence reservations
+and direct replay lookup; see [capacity and attribution](capacity.md) for the
+10,000-callback qualification and its measured p95 latency (48.16 ms on one
+reference run). The ceiling is a resource bound, not a claim that every workload up to it has been qualified.
 
 Imports accept bytes explicitly supplied by the caller; they do not open files
 or discover native history. Offsets start at zero for the selected source
@@ -385,7 +391,7 @@ Tests use temporary homes and synthetic records. They cover scope isolation,
 unknown attribution, allowlisted metadata, deduplication/conflicts, partial batch
 retry, concurrent writers, interrupted publication, consent expiry/revocation,
 regrant, copied old records, private modes and unsafe filesystem objects.
-The [native guide](native.md) documents implemented Claude delivery and its narrower
+The [native guide](native.md) documents implemented Claude and Codex delivery and its narrower
 qualification. Default installations still collect nothing. Run
 `python3.11 -m unittest discover -s tests -p 'test_observation_native.py'` and the
 installer tests for native scope, deduplication, neutral delivery and coexistence.
