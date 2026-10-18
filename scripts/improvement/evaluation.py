@@ -261,6 +261,9 @@ def compare(experiment, completions, current_spec):
     require(encoded(experiment) == encoded(freeze(experiment['spec'])), 'experiment_tampered')
     require(isinstance(completions, list) and len(completions) <= 30000 and len(encoded(completions)) <= MAX_BYTES, 'completion_limit')
     spec = experiment['spec']
+    frozen_grader = spec['identities']['grader']
+    frozen_spec_digest = experiment['spec_digest']
+    frozen_experiment_digest = digest(experiment)
     stale = digest(current_spec) != experiment['spec_digest'] or spec['identities']['grader'] != source_hash()
     qualification = qualify()
     qualified = qualification['status'] == 'qualified'
@@ -353,6 +356,25 @@ def compare(experiment, completions, current_spec):
               'usage': usage_summary(completions, missing),
               'latency': {'known_records': len(latencies), 'known_total_ms': sum(latencies), 'unknown': len(completions)-len(latencies)+missing},
               'qualification': qualification, 'blockers': blockers, 'live_eligible': False, 'promotion': 'inconclusive'}
+    # Detect drift after scoring as well as at entry. The trusted local scorer
+    # retains filesystem access; this is evidence invalidation, not containment.
+    if not stale and (source_hash() != frozen_grader or digest(current_spec) != frozen_spec_digest
+                      or digest(experiment) != frozen_experiment_digest):
+        report['blockers'].append('grading_identity_changed')
+        for trial in report['trials']:
+            trial.update(verdict='blocked', reason='grading_identity_changed', checks=[], completion_checks=[],
+                         dimensions={d: 'blocked' for d in DIMENSIONS})
+        report['counts'] = counts([t['verdict'] for t in trials])
+        report['dimensions'] = {d: counts([t['dimensions'][d] for t in trials]) for d in DIMENSIONS}
+        report['arms'] = {a: counts([t['verdict'] for t in trials if t['arm'] == a]) for a in ARMS}
+        report['per_case'] = {c['case_id']: {v: {a: counts([t['verdict'] for t in trials
+            if t['case_id'] == c['case_id'] and t['variant'] == v and t['arm'] == a])
+            for a in ARMS} for v in VARIANTS} for c in spec['cases']}
+        report['pairs'] = [dict(case_id=k[0], variant=k[1], repetition=k[2],
+                               baseline='blocked', candidate='blocked') for k in pairs]
+        report['paired_summary'] = paired_summary(trials, spec['primary_metric'])
+        # Preserve already observed critical counts as diagnostics under the
+        # blocked identity-changed verdict; invalidation must not erase them.
     report['report_digest'] = digest(report)
     return report
 

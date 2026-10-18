@@ -2812,7 +2812,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/native-trials.md",
-      "summary": "Check, run and recover one frozen trial; selected pinned-profile actual qualification passed, while comparison eligibility stays false.",
+      "summary": "Check, run and recover a frozen trial; current credential-free scoped grading probes are verified, while changed-source authentication and comparisons remain pending.",
       "when": [
         "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission."
       ],
@@ -2822,7 +2822,7 @@
         "Keep one temporary credential copy with the trusted host client outside the remote OS executor; readonly /runtime/arm and /runtime/qualification.js are distinct from editable case files.",
         "Observe one initial turn with post-use soft token guards and bounded cleanup. Unknown request counts, task correctness and backend identity remain unknown or ungraded.",
         "Preserve blocked attempts and cleanup uncertainty; recovery cannot waive unresolved native ownership. No VM lifecycle, account activation, grading or promotion.",
-        "Selected current-source credential-free and authenticated qualification passed on the recorded macOS/Linux arm64 profile; see the evidence and screenshot manual. Other hosts and natural routing remain unqualified."
+        "Current credential-free native command/child probes verify task IO and protected grading/other-arm/installer synthetic access. Host controller/scorer retain account access. Historical authenticated results do not qualify changed source bytes."
       ],
       "outputs": [
         "A private typed attempt or recovery receipt; live_eligible=false and no comparative improvement claim."

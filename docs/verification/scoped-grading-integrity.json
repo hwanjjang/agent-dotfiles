@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-18",
+  "kind": "scoped-grading-integrity-qualification",
+  "status": "credential_free_scoped_executor_verified",
+  "status_authority": "private_coordinator_attestation; not a public CLI qualification status",
+  "profile": "codex-0.163-macos-arm64-linux-arm64-v1",
+  "source_digests": {
+    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "419c3f54b3f85777e4eb774924f37d51fffdbdc3d56ae904150ebcd52d23bd62",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "1841fad7addac7514df2014330e999a9fd4f501021a4e4a61e29b334ac5baeeb",
+    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+  },
+  "grader_source_sha256": "30d03dc92ea55ce763d2f830e376664fb2a3b152bc86e9c8c37a0cebc5f567af",
+  "runtime_digests": {
+    "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
+    "codex": "8813367285524ac798dd96d1b071aea30d58708c7226fd236cd275cf1cfdee31",
+    "docker": "5a7f2e9607d759d0ec5c35810c9548b67e1d78daa44861516e47037d7ac3bfcd",
+    "executor_archive": "9d8ecf2d19d3e184877983902d6c85de48b3888dcb72c382a8a0c975845927fb"
+  },
+  "image_digest": "sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
+  "manifest_digest": "9e7b5eb06d091f6ad79eecaaa851a46f593754ca3cacd46fd1959149c491d43f",
+  "actors": {
+    "tested": "remote native task/result producer and explicit Python child",
+    "trusted_access_retained": [
+      "local controller",
+      "local scorer",
+      "same-account maintainer"
+    ],
+    "hostile_same_account_prevention": false
+  },
+  "actual_checks": {
+    "native_mock_terminal": "completed",
+    "scoped_io": {
+      "child": {
+        "denied": {
+          "grading": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          },
+          "installer_journal": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          },
+          "installer_receipt": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          },
+          "other_arm": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          }
+        },
+        "fixture_read": true,
+        "task_write_readback": true
+      },
+      "direct": {
+        "denied": {
+          "grading": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          },
+          "installer_journal": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          },
+          "installer_receipt": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          },
+          "other_arm": {
+            "create_errno": 2,
+            "read_errno": 2,
+            "write_errno": 2
+          }
+        },
+        "fixture_read": true,
+        "task_write_readback": true
+      }
+    },
+    "protected_files_exist_outside_mounts_and_unchanged_after_shutdown": true,
+    "protected_fixture_files": 8,
+    "installer_targets": "Synthetic installed receipt and transaction journal only; no live account paths accessed",
+    "denial_meaning": "ENOENT for actual known owner-side files absent from executor mounts, supported by outer boundary inspection; not general EACCES or hostile-host proof"
+  },
+  "inference": {
+    "model_calls": 0,
+    "authentication_copied": false,
+    "public_fixture_status": "mock_complete",
+    "live_eligible": false,
+    "authenticated_current_sources_qualified": false
+  },
+  "cleanup": {
+    "owned_processes_and_groups_absent": true,
+    "owned_containers_absent": true,
+    "owned_volumes_absent": true,
+    "native_home_auth_control_absent": true,
+    "vm_restored_stopped": true,
+    "ambient_context_preserved": true,
+    "host_original_work_unchanged_during_run": true
+  },
+  "verification": {
+    "focused_tests": 93,
+    "grading_drift": "Unit tests preserve entry-stale diagnostics and block late source/spec/experiment drift; already observed critical diagnostics remain under blocked verdict",
+    "native_result": "Actual credential-free fixed tool execution, not a paid model or comparison",
+    "archive": "Same262144-byte combined retained cap; raw native events retained, duplicated synthetic HTTP request bodies omitted by private bridge",
+    "first_attempt": "Blocked on archive_limit; all cleanup complete, VM stopped. Kept historical, not relabeled pass."
+  },
+  "private_artifact_digests": {
+    "fixture_run.py": "89b1ec1fca34476347b830b8b17bd8a6c9286284aad747d98f5047ef52b69625",
+    "coordinate_fixture.py": "e69c91d62f121a635f2cf5270a7ad7ee9bc716ece453b817931bb78498e19905",
+    "release-scope.json": "8d606f1944c50d95a453ec7afcf29d12bb0b3fd193ac2b97a25f5d93554b97bb",
+    "root-final-audit.json": "a8d94715b66d2866dc88fc9f8fae35cb59c0f2272bccc0a308c7fa8d97fd84a7",
+    "fixture-native/receipt.json": "a50a2ffd08d035c18e5b6243042f9ebc8ece0759328a7fd1b2a91a262c40ddf4"
+  },
+  "limits": [
+    "One existing pinned macOS/Linux arm64 topology; no additional host/account/custodian created.",
+    "Private bridge combines run_fixture with observed outer ownership/cleanup; public run_fixture remains mock_complete, authentication/isolation flags false.",
+    "Task/result-producer paths are scoped; host controller/scorer keep account access.",
+    "Public fixtures are development material; no held-out exposure or performance claim.",
+    "Old V9/V10 authenticated evidence remains historical for its original source; changed source requires affected renewal.",
+    "Hashes identify retained bytes, not signatures or hostile-host attestation."
+  ]
+}

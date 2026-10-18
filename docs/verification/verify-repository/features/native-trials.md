@@ -7,9 +7,11 @@ Scenario ID: `native-trials`. Surfaces: the public `native_trial.py`
 Read the [operator guide](../../../native-trials.md) for exact prerequisites,
 manifest fields, commands and result meanings, and the
 [design contract](../../../decisions/native-trial-execution.md) for ownership and
-acceptance rules. The [selected evidence record](../../../verification/native-trials.json)
-owns current source/profile qualification status. Reconcile its source digests
-with the candidate; historical results and a working CLI do not qualify new bytes.
+acceptance rules. The [historical selected evidence](../../../verification/native-trials.json) and
+[current scoped grading evidence](../../../verification/scoped-grading-integrity.json)
+own their separate source/profile qualification status. Reconcile the current scoped
+record's source digests with the candidate; historical results and a working CLI do
+not qualify new bytes.
 Missing evidence is pending, not pass. Do not reproduce schema or last-run status
 in this recipe.
 
@@ -112,3 +114,15 @@ Preserve failure and cleanup uncertainty without a local fallback.
 uses a synthetic provider, not real inference; do not convert its submission count
 to provider billing or use it as authenticated evidence. Current-profile results,
 comparison admission and promotion remain separate from this recipe.
+
+## Scoped grading and installer-state checks
+
+For the fixed credential-free loader, require both direct and explicit child task
+read/write/readback plus exact protected grading/other-arm/installer synthetic
+read/write/create outcomes. Combine owner-side file existence, excluded mounts,
+post-shutdown identity/content and absent created siblings. Missing operations,
+child failure or a nonzero exit alone cannot establish denial. Verify exact source
+identities and outer cleanup from the linked current scoped record. Host controller
+and scorer retain their access; no new account, external operator or environment
+is needed. The grader's late source/spec drift tests must block the result while
+retaining critical observations; synthetic tests are not actual model outcomes.
