@@ -1,4 +1,4 @@
-"""Opt-in synthetic observations. No native adapters, account probes or network IO."""
+"""Opt-in private observations. No transcript reading, account probes or network IO."""
 from contextlib import contextmanager
 import hashlib
 import json
@@ -69,10 +69,14 @@ def normalize(body, grant):
     require(integer(value.get('sequence')) and value['sequence'] > grant['start_after'], 'source_high_water')
     require(isinstance(value.get('event_kind'), str) and value['event_kind'] in KINDS, 'event_kind')
     event = {field: value[field] for field in ('session_id', 'sequence', 'event_kind')}
-    event.update(project_id=grant['project_id'], client='synthetic', profile=grant['profile'],
+    event.update(project_id=grant['project_id'], client=grant['client'], profile=grant['profile'],
                  source=grant['source'], registration_id=grant['registration_id'],
                  epoch=grant['epoch'], schema_version=1)
-    gaps = ['synthetic_adapter', 'environment_not_observed', 'task_outcome_not_observed']
+    gaps = ['environment_not_observed', 'task_outcome_not_observed']
+    if grant['client'] == 'synthetic':
+        gaps.insert(0, 'synthetic_adapter')  # Preserve schema-v1 replay equality.
+    else:
+        gaps.extend(['native_metadata_only', 'collector_receipt_order_only', 'delivery_completeness_not_observed'])
     for field in ('source_event_id', 'actor_id', 'parent_actor_id', 'turn_id', 'tool_call_id'):
         item = value.get(field)
         require(item is None or token(item), 'invalid_identity')
@@ -115,13 +119,15 @@ class Store:
                 yield files
 
     def grant(self, project, *, profile='default', source='fixture-v1', start_after=0,
-              lifetime_seconds=2592000):
+              lifetime_seconds=2592000, client='synthetic'):
         project = Path(project).resolve(strict=True)
         require(project.is_dir() and token(profile) and token(source), 'invalid_scope')
         require(integer(start_after), 'source_high_water')
+        require(client == 'synthetic' or (client == 'claude' and profile == 'default'
+                and source == 'claude-hooks-v1'), 'unsupported_adapter')
         require(type(lifetime_seconds) in (int, float) and 0 < lifetime_seconds <= 2592000
                 and math.isfinite(lifetime_seconds), 'grant_lifetime')
-        registration_id = digest([str(project), 'synthetic', profile, source])
+        registration_id = digest([str(project), client, profile, source])
         with self._locked(create=True) as files:
             try:
                 previous = files.read(('grants', registration_id + '.json'))
@@ -129,12 +135,15 @@ class Store:
                 previous = None
             require(not previous or not previous['active'], 'already_granted')
             require(not previous or previous.get('high_water_known', True), 'source_generation_required')
+            if client != 'synthetic' and previous:
+                # Native sequence is collector receipt order, not a history cursor.
+                start_after = max(start_after, previous['high_water'])
             require(not previous or start_after >= previous['high_water'], 'source_high_water')
             # Any interrupted purge must finish before accepting a new epoch.
             self._delete_evidence(files, registration_id)
             grant = dict(schema_version=1, registration_id=registration_id,
                          epoch=uuid.uuid4().hex, project_root=str(project),
-                         project_id=digest(str(project)), client='synthetic',
+                         project_id=digest(str(project)), client=client,
                          profile=profile, source=source, start_after=start_after,
                          high_water=start_after, active=True, created_at=time.time(),
                          expires_at=time.time() + lifetime_seconds)
@@ -147,8 +156,13 @@ class Store:
         if (not grant['active'] or grant['expires_at'] <= time.time()
                 or (epoch is not None and epoch != grant['epoch'])):
             return None
-        require(grant['registration_id'] == registration_id and grant['client'] == 'synthetic', 'invalid_grant')
+        require(grant['registration_id'] == registration_id and grant['client'] in ('synthetic', 'claude'), 'invalid_grant')
         return grant
+
+    def registration(self, registration_id):
+        """Read an active grant for explicit installer selection; never creates it."""
+        with self._locked() as files:
+            return self._grant(files, registration_id)
 
     def _records(self, files, grant):
         names = files.names(('records', grant['registration_id']))
@@ -178,17 +192,24 @@ class Store:
             records.append(record)
         return records
 
-    def _capture(self, registration_id, epoch, payload, offset=None):
+    def _capture(self, registration_id, epoch, payload, offset=None, native_stream=None):
         require(isinstance(epoch, str) and EPOCH.fullmatch(epoch), 'epoch')
         with self._locked() as files:
             grant = self._grant(files, registration_id, epoch)
             if grant is None:
                 return {'status': 'disabled'}
-            # Grant checked before decoding any event content.
+            require((grant['client'] == 'synthetic') == (native_stream is None), 'adapter_mismatch')
+            # Scope is checked before ledger scans or reading hook input.
+            if native_stream is not None:
+                from .native import validate_process_scope
+                validate_process_scope(grant)
             limit = EVENT_LIMIT if offset is None else BATCH_LIMIT
-            require(isinstance(payload, bytes) and len(payload) <= limit, 'payload_size')
             records = self._records(files, grant)
             existing = {event['event_id']: event for record in records for event in record['events']}
+            if native_stream is not None:
+                from .native import adapt
+                payload = adapt(native_stream, grant, existing.values())
+            require(isinstance(payload, bytes) and len(payload) <= limit, 'payload_size')
             if offset is None:
                 events = [normalize(payload, grant)]
                 record_id = digest(['event', events[0]['event_id']])
@@ -239,9 +260,9 @@ class Store:
                 result.update(next_offset=cursor, trailing_bytes=trailing)
             return result
 
-    def _receive(self, registration_id, epoch, payload, offset=None):
+    def _receive(self, registration_id, epoch, payload, offset=None, native_stream=None):
         try:
-            return self._capture(registration_id, epoch, payload, offset)
+            return self._capture(registration_id, epoch, payload, offset, native_stream)
         except FileNotFoundError:
             return {'status': 'disabled'}
         except BusyStore:
@@ -254,6 +275,9 @@ class Store:
 
     def capture(self, registration_id, epoch, payload):
         return self._receive(registration_id, epoch, payload)
+
+    def capture_native(self, registration_id, epoch, stream):
+        return self._receive(registration_id, epoch, None, native_stream=stream)
 
     def import_batch(self, registration_id, epoch, offset, payload):
         if not integer(offset):

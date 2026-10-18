@@ -110,6 +110,17 @@ class ObservationStoreTests(unittest.TestCase):
         self.assertEqual(self.capture(grant, prompt="synthetic changed prompt")["status"], "duplicate")
         self.assertEqual(len(self.events(grant)), 1)
 
+    def test_synthetic_replay_remains_compatible_with_slice_one_records(self):
+        grant = self.grant(); self.capture(grant)
+        record_path, = (self.root / 'records' / grant['registration_id']).glob('*.json')
+        record = json.loads(record_path.read_text())
+        # Original schema-v1 records put the adapter gap first. Keep their bytes'
+        # logical content replayable when introducing another adapter.
+        gaps = record['events'][0]['gaps']
+        gaps.remove('synthetic_adapter'); gaps.insert(0, 'synthetic_adapter')
+        record_path.write_text(json.dumps(record))
+        self.assertEqual(self.capture(grant)['status'], 'duplicate')
+
     def test_missing_stable_id_is_retained_with_duplicate_uncertainty(self):
         grant = self.grant()
         event = json.loads(self.payload())

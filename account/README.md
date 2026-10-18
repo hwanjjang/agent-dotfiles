@@ -67,6 +67,13 @@ ambiguous “check the hooks” request without introducing a trust-bypass optio
 
 ### Optional integrations
 
+[Native observations](observation/native.md) are a separate opt-in: create an
+exact-project Claude grant, then select it with `--observation-registration ID`
+on install/update. Default installations collect nothing. Preview lists the five
+independent Claude callback commands; `--observation-registration none` removes
+only that delivery. Grants and records remain under the observation CLI's ownership.
+Codex observation and comparative evaluation are not implemented.
+
 ```sh
 # Opt in only if Hermes is already installed on this host.
 sh scripts/setup-account.sh install --with-hermes
@@ -210,7 +217,8 @@ Doctor reports identify `evidence_kind: account_qualification`, with
 successful model scenarios. Use them for setup readiness and deployment checks.
 The [improvement-loop contract](../docs/decisions/account-improvement-loop.md#account-qualification-and-reuse)
 owns comparison, failure-to-case triage and promotion requirements. Doctor neither
-activates collection nor writes events to the observation store. Existing observation
+activates collection nor writes events to the observation store. When delivery is
+selected, it checks the grant's status; it does not certify native delivery. Existing observation
 records and grants remain outside installer ownership through update, rollback and
 uninstall; use the observation CLI to revoke or prune them explicitly.
 

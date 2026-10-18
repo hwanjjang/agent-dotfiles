@@ -1,0 +1,31 @@
+{
+  "captured": "2026-10-18",
+  "baseline": "7131b4b",
+  "status": "uncommitted_candidate",
+  "scenario": "native-observation",
+  "client": "Claude Code 2.1.302",
+  "model": "claude-haiku-5-5",
+  "source_sha256": {
+    "account/observation/native.py": "46ffb4a67701184493012c4f82319d26d1f58db93724bff6cc51559585f8b022",
+    "account/observation/store.py": "477d5b1abf081af3d08ee2885d463908396b15b1541e73b1ad16dc055a2cd12b",
+    "account/observation/files.py": "85e67e1d7048036b368d4055177e0adf290679e942626b07e959fa0b027324d4",
+    "account/hooks/observation-hook.py": "549ece3ddcc6ffacdd858457e9b162b4ebb5d6faf4be311a60bdfaf1859177ab",
+    "scripts/setup_account.py": "096b71f58b860038072510070a3f1a3cfe78928bb3c2a9748dd0d7c97ed596d2",
+    "scripts/account_storage.py": "1895e341548253c9014ecc6bc46bdc9d93d92d58e725567c4ff1c35077ab57af",
+    "scripts/account_doctor.py": "0963cae15a7be94c4b1e602498b42adb1c1c6f12fa7a390af95f0ba9a6560b72",
+    "scripts/improvement/observations.py": "e5792ebc09770a4c72a48dbbfa0911d4d63f6151d0be26e83ce121503ec99fb3",
+    "docs/map/catalog.json": "063bbf520847f7fe8e7938144ea98ca65ef6cd62cec9de5aa37225475e95f7a9",
+    "docs/map/workflow.json": "0bcd1aef5ccfcd8f6af44dbf2ea04447ac9493dc215e145d5f5d40a36201a4b6"
+  },
+  "images": {
+    "native-observe.png": "a62384c34b14b59303518f7bde01fb53c827d48cf7217a259daf47e9a7b0feca",
+    "native-result.png": "cfb4c635e305edce98e05fd2da7d9d2af695e128315ca9e01762c4d49c658014"
+  },
+  "notes": [
+    "Actual current map screenshot and browser-rendered selected results from a fresh corrected native qualification, including a fresh post-revocation native session with no added records.",
+    "The fixture revision identifies the disposable installed source snapshot; all eight runtime hashes match the documentation candidate. Map hashes identify the separately captured current map, not native execution.",
+    "Existing authentication with disposable settings; not a hermetic evaluation account.",
+    "PDF render and visual inspection recorded separately after rebuilding."
+  ],
+  "native_fixture_revision": "49cb742ebf79a734ef52e32571babb366cb69b02"
+}

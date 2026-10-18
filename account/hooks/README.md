@@ -44,6 +44,15 @@ Templates use `python3`; validate its actual interpreter on the destination.
 The current templates assume default client directories; custom client homes need
 an explicit adapter. Never change the real home to test this package.
 
+## Independent optional observation route
+
+The [Claude observation adapter](../observation/native.md) is a separate dispatcher
+at `~/.agents/bin/observation-hook.py`. It is absent from default registrations;
+an explicit installer selection adds five Claude metadata callbacks alongside the
+existing planning SessionStart group. It does not alter the seven Codex planning
+hooks, wrap planning execution, return model context or approve tools. Follow its
+own project-consent and qualification guide; planning trust is not collection consent.
+
 ## Verify before activation
 
 Run the repository's isolated tests with

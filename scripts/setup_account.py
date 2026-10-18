@@ -29,7 +29,7 @@ INSTRUCTIONS = {'.codex/AGENTS.md', '.claude/CLAUDE.md', '.hermes/SOUL.md'}
 def owned_path(name):
     if '/skills/' in name and Path(name).name in PRESERVED_SKILLS:
         return False
-    return (name.startswith(BUNDLE + '/') or name == '.agents/bin/planning-hook.py'
+    return (name.startswith(BUNDLE + '/') or name in ('.agents/bin/planning-hook.py', '.agents/bin/observation-hook.py')
             or name.startswith('.codex/hooks/') or name == '.claude/hooks/planning-with-files-dispatch.sh'
             or re.fullmatch(r'\.(?:agents|codex|claude|hermes)/skills/[a-z0-9-]+', name))
 
@@ -75,6 +75,13 @@ def load_receipt(home):
     require(set(data['instructions']) <= INSTRUCTIONS and set(data['hooks']) <= CONFIGS,
             'Receipt owns an unsupported configuration')
     require(isinstance(data.get('codex_mcp'), str), 'Invalid MCP receipt')
+    observation = data.get('observation')
+    if observation is not None:
+        require(isinstance(observation, dict) and observation.get('client') == 'claude'
+                and isinstance(observation.get('registration_id'), str)
+                and re.fullmatch(r'[a-f0-9]{64}', observation['registration_id'])
+                and isinstance(observation.get('epoch'), str)
+                and re.fullmatch(r'[a-f0-9]{32}', observation['epoch']), 'Invalid observation receipt')
     return data
 
 
@@ -184,7 +191,7 @@ def status(home):
 
 
 def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=None,
-            mcp=None, legacy=None):
+            mcp=None, legacy=None, observation_registration=None):
     old = load_receipt(home)
     require(action != 'update' or old, 'No installation receipt; use install')
     require(not legacy or not old, 'Legacy adoption is only available on first install')
@@ -196,6 +203,19 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
     mcp = old.get('mcp_selection', []) if mcp is None else mcp
     if remove:
         hermes, hooks, mcp = False, False, []
+    observation = old.get('observation')
+    if remove or observation_registration == 'none':
+        observation = None
+    elif observation_registration is not None:
+        sys.path.insert(0, str(ROOT))
+        from account.observation.store import Store
+        grant = Store(home).registration(observation_registration)
+        require(grant and grant['client'] == 'claude' and grant['source'] == 'claude-hooks-v1'
+                and grant['profile'] == 'default', 'Select an active Claude observation grant')
+        observation = {key: grant[key] for key in ('registration_id', 'epoch', 'client', 'project_root', 'expires_at')}
+    if observation:
+        require('account/hooks/observation-hook.py' in files and 'account/observation/native.py' in files,
+                'Selected revision has no native observation adapter; disable its registration before downgrading')
     require(not hermes or shutil.which('hermes') is not None, '--with-hermes requires an installed hermes executable on PATH')
     # Current hook/runtime package has a fixed POSIX layout; do not silently target a different profile.
     for key, rel in [('CODEX_HOME', '.codex'), ('CLAUDE_CONFIG_DIR', '.claude'), ('HERMES_HOME', '.hermes')]:
@@ -205,7 +225,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
     changes, before, after, conflicts = {}, {}, {}, []
     receipt = dict(version=1, home=str(home), source_revision=sha, hermes=hermes,
                    planning_hooks=hooks, mcp_selection=mcp, assets={}, instructions={}, hooks={},
-                   claude_mcp={}, codex_mcp='')
+                   claude_mcp={}, codex_mcp='', observation=observation)
 
     def change(name, value, owned=True):
         path = safe(home, name)
@@ -226,6 +246,8 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
                 assets[name] = {'link': str(home / BUNDLE / 'skills' / skill)}
         # Runtime expects this compatibility path. Avoid another full Codex skill tree.
         assets['.codex/skills/planning-with-files'] = {'link': str(home / BUNDLE / 'skills/planning-with-files')}
+        if observation:
+            assets['.agents/bin/observation-hook.py'] = files['account/hooks/observation-hook.py']
         if hooks:
             assets['.agents/bin/planning-hook.py'] = files['account/hooks/planning-hook.py']
             for name, value in files.items():
@@ -271,7 +293,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
     for client, name in [('codex', '.codex/hooks.json'), ('claude', '.claude/settings.json')]:
         previous = old.get('hooks', {}).get(name, {})
         retired = retiring.get('hooks', {}).get(name, {})
-        if not hooks and not previous and not retired:
+        if not hooks and not previous and not retired and not (client == 'claude' and observation):
             continue
         if client == 'codex' and hooks:
             inline = tomllib.loads(read(safe(home, '.codex/config.toml')).decode()).get('hooks', {})
@@ -284,12 +306,17 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         remove_groups(config, previous)
         remove_groups(config, retired)
         groups = hook_groups(home, client, files) if hooks else {}
+        if client == 'claude' and observation:
+            command = ' '.join(shlex.quote(part) for part in (sys.executable,
+                str(home / '.agents/bin/observation-hook.py'), observation['registration_id'], observation['epoch']))
+            for event in ('SessionStart', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'Stop'):
+                groups.setdefault(event, []).append({'hooks': [{'type': 'command', 'command': command, 'timeout': 4}]})
         for event, additions in groups.items():
             existing = config.setdefault('hooks', {}).setdefault(event, [])
             for group in existing:
-                require(not any(re.search(r'planning[-_]with[-_]files|planning-hook|/hooks/(run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py', h.get('command', ''))
+                require(not any(re.search(r'planning[-_]with[-_]files|planning-hook|observation-hook|/hooks/(run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py', h.get('command', ''))
                                 for h in group.get('hooks', [])),
-                        'Existing planning route needs explicit ownership reconciliation')
+                        'Existing planning or observation route needs explicit ownership reconciliation')
             existing.extend(additions)
         if groups:
             receipt['hooks'][name] = groups
@@ -339,8 +366,10 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
                      for event, groups in receipt['hooks'].get('.claude/settings.json', {}).items()
                      for group in groups for handler in group['hooks']]
     plan = dict(version=1, action=action, home=str(home), source_revision=sha,
-                hermes=hermes, planning_hooks=hooks, mcp=mcp, skills=skills,
-                hook_activation=dict(codex=hook_review, claude=claude_review, runs_outside_sandbox=True,
+                hermes=hermes, planning_hooks=hooks, mcp=mcp, skills=skills, observation=observation,
+                hook_activation=dict(codex=hook_review, claude=claude_review,
+                                     claude_observation=[item for item in claude_review if 'observation-hook.py' in item['command']],
+                                     runs_outside_sandbox=True,
                                      trust_persists=True, trust_changed_by_installer=False,
                                      next_action='Review the listed definitions in native /hooks; activate only within explicit authority.'),
                 conflicts=sorted(set(conflicts)), missing_executables=prerequisites,
@@ -364,6 +393,7 @@ def main(argv=None):
     group.add_argument('--with-hooks', dest='hooks', action='store_true', default=None)
     group.add_argument('--without-hooks', dest='hooks', action='store_false')
     parser.add_argument('--mcp', help='Comma-separated opt-in selection: github,context7,playwright; none to remove managed registrations')
+    parser.add_argument('--observation-registration', help='Opt in an existing active Claude grant ID; none removes owned observation hooks without revoking data')
     parser.add_argument('--transaction', help='Backup ID for guarded rollback')
     parser.add_argument('--json', action='store_true', help='Machine-readable doctor report')
     parser.add_argument('--native', action='store_true', help='Doctor: query native clients without model requests')
@@ -379,6 +409,8 @@ def main(argv=None):
         require(args.action == 'doctor' or not (args.json or args.native or args.client or args.model_smoke
                 or args.model or args.with_paseo or args.evidence_dir or args.timeout != 90 or args.scenario != 'spec'),
                 'Diagnostic options require the doctor action')
+        require(args.observation_registration is None or args.action in ('install', 'update'),
+                'Observation selection requires install or update')
         require(os.name == 'posix', 'Only POSIX accounts are supported')
         home = args.home.expanduser().absolute()
         require(home.exists() and home.is_dir() and not home.is_symlink(), 'Target home must be an existing real directory')
@@ -386,7 +418,7 @@ def main(argv=None):
         if args.action == 'doctor':
             require(not args.apply and not args.approve_plan and not args.legacy_receipt
                     and not args.transaction and args.hermes is None and args.hooks is None
-                    and args.mcp is None,
+                    and args.mcp is None and args.observation_registration is None,
                     'Doctor does not accept installation or mutation flags')
             require(1 <= args.timeout <= 300, 'Timeout must be between 1 and 300 seconds')
             require(not args.model_smoke or (args.client and args.model and args.evidence_dir),
@@ -420,7 +452,7 @@ def main(argv=None):
         mcp = None if args.mcp is None else ([] if args.mcp == 'none' else sorted(set(args.mcp.split(','))))
         def run():
             plan, changes = prepare(home, repo, args.revision, args.action, args.hermes, args.hooks,
-                                    mcp, args.legacy_receipt)
+                                    mcp, args.legacy_receipt, args.observation_registration)
             if args.apply:
                 require(not plan['conflicts'] or (args.approve_plan and json.loads(args.approve_plan.read_bytes()) == plan),
                         'Conflicts require review of saved preview and --approve-plan with that exact file')
