@@ -140,6 +140,59 @@ class LifecycleTests(unittest.TestCase):
         self.addCleanup(controller.release)
         return controller
 
+    def test_observation_deadline_does_not_poison_bounded_watcher_cleanup(self):
+        import threading, time
+        from native_trial_owner import copy_native_home
+        c=self.controller()
+        source=self.root/'synthetic-auth'; source.write_bytes(b'SYNTHETIC_NOT_A_CREDENTIAL');source.chmod(0o600)
+        (c.control/'home').mkdir(mode=0o700)
+        c.home=copy_native_home(source,c.control/'home/.codex')
+        auth=c.home.root/'auth.json'
+        entered=threading.Event();closed=threading.Event()
+        c.deadline=time.monotonic()+.04
+        c.seen={111:{'pid':111,'ppid':os.getpid(),'pgid':111,
+                     'start':'Sun Oct 18 16:00:00 2026','exe':c.runtime['codex']}}
+        c.launch_called=c.launch_complete=True
+        c.live=Mock();c.live.proc=Mock(pid=111)
+        def close():
+            closed.set()
+            return {'process_reaped':True,'group_signal_error':None}
+        c.live.close.side_effect=close
+        def query(argv,timeout,**kwargs):
+            self.assertEqual(argv[0],'/bin/ps')
+            if closed.is_set():return {'exit':1,'stdout':'','stderr':'','stop_reason':None}
+            entered.set(); c.watch_stop.wait(.5)
+            if timeout<.1:return {'exit':None,'stdout':'','stderr':'','stop_reason':'timeout'}
+            return {'exit':0,'stdout':f"111 {os.getpid()} 111 Sun Oct 18 16:00:00 2026 {c.runtime['codex']}",'stderr':'','stop_reason':None}
+        with patch.object(trial,'bounded',side_effect=query), patch.object(trial.os,'killpg') as kill:
+            c.watcher=threading.Thread(target=c.watch);c.watcher.start()
+            self.assertTrue(entered.wait(1))
+            time.sleep(max(0,c.deadline-time.monotonic())+.01)
+            self.assertGreater(time.monotonic(),c.deadline)
+            result=c.cleanup()
+            self.assertFalse(c.watcher.is_alive());kill.assert_not_called()
+        self.assertFalse(result['watch_uncertain'])
+        self.assertTrue(result['processes_stopped'])
+        self.assertTrue(result['native_home']['auth_absent'])
+        self.assertTrue(result['complete']);self.assertFalse(auth.exists())
+
+    def test_protected_mutation_during_native_shutdown_blocks_qualification(self):
+        c=self.controller();path=c.control/'protected-canary';path.write_bytes(b'SYNTHETIC_CANARY')
+        c.protected={path:(trial.plan.stamp(path.stat()),b'SYNTHETIC_CANARY')}
+        self.assertTrue(c.verify_protected())
+        c.live=Mock()
+        def close():
+            path.write_bytes(b'SYNTHETIC_MUTATION')
+            return {'process_reaped':True,'group_signal_error':None}
+        c.live.close.side_effect=close
+        result=c.cleanup()
+        self.assertIs(result.get('protected_synthetic_files_unchanged_after_shutdown'),False)
+        c.data['mode']='qualification';c.qualification=Mock();c.qualification.summary.return_value={'status':'observed'}
+        c.observation={'status':'completed_ungraded'}
+        receipt=c.finish(result,result['protected_synthetic_files_unchanged_after_shutdown'])
+        self.assertEqual(receipt['status'],'blocked')
+        self.assertTrue(result['complete']);self.assertFalse(c.control.exists())
+
     def test_staging_is_readonly_for_arm_and_executor_volume_uses_nocopy(self):
         controller = self.controller(); controller.setup()
         self.assertEqual(self.docker.staged, {'arm_mode':0o555,'entry_mode':0o444,

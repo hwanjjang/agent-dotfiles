@@ -695,7 +695,11 @@ class Controller:
         self.checked(['start', info['Id']])
 
     def prepare_qualification(self, *, credential_free=False):
-        """Only this reviewed synthetic case can request qualification semantics."""
+        """Prepare the fixed case; credential_free is for a trusted outer owner.
+
+        The public fixture CLI remains native_execution.py. Its outer owner
+        must bind its own harness and establish shutdown/protected-file custody.
+        """
         expected = plan.QUALIFICATION_FILES
         plan.require(self.selected.files == expected and self.data['inputs']['entrypoint'] ==
                      'skills/assigned/SKILL.md', 'qualification_fixture')
@@ -743,9 +747,12 @@ class Controller:
         except Exception:
             return False
 
-    def process(self, pid, *, cleanup=False):
+    def process(self, pid, *, cleanup=False, watch=False):
         try:
-            deadline = self.cleanup_deadline if cleanup else self.deadline
+            # Supervision must not inherit the model observation expiry. Each
+            # query still has its own two-second bound; actual query failures
+            # remain uncertainty. Cleanup stops/drains the watcher before close.
+            deadline = time.monotonic()+2 if watch else (self.cleanup_deadline if cleanup else self.deadline)
             plan.require(deadline is not None and time.monotonic() < deadline, 'process_deadline')
             result = bounded(['/bin/ps', '-p', str(pid), '-o', 'pid=,ppid=,pgid=,lstart=,comm='],
                              min(2, max(.01, deadline-time.monotonic())), limit=2048, env=self.env)
@@ -764,18 +771,24 @@ class Controller:
                     if self.watch_stop.is_set():
                         return
                     stage, parent_pid, child_pid, child_kind = 'parent_query', saved['pid'], None, None
-                    current = self.process(saved['pid'])
+                    current = self.process(saved['pid'], watch=True)
+                    if self.watch_stop.is_set():
+                        return
                     if current is None:
                         continue
                     plan.require(same_process(saved, current), 'parent_changed')
                     stage = 'child_inventory'
                     children = child_inventory(bounded(['/usr/bin/pgrep', '-P', str(saved['pid'])],
-                        min(2, max(.01, self.deadline-time.monotonic())), limit=1024, env=self.env))
+                        2, limit=1024, env=self.env))
+                    if self.watch_stop.is_set():
+                        return
                     for pid in children:
                         if self.watch_stop.is_set():
                             return
                         stage, child_pid = 'child_query', pid
-                        child = self.process(pid)
+                        child = self.process(pid, watch=True)
+                        if self.watch_stop.is_set():
+                            return
                         if child is None:
                             continue
                         child_kind = 'transport' if child['exe'] == self.runtime['docker'] else (
@@ -919,6 +932,10 @@ class Controller:
             (self.launch_complete and self.live is not None and self.live.proc is not None
              and close and close.get('process_reaped') is True and not close.get('group_signal_error')))
             and not process_failure and not self.process_uncertain and not result['watch_uncertain'])
+        # Check protected bytes only after owned process shutdown, while the
+        # control tree still exists. Qualification consumes this captured fact.
+        result['protected_synthetic_files_unchanged_after_shutdown'] = (
+            self.verify_protected() if result['processes_stopped'] and getattr(self, 'protected', {}) else None)
         # Absence must be observed without following a replacement link.
         parent_fd = None
         try:
@@ -1058,8 +1075,8 @@ def run(path, *, auth_source=None, fixture=False):
                 controller.primary = fixed_failure(exc)
             finally:
                 clock.cancel()
-                protected = controller.verify_protected()
                 cleanup = controller.cleanup()
+                protected = cleanup.get('protected_synthetic_files_unchanged_after_shutdown')
         return controller.finish(cleanup, protected)
     finally:
         controller.release()

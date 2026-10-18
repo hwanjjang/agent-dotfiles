@@ -13,7 +13,7 @@
       "title": "Require both qualification and owned cleanup",
       "instruction": "Run one explicitly authorized attempt with --auth-source. Read the receipt, exact qualification predicates, matching terminal, numeric usage and cleanup. Independently reconcile saved processes and executor resources before the external owner stops its dedicated VM. For residue, use guarded recover only with the original journal and source identities; uncertain ownership remains blocked.",
       "screenshot": "native-trials-result.png",
-      "caption": "Actual selected profile passed the short-loader, six boundary checks and remote-only challenge; automatic cleanup and independent absence checks passed. Earlier failures remain preserved.",
+      "caption": "Actual selected profile passed the short-loader, six boundary checks and remote-only challenge; post-shutdown protected-file checks, automatic cleanup and independent absence checks passed. Earlier failures remain preserved.",
       "expected": "qualified_current_profile applies only to the recorded sources and environment. General trials remain completed_ungraded; live_eligible=false. Token limits are post-use soft guards and can overshoot."
     }
   ]

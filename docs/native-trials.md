@@ -1,9 +1,10 @@
 # Frozen native trials: operator guide
 
 The source implements `check`, `run` and guarded `recover` for one pinned native
-trial. **The selected profile passed source-bound credential-free and authenticated
-qualification on 2026-10-18.** This applies to the recorded runtime and environment;
-other hosts and comparative evaluation remain unqualified.
+trial. **Selected V9/V10 evidence renews credential-free and authenticated qualification
+for the recorded corrected sources on 2026-10-18.** Those results apply only to
+their recorded source, runtime and environment; other hosts and comparative
+evaluation remain unqualified.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -15,16 +16,28 @@ change Docker context, log in, compare arms, grade general tasks or promote chan
 ## Selected evidence and current limits
 
 The [selected evidence record](verification/native-trials.json) owns the sanitized
-source/profile bindings and results. A coordinator-run current-source
-credential-free loader check observed all six closed boundary projections,
-actual disabled-collaboration refusal, unchanged external synthetic protected
-files and owned process/container/volume/home cleanup. That targeted mock result
-does not establish authentication, natural routing, every future tool route or
-comparison eligibility. A matching-source authenticated Luna/low turn also passed
-the exact short loader, six boundary projections, remote-only challenge and owned
-cleanup. Preserve historical failed attempts separately. See the
+V9/V10 source/profile bindings and results, with previous V7/V8 evidence preserved.
+V9's private Python bridge called the
+public `native_execution.run_fixture` API and received `mock_complete`. The bridge
+combined that result with outer protected-sentinel and cleanup checks; its private
+coordinator independently checked owned resources and VM stop. The selected
+`coordinator_attested_credential_free_profile` status is this private attestation, **not a
+status emitted by the public `native_execution` CLI**. The evidence record names
+and hashes the private bridge, coordinator, release and receipt artifacts without
+publishing their paths or contents. Those hashes identify retained evidence;
+they do not make the private orchestration a reproducible public command.
+
+That selected targeted mock observed all six closed boundary projections,
+actual disabled-collaboration refusal and unchanged external synthetic protected
+files. Matching-source V10 authenticated Luna/low evidence observed the exact short
+loader, six boundary projections, remote-only challenge and owned cleanup. Both
+attempts verified protected synthetic files unchanged after process shutdown.
+Neither result qualifies later changed source bytes, natural routing, every future
+tool route or comparative evaluation. Preserve historical failures and renew
+affected checks on drift. The
 [screenshot manual](manual/native-trials.pdf), [editable source](manual/native-trials.json)
-and [workflow diagram](architecture/native-trial-workflow.html).
+and [workflow diagram](architecture/native-trial-workflow.html) retain their own
+source/capture provenance.
 
 ## Prepare a frozen plan
 
@@ -171,7 +184,10 @@ text or a zero wrapper exit cannot substitute.
 
 This path uses a local synthetic Responses provider and no real inference or
 authentication. Its two synthetic submissions are not provider retry accounting.
-A `mock_complete` receipt keeps `live_eligible`, `authentication_qualified` and
+The public runner emits `mock_complete` or `blocked`, never the private bridge
+status `coordinator_attested_credential_free_profile` (or historical
+`qualified_credential_free_profile`). A `mock_complete` receipt keeps
+`live_eligible`, `authentication_qualified` and
 `isolation_qualified` false. The caller must separately verify readonly source
 custody, external protected files and owned executor/helper cleanup; inner
 sentinel checks cover only the fixture's own temporary files. Trusted Python

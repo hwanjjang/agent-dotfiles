@@ -9,7 +9,7 @@
     "native_execution_command_skills.js": "ec2fa02e7d670dfbdedc43d2334d74c5395aab038abf06abd394e209951bd06a",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "96155a61c91a52cc8c6bef8c5950c6d13803cd08e9e3ac7a74ac0e90eedf029d",
+    "native_trial.py": "090991bb9d50b44992da6f71052b5019036fd186eecbaee952f1ad6537e4e312",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
     "native_trial_plan.py": "1841fad7addac7514df2014330e999a9fd4f501021a4e4a61e29b334ac5baeeb",
     "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
@@ -25,18 +25,22 @@
   "pages": 2,
   "text_check_passed": true,
   "every_page_rendered_and_visually_reviewed": true,
-  "visual_result": "Both pages readable; no clipping, overlaps, missing glyphs or private paths. Screenshots and text agree with selected actual results.",
+  "visual_result": "Both renewed PDF pages visually inspected: readable, no clipping/overlaps/missing glyphs/private paths. Actual V10 aggregate16917/204 and post-shutdown protected bytes agree with selected evidence.",
   "artifacts_sha256": {
-    "native-trials.json": "a479e96ddbcc5786b4e63d9b2b49292330a99680ab9131835a2345ddeb0046c3",
-    "native-trials.pdf": "130f810463c6233248144c4c3ae30e8e34041c04d52f8441ca954ca66ae6625e",
+    "native-trials.json": "499874fda8fa6c97e54d1577f59e65d961177932e669f487b132e4c39764239a",
+    "native-trials.pdf": "6d065c5f9914cde32b52538ba7a0a608ff08db509955d6ca241309e890cf1d29",
     "native-trials-check.html": "e293e19a65fd6e62a5ad1c0df933075853351edd5dc7158e8cc5980123014e69",
-    "native-trials-result.html": "44445b2744274b2e4350cde5e54bed09729b2ed5bb617dfd78dbfba2fbe68795",
+    "native-trials-result.html": "2f8c43f5916b30e766b407e964adfd97d27010645a6b9620d4392711c1cf3472",
     "native-trials-check.png": "0e14967f6c19950ed51bad96d47a162926e1b158c2c24acf6bb8d4e193552b29",
-    "native-trials-result.png": "d0cd81cebc678ceadcf3fa350ad0cc8d58c8dffd411f30b52e81d0bebc4d1d59"
+    "native-trials-result.png": "00c035159e50eb905087df469b029b3920b97fdf30a52193e261ce3b9aa3dc4a"
   },
   "limits": [
     "Capture summarizes recorded actual results, not independent reproduction.",
     "No credentials, raw native traffic or challenge value included.",
     "Profile-specific qualification; no comparison or account activation."
-  ]
+  ],
+  "evidence_attempts": {
+    "credential_free": "V9 private coordinator attestation",
+    "authenticated": "V10 public native_trial.py CLI"
+  }
 }

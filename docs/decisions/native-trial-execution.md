@@ -1,6 +1,6 @@
 # Frozen native trial execution
 
-Design contract for issue [#25](https://github.com/hwanjjang/agent-dotfiles/issues/25). The [operator guide](../native-trials.md) and [selected evidence](../verification/native-trials.json) record implemented commands and the exercised current-profile qualification. This design contract defines their boundary; it does not grant comparison admission. The [credential-free fixture](native-execution-fixture.md) retains its separate contract.
+Design contract for issue [#25](https://github.com/hwanjjang/agent-dotfiles/issues/25). The [operator guide](../native-trials.md) and [selected evidence](../verification/native-trials.json) record implemented commands and selected corrected-source V9/V10 qualification, preserving earlier V7/V8 evidence. This design contract defines their boundary; it does not grant comparison admission. The [credential-free fixture](native-execution-fixture.md) retains its separate contract.
 
 ## Purpose and supported boundary
 
@@ -50,6 +50,8 @@ Emit a typed source/trial/attempt/arm/environment-bound receipt with actual term
 Use known-existing synthetic protected host/account/history/other-arm/evaluator sentinels, with prior existence and unchanged bytes checked outside executor mounts. Selected command/skill paths and parent/symlink traversal must not expose them. Require successful selected command and skill body/reference controls. Exercise actual current network/root-write restrictions and finite IPv4/IPv6 errors; timeout/DNS ambiguity is not denial. No real account/history or unseen evaluation corpus is a canary.
 
 The existing catalog also exposes patch/image/stdin and generic MCP/clock controls. Do not describe the profile as command-only while those remain callable. Retain small relevant outside-boundary patch/image/invalid-session guards; successful patch/image/PTY workflows are not promised. Unknown routes refuse qualification. Keep root-entry and nested-tool inventories distinct, and actual dispatcher behavior separate from names.
+
+The selected V9 credential-free evidence is a private-coordinator attestation, with bridge/coordinator and receipt digests in the selected evidence record. The public `native_execution` runner returns `mock_complete` or `blocked`; it does not emit the private bridge status `coordinator_attested_credential_free_profile` (historically `qualified_credential_free_profile`). Outer sentinel/resource/VM checks belong to that separate attestation, not an implied public CLI capability. Preserve historical V7/V8 bindings alongside selected V9/V10 evidence, including protected-file verification after process shutdown, and renew evidence after relevant source changes.
 
 Credential-free native probes may establish model-independent dispatch/OS denials on reconciled exact binaries/configuration/environment. They cannot replace actual authentication compatibility. One actual source-bound qualification turn can require exact fixed JavaScript, a bounded actual catalog/global/import projection, matching native call/output/thread/turn correlation and the remote-only random challenge. Any extra/unaccounted call or incomplete projection fails qualification. Exact-script observation is evidence, not a pre-dispatch code gate or natural routing test.
 

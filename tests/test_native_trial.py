@@ -25,6 +25,18 @@ class ControllerTests(unittest.TestCase):
                           auth_source=Path('/synthetic/auth.json'))
             copied.assert_not_called()
 
+    @unittest.skipUnless(hasattr(__import__('signal'),'SIGALRM'),'POSIX interval timer required')
+    def test_phase_clock_interrupts_and_restores_the_native_timer(self):
+        import signal
+        self.assertEqual(signal.getitimer(signal.ITIMER_REAL),(0.0,0.0))
+        previous=signal.getsignal(signal.SIGALRM)
+        with self.assertRaisesRegex(trial.plan.Refusal,'^deadline$'):
+            with trial.PhaseClock() as clock:
+                clock.arm(time.monotonic()+.02)
+                time.sleep(.5)
+        self.assertEqual(signal.getitimer(signal.ITIMER_REAL),(0.0,0.0))
+        self.assertEqual(signal.getsignal(signal.SIGALRM),previous)
+
     def test_fixture_and_authenticated_profiles_disable_image_generation(self):
         import tomllib
         for profile in (trial.native_execution.PROFILE, trial.DIRECT_PROFILE):
