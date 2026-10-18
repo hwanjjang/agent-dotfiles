@@ -373,9 +373,9 @@ completion. Collection and trusted admission must connect those components befor
 an actual comparison can pass. Changed runtime sources require renewed affected
 qualification; historical qualification cannot be relabeled as current evidence.
 
-The development pilot uses the requested and observed native-client model selection,
+The development pilot must use the requested and observed native-client model selection,
 client/runtime/environment identities and observed reroute/mismatch checks. Missing
-required observations block the trial. Backend weights or silent provider substitution
+required observations must block the trial. Backend weights or silent provider substitution
 are not attested by that interface and remain unknown. The exact observable identity
 requirement belongs to #27; selecting a model does not prove server internals.
 
@@ -549,4 +549,4 @@ improved task performance.
 
 ### Offline accounting implementation
 
-The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. Actual isolated model execution, authenticated evidence and independent holdout custody remain separate incomplete requirements; diagnostic reports cannot authorize promotion.
+The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner has selected-profile execution qualification; task-result admission, authenticated evaluator evidence and independent holdout custody remain incomplete. Diagnostic reports cannot authorize promotion.
