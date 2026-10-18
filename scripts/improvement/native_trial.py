@@ -1273,8 +1273,25 @@ def read_recovery(attempt):
     raw, _ = plan.read_file(attempt / 'manifest.json', 1024*1024, 'recovery_manifest')
     data = json.loads(raw, object_pairs_hook=protocol.unique,
         parse_constant=lambda _: (_ for _ in ()).throw(plan.Refusal('recovery_manifest')))
-    plan.require(isinstance(data, dict) and data.get('schema_version') == 1 and data.get('profile') == plan.PROFILE,
+    plan.require(isinstance(data, dict) and type(data.get('schema_version')) is int
+                 and data['schema_version'] in (1, 2) and data.get('profile') == plan.PROFILE,
                  'recovery_manifest')
+    routed = data['schema_version'] == 2
+    fields = 'schema_version profile mode identity inputs prompt runtime limits sources state_root'
+    plan.fields(data, fields + (' routing' if routed else '') +
+                (' collection' if 'collection' in data else ''), 'recovery_manifest')
+    plan.require(data['mode'] in ('trial', 'qualification') and
+                 (not routed or data['mode'] == 'trial'), 'recovery_manifest')
+    if routed:
+        routing = data['routing']
+        plan.fields(routing, 'mode observer catalog_scope catalog_digest catalog', 'recovery_manifest')
+        plan.require(routing['mode'] in ('natural', 'forced_entrypoint')
+                     and routing['observer'] == 'implicit-stderr-json-v1'
+                     and routing['catalog_scope'] == 'declared_experiment_subset', 'recovery_manifest')
+        plan.fields(data['inputs'], 'root files' if routing['mode'] == 'natural'
+                    else 'root entrypoint files', 'recovery_manifest')
+    # Original frozen_binding is checked before cleanup; never reopen task/auth
+    # inputs to revalidate the catalog or turn a routed receipt into launch authority.
     identity = data.get('identity', {})
     plan.require(plan.is_digest(identity.get('trial_id')) and plan.token(identity.get('attempt_id')),
                  'recovery_manifest')
