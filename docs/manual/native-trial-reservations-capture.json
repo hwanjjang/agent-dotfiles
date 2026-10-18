@@ -3,8 +3,10 @@
   "feature_id": "evaluation-accounting",
   "scope": "Actual public initialize refusal and renewed CLI/parser/process smoke using a fixed native-run STUB with fake qualification, journals and usage. No current native qualification.",
   "capture_surface": "Browser-rendered sanitized actual CLI/process result summary; not terminal images.",
-  "source_checkpoint": "b57ea16629b10f1c20c79ff6907120d88a4ae342",
-  "execution_at_existing_checkpoint": true,
+  "source_checkpoint": "a8b0f97854570e3826d685696853747ed14b0855",
+  "execution_at_existing_checkpoint": false,
+  "execution_preceded_checkpoint": true,
+  "checkpoint_binding": "Exact source bytes matched after execution; checkpoint created later",
   "source_digests": {
     "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
     "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
@@ -22,13 +24,14 @@
   },
   "grader_source_digests": {
     "evaluation.py": "6ef4f4ad1575033105003c0e0cd2aee87d8be697fdff936b7e0a4389670fbea6",
-    "trial_admission.py": "c1b1d119116cbf1761decb21e47ed39a5b4d3b320be116370eef7c2fb51a9573",
+    "trial_admission.py": "de1c341ed69bc186b4328d7dcdd7e6f376ac8e6b3711bdeaac9425a4b692a861",
     "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
   },
-  "source_identity": "47816b30d2c9f69f01b05cea2a3bf121f38457a7bd0ec2c5d12bfb9c1747b7a2",
-  "grader_identity": "fb64d5d7c230b4101777957a939ac5cfe24d63cdc912faf80126e0284854fe14",
-  "retained_smoke_sha256": "3231cc710d5ba9998daa59de632f6aa0625ed3930a62834de767a68575ec7c9f",
-  "retained_renewal_handoff_sha256": "78dbfd3a179094e864f423378dd4621ba13ceb4211ce88cb0dffa5f7d39c83e1",
+  "source_identity": "161e32022d834386749dbb12871d2782f5f7680d6dbcb09f16a9277a12a105ed",
+  "grader_identity": "c629567cd7994ae0b40ae14ede76428114a5d7690101c898e7c455845c2c158d",
+  "retained_smoke_sha256": "96991641c8eb5d815a4a0f5dbbdb7f94933debd480b5f36e26dc0511560fa08e",
+  "retained_smoke_314_sha256": "2da665eddc1d6601e91bf07c74f8d71905e1232dae1733dac8e7c274e4a17a58",
+  "retained_renewal_handoff_sha256": "1203191baa0ae8ba37e436ff2750940f8789ffe157d6b572205ebb8a8a86389a",
   "capture_method": {
     "browser": "Existing Google Chrome",
     "transport": "Archify ChromeVisualBrowser direct DevTools pipe",
@@ -59,6 +62,8 @@
     "fixed_stub_native_runner_calls": 3,
     "actual_lock_probe_processes": 6,
     "crash_exit": 23,
+    "crash_scope": "Separate actual process directly appended Journal reserve then exited23; not process death inside run-next. In-process checks separately verify launch ordering.",
+    "crash_inside_run_next": false,
     "after_two_stub_attempts": {
       "status": "ready",
       "reserved": 2,
@@ -95,11 +100,11 @@
     "tokens": "Post-use soft guard; unknown usage blocks and overshoot is possible"
   },
   "artifact_sha256": {
-    "native-trial-reservations.json": "79d4b814c915859eaecce3b239a012d37b896d2e411449efe6ca8cfa4e0ca04e",
-    "native-trial-reservations.pdf": "76af28e5410b14455366f426b8bfcbcb0c559173f245463a98437ffdb9407030",
-    "native-trial-reservations-check.html": "17bcce69df49bce658846ee7c5a2d7ccebe41691ee3a254bfeee98eac06301fd",
-    "native-trial-reservations-check.png": "91c687288f7cc0c07dac8cd1d259be4ccd7c5c0a4b06170c41d61bfbb6e222e5",
-    "native-trial-reservations-result.html": "ad16e18ad68ea416d589fd67eeede83e4d6a539d3e3869bd9052d9b337d72c18",
-    "native-trial-reservations-result.png": "641af81076cad6873bceeb61fa74abbe2ef5c0290e06c3fd5ee5bca2960d8b5a"
+    "native-trial-reservations.json": "d7304a0ba415838ca4bc3ce303b34c00925cbdc981f327a2cfede1f6422e5184",
+    "native-trial-reservations.pdf": "6997c6da116475202fb93fa4cd339c15bc7c2c726f5f8e33ed84c9b46faff4cf",
+    "native-trial-reservations-check.html": "5f02317b11519a43342c8e493dc31c148b020663b95c653a29be3131ca3eac5f",
+    "native-trial-reservations-check.png": "c7595a59e76f96e6d538cdffa6e96418e54327b4832ceaeb756c1dcddad375c1",
+    "native-trial-reservations-result.html": "ab808b9fb9d5eace9698bcf7bd41fd7a5f68f3147d926db1cba05e16aab60c41",
+    "native-trial-reservations-result.png": "faec786cd7d172be3366dd5e3d103e2cfffefbf4d8c67c446ad8bc9fbe25d0b4"
   }
 }
