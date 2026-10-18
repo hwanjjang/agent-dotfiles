@@ -148,6 +148,9 @@ its PASS does not establish improvement over a baseline.
 The [collector capacity guide](account/observation/capacity.md) records bounded
 delivery attribution and 10,000 synthetic callback recovery, including the measured
 p95 latency and its reference-host limit. Delivery identity never implies exact model exposure.
+The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md)
+provides macOS Python canaries and a guarded Linux native synthetic workflow.
+A passing native fixture does not enable live provider access or promotion.
 
 ## Principles
 

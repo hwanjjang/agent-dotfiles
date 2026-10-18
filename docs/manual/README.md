@@ -144,3 +144,18 @@ earlier candidate missed the target and remains historical evidence. Snapshot de
 qualify exact exposure. Both PDF pages are rendered and visually inspected, with
 text and page count checked. Earlier native model results retain their own source
 boundaries; this supplement does not requalify them against the capacity runtime.
+
+## Native isolation qualification guide
+
+The [native isolation walkthrough](native-isolation.pdf), [editable source](native-isolation.json)
+and [actual map capture](native-isolation.png) show how to locate and expand the
+new synthetic qualification guide. The capture uses workflow digest `c8bcdb25297a`,
+isolated Chrome and public repository content only, on 2026-10-18. It is bound to
+that earlier map revision; the current map includes later main additions. It proves
+map navigation, not CLI execution. The separate maintained CLI smoke exercised the
+actual Linux client, mock turn, native failed tool and cleanup; scope and commands
+remain authoritative in the [qualification guide](../decisions/evaluation-isolation-pilot.md).
+The single PDF page was rendered with PDFium and visually inspected for readable
+text, complete capture, captions and margins; text and page count were checked
+with pypdf. Rebuild using the screenshot-manual commands above with
+`native-isolation.json`, and recapture when the documented dialog changes.

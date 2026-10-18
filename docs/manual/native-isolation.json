@@ -1,0 +1,13 @@
+{
+  "title": "Native isolation qualification",
+  "scenario": "Find the synthetic qualification guide and run its bounded CLI on an existing Docker host. Requires Python 3.12+, the verified Codex 0.163.0 arm64 package, pinned image and a Docker-visible staging directory.",
+  "steps": [
+    {
+      "title": "Open the isolation guide",
+      "instruction": "In the AK SDLC map, open Self-improvement and eval, select Native isolation / synthetic, then choose Expand all. Follow Sources for the exact prerequisite and CLI commands. Use a fresh private evidence directory. A pass qualifies the synthetic native path only; live transport and promotion remain false. If blocked, inspect receipt.json and correct the stated prerequisite without broadening access.",
+      "screenshot": "native-isolation.png",
+      "caption": "Actual expanded guide from workflow digest c8bcdb25297a, captured on 2026-10-18 after review corrections. Navigation only; separate CLI smoke verified execution.",
+      "expected": "The guide explains the synthetic workflow, observed boundary checks, deliberate tool exit 3 and uncertain cleanup. A timed-out create keeps staging and cannot qualify the run."
+    }
+  ]
+}

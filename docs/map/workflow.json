@@ -376,7 +376,8 @@
         "improvement-candidate",
         "improvement-eval",
         "improvement-review",
-        "improvement-deploy"
+        "improvement-deploy",
+        "native-isolation"
       ]
     }
   ],
@@ -419,7 +420,8 @@
     "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",
     "improvement-review": "A comparison proposes changing the source used by future account tasks. Existing review methods support a planned promotion gate for skill improvements.",
     "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned.",
-    "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement."
+    "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement.",
+    "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted container."
   },
   "category_titles": {
     "triage": [
@@ -522,6 +524,7 @@
     "improvement-eval": "4. Eval / planned",
     "improvement-review": "5. Review / planned gate",
     "improvement-deploy": "6. Deploy / installer exists",
-    "account-doctor": "Account doctor"
+    "account-doctor": "Account doctor",
+    "native-isolation": "Native isolation / synthetic"
   }
 }
