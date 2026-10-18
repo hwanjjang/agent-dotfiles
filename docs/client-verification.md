@@ -4,6 +4,15 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## SDLC intake evidence - 2026-10-18
+
+The [intake verification record](verification/sdlc-intake.md) documents bounded
+native Claude runs for general requests, issues, PRs and reassessment, including
+failures and model differences. Its [recipe](verification/verify-repository/features/sdlc-intake.md)
+is separate from browser navigation and account installation checks. The
+[integrated guide](manual/user-guide/README.md) explains invocation; neither that
+guide nor these runs qualifies every client or an entire live tracker lifecycle.
+
 ## Collector capacity and boundary snapshots — 2026-10-18
 
 The later [capacity qualification](../account/observation/capacity.md) executed

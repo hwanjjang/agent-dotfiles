@@ -15,7 +15,8 @@
     "Made the PR workflow policy authoritative over the historical one-task/one-PR equation.",
     "AK 2026-10-17 amendment: one assignment/result/publication for matching required and additional reviewers; shared high default with explicit effort precedence and provider-checked receipt support.",
     "Required and additional reviewers apply the existing code-review-and-quality method inside their assigned context through the canonical skill-routing table; no second review orchestrator.",
-    "Consolidated useful account runtime continuity into the existing host adapter contract; no second runtime policy, private authorization or launcher settings imported."
+    "Consolidated useful account runtime continuity into the existing host adapter contract; no second runtime policy, private authorization or launcher settings imported.",
+    "Connected evidence-based intake and consequential reassessment through references/intake.md; reuse stage routing and triage/receipt records without a separate skill, classifier agent or schema."
   ],
   "skill_dependencies": [
     "planning-with-files",

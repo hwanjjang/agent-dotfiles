@@ -111,6 +111,28 @@
       "date": "2026-10-18",
       "worksheet_sha256": "97f91536ebdf91cde68c6f4e083973bc26f163ea2abf9bbbad5dfc0fee0889ae",
       "scope": "Editable worksheet follows same-host fresh-context/exposure protocol. Original capture hashes, PDFs and illustrations remain historical; no new screenshot, model run or PDF render is claimed."
+    },
+    "sdlc_intake": {
+      "date": "2026-10-19",
+      "changed_steps": [
+        "map",
+        "first-task",
+        "continuity"
+      ],
+      "scope": "SDLC intake, endpoint and resumption text amendment only. Top-level delivered_pdf_sha256 and visual_review describe the earlier capture edition; the hashes below identify the current rebuilt PDFs. Screenshots and all historical capture hashes remain unchanged.",
+      "delivered_pdf_sha256": {
+        "manual-en.pdf": "01e4aa1f2bfb907a4759408b33098605dd83994e44796b1a04f6e45ed47c7749",
+        "manual-ko.pdf": "0ac5a51b3df713d8110bf94b918de495bec8fc71fcdea6a4720c88b2fd00546e"
+      },
+      "source_sha256": {
+        "bilingual-source.json": "168c937fd6bf8e8dd87935c275e264c19ce4a13150efb2eccd66d2bad01e8cb8",
+        "manual-en.json": "125b18b12957c1c8bbe6d07425585bb79da9b7e4f08664a2718ab6affe904356",
+        "manual-ko.json": "8ef1a18a35754a64384b7d758138ce1fd77fe4fe65af9eee8f221bd55f4539fc",
+        "manual-en.md": "caeb0df4e02d16806a5ef3cb6d4ac019fcf42106a9cb4b9bec9d3fc1bc3ffde1",
+        "manual-ko.md": "bf44ca6e14f5d050a37ecf4f15a0c0dcc99ab6d1151166302f2865383ec68818"
+      },
+      "font": "Nanum Gothic Regular; SIL OFL 1.1; editable embedding permitted; font file not redistributed",
+      "verification": "Both18-page PDFs rendered and all36pages visually inspected. Final wording correction affected English page5 and Korean pages5,7; all other page images pixel-identical to the inspected prior rebuild. Source parity, complete updated instruction extraction, local links and maps checked."
     }
   }
 }

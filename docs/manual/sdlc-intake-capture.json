@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-18",
+  "source_hashes": {
+    "skills/sdlc/LICENSE": "51ac333c30801d809567822a19c89bd0c36bdf5d9d31e444ddb643fe8240a5cc",
+    "skills/sdlc/SKILL.md": "caba6a6525c13f4f502ea9b0ff74e8443a3ce3541f7a38c408b82f7751bf6ace",
+    "skills/sdlc/assets/delegation-receipt.json": "2fb305807b974d1848eab34f8ed65a80aaf59e8d45bacec7e90740ef6c75ffa3",
+    "skills/sdlc/assets/documentation.json": "d64a9d94674b1d217d168d40452f974144f94fad97380f2a7906a30f705bdc3d",
+    "skills/sdlc/assets/merge-gate.json": "ad5a391acd7e7930cedbd326f7b716f4d484dd0e8df73179abc85998d353173a",
+    "skills/sdlc/assets/merge-ready.json": "c08d6e2f42b719e37a53bd017216544e56e7e45a587470dd93e31ea4333f75a1",
+    "skills/sdlc/assets/pre-merge-authority.json": "121207a7090fba64868954e538acae772c4ce6873d29e3a87305cc9793142242",
+    "skills/sdlc/assets/receipt.json": "7e73a2bec92086e82156c4a163d54f1b18d07c24f794b65eb5e81d428cdece5e",
+    "skills/sdlc/assets/reviewer-configuration.json": "0c34dacf854da4fc51cc597c3c2fd52fb5161413125ff95b56f38460981b31b6",
+    "skills/sdlc/assets/smoke-scenario.md": "41f5545b13d8c082d1a6d333f3fc9cedcf609270427cb06dc155a4c117160e76",
+    "skills/sdlc/assets/stage-deliverables.md": "01b711883f7b1aae0ba8db7e97594dc0777da18740b88bff7fd3ba02746a1bff",
+    "skills/sdlc/assets/test-results.json": "508911520c75467d751b31f00e8a914b8a15166a630b3d711e0f0b75b573581d",
+    "skills/sdlc/assets/user-scenarios.json": "8a21ddfbf75c76f596a7cfc84fe62180d7890fa07e296b62dd5c2c8882b54055",
+    "skills/sdlc/provenance.json": "abb5750b2c4dd99734009899d88ff29abbf6d0f661f66e9fc36a8bca9b0924d7",
+    "skills/sdlc/references/artifact-retention.md": "c503d51be262613bb16cb9f123e27bb7f80c288d63201a7a524d8d4c258943ad",
+    "skills/sdlc/references/host-adapters.md": "87dc354f87537b2b2c56a72db48b27e247c56838199b51e28be1350aab33364b",
+    "skills/sdlc/references/intake.md": "cf8629f12f91b97aa01bf86b961c8d89f5647007f9b0b3ca65fd841305665904",
+    "skills/sdlc/references/optional-reviewers.md": "283de4dc04d94d0b7e31af9e27ffba08f898ef2ce8d75604805addfce70c8152",
+    "skills/sdlc/references/policy/sdlc-playbook.md": "31399efee2087a4d490b9a5c76f11b208da271a581c97bdfaa9ec0d1cddbebde",
+    "skills/sdlc/references/policy/sources/2026-08-21-model-agnostic-ai-native-sdlc-playbook.ko.md": "304cb10cc8002c71e51ca7b048461e88b0636c38b6473d025636cfd12999b4c4",
+    "skills/sdlc/references/skill-routing.md": "f8143d7b8638e9412d89ad0fe7667dedd591f2cc9713cc0c61fb653389722d2d",
+    "skills/sdlc/references/state-contract.md": "b7e85139768727c68d3bfd87884448f897495d29cb1f1268b5618837c2a3afca",
+    "skills/sdlc/references/subagents.md": "9c3da94121a4811ba8e49d52f4a0d7febc388d53617f8034d6ba77023611561b",
+    "skills/sdlc/references/verification.md": "17179cf97c068699e93cbcc7f822157bfc26515b452099795315a5dcba4dfe8d",
+    "skills/sdlc/references/workflow.md": "633119d2e43a3c721f8726b976aee4bb871cf7e1cc43b785394f128b6b4d4944",
+    "skills/sdlc/scripts/reviewer_mode.py": "33ce32ffde3a6e0690bf56457b9e56e6d403679c37cd8a946320d144e8634f62",
+    "skills/sdlc/scripts/sdlc_state.py": "d0b3fd5294c60a03ef264fa9dda631ac142db08bbf2bb4637d1fda293c3d481f",
+    "skills/sdlc/scripts/test_reviewer_effort.py": "c9be60d250bacee08d32df697ac4c378565e67f834c169e73d38408f6d60e1f4",
+    "skills/sdlc/scripts/test_reviewer_mode.py": "be7dfe3c6695c2417143d2b99e6117d5b623276c55eb7de168701a87e35fc3f0",
+    "skills/sdlc/scripts/test_sdlc_state.py": "21b3f60a1abe4aa2fb9ca18a3a1d6494605d6ffa8d47adabafe505d68ca6d1a6",
+    "skills/sdlc/scripts/test_verification_modes.py": "4d65b1b0577e33676e1e8216b141ccca1f4354ae37a9b90140cb0c0a9e31eaef"
+  },
+  "captures": [
+    {
+      "case": "vague",
+      "source_prompt_sha256": "6fdac5d5c7202ece2acad948caa1ae7b581a853d1b57cc3e6987a81f0a8ce15a",
+      "source_answer_sha256": "f39046b396252fa65f3406649bf4013220c0aa6a3b2c57145fb2c41543e94759",
+      "display": "Exact first three answer paragraphs; browser screenshot of a transcript excerpt, not native terminal UI",
+      "html": "sdlc-intake-vague.html",
+      "screenshot": "sdlc-intake-vague.png"
+    },
+    {
+      "case": "ready",
+      "source_prompt_sha256": "c702282d77fe579579bc7cfc63fcc9abd9fda4eb0545f6918f41ce2d785c6cab",
+      "source_answer_sha256": "a38e5bf00a42b611de8d360cde2440f637bc55170186ad5d07b04c35c28e6338",
+      "display": "Exact first three answer paragraphs; browser screenshot of a transcript excerpt, not native terminal UI",
+      "html": "sdlc-intake-ready.html",
+      "screenshot": "sdlc-intake-ready.png"
+    }
+  ]
+}

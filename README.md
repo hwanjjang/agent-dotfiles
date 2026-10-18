@@ -125,6 +125,9 @@ verification. Skills remain independently usable. The single pstack-derived
 `tdd` method serves bug fixes and test-first feature changes; diagnosis and review
 corrections reuse it. Source integration and evidence checks are implemented;
 complete multi-provider execution still needs a target-host run.
+The [intake decision](docs/decisions/sdlc-intake.md) connects requests, issues and
+PRs to evidence-based next actions inside SDLC; its [native behavior recipe](docs/verification/verify-repository/features/sdlc-intake.md)
+checks selection, execution and results separately.
 
 | Area | Purpose |
 | --- | --- |
