@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -37,7 +38,8 @@ class PlanTests(unittest.TestCase):
         self.source_names = ('native_trial.py', 'native_trial_plan.py', 'native_trial_protocol.py',
                              'native_trial_owner.py', 'native_usage.py', 'native_execution.py',
                              'native_execution_catalog.py', 'native_execution_command_skills.js',
-                             'native_isolation.py', 'native_trial_qualification.py', 'native_execution_loader.js')
+                             'native_isolation.py', 'native_trial_qualification.py', 'native_execution_loader.js',
+                             'native_trial_results.py')
         for name in self.source_names:
             (self.sources / name).write_text('SYNTHETIC_SOURCE_' + name)
         digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
@@ -79,6 +81,18 @@ class PlanTests(unittest.TestCase):
         with self.assertRaisesRegex(plan.Refusal, '^' + reason + '$'):
             self.load(value)
 
+    def test_plan_keeps_package_import_available_in_a_fresh_isolated_process(self):
+        repository = Path(__file__).resolve().parents[1]
+        code = ('import sys; sys.path.insert(0, sys.argv[1]); '
+                'from scripts.improvement import native_trial_plan as plan; '
+                'assert plan.PROFILE == "codex-0.163-macos-arm64-linux-arm64-v1"; '
+                'plan.validate_collection({"schema_version":1,"paths":["result.txt"],'
+                '"max_file_bytes":65536,"max_total_bytes":262144},"trial")')
+        result = subprocess.run([sys.executable, '-I', '-S', '-c', code, str(repository)],
+                                capture_output=True, text=True, timeout=5)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, '')
+
     def test_valid_selected_plan_is_checked_without_mutating_state(self):
         before = list(self.state.iterdir())
         result = self.load()
@@ -86,6 +100,46 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(result.files[('case', 'fixture.txt')], b'SYNTHETIC_CASE')
         self.assertEqual(len(result.digest), 64)
         self.assertEqual(list(self.state.iterdir()), before)
+
+    def test_optional_collection_is_frozen_and_check_does_not_capture(self):
+        value = copy.deepcopy(self.value)
+        value['collection'] = {'schema_version': 1, 'paths': ['result.txt'],
+                               'max_file_bytes': 65536, 'max_total_bytes': 262144}
+        result = self.load(value)
+        self.assertEqual(result.data['collection'], value['collection'])
+        self.assertNotEqual(result.digest, self.load().digest)
+        self.assertEqual(list(self.state.iterdir()), [])
+
+    def test_collection_invalid_declarations_fail_during_plan_check(self):
+        valid = {'schema_version': 1, 'paths': ['result.txt'],
+                 'max_file_bytes': 65536, 'max_total_bytes': 262144}
+        for declaration, reason in [
+            (None, 'collection_fields'), ({}, 'collection_fields'),
+            (dict(valid, extra=True), 'collection_fields'),
+            (dict(valid, schema_version=True), 'collection_version'),
+            (dict(valid, schema_version=2), 'collection_version'),
+            (dict(valid, paths=[]), 'collection_declaration'),
+            (dict(valid, paths=['../outside']), 'collection_declaration'),
+            (dict(valid, paths=['auth.json']), 'collection_declaration'),
+            (dict(valid, paths=['transport-canary.txt']), 'collection_declaration'),
+            (dict(valid, paths=['same','same']), 'collection_declaration'),
+            (dict(valid, paths=[str(i) for i in range(9)]), 'collection_declaration'),
+            (dict(valid, paths=[str(i)+'😀'*159 for i in range(8)]), 'collection_declaration'),
+            (dict(valid, max_file_bytes=True), 'collection_declaration'),
+            (dict(valid, max_file_bytes=65537), 'collection_declaration'),
+            (dict(valid, max_total_bytes=262145), 'collection_declaration'),
+        ]:
+            with self.subTest(reason=reason, declaration=declaration):
+                value = copy.deepcopy(self.value); value['collection'] = declaration
+                self.refused(value, reason)
+                self.assertEqual(list(self.state.iterdir()), [])
+        value = copy.deepcopy(self.value)
+        value.update(collection=valid, mode='qualification')
+        self.refused(value, 'collection_mode')
+
+    def test_collector_source_drift_invalidates_plan(self):
+        (self.sources/'native_trial_results.py').write_text('SOURCE_DRIFT')
+        self.refused(self.value, 'source_changed')
 
     def test_source_and_selected_input_drift_refuse(self):
         (self.inputs / 'case/fixture.txt').write_text('CHANGED')

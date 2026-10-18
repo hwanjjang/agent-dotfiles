@@ -12,12 +12,18 @@ import re
 import stat
 from types import MappingProxyType
 
+if __package__:
+    from . import native_trial_results as results
+else:
+    import native_trial_results as results
+
 SOURCE = Path(__file__).resolve().parent
 SOURCE_NAMES = frozenset((
     'native_trial.py', 'native_trial_plan.py', 'native_trial_protocol.py',
     'native_trial_owner.py', 'native_usage.py', 'native_execution.py',
     'native_execution_catalog.py', 'native_execution_command_skills.js',
     'native_isolation.py', 'native_trial_qualification.py', 'native_execution_loader.js',
+    'native_trial_results.py',
 ))
 PROFILE = 'codex-0.163-macos-arm64-linux-arm64-v1'
 PINNED_RUNTIME = {
@@ -210,6 +216,22 @@ class ValidatedPlan:
         return dict(self._files)
 
 
+def validate_collection(value, mode):
+    """Validate optional native delivery without touching outcome files."""
+    fields(value, 'schema_version paths max_file_bytes max_total_bytes', 'collection_fields')
+    require(type(value['schema_version']) is int and value['schema_version'] == 1,
+            'collection_version')
+    require(mode == 'trial', 'collection_mode')
+    try:
+        results._validate(Path('/work/project'), value['paths'],
+                          value['max_file_bytes'], value['max_total_bytes'])
+    except results._Blocked:
+        raise Refusal('collection_declaration') from None
+    require(len(value['paths']) <= 8 and len(encoded(value)) <= 4096,
+            'collection_declaration')
+    return value
+
+
 def load_plan(path):
     """Validate a selected plan and materialize <=4MiB of frozen input bytes.
 
@@ -223,9 +245,13 @@ def load_plan(path):
                            parse_constant=lambda _: (_ for _ in ()).throw(Refusal('plan_json')))
     except (ValueError, UnicodeError, RecursionError):
         raise Refusal('plan_json') from None
-    fields(value, 'schema_version profile mode identity inputs prompt runtime limits sources state_root', 'plan_fields')
+    names = 'schema_version profile mode identity inputs prompt runtime limits sources state_root'
+    fields(value, names + (' collection' if isinstance(value, dict) and 'collection' in value else ''),
+           'plan_fields')
     require(type(value['schema_version']) is int and value['schema_version'] == 1, 'plan_version')
     require(value['profile'] == PROFILE and value['mode'] in ('trial', 'qualification'), 'plan_profile')
+    if 'collection' in value:
+        validate_collection(value['collection'], value['mode'])
     identity = value['identity']
     fields(identity, 'trial_id binding_digest experiment_digest case_id arm variant repetition attempt_id', 'identity')
     require(all(is_digest(identity[k]) for k in ('trial_id', 'binding_digest', 'experiment_digest'))
