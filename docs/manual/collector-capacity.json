@@ -1,0 +1,20 @@
+{
+  "title": "Check collector capacity and attribution",
+  "scenario": "Scenario: native-observation. Frozen synthetic qualification, 2026-10-18. Use a candidate checkout, Python 3.11+ and a new ignored evidence directory. No real account, authentication or model access is required.",
+  "steps": [
+    {
+      "title": "Separate capacity from latency",
+      "instruction": "Open the Observe source guide and follow capacity.md to run the bounded callback qualifier. Compare attempted callbacks with actual stored IDs, replay counts and interrupted reservation evidence. Read the recorded latency distribution independently of the capacity verdict.",
+      "screenshot": "collector-capacity-result.png",
+      "caption": "Browser rendering of the actual corrected 10,000 PostToolUse callback run, excluding boundary probes. Capacity/recovery and the 50 ms p95 target passed this reference-host run.",
+      "expected": "All 10,000 records were verified; p95 was 48.16 ms on this run, with no cross-host or mixed-boundary guarantee. Prior candidates measured 48.04 and 64.71 ms. A reservation hole is not an event, and neutral callback output does not acknowledge storage."
+    },
+    {
+      "title": "Read only the scope of the snapshot",
+      "instruction": "Inspect the manifest attached to SessionStart or Stop and its observation time, hashes and gaps. Tool events must not borrow the earlier manifest. Test missing or changed receipts and component drift with disposable fixtures using the native-observation recipe.",
+      "screenshot": "collector-attribution-result.png",
+      "caption": "Browser rendering of actual installed synthetic boundary probes. The receipt describes delivered source, not proven model exposure.",
+      "expected": "effective_exposure_exact remains false. Missing, stale or mid-turn changes cannot become exact attribution; historical imports never borrow today's receipt. No model-effectiveness or native platform claim follows."
+    }
+  ]
+}

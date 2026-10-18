@@ -58,15 +58,22 @@ an account installation manual.
 The [account source walkthrough](account-source.pdf) shows the installation and hook-guide Anytime
 entries. The screenshots demonstrate map navigation, not a completed installation. Its [editable source](account-source.json),
 [ownership capture](account-source.png) and [hook capture](account-hooks.png)
-show the actual expanded dialogs from workflow digest `b4f054f4165a`, captured
-on 2026-10-17 in isolated Chrome at 2x device scale. The maintained browser
+show actual expanded dialogs captured on 2026-10-17 in isolated Chrome at 2x
+device scale. These captures predate the later improvement-loop qualification
+details; the illustrated controls, commands and source links remain applicable. The maintained browser
 recipe verifies their source links and the distinction between delivery and native
 activation. Installation commands remain authoritative in the account guide.
 
-Both PDF pages were rendered with PDFium and visually checked for readable text,
-complete screenshots, margins and captions. Text and page count were checked with
+All three account PDF pages were rendered with PDFium and visually checked for
+readable text, complete screenshots, margins and captions. Text and page count were checked with
 pypdf. Regenerate with the screenshot-manual scripts above, substituting
 `account-source.json`; recapture when either documented dialog changes.
+
+The account walkthrough also covers the account-doctor node and its optional
+real-model/Paseo path. Its [doctor capture](account-doctor.png) and third page were
+recaptured from the generated map; screenshots prove navigation, not a passing
+account check. The [account verification recipe](../verification/verify-repository/features/account-verification.md)
+owns the behavioral checks.
 
 ## Complete English and Korean user guides
 
@@ -74,8 +81,84 @@ The [English guide](user-guide/manual-en.pdf) and [Korean guide](user-guide/manu
 cover installation, AK SDLC navigation, private synthetic observations, the proposed
 eval workflow and recovery in 18 pages each. See the [source and capture notes](user-guide/README.md),
 [English editable text](user-guide/manual-en.md) and [Korean editable text](user-guide/manual-ko.md).
-The six-step improvement cycle is documented with explicit implemented/planned status.
-Actual native collection and comparative model evaluation remain future work.
+The six-step improvement cycle is documented with explicit implemented/planned status
+at that capture baseline. See the current native walkthrough below for the later
+Claude adapter; comparative model evaluation remains future work.
+
+## Native Claude collection walkthrough
+
+The [two-page walkthrough](native-observation.pdf) covers finding the collection
+guide, opting in, verifying callbacks and revoking delivery. Its
+[editable source](native-observation.json), [map capture](native-observe.png),
+[sanitized native result capture](native-result.png) and
+[capture manifest](native-observation-capture.json) are maintained together.
+
+The 2026-10-18 Claude candidate is based on doctor parent `7131b4b`; the manifest binds the runtime and
+map sources. The first image shows the actual map; the second is a browser rendering
+of selected results from a real disposable Claude 2.1.302 / Haiku 5.5 session, not
+a terminal screenshot. Native runtime files match the tested snapshot. Both PDF
+pages were rendered and visually checked, with text and page count checked too.
+The [native guide](../../account/observation/native.md) owns commands and limits;
+the [recipe](../verification/verify-repository/features/native-observation.md)
+owns repeatable verification. No real-account collection was activated by this guide.
+
+## Codex and platform coverage walkthrough
+
+For current qualification status, use the
+[native platform matrix](../../account/observation/native.md#native-platform-evidence--2026-10-18).
+It owns source revisions, actual coverage, cleanup and unresolved gaps. The PDFs
+below retain their original evidence boundaries; a later status update does not
+requalify or rewrite their captures.
+
+The [three-page Codex walkthrough](codex-observation.pdf) follows the existing
+`native-observation` scenario: select one client, review native trust, inspect
+actual results and retain platform blockers. Its [editable source](codex-observation.json),
+[map capture at its capture revision](codex-observe.png), [macOS results](codex-native-result.png),
+[Linux matrix](linux-observation-result.png) and [capture manifest](codex-observation-capture.json)
+are maintained together. The two result images are browser renderings of selected
+actual qualification evidence, not terminal captures. The macOS result is a fresh
+corrected parent-native runtime run, before later capacity/attribution changes;
+Linux results remain historical pre-guard partial
+coverage and do not qualify the corrected Linux runtime. The later offline Linux
+prerequisite result is recorded in the native guide, not these historical captures.
+The native guide owns exact source revisions and coverage; the earlier Claude
+walkthrough retains its historical capture and is not a current Codex map. The
+observation dialog text has changed since these captures; their editable source
+and PDFs describe the recorded revision, not the current dialog.
+
+All three Codex PDF pages were rendered and visually inspected at their capture revision;
+text/page-count checks and browser navigation are recorded separately. Rebuild
+with the existing screenshot-manual scripts and recapture affected map dialogs
+when their metadata changes. No account installation or activation was performed
+by the documentation workflow.
+
+## Collector capacity and attribution supplement
+
+The [two-page supplement](collector-capacity.pdf), [editable source](collector-capacity.json)
+and [capture manifest](collector-capacity-capture.json) reuse `native-observation`.
+Its [capacity result image](collector-capacity-result.png) and
+[boundary snapshot image](collector-attribution-result.png) are browser renderings
+of selected actual synthetic benchmark/probe results, not terminal screenshots.
+Capacity/recovery and the p95 target passed one final reference-host run; the
+earlier candidate missed the target and remains historical evidence. Snapshot delivery hashes do not
+qualify exact exposure. Both PDF pages are rendered and visually inspected, with
+text and page count checked. Earlier native model results retain their own source
+boundaries; this supplement does not requalify them against the capacity runtime.
+
+## Native isolation qualification guide
+
+The [native isolation walkthrough](native-isolation.pdf), [editable source](native-isolation.json)
+and [actual map capture](native-isolation.png) show how to locate and expand the
+new synthetic qualification guide. The capture uses workflow digest `c8bcdb25297a`,
+isolated Chrome and public repository content only, on 2026-10-18. It is bound to
+that earlier map revision; the current map includes later main additions. It proves
+map navigation, not CLI execution. The separate maintained CLI smoke exercised the
+actual Linux client, mock turn, native failed tool and cleanup; scope and commands
+remain authoritative in the [qualification guide](../decisions/evaluation-isolation-pilot.md).
+The single PDF page was rendered with PDFium and visually inspected for readable
+text, complete capture, captions and margins; text and page count were checked
+with pypdf. Rebuild using the screenshot-manual commands above with
+`native-isolation.json`, and recapture when the documented dialog changes.
 
 ## Offline development evaluation
 

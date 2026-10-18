@@ -44,12 +44,26 @@ Templates use `python3`; validate its actual interpreter on the destination.
 The current templates assume default client directories; custom client homes need
 an explicit adapter. Never change the real home to test this package.
 
+## Independent optional observation route
+
+The [native observation adapters](../observation/native.md) share a separate
+dispatcher at `~/.agents/bin/observation-hook.py`. Default registrations omit it.
+An explicit installer selection adds five Claude or four Codex callbacks for one
+client, alongside its existing planning groups. Codex observation definitions need
+their own native trust; seven trusted planning hooks do not activate the four
+observers. The dispatcher neither wraps planning nor changes model context or tool
+permissions. Follow the native guide for consent, trust and qualification limits.
+
 ## Verify before activation
 
 Run the repository's isolated tests with
 `python3 -m unittest discover -s tests -p 'test_account_hooks.py'`.
 They use disposable delivery layouts, synthetic plans and isolated caches.
-Then, on an authorized target client, inspect effective registrations, confirm the
+Then run `sh scripts/setup-account.sh doctor --native --client codex` and the
+corresponding `--client claude` check on an authorized target account. The doctor
+reports modified/untrusted Codex hooks as blocked and never auto-trusts them.
+It checks Claude SessionStart recovery with synthetic data; it does not certify
+every lifecycle event. On the target client, inspect effective registrations, confirm the
 delivered source revision, and exercise session recovery and each claimed event.
 Test project/account overlap and opt-out. JSON parsing or a direct script run alone
 does not establish native hook activation or user-facing model behavior.

@@ -17,6 +17,33 @@ CLI = ROOT / 'scripts/improvement/observations.py'
 
 
 class ObservationCliTests(unittest.TestCase):
+    def test_native_grant_cli_requires_no_synthetic_cursor_and_can_be_revoked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory).resolve()
+            project = home / 'project'; project.mkdir()
+            command = [sys.executable, str(CLI), '--home', str(home)]
+            result = subprocess.run(command + ['grant', '--client', 'claude', '--project', str(project)],
+                                    capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            grant = json.loads(result.stdout)
+            rejected = subprocess.run(command + ['capture', '--registration', grant['registration_id'],
+                                                 '--epoch', grant['epoch']], input=b'{}', capture_output=True, timeout=10)
+            self.assertEqual(rejected.returncode, 1)
+            self.assertEqual(json.loads(rejected.stdout)['reason'], 'adapter_mismatch')
+            revoked = subprocess.run(command + ['revoke', '--registration', grant['registration_id']],
+                                     capture_output=True, timeout=10)
+            self.assertEqual(json.loads(revoked.stdout)['status'], 'revoked')
+
+    def test_codex_grant_cli_selects_native_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run([sys.executable, str(CLI), '--home', directory, 'grant',
+                                     '--client', 'codex', '--project', directory],
+                                    capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            grant = json.loads(result.stdout)
+            record = Path(directory) / '.agents/agent-dotfiles/observations/grants' / (grant['registration_id'] + '.json')
+            self.assertEqual(json.loads(record.read_text())['source'], 'codex-hooks-v1')
+
     def test_manual_synthetic_lifecycle(self):
         with tempfile.TemporaryDirectory(prefix='observation CLI ') as directory:
             base = Path(directory).resolve()
