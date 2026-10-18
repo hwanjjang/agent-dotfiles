@@ -46,7 +46,9 @@ owns commands, evidence privacy, cost boundaries and coverage limits.
 [Private observations](account/observation/README.md) support explicit immutable task
 selections and local feedback. See the [task-feedback walkthrough](docs/manual/task-feedback.pdf)
 and [verification recipe](docs/verification/verify-repository/features/task-feedback.md).
-Reviewed case export and live comparative evaluation remain planned.
+[Reviewed synthetic case export](account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
+is available with an [exact-digest review walkthrough](docs/manual/reviewed-cases.pdf).
+Evidence-bound caller triage is available; automatic diagnosis and live comparative evaluation remain planned.
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.

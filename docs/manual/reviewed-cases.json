@@ -1,0 +1,20 @@
+{
+  "title": "Review and export a synthetic case",
+  "scenario": "Scenario: reviewed-cases / workflow-map. Fresh correction capture on d8cd2c5. Python 3.11+, a disposable home and synthetic inputs; no model call.",
+  "steps": [
+    {
+      "title": "Declare the cause and inspect the case boundary",
+      "instruction": "Open docs/map/workflow.html and choose 2. Case / reviewed export. Follow Sources to the authoritative Store guide. Select a frozen revision and feedback; supply triage category and evidence IDs, synthetic inputs and a successful or contrary counterpart.",
+      "screenshot": "reviewed-cases-map.png",
+      "caption": "Actual current workflow dialog. Evidence-bound caller triage is reported attribution, not automated diagnosis.",
+      "expected": "Only instruction cases qualify. Outcome cases need a referenced failed tool. Unknown is insufficient; environment/auth/grader are blocked. Routing/adherence need correction-linked evidence without a failed-tool prerequisite."
+    },
+    {
+      "title": "Review exact bytes and export to a new path",
+      "instruction": "Run prepare, then show. Keep its triage envelope private; inspect the public payload and counterpart. Review the exact digest with both flags. Export into an existing directory using its resolved real path. Revoke the disposable grant after the check.",
+      "screenshot": "reviewed-cases-result.png",
+      "caption": "Browser-rendered summary of actual synthetic CLI results, not a terminal or live efficacy result.",
+      "expected": "Missing correction stays insufficient. Unreviewed, existing, parent-link, relative and private-store outputs refuse. Revoke purges private lineage; expiry disables access and prune deletes bytes. Detached synthetic exports remain. Review assertions are not automatic sanitization."
+    }
+  ]
+}

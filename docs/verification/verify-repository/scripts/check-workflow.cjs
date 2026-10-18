@@ -79,6 +79,13 @@ async function main() {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
       assert.match(await page.locator('#pop').innerText(), expected);
+      if (id === 'improvement-case') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /Only instruction cases are eligible/);
+        assert.match(detail, /outcome cases require an actual failed tool/);
+        assert.match(detail, /Caller triage is not automated diagnosis/);
+        assert.match(detail, /not automatic sanitization/);
+      }
       assert.ok(await page.locator('#pop a[href*="super-board/blob/"]').first().isVisible());
       if (id === 'grill-with-docs') {
         await page.locator('#pop').screenshot({path: path.join(output, 'workflow-rich-detail.png'), animations: 'disabled'});
@@ -100,6 +107,13 @@ async function main() {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
       assert.match(await page.locator('#pop').innerText(), expected);
+      if (id === 'improvement-case') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /Only instruction cases are eligible/);
+        assert.match(detail, /outcome cases require an actual failed tool/);
+        assert.match(detail, /Caller triage is not automated diagnosis/);
+        assert.match(detail, /not automatic sanitization/);
+      }
       assert.ok(await page.locator('#pop a[href="../../skills/' + id + '/provenance.json"]').isVisible());
       if (id === 'screenshot-manual' || id === 'sdlc') {
         await page.locator('#pop a[href="../../skills/' + id + '/provenance.json"]').scrollIntoViewIfNeeded();
@@ -118,6 +132,13 @@ async function main() {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
       assert.match(await page.locator('#pop').innerText(), expected);
+      if (id === 'improvement-case') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /Only instruction cases are eligible/);
+        assert.match(detail, /outcome cases require an actual failed tool/);
+        assert.match(detail, /Caller triage is not automated diagnosis/);
+        assert.match(detail, /not automatic sanitization/);
+      }
       assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
       if (id === 'planning-hooks') {
         await page.locator('#pop').screenshot({path: path.join(output, 'planning-hooks-detail.png'), animations: 'disabled'});
@@ -131,7 +152,7 @@ async function main() {
     await close();
     for (const [id, expected, source] of [
       ['observation-store', /synthetic|Synthetic/, 'account/observation/README.md'],
-      ['improvement-case', /Planned:/, 'docs/decisions/account-improvement-loop.md'],
+      ['improvement-case', /caller triage.*are available/, 'docs/decisions/account-improvement-loop.md'],
       ['improvement-candidate', /manual|Manual/, 'docs/decisions/account-improvement-loop.md'],
       ['improvement-eval', /This tool launches no model or command/, 'docs/decisions/evaluation-accounting.md'],
       ['improvement-review', /It never merges or installs/, 'docs/decisions/promotion-recommendations.md'],
@@ -140,6 +161,13 @@ async function main() {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
       assert.match(await page.locator('#pop').innerText(), expected);
+      if (id === 'improvement-case') {
+        const detail = await page.locator('#pop').innerText();
+        assert.match(detail, /Only instruction cases are eligible/);
+        assert.match(detail, /outcome cases require an actual failed tool/);
+        assert.match(detail, /Caller triage is not automated diagnosis/);
+        assert.match(detail, /not automatic sanitization/);
+      }
       if (id === 'improvement-eval') {
         const detail = await page.locator('#pop').innerText();
         assert.match(detail, /4\. Eval \/ offline/);

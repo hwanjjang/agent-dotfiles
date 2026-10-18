@@ -1,10 +1,12 @@
 """Small POSIX private-file boundary; all descendants use directory descriptors."""
 from contextlib import contextmanager
+import errno
 import fcntl
 import json
 import os
 from pathlib import Path
 import stat
+import sys
 import time
 import uuid
 
@@ -30,6 +32,56 @@ def check_private(fd, directory=False):
             or stat.S_IMODE(info.st_mode) != (0o700 if directory else 0o600)
             or (not directory and info.st_nlink != 1)):
         raise UnsafeStore('unsafe_store_object')
+
+
+def export_new(destination, value, *, private_root_fd=None):
+    """Publish a new local artifact without following links or replacing a file.
+
+    The caller holds the observation guard through this operation. The existing
+    destination directory is explicit; no directory is created or traversed by link.
+    """
+    path = Path(destination)
+    if not path.is_absolute() or any(part in {'.', '..'} for part in path.parts):
+        raise UnsafeStore('export_path')
+    parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
+    temporary = '.case-export-' + uuid.uuid4().hex
+    private = os.fstat(private_root_fd) if private_root_fd is not None else None
+
+    def refuse_private(fd):
+        info = os.fstat(fd)
+        if private is not None and (info.st_dev, info.st_ino) == (private.st_dev, private.st_ino):
+            raise UnsafeStore('export_private_store')
+
+    try:
+        refuse_private(parent)
+        for name in path.parts[1:-1]:
+            try:
+                child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            except OSError as error:
+                if error.errno in (errno.ELOOP, errno.ENOTDIR):
+                    raise UnsafeStore('export_path_symlink') from error
+                raise
+            os.close(parent); parent = child
+            refuse_private(parent)
+        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=parent)
+        try:
+            with os.fdopen(fd, 'wb', closefd=False) as stream:
+                stream.write(encoded(value)); stream.flush(); os.fsync(fd)
+            # Hard-link publication is atomic and refuses every existing target,
+            # including symlinks; no overwrite race is possible.
+            os.link(temporary, path.name, src_dir_fd=parent, dst_dir_fd=parent, follow_symlinks=False)
+            os.fsync(parent)
+        finally:
+            primary_error = sys.exc_info()[0] is not None
+            try:
+                os.close(fd)
+                os.unlink(temporary, dir_fd=parent)
+                os.fsync(parent)
+            except OSError:
+                if not primary_error:
+                    raise
+    finally:
+        os.close(parent)
 
 
 class Files:

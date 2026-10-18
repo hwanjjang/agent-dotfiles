@@ -206,3 +206,29 @@ the [task-feedback recipe](../verification/verify-repository/features/task-feedb
 owns repeatable checks. Rebuild with the screenshot-manual scripts above, replacing
 the source name with task-feedback.json. This slice does not implement reviewed
 case export, native Codex collection or comparative evaluation.
+
+## Reviewed synthetic case walkthrough
+
+The [two-page case walkthrough](reviewed-cases.pdf) follows evidence-bound caller
+triage, prepare/show/review/export and revoke using synthetic development inputs.
+Its [editable source](reviewed-cases.json), [map image](reviewed-cases-map.png),
+[CLI result image](reviewed-cases-result.png) and [capture manifest](reviewed-cases-capture.json)
+are maintained together. The current correction capture is based on `d8cd2c5`.
+Its result image renders selected actual disposable CLI results in a browser; it
+is not a terminal screenshot or a native/model comparison.
+
+Earlier captures on `48b854b`, integration onto `16fa81f` (187 tests), and refresh
+onto `57173d8` (193 tests) remain historical provenance in the capture manifest
+and Git history. Current images and PDF were recaptured for explicit caller triage,
+actual failed-tool eligibility and precise output refusals. Caller attribution is
+checked against selected evidence; it is not a diagnosed cause. Public v1 payloads
+remain unchanged. Fresh correction validation passed 200 tests and the separate
+bilingual CLI journey, including category and destination refusals.
+
+The [Store guide](../../account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
+owns commands and privacy limits; the [case recipe](../verification/verify-repository/features/reviewed-cases.md)
+owns repeatable checks. Review assertions do not guarantee sanitization; public
+cases remain development data. Automated diagnosis remains planned. Both current
+PDF pages were rendered and individually viewed, with required text/page count
+checked. Rebuild using the existing screenshot-manual commands with
+reviewed-cases.json and recapture after workflow changes.

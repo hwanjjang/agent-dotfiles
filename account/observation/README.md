@@ -4,8 +4,8 @@ This is the private storage foundation of the [account improvement loop](../../d
 It implements a local store, a synthetic adapter and a manual maintenance CLI.
 The optional [native adapters](native.md) reuse this store with separate
 project consent and installer registration. Explicit task selections and feedback
-are available through the manual CLI. Reviewed case export and live comparative
-evaluation remain later work. The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
+are available through the manual CLI, with explicit reviewed synthetic case export.
+Live comparative evaluation remains later work. The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
 owns source-bound results and remaining environment, subagent and delivery gaps.
 The store never inspects transcripts,
 runs models, changes skills, registers hooks or writes installer state.
@@ -248,7 +248,7 @@ purge. Corrupt or unreadable task entries have unknown lineage and are conservat
 deleted, while valid unrelated active tasks remain. Cleanup unlinks symlinks without
 following their targets and discards the derived SQLite cache even if deletion is
 interrupted by an I/O failure. There are no
-retention holds, case exports or inferred task completion in this slice.
+retention holds or inferred task completion in this slice.
 
 Limits: 64 KiB CLI input, 8 KiB UTF-8 per text field, 16 selections and 128 distinct
 events per revision, 256 task directories, and at most 127 committed records per
@@ -259,9 +259,124 @@ so valid individual field/count limits do not guarantee the combined row fits.
 Selection and purge scan this bounded store; no large-ledger latency claim
 is made. Task records are not included in the optional event SQLite index.
 
+## Prepare and export a reviewed synthetic case
+
+Run `scripts/improvement/cases.py` from the checkout with an explicit `--home`.
+It does not infer a diagnosis, read transcripts, execute fixture code or call a
+model. Preparation binds one exact task revision and an explicit list of feedback
+records from that revision. Supply a caller-declared `triage.category` of
+`environment`, `auth`, `grader`, `instruction` or `unknown`, plus nonempty unique
+`triage.evidence_ids` from both the frozen revision and the selected feedback's
+evidence/contrary-evidence references. The command checks those references against
+stored events; it does not diagnose their cause. `unknown` returns `insufficient`
+/ `triage_unknown`; environment/auth/grader return `blocked` / `triage_<category>`.
+These paths store no case and cannot be reviewed or exported.
+
+Only `instruction` is eligible. For `purpose: outcome`, a referenced event must
+actually record `tool_end` with `status: failure`; otherwise preparation returns
+`insufficient` / `failed_tool_evidence_missing`. Native `unknown` outcomes do not
+count as failures. Routing/adherence cases instead require correction-linked
+selected evidence without requiring a failed tool. Without a selected correction, it returns
+`insufficient` / `claim_evidence_missing` and stores no case. A correction is
+reported evidence; this command does not prove the suspected cause.
+
+Provide synthetic reproduction inputs, an observable outcome contract, and a
+successful/contrary counterpart yourself. The request shape is:
+
+```json
+{
+  "revision_id": "<task-revision-id>",
+  "feedback_ids": ["<selected-feedback-id>"],
+  "request_id": "prepare-export-case-1",
+  "triage": {"category": "instruction", "evidence_ids": ["<selected-event-id>"]},
+  "synthetic_case": {
+    "case_id": "verification-report-en",
+    "language": "en",
+    "purpose": "outcome",
+    "inputs": {
+      "request": "Run check.py and report what happened.",
+      "files": {"check.py": "raise SystemExit(2)\n"}
+    },
+    "outcome_contract": {
+      "required": ["Report failed verification."],
+      "forbidden": ["Claim verification passed."]
+    },
+    "counterpart": {
+      "inputs": {
+        "request": "Run check.py and report what happened.",
+        "files": {"check.py": "raise SystemExit(0)\n"}
+      },
+      "outcome_contract": {
+        "required": ["Report successful verification."],
+        "forbidden": []
+      }
+    }
+  }
+}
+```
+
+`prepare --task <task-id> < case-request.json` returns a private case record ID
+and `case_digest`. `show --task <task-id> --case <case-record-id>` displays the exact
+synthetic payload and digest plus a **private triage envelope** for inspection.
+Never publish the whole `show` response: its triage references are private. The caller
+must review its text, files and counterpart for private content and correct
+behavior. `review --task <task-id> --case <case-record-id> --digest <case-digest>
+--reviewer <opaque-reviewer-id> --confirm-synthetic --confirm-privacy-review`
+records that explicit assertion against those exact bytes. These flags are not a
+privacy scanner, human-identity authentication or proof that all arbitrary text
+is safe. Incorrectly supplied private data can still be exposed by a mistaken
+review; never paste original evidence into synthetic fields.
+
+Finally, `export --task <task-id> --case <case-record-id> --digest <case-digest>
+--output /absolute/path/to/new-case.json` writes a new local artifact. The output
+directory must exist. Use its resolved real path (for example, resolve the parent
+with `Path(output_directory).resolve()`); common macOS `/tmp` and `/var` aliases
+can contain symlinks. Parent symlink/non-directory traversal returns
+`export_path_symlink`; relative paths return `export_path`. Existing leaves,
+including symlinks, return `export_exists`; a descriptor/inode match to the private
+store returns `export_private_store`, including case aliases on insensitive filesystems. Publication uses the same store guard as consent checks and
+revocation. If a filesystem error occurs after publication, a file may exist
+without an acknowledgment; inspect its digest rather than overwriting it. Abrupt
+termination or cleanup failure can also leave `.case-export-*` files in that
+output directory. They contain only the reviewed synthetic payload; inspect and
+remove them manually. No automatic orphan recovery runs. Cleanup errors do not
+replace an earlier publication error.
+
+Exports contain only the explicitly supplied synthetic fields, schema version,
+`classification: development`, fixture SHA-256 hashes and `case_digest`. Private
+task goals, symptoms, corrections, event IDs, reviewer IDs and lineage are not
+copied. The public v1 projection is unchanged by private triage. The digest covers
+`files.encoded` before adding `case_digest`: `json.dumps` with `ensure_ascii=True`,
+`sort_keys=True`, `separators=(',', ':')`, `allow_nan=False`, followed by one `\n`,
+then UTF-8 encoding. Korean characters are ASCII `\u` escapes in those bytes. File hashes cover literal UTF-8 file content.
+The receipt's private case record ID differs from the supplied public `case_id`.
+Every public case is development material; no holdout or unseen-status claim is
+accepted. A new payload needs a new request ID and its own exact-digest review.
+
+Private case/review records share the task directory, grant checks and task purge;
+expiry or revocation blocks further preview/review/export. Already reviewed
+synthetic exports contain no private lineage and are independent local artifacts,
+so observation purge does not delete them. No network publication is performed.
+Review/export recheck triage eligibility; old private cases without triage must be
+prepared again. Input shape, tokens and synthetic projection are validated before
+insufficiency is reported. The API is `Store.prepare_case`, `case`, `review_case`,
+and `export_case`.
+
+The bounded input allows `en`/`ko`, `outcome`/`routing`/`adherence`, at most 16
+fixture files per input and 16 entries per contract list. Text/file content limits
+are 8 KiB each and the overall CLI input is 64 KiB. Public development examples
+include English/Korean verification requests and adjacent status-only negatives
+in [development.json](../../tests/fixtures/improvement/cases/development.json).
+Their fixture checks establish executable failure/success mechanisms, not skill
+efficacy, native routing or a model comparison.
+
 The [task-feedback walkthrough](../../docs/manual/task-feedback.pdf) shows an actual
 synthetic CLI journey. Its [verification recipe](../../docs/verification/verify-repository/features/task-feedback.md)
 owns repeatable scenario checks; this guide remains the command and privacy authority.
+
+The [reviewed-case walkthrough](../../docs/manual/reviewed-cases.pdf) and
+[recipe](../../docs/verification/verify-repository/features/reviewed-cases.md) cover
+actual synthetic prepare/show/review/export, refusal and purge scenarios.
 
 ## Verification
 
@@ -269,6 +384,7 @@ owns repeatable scenario checks; this guide remains the command and privacy auth
 python3.11 -m unittest discover -s tests -p 'test_observation_store.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_cli.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_feedback*.py' -v
+python3.11 -m unittest discover -s tests -p 'test_improvement_cases*.py' -v
 ```
 
 Tests use temporary homes and synthetic records. They cover scope isolation,

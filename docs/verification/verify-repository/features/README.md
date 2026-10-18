@@ -15,6 +15,7 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | native-isolation | Qualify a synthetic native client and tool inside an outer OS boundary | Python CLI / existing Docker host | [Native isolation](native-isolation.md) |
 | evaluation-accounting | Freeze development evidence and account for every scheduled trial | Offline Python CLI | [Evaluation accounting](evaluation-accounting.md) |
 | task-feedback | Bind selected observations, record feedback and revoke private task state | Synthetic CLI / disposable home | [Task feedback](task-feedback.md) |
+| reviewed-cases | Prepare, inspect, review and export a synthetic development case | Case CLI / disposable home | [Reviewed cases](reviewed-cases.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;

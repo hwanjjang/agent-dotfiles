@@ -37,7 +37,8 @@ that summary as a terminal capture or automatic privacy review. The
 
 In both generated maps, open Private observations. Usage must name task-bind,
 feedback-add and task-show; sources must reach the maintained guide. The reproduction
-node must distinguish implemented task feedback from planned case export. Opt-in Claude/Codex collection exists with the
+node must distinguish implemented task feedback and reviewed synthetic case export
+from planned automatic triage. Opt-in Claude/Codex collection exists with the
 native guide’s source-bound trust/platform limits; comparative model execution
 remains planned.
 
