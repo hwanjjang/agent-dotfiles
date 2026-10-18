@@ -45,5 +45,6 @@ with a clearly labeled browser summary of actual synthetic CLI results.
 Both generated maps must show reviewed export as available, link the authoritative
 Store guide or design, and preserve the limitations: explicit inputs and assertions
 are not automatic sanitization; public cases are development material; automatic
-diagnosis, native Codex collection and live comparison remain planned in this branch.
+diagnosis and live comparison remain planned. Native Claude/Codex collection has
+separate source-bound consent, trust and platform limits in the native guide.
 Caller-declared triage is implemented and is not a verified diagnosis.
