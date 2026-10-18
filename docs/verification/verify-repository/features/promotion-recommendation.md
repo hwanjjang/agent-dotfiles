@@ -26,6 +26,11 @@ exact complete arm inventories from full commit object IDs. Exercise raw invalid
 UTF-8 blob bytes, wrong commits/refs, forged reports, outside-root changes,
 incomplete selected inventories and unsupported modes. Dirty checkout content
 must not become committed source evidence. Test bounded raw process/cap cleanup.
+A held-out-scoped or wrongly classified development input must not recommend;
+renaming IDs or using another execution root does not separate an identical case
+or counterpart `inputs` digest. Stable IDs with distinct inputs remain supported.
+`source_read_limit`, `git_unavailable` and `TimeoutExpired` return inconclusive;
+wrong objects, tampering and out-of-scope source changes reject.
 
 A complete development report without held-out evidence stays inconclusive unless
 its frozen rule rejects. Current actual public qualification must stay unavailable;
@@ -41,13 +46,24 @@ lifecycle/clock, context/tool receipts and remote metadata **FAKE**. Check:
 
 - Source-bound requirements-only `fork_turns: none`, distinct preparer/author IDs,
   digest-only output and candidate-anchor-before-pack chronology.
-- Actual metadata transport contracts through fixed GET only; body/issue/edit
-  mismatch and late local drift refuse, transport absence stays inconclusive.
+- Actual metadata transport contracts through fixed GET only. Assert exact
+  inconclusive assessments for missing/edited/malformed/rebound remote anchors
+  and late refresh changes. With otherwise favorable development evidence the
+  recommendation is inconclusive; an independently established development
+  critical/regression rejection stays reject. Local manifest/receipt tampering
+  rejects.
+- Final held-out context, batch and local evidence guards after the remote refresh,
+  and the second committed-source verification after assessment. Remote waits do
+  not consume the shared cumulative twelve-second Git-read window.
 - Exact scheduled attempts and an outside-execution-root preflight receipt,
   created before the first reservation under the existing lease; a missing
-  receipt after launches begin cannot be reminted.
-- Known author exposure during comparison is exposed; unknown delivery is
-  inconclusive; any candidate edit invalidates. Feedback after completion
+  receipt after launches begin cannot be reminted through the source-owned wrapper.
+  Receipt bytes alone do not establish invocation chronology against a bypassing
+  same-UID caller; this remains a cooperating trusted-host protocol.
+- Known pack material under a normalized alternate path or identical digest is
+  refused as an author input. Known author exposure before or during comparison
+  is exposed; unknown delivery is inconclusive; any candidate edit invalidates.
+  Feedback after completion
   reclassifies future reuse without changing the recorded earlier comparison.
 - Only eligible development **and** held-out rules can return a bounded
   recommendation. A no-benefit frozen result rejects and stops; do not search
@@ -75,7 +91,10 @@ manual page and inspect actual captures separately from automated browser checks
 
 Both recommendation CLIs reject malformed/extra top-level input with exit 1 and
 a small envelope. Invalid nested evidence can return exit 0 with a full reject
-recommendation. Preflight refusal uses exit 2. Inspect the payload, not exit 0 alone.
+recommendation. The selected source process-limit/unavailability failures yield
+inconclusive. Remote anchor uncertainty does not erase an independent development
+rejection. Preflight refusal, including bounded subprocess failure, uses exit 2.
+Inspect the payload, not exit 0 alone.
 Retain original failed executions, source hashes, exact commands and synthetic
 labels in ignored local evidence. A cwd snapshot proves only that cwd subset;
 source inspection separately establishes the recommendation route's lack of model,

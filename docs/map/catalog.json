@@ -2699,8 +2699,9 @@
       "usage": "Use promotion.py recommend-native for sealed NativeBatch and committed-source review, optionally with heldout_record_path. Legacy recommend stays diagnostic. heldout.py run-next is a separate authorized launch adapter; read the guide first.",
       "behavior": [
         "Verify actual commit/tree/blob objects and complete component inventories against guarded arm bytes; refuse untested paths or file modes.",
-        "Recompute development and optional held-out native reports, preserving current-source qualification, serial accounting and client-model requirements.",
-        "Verify selected fork-none requirements-only receipts, remotely fetched freeze anchors, preflight-before-first-reservation and known exposure; unknown filesystem reads remain separate.",
+        "Require unscoped development evidence and separate held-out task content; recompute native reports with current qualification, accounting and model requirements.",
+        "Verify selected fork-none receipts, normalized pack separation, remote anchors and known exposure. Anchor uncertainty alone cannot reject a candidate; local tampering rejects.",
+        "Recheck held-out records after anchor refresh and committed source after assessment; preflight chronology relies on the cooperating source-owned wrapper.",
         "Apply both frozen rules without retrying until improvement; candidate critical violations reject and baseline defects remain diagnostic.",
         "Return recommend/reject/inconclusive with bounded reasons. FAKE positive conformance is not an actual beneficial candidate; source acceptance, merge and install authority remain false."
       ],

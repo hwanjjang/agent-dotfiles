@@ -65,7 +65,14 @@ Input contains exactly these fields, with only `heldout_record_path` optional:
 
 The consumer opens the guarded context and sealed `NativeBatch`, recomputes the
 actual report, holds its existing locks/guards, and checks late source/evidence
-changes before returning. Caller rows, report aggregates, claimed success or
+changes before returning. Positive evidence must begin with an **unscoped**
+`development` report of kind `native_artifact_development_comparison`; a declared
+held-out schedule cannot stand in for development evidence. The separate held-out
+pack cannot reuse a development case or counterpart's canonical `inputs` digest;
+changing the execution root or renaming a case ID does not establish separation.
+Stable category IDs may repeat when the actual inputs differ. This is exact
+input-content separation, not a semantic similarity detector. Caller rows, report
+aggregates, claimed success or
 `verified: true` are not alternate input authorities. Missing current qualification
 stays unavailable; old public proof cannot be relabeled as current-source proof.
 
@@ -92,8 +99,12 @@ or lazy fetch are requested. Inherited Git configuration/environment overrides
 are excluded. Read limits include 64 KiB per commit, 4,096 recursive tree entries,
 1 MiB of tree-object data per tree inventory, and the blob limits above. Each
 command has a three-second read deadline and a combined stdout/stderr cap. The
-native consumer shares a 12-second source-read deadline across its before/after
-source verification. Owned process-group termination/reap and stream close are
+native consumer shares a cumulative 12-second Git-read window across two source
+verifications: before assessment and again after it. Time spent fetching remote
+anchors is excluded from this Git window. `source_read_limit`, `git_unavailable`
+and subprocess `TimeoutExpired` become `source_unavailable` and remain inconclusive.
+Wrong source objects, unsupported inventory limits/modes, tampering and out-of-scope
+changes reject. Owned process-group termination/reap and stream close are
 attempted on failure; uncertain group cleanup refuses source verification. These
 are bounded local process operations, not a hard end-to-end wall-clock guarantee.
 
@@ -137,8 +148,9 @@ An author input receipt has exactly `schema_version: 1`,
 `kind: candidate_author_inputs_v1`, `context_id`, `workspace`, `candidate_commit`,
 and `materials`. Each material has `{kind, path, sha256}`, with kind one of
 `requirements`, `development`, `source`; at most 64 are accepted per author.
-Their actual bytes are checked. The pack must be outside each recorded author
-workspace and cannot be its listed input path. This is a selected trusted-host
+Their actual bytes are checked. The pack must be outside each normalized recorded
+author workspace. A listed author material cannot resolve to the pack path or have
+the pack's SHA-256, even under another filename. This is a selected trusted-host
 input inventory, not a parser that establishes all historical model input.
 
 ### Selected fresh-preparer evidence
@@ -197,8 +209,14 @@ The verifier calls the fixed read-only
 `gh api --hostname github.com --method GET repos/<owner>/<repo>/issues/comments/<id>`.
 It validates actual comment ID, issue URL, exact body and digest, and requires
 `created_at == updated_at == declared created_at`. Edited, rebound or missing
-anchors cannot qualify. It refetches both anchors late and rechecks guarded local
-bytes. Each lookup has a five-second bound and 64 KiB combined output limit;
+anchor assessments remain inconclusive, including malformed metadata and a change
+during the final refresh. Anchor uncertainty alone cannot reject a candidate; an
+independently established development critical/regression rejection remains a
+rejection with the held-out uncertainty recorded. Local manifest/receipt tampering
+remains invalid and rejects.
+It refetches both anchors late, then rechecks the held-out context, batch and
+local evidence guards before accepting the assessment. Each lookup has a
+five-second bound and 64 KiB combined output limit;
 unavailable transport remains inconclusive, without trusting a copied response.
 The selected trusted-maintainer boundary is explicit; this is not a signature
 against a malicious maintainer or GitHub administrator.
@@ -217,7 +235,10 @@ the existing reservation lease. It writes `same_host_preflight_v1` only while
 the actual audited prefix is ready and has **zero** reserved initial turns.
 That receipt binds `record_digest`, `helper_digest`, fetched `anchor_digest`,
 actual `header_digest` and `reserved_initial_turns: 0`. It is stored outside the
-execution root. A missing receipt cannot be reconstructed after launches begin.
+execution root. The source-owned wrapper refuses to mint a missing receipt after
+launches begin. Its deterministic bytes alone cannot prove that the wrapper was
+invoked before launch against a caller writing identical bytes later; chronology
+relies on cooperating use of this trusted-host path.
 The lease is released before fixed `trial_reservation.run_next`, avoiding
 same-lock deadlock. That gate still owns order, launch reservation, cumulative
 unknown/failed usage and its unchanged cleanup allowance; the
@@ -231,10 +252,10 @@ The future exposure ledger has exactly `schema_version: 1`,
 `kind: same_host_exposure_v1`, `events`. Up to 256 events are accepted, each
 `{context_id, material, phase}`. Material is `pack`, `case`, `answer`, `pack_read`,
 `aggregate_feedback`, `candidate_edit` or `unknown_delivery`; phase is
-`during_comparison` or `after_comparison`.
+`before_comparison`, `during_comparison` or `after_comparison`.
 
-Known pack/case/answer/read/feedback delivery to an author during comparison makes
-the held-out result `exposed`. Unknown delivery makes it inconclusive. A candidate
+Known pack/case/answer/read/feedback delivery to an author before or during
+comparison makes the held-out result `exposed`. Unknown delivery makes it inconclusive. A candidate
 edit invalidates it. Recorded author exposure reclassifies future use as
 `development_regression`; post-comparison feedback does not retroactively erase
 the previous fixed comparison. Fresh cases are required before a later unseen
@@ -286,10 +307,15 @@ accounting and actual enforcement remain the existing runner's responsibility.
 For either recommendation subcommand, malformed/oversized JSON (over 16 MiB),
 duplicate keys, non-finite numbers or missing/extra top-level fields return
 `{"status":"rejected","reason":"invalid_gate_input"}` and exit 1. Accepted
-outer fields with invalid nested evidence return a full reject recommendation
-and exit 0. Usage errors exit 2. Exit 0 does not mean evidence or promotion passed.
+outer fields with invalid local nested evidence return a full reject recommendation
+and exit 0. The selected source process-limit/unavailability failures above and
+unavailable remote anchors do not themselves establish a negative candidate
+result. Source process failures yield inconclusive; a missing anchor yields
+inconclusive unless an independent development rejection already applies. Usage
+errors exit 2. Exit 0 does not mean evidence or promotion passed.
 `heldout.py run-next` uses a fixed small refusal envelope and exit 2 for unavailable
-preflight; command-usage errors are also handled by argparse.
+preflight, including bounded subprocess failures; command-usage errors are also
+handled by argparse.
 
 Native output includes source/report/experiment/context and gate/recommendation
 digests, rule reasons and optional held-out assessment. These are reproducible

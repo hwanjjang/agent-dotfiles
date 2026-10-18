@@ -3,8 +3,8 @@
   "feature_id": "promotion-recommendation",
   "scope": "Current offline conformance with existing fixed synthetic fixtures. Real local Git objects and public CLI processes; FAKE qualification, lifecycle, usage, clock, remote anchors and tool receipts. No actual candidate benefit or native/model performance.",
   "capture_surface": "Actual Chrome screenshots of sanitized CLI summaries, not terminal images.",
-  "source_checkpoint": "dfa4cbc217ebf343b07e72717751d0772dc0b79e",
-  "checkpoint_existed_before_runs": true,
+  "source_checkpoint": "858c067e39406e8bc6609fba08896c2dd0c18fde",
+  "checkpoint_existed_before_runs": false,
   "source_digests": {
     "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
     "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
@@ -26,35 +26,38 @@
     "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
   },
   "helper_source_digests": {
-    "heldout.py": "89f489437f7ddd9f8044c79d16775e21eb833f7f35500ac121ce2a3b7bb2e569",
-    "promotion.py": "3906975e740b23b0ced6af21cb17884380af0ed191d7a88dd31dffc6416e1668"
+    "heldout.py": "d05ae35dae47b1449d38b2181aa8e75212edc9e747c25762b5cd0378f8b02c89",
+    "promotion.py": "5e1e9c50f37a80152b93339bd490acd04dcba0866a019ad122723370950cdd80"
   },
   "source_identity": "e85fcffa213dd3b7a74299fb1fc397e3ad21d1f408ba8b464cf09a4de350a45b",
   "grader_identity": "74b65d1d2955e6a35f6c7b7bd3a84ad1eaf06a173d65047dc98551539b308ea2",
-  "source18_identity": "f34942822ebfefbd44ade8c9978b0cfe00b9fb914bd5be5855057388ad59ecd3",
+  "source18_identity": "7b900abaf8b8271291dba306fc4cf1397d1840ca6c777cfd3279451cb3bf4b7a",
   "retained_evidence_sha256": {
-    "cli-311/result.json": "c9e76550fe516803be07e0426234c8965e1ef636f5718b022098ad7b6ca820ea",
-    "cli-314/result.json": "f40873fc746d6ffdc173dea2824dd14169dfec7be41ab2d292b9c7470af08870",
-    "combined311.txt": "18712a546c6740a59a248b69b625b3e5ada1c25a849dd56018992b19a7b7334b",
-    "combined314.txt": "5fef34101cd77e1271006d45fde229671c963d3cbea0f6473750cdf8e2413841",
-    "cli-smoke.py": "5d26f489da686fcb02bcef47254616dc41df43a0c85e59064aa4e67bf9655239",
+    "cli-311/result.json": "fb53605b0eede48c35325145c83a4806f07e8f88378b1dc2af28b65751fb1ebb",
+    "cli-314/result.json": "1ac092815acb71441d24a1b625deb77a94a1433d8c9bf68a5f41adf4b78f9701",
+    "focused311.log": "e3b94cf0896521831aa77185d16a8cdb77f7f5e94be70dc557bcc98e59ea120e",
+    "focused314.log": "b89484e0e4226eed92a07a3c069ed915c00e655f554ebca78b8511d9b272dc94",
+    "cli-smoke.py": "058d73660df610db19ddcc85098d0bca8a3be6cb79bf36c55cc36656e563ee8b",
     "fixed-cli-driver.py": "098add9ccc4f504a483a1a876db7e99d4bc749f8508a50afa027d2b3d537bf95",
-    "combined-checks.py": "4d5652de557391049b8a6fa1ea032714803bc14f7e0540114cc851a15a10f941"
+    "correction-source-manifest.json": "6264f4ee142f2db4c133a317a20883116c8814529c1bf8ca70af4a56593f44fc",
+    "correction-handoff.json": "8f21785d14e99b5acf5137693b09a5e75fb5db66c1e1f7f2cbedeb520987d8af"
   },
   "checks": {
     "python_311": {
-      "tests": 377,
+      "tests": 53,
       "failures": 0,
       "errors": 0,
       "skips": 0,
-      "actual_cli_calls": 11
+      "actual_cli_calls": 11,
+      "test_scope": "focused promotion and heldout regression suites"
     },
     "python_314": {
-      "tests": 377,
+      "tests": 53,
       "failures": 0,
       "errors": 0,
       "skips": 0,
-      "actual_cli_calls": 11
+      "actual_cli_calls": 11,
+      "test_scope": "focused promotion and heldout regression suites"
     }
   },
   "result_summary": [
@@ -119,14 +122,14 @@
       "heldout_status": "verified"
     },
     {
-      "name": "remote-edit-refused",
+      "name": "remote-edit-inconclusive",
       "exit": 0,
-      "recommendation": "reject",
+      "recommendation": "inconclusive",
       "source_accepted": false,
       "promotion_eligible": false,
       "merge_authorized": false,
       "install_authorized": false,
-      "heldout_status": "invalid"
+      "heldout_status": "inconclusive"
     },
     {
       "name": "caller-verified-flag-refused",
@@ -196,22 +199,30 @@
     "feedback_policy": "After feedback or exposure, future use is development/regression. This is a maintained rule, not a claim that this CLI smoke exercised aggregate feedback."
   },
   "artifact_sha256": {
-    "native-recommendation.json": "fe618d1f9c98c302534639d0f99db303e61d52dd3bb219721fec12e4644cb736",
-    "native-recommendation.pdf": "506178dd93363f714affc9784e698a24192a5a7e47ef46e4ab6115986dc702a0",
-    "native-recommendation-check.html": "261511d7032fecd10b9a97213becebdee8536d85cec3402260a050799c64c857",
-    "native-recommendation-check.png": "bb00465617b14d44c6196d7500617331ad83134c3fbaab266c0ac8168d0377c4",
+    "native-recommendation.json": "882a7cd049c1f49a5aa291ae8d26524e3901d9795003fa29a8ab064da568df73",
+    "native-recommendation.pdf": "39c207480cbfedf1bf5dcf96f8c3959568fda9e4e8275ff5e2e7dc3da9c3fded",
+    "native-recommendation-check.html": "c34874bd27306914a708b424796d472699957fb447e87f88201a711bc495b0b4",
+    "native-recommendation-check.png": "a205a60c41134481072076ee2fbd336cf5e48bd41d99008be85e23f4e9ece6f9",
     "native-recommendation-result.html": "5031f1d9e434941044567967cd0e3704c3d4f881ceea16c541a840199248ce0e",
     "native-recommendation-result.png": "c104df8f17ed563b1e232776d1cec362b2868f1ede010092581fb82b389e78ae"
   },
   "renewal": {
-    "previous_checkpoint": "1c23c4f29f6e518ee40491c227d16e04c2af4b3e",
-    "prior_capture_sha256": "cb09191775ffc6f5a6bcd9a5144a055c44c9a71d95688b98eb30f604bddf00a1",
-    "reason": "Merged selected PR67 R10 native-YAML escape compatibility correction; all eighteen source hashes rebound to current checkpoint before fresh CLI runs.",
+    "previous_checkpoint": "dfa4cbc217ebf343b07e72717751d0772dc0b79e",
+    "prior_capture_sha256": "b18f67fb387bbb3ac5d0828074ef017d0a4ea8bc54033bbc9515bb3aff9720b0",
+    "reason": "Selected PR69 review corrections distinguish development from heldout tasks, uncertainty from candidate failure, late drift, and known exposure.",
     "previous_evidence_retained": true,
-    "combined_tests_owner": "Coordinator; completed source-bound logs copied unchanged.",
-    "cli_execution_owner": "Manual worker; eleven separate current CLI calls for each Python version.",
-    "command_provenance": "Fresh copied driver resolves the repository from parents[3]; actual sys.executable argv retained privately.",
+    "test_evidence": "53 focused checks per Python version on corrected bytes; earlier377 combined checks remain historical.",
+    "cli_evidence": "11 actual offline CLI calls per Python version reused with exact18 production and2 fixture-file hashes; no new CLI run for rendering.",
+    "command_provenance": "Actual execution used the retained correction smoke/driver; copies here are evidence only, not invoked.",
     "marker": "Existing one PDF-create marker reused; no new marker invocation.",
-    "delivery_status": "Prepared for parent integration; no independent review or release claim."
+    "delivery_status": "Prepared for parent integration and review; no release claim."
+  },
+  "source_snapshot": {
+    "kind": "working_tree_content_addressed",
+    "identity": "7b900abaf8b8271291dba306fc4cf1397d1840ca6c777cfd3279451cb3bf4b7a",
+    "base_commit": "541b34d9e84ee214a203aa48b96bb75b2c223749",
+    "base_contains_corrections": false,
+    "matched_later_commit": "858c067e39406e8bc6609fba08896c2dd0c18fde",
+    "chronology": "The frozen corrected file bytes were used by the CLI runs. The source manifest/handoff and matching commit were recorded afterwards. No claim that the matching commit existed before execution or capture."
   }
 }

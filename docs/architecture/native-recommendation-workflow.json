@@ -8,7 +8,7 @@
     "output": "docs/architecture/native-recommendation-workflow.html",
     "repository": {
       "url": "https://github.com/hwanjjang/agent-dotfiles",
-      "revision": "dfa4cbc217ebf343b07e72717751d0772dc0b79e",
+      "revision": "858c067e39406e8bc6609fba08896c2dd0c18fde",
       "provider": "github",
       "link_mode": "web"
     }
@@ -58,8 +58,8 @@
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 70,
-          "end_line": 153,
+          "line": 76,
+          "end_line": 164,
           "label": "Closed pack and context evidence"
         }
       ]
@@ -71,19 +71,19 @@
       "type": "cloud",
       "label": "Fetch anchors",
       "sublabel": "Exact GitHub comments",
-      "tag": "Read-only fixed GET",
+      "tag": "Uncertain anchors cannot qualify",
       "width": 153,
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 40,
-          "end_line": 63,
+          "line": 44,
+          "end_line": 69,
           "label": "Bounded lookup and exact metadata"
         },
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 133,
-          "end_line": 139,
+          "line": 145,
+          "end_line": 152,
           "label": "Candidate and pack chronology"
         }
       ]
@@ -95,20 +95,20 @@
       "type": "security",
       "label": "Preflight receipt",
       "sublabel": "Before first reservation",
-      "tag": "Existing lease then release",
+      "tag": "Cooperating wrapper chronology",
       "width": 153,
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 213,
-          "end_line": 229,
+          "line": 240,
+          "end_line": 257,
           "label": "Empty prefix then fixed delegation"
         },
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 156,
-          "end_line": 158,
-          "label": "Manifest, helper, anchor and header"
+          "line": 167,
+          "end_line": 169,
+          "label": "Deterministic trusted-host receipt"
         }
       ]
     },
@@ -154,15 +154,15 @@
       "col": 0,
       "type": "database",
       "label": "Development batch",
-      "sublabel": "Sealed NativeBatch records",
-      "tag": "Own frozen schedule",
+      "sublabel": "Unscoped native report",
+      "tag": "Distinct actual task inputs",
       "width": 153,
       "sources": [
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 285,
-          "end_line": 295,
-          "label": "Load, seal and recompute report"
+          "line": 293,
+          "end_line": 302,
+          "label": "Require unscoped development report"
         },
         {
           "path": "scripts/improvement/trial_admission.py",
@@ -178,15 +178,15 @@
       "col": 5,
       "type": "database",
       "label": "Held-out batch",
-      "sublabel": "Separate execution root",
+      "sublabel": "Distinct inputs / separate root",
       "tag": "Frozen report and attempts",
       "width": 153,
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 171,
-          "end_line": 179,
-          "label": "Distinct binding and recomputation"
+          "line": 180,
+          "end_line": 195,
+          "label": "Distinct input content and recomputation"
         }
       ]
     },
@@ -202,9 +202,9 @@
       "sources": [
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 285,
-          "end_line": 298,
-          "label": "Actual development report binding"
+          "line": 293,
+          "end_line": 309,
+          "label": "Development scope and report binding"
         }
       ]
     },
@@ -215,7 +215,7 @@
       "type": "security",
       "label": "Verify Git objects",
       "sublabel": "Complete arm byte inventories",
-      "tag": "Bounded raw object reads",
+      "tag": "Bounded cumulative Git window",
       "width": 153,
       "sources": [
         {
@@ -238,19 +238,19 @@
       "col": 2,
       "type": "security",
       "label": "Optional same-host",
-      "sublabel": "Exposure and late guards",
+      "sublabel": "Anchor / exposure / late guards",
       "tag": "Unknown reads stay unknown",
       "width": 153,
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 161,
-          "end_line": 210,
-          "label": "Actual held-out report and exposure"
+          "line": 172,
+          "end_line": 237,
+          "label": "Recompute, refresh and recheck evidence"
         },
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 317,
+          "line": 319,
           "end_line": 331,
           "label": "Only assess supplied held-out records"
         }
@@ -261,9 +261,9 @@
       "lane": "review",
       "col": 3,
       "type": "backend",
-      "label": "Frozen rules",
-      "sublabel": "Both reports must qualify",
-      "tag": "No retry until benefit",
+      "label": "Rules + final checks",
+      "sublabel": "Recheck source after assess",
+      "tag": "Both rules must qualify",
       "width": 153,
       "sources": [
         {
@@ -274,9 +274,15 @@
         },
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 317,
-          "end_line": 331,
-          "label": "Held-out rule and bounded outcome"
+          "line": 324,
+          "end_line": 349,
+          "label": "Outcome and final source/evidence checks"
+        },
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 209,
+          "end_line": 225,
+          "label": "Frozen held-out rule and final guards"
         }
       ]
     },
@@ -292,8 +298,8 @@
       "sources": [
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 317,
-          "end_line": 344,
+          "line": 319,
+          "end_line": 361,
           "label": "Reasons and canonical recommendation"
         }
       ]
@@ -310,8 +316,8 @@
       "sources": [
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 337,
-          "end_line": 344,
+          "line": 355,
+          "end_line": 361,
           "label": "False authority flags and digest"
         }
       ]
@@ -433,16 +439,17 @@
       "dot": "cyan",
       "title": "Existing execution, separate review",
       "items": [
-        "Preflight requires explicit authorization and current qualification; the recommendation command launches no trial.",
-        "Recorded development and held-out reports are recomputed; raw commit/tree/blob bytes bind full materialized arm inventories."
+        "Authorized preflight uses the existing lease/serial gate. Deterministic receipt bytes rely on cooperating wrapper use, not hostile-caller chronology.",
+        "Recommendation launches no trial. Development must be unscoped; held-out primary/counterpart input content cannot reuse development inputs."
       ]
     },
     {
       "dot": "amber",
       "title": "Limited same-host claim",
       "items": [
-        "Selected trusted-maintainer receipts support not-supplied-to-author during the fixed comparison, not hostile same-UID secrecy.",
-        "Known exposure blocks or reclassifies; unavailable delivery stays unknown. Source/record drift invalidates the result."
+        "Selected trusted-maintainer receipts support not-supplied-to-author during the fixed comparison, not hostile same-UID secrecy. Unknown reads stay unknown.",
+        "Remote anchor uncertainty is inconclusive, preserving independent development rejection. Local tampering rejects; known prior or during-comparison exposure blocks.",
+        "Recheck held-out records after remote refresh and source after assessment. Two source checks share 12 seconds of Git/read time, excluding remote waits."
       ]
     },
     {
