@@ -186,7 +186,7 @@ j.save('reserve',r.reserve_record(h,0));os._exit(23)
         run.assert_not_called()
         ctx=ad.load_context(self.s.f.experiment,self.s.f.spec,self.s.f.context_path)
         m=json.loads(Path(self.s.plans[0]).read_text());m['routing']={'mode':'natural'}
-        with self.assertRaisesRegex(ValueError,'natural_admission_unavailable'):ad.bind_manifest(ctx,m)
+        with self.assertRaisesRegex(ValueError,'input_binding'):ad.bind_manifest(ctx,m)
 
     def test_late_ledger_change_invalidates_report_and_retains_costs(self):
         self.init();self.launch();f=self.s.f;ctx=ad.load_context(f.experiment,f.spec,f.context_path)

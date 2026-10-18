@@ -402,6 +402,9 @@ def compare(experiment, completions, current_spec, *, native=None):
                 report['blockers'].remove('aggregate_launch_reservation_unavailable')
             if native.execution['status'] not in ('ready', 'complete'):
                 report['blockers'].append('aggregate_execution_incomplete')
+        if native.observed_models_complete():
+            report['blockers'].remove('explicit_observed_model_projection_unavailable')
+            report['selection_evidence'] = 'persisted_thread_start_client_model'
         if native.context.qualification_error:
             report['blockers'].append(native.context.qualification_error)
     # Detect drift after scoring as well as at entry. The trusted local scorer

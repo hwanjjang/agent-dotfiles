@@ -294,6 +294,8 @@ class RoutingCollectionTests(unittest.TestCase):
         self.assertEqual(receipt['collection']['status'],'captured')
         self.assertFalse(receipt['natural_routing_qualified'])
         self.assertEqual(value['qualification'],'pending')
+        _,records=trial.Journal.resume(c.journal.path,c.journal.limit)
+        self.assertEqual(records.get('observation_finalized'),[receipt['observation']])
 
     def test_failed_projection_capture_cannot_pass_or_leak_exception(self):
         c=self.prepared();cleanup=c.cleanup();save=c.journal.save
@@ -303,6 +305,16 @@ class RoutingCollectionTests(unittest.TestCase):
         with patch.object(c.journal,'save',side_effect=fail):receipt=c.finish(cleanup,None)
         self.assertEqual(receipt['status'],'blocked')
         self.assertEqual(receipt['observation']['routing_observation']['activation'],'unknown')
+        self.assertNotIn('PRIVATE_WRITE_ERROR',json.dumps(receipt))
+
+    def test_failed_final_snapshot_capture_blocks_receipt(self):
+        c=self.prepared();cleanup=c.cleanup();save=c.journal.save
+        def fail(label,*args,**kwargs):
+            if label=='observation_finalized':raise OSError('PRIVATE_WRITE_ERROR')
+            return save(label,*args,**kwargs)
+        with patch.object(c.journal,'save',side_effect=fail):receipt=c.finish(cleanup,None)
+        self.assertEqual(receipt['status'],'blocked')
+        self.assertTrue(receipt['capture_failed'])
         self.assertNotIn('PRIVATE_WRITE_ERROR',json.dumps(receipt))
 
 

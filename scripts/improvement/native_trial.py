@@ -49,6 +49,11 @@ def routing_profile(data):
         'RUST_LOG': 'off,codex_otel.log_only=info', 'LOG_FORMAT': 'json'}
 
 
+def routing_profile_digest(data):
+    config, env = routing_profile(data)
+    return plan.digest({'config': config, 'env': env, 'sources': data['sources']})
+
+
 def private_write(path, payload):
     """Write an exclusively created supervisor file; no arbitrary overwrite."""
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -945,8 +950,7 @@ class Controller:
         self.archive = protocol.CounterArchive()
         self.live = protocol.NativeSession(self.archive, self.deadline)
         if 'routing' in self.data:
-            profile_digest = plan.digest({'config': config, 'env': logging_env,
-                                          'sources': self.data['sources']})
+            profile_digest = routing_profile_digest(self.data)
             self.live.routing = protocol.RoutingObserver(self.data['routing'], profile_digest)
         self.journal.save('native_launch_intent', {'executable': self.runtime['codex'], 'launch': 1})
         self.launch_called = True
@@ -1161,6 +1165,10 @@ class Controller:
                 routing.update(status='blocked', reason='routing_capture', activation='unknown')
                 if observer:
                     routing['transport']['projected_records_written'] = 0
+            try:
+                self.journal.save('observation_finalized', observed, cleanup=True)
+            except Exception:
+                self.capture_failed = True
         good = self.primary is None and cleanup.get('complete') is True and not self.capture_failed \
             and observed.get('status') == 'completed_ungraded'
         if self.data.get('routing') is not None:
