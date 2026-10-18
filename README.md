@@ -162,17 +162,25 @@ A passing native fixture does not enable live provider access or promotion.
 Offline development comparison is available through
 [deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
 It freezes and grades supplied synthetic evidence; it does not execute models or
-establish holdout or promotion eligibility.
+establish holdout or promotion eligibility. The [selected-trial preparation adapter](docs/decisions/frozen-trial-dispatch.md)
+projects one executor input without exposing the grading envelope; it performs
+no execution or real-evidence admission.
 
 The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
 receipts and selected native-route checks; authenticated comparison remains
 unqualified. The [frozen native-trial operator guide](docs/native-trials.md)
 documents implemented `check/run/recover` and the separate credential-free
-`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current-source
+`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records original-source
 credential-free and authenticated qualification for the exercised pinned profile;
 these commands do not enable comparative evaluation or account activation. A
 [screenshot manual](docs/manual/native-trials.pdf) explains the results.
+
+The [scoped grading-integrity evidence](docs/verification/scoped-grading-integrity.json)
+adds current credential-free native/child access checks and grading-drift tests.
+Changed sources still require affected authenticated renewal; task-result admission,
+natural routing and comparisons remain pending. The trusted host controller keeps
+normal account access; no external evaluator environment is required.
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
 

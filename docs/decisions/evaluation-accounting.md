@@ -101,6 +101,13 @@ but expanded per-completion checks can produce much larger output and memory use
 There is no output-size cap. Keep inputs small and inspect duplicate counts; this
 is a local diagnostic command, not a service or arbitrary-input execution endpoint.
 
+## Selected-trial execution input
+
+The [frozen-trial preparation guide](frozen-trial-dispatch.md) describes the pure
+adapter for selecting one request/files payload and supervisor binding. It reuses
+this frozen inventory and does not admit real evidence, execute trials or change
+this evaluator's eligibility rules.
+
 ## Report and trust limits
 
 Reports retain every scheduled trial, all submitted completion digests, unknown

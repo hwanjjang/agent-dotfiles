@@ -2812,7 +2812,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/native-trials.md",
-      "summary": "Check, run and recover one frozen trial; selected pinned-profile actual qualification passed, while comparison eligibility stays false.",
+      "summary": "Check, run and recover a frozen trial; current credential-free scoped grading probes are verified, while changed-source authentication and comparisons remain pending.",
       "when": [
         "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission."
       ],
@@ -2822,7 +2822,7 @@
         "Keep one temporary credential copy with the trusted host client outside the remote OS executor; readonly /runtime/arm and /runtime/qualification.js are distinct from editable case files.",
         "Observe one initial turn with post-use soft token guards and bounded cleanup. Unknown request counts, task correctness and backend identity remain unknown or ungraded.",
         "Preserve blocked attempts and cleanup uncertainty; recovery cannot waive unresolved native ownership. No VM lifecycle, account activation, grading or promotion.",
-        "Selected current-source credential-free and authenticated qualification passed on the recorded macOS/Linux arm64 profile; see the evidence and screenshot manual. Other hosts and natural routing remain unqualified."
+        "Current credential-free native command/child probes verify task IO and protected grading/other-arm/installer synthetic access. Host controller/scorer retain account access. Historical authenticated results do not qualify changed source bytes."
       ],
       "outputs": [
         "A private typed attempt or recovery receipt; live_eligible=false and no comparative improvement claim."
@@ -2833,6 +2833,34 @@
         "qualification",
         "frozen",
         "recovery"
+      ]
+    },
+    {
+      "id": "frozen-trial-dispatch",
+      "title": "Prepare one frozen trial",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/frozen-trial-dispatch.md",
+      "summary": "Project one exact frozen trial into supervisor bindings and selected executor input; actual execution/admission remains separate.",
+      "when": [
+        "A reviewed frozen experiment needs one selected request/files payload without exposing its grading material."
+      ],
+      "usage": "Run trial_dispatch.py prepare on JSON containing experiment,current_spec,trial_id,attempt_id. Keep the whole envelope with the trusted supervisor; release only executor_input.",
+      "behavior": [
+        "Reuse the evaluator freeze and exact inventory; refuse stale/tampered spec, grader and trial identities.",
+        "Only selected request/files go to the executor; checks, expected answers, other-arm data and the experiment-wide budget stay outside.",
+        "Runtime fields are requested declarations; digests do not establish execution or provenance.",
+        "Cross-call attempt reservation and shared budget enforcement remain supervisor responsibilities; no new ledger, grader or live evidence admission."
+      ],
+      "outputs": [
+        "A deterministic development_trial_dispatch envelope, not a model completion or promotion decision."
+      ],
+      "tags": [
+        "eval",
+        "self-improvement",
+        "synthetic",
+        "dispatch"
       ]
     }
   ],
@@ -3376,6 +3404,11 @@
       "from": "native-trials",
       "to": "improvement-eval",
       "label": "later admission remains separate"
+    },
+    {
+      "from": "improvement-eval",
+      "to": "frozen-trial-dispatch",
+      "label": "Prepare one selected executor input"
     }
   ]
 }
