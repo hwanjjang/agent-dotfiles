@@ -6,7 +6,7 @@
       "title": "Compare routing and outcome dimensions separately",
       "instruction": "Read the routing/model contract before freezing a declared arm catalog. Run trial_admission.py report only with owned bound attempts and required source qualification. This demonstration uses synthetic qualification and native journals in a disposable copied-source fixture, not a qualified native run.",
       "screenshot": "native-routing-admission-check.png",
-      "caption": "Current checkpoint 82a83a4e5e28 existed before renewed smoke. Three actual offline CLI scenarios each contain four trials; thirteen runtime and three grader source hashes match. Each scenario records 640 synthetic tokens, not measured model usage.",
+      "caption": "Current checkpoint 048ee7b88c6f existed before renewed smoke. Three actual offline CLI scenarios each contain four trials; thirteen runtime and three grader source hashes match. Each scenario records 640 synthetic tokens, not measured model usage.",
       "expected": "Implicit first-page reads satisfy the expected-read criterion. Healthy none fails that criterion while all four artifact outcomes pass. Tampered qualification blocks all four trials. Client-model selection is not backend attestation; unobserved adherence and exposure stay inconclusive."
     },
     {

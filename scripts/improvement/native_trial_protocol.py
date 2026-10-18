@@ -209,15 +209,32 @@ class NativeSession(Session):
         """Drain opened pipes within cleanup; never restart the observation turn."""
         end = min(time.monotonic()+2, getattr(self, 'cleanup_deadline', float('inf')))
         grace = min(end, time.monotonic()+.5)
-        signaled = False
+        signaled = attempted = grace_expired = False
         signal_error = None
+
+        def signal_owned_group():
+            nonlocal signaled, attempted, signal_error
+            if attempted:
+                return
+            attempted = True
+            try:
+                os.killpg(self.proc.pid, signal.SIGKILL)
+                signaled = True
+            except ProcessLookupError:
+                pass
+            except OSError:
+                signal_error = 'signal_failed'
+                self.routing.fail('routing_drain')
+
         self.deadline = end
         try:
             self.proc.stdin.close()
-            while time.monotonic() < end and (self.selector.get_map() or self.pending or self.proc.poll() is None):
-                if time.monotonic() >= grace and not signaled:
-                    os.killpg(self.proc.pid, signal.SIGKILL)
-                    signaled = True
+            # EOF does not establish descendant absence. Never poll/reap this
+            # owned leader until its original process group has been signaled.
+            while time.monotonic() < end and (self.selector.get_map() or self.pending):
+                if time.monotonic() >= grace:
+                    grace_expired = True
+                    signal_owned_group()
                 try:
                     self.pump()
                 except Refusal as exc:
@@ -227,24 +244,21 @@ class NativeSession(Session):
                     if time.monotonic() >= end:
                         raise Refusal('deadline')
                     event = self.pending.pop(0)
+                    if 'method' not in event:
+                        raise Refusal('native_response_identity')
                     if self._turn_context is None:
                         raise Refusal('terminal_identity')
                     accept_event(self, event, late=True)
         except (OSError, ValueError, Refusal, TimeoutError, KeyError, TypeError) as exc:
             if self._turn_context is not None:
                 result, usage, *_ = self._turn_context
-                result.update(status='blocked', reason=str(exc) if isinstance(exc, Refusal)
-                    and str(exc) in SAFE_REASONS else 'protocol_operation')
+                reason = str(exc) if isinstance(exc, Refusal) and str(exc) in SAFE_REASONS else 'protocol_operation'
+                result['status'] = 'blocked'
+                if result.get('reason') != reason:
+                    result['post_stop_observation' if result.get('reason') else 'reason'] = reason
             self.routing.fail('routing_drain')
         finally:
-            if self.proc.poll() is None:
-                try:
-                    os.killpg(self.proc.pid, signal.SIGKILL)
-                    signaled = True
-                except ProcessLookupError:
-                    pass
-                except OSError:
-                    signal_error = 'signal_failed'
+            signal_owned_group()
             try:
                 self.proc.wait(timeout=max(.001, end-time.monotonic()))
             except subprocess.TimeoutExpired:
@@ -252,7 +266,9 @@ class NativeSession(Session):
             transport = {'stdout_eof': 'stdout' in self.eof, 'stderr_eof': 'stderr' in self.eof,
                 'trailing_bytes': len(self.buffer)+len(self.routing.buffer), 'pending_records': len(self.pending),
                 'process_reaped': self.proc.returncode is not None,
-                'close_mode': 'post_terminal_kill_drained' if signaled else 'graceful_stdin_eof'}
+                'close_mode': 'incomplete' if self.proc.returncode is None or signal_error else
+                    'post_terminal_kill_drained' if signaled and (grace_expired or self.proc.returncode == -signal.SIGKILL) else
+                    'graceful_stdin_eof' if self.proc.returncode >= 0 else 'incomplete'}
             if self._turn_context is not None:
                 result, usage, *_ = self._turn_context
                 result['usage'] = usage.summary()
@@ -387,7 +403,8 @@ def accept_event(session, event, *, late=False):
             raise Refusal('usage_identity')
         reason = usage.accept(params.get('tokenUsage'))
         if late and reason:
-            result.update(status='blocked', reason=reason)
+            result['status'] = 'blocked'
+            result['post_stop_observation' if result.get('reason') else 'reason'] = reason
             raise Refusal(reason)
         if reason and result.get('_stopping') is None:
             result['_stopping'] = reason

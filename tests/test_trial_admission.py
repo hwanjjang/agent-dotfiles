@@ -168,9 +168,22 @@ class AdmissionTests(unittest.TestCase):
             self.assertEqual(report['latency']['known_records'],0)
 
     def test_duplicate_same_attempt_does_not_double_charge(self):
-        ref=self.fixture.attempt();r=self.report([ref,ref])
+        ref=self.fixture.attempt()
+        self.fixture.mutate(ref,'receipt',lambda r:r.update(controller_timing=dict(clock='monotonic_ns',scope='controller_setup_task_cleanup',elapsed_ms=2456)))
+        r=self.report([ref,ref])
         self.assertEqual(r['coverage']['duplicate_trials'],1);self.assertEqual(r['usage']['known_tokens'],160)
         self.assertEqual(r['usage']['known_records'],1);self.assertEqual(r['usage']['submissions'],2)
+        self.assertEqual(r['latency'],{'known_records':1,'known_total_ms':2456,'unknown':3})
+
+    def test_duplicate_unknown_clock_is_one_unknown_attempt(self):
+        ref=self.fixture.attempt();report=self.report([ref,ref])
+        self.assertEqual(report['latency'],{'known_records':0,'known_total_ms':0,'unknown':4})
+
+    def test_distinct_attempt_clocks_are_counted_separately(self):
+        refs=[self.fixture.attempt(attempt=name) for name in ('one','two')]
+        for ref,millis in zip(refs,(12,34)):
+            self.fixture.mutate(ref,'receipt',lambda r,n=millis:r.update(controller_timing=dict(clock='monotonic_ns',scope='controller_setup_task_cleanup',elapsed_ms=n)))
+        self.assertEqual(self.report(refs)['latency'],{'known_records':2,'known_total_ms':46,'unknown':3})
 
     def assert_blocked_attempt_accounting(self, report, ref, known_tokens):
         trial=next(row for row in report['trials'] if row['trial_id']==ref['trial_id'])
@@ -588,3 +601,17 @@ class RoutingAdmissionTests(unittest.TestCase):
         report=self.report(refs,lambda _:save(self.root/f.proof_path,{'qualified':True}))
         self.assertEqual(report['counts']['pass'],0)
         self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+
+    def test_late_guard_revokes_all_observed_model_claims(self):
+        f=self.fixture;refs=[f.attempt(i) for i in range(len(f.experiment['trials']))]
+        original=ad.NativeBatch.observed_models_complete
+        def drift(batch):
+            complete=original(batch);self.assertTrue(complete)
+            proof=self.root/f.proof_path;proof.write_bytes(proof.read_bytes()+b' ')
+            return complete
+        with patch.object(ad.NativeBatch,'observed_models_complete',drift):report=self.report(refs)
+        self.assertIn('grading_identity_changed',report['blockers'])
+        self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+        self.assertEqual(report['selection_evidence'],'source_guarded_protocol_not_exported_selection')
+        self.assertTrue(all(row.get('observed_client_model') is None for row in report['attempt_observations']))
+        self.assertEqual(report['counts']['blocked'],len(refs))

@@ -2,6 +2,9 @@
 import copy
 import hashlib
 import json
+import os
+import signal
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -206,6 +209,150 @@ class RoutingTests(unittest.TestCase):
         self.assertFalse(parsed['otel']['log_user_prompt'])
         self.assertEqual(parsed['otel']['tool_result']['max_bytes'],0)
         self.assertEqual(profile(forced),(trial.DIRECT_PROFILE,{}))
+
+
+class DrainLifecycleTests(unittest.TestCase):
+    observer = RoutingTests.observer
+
+    def observed(self, events=None):
+        fake=FakeSession([usage(),terminal()] if events is None else events)
+        result=protocol.observe(fake,prompt='SYNTHETIC',project='/synthetic/project',
+            codehome='/synthetic/home/.codex',metadata_check=lambda:{'status':'recognized','compatibility_match':True},
+            soft_total=131072,soft_output=4096)
+        return fake._turn_context,result
+
+    def start(self, folder, code, *, context=None):
+        session=protocol.NativeSession(protocol.CounterArchive(),time.monotonic()+5)
+        session.routing=self.observer();session._turn_context=context
+        session.start([sys.executable,'-I','-S','-c',code],folder,{'PATH':'/usr/bin:/bin'},lambda _:None)
+        return session
+
+    def test_eof_grandchild_is_group_signaled_before_owned_leader_reap(self):
+        # The orphan closes both pipes; EOF is not descendant absence.
+        with tempfile.TemporaryDirectory() as folder:
+            childfile=Path(folder)/'child.pid'
+            code=("import os,sys,time;pid=os.fork();\n"
+                  "if pid==0:\n"
+                  " os.close(0);os.close(1);os.close(2);time.sleep(30);os._exit(0)\n"
+                  f"open({str(childfile)!r},'w').write(str(pid));sys.stdin.buffer.read()\n")
+            session=self.start(folder,code);child=None;sent=[];real_killpg=os.killpg;real_wait=session.proc.wait
+            try:
+                until=time.monotonic()+3
+                while time.monotonic()<until:
+                    try:
+                        child=int(childfile.read_text());break
+                    except (FileNotFoundError,ValueError):time.sleep(.01)
+                self.assertIsNotNone(child)
+                def send_owned(pid,sig):
+                    self.assertIsNone(session.proc.returncode);sent.append((pid,sig));return real_killpg(pid,sig)
+                def wait_owned(*args,**kwargs):
+                    self.assertTrue(sent,'group must be signaled before leader wait/reap')
+                    return real_wait(*args,**kwargs)
+                with patch.object(protocol.os,'killpg',side_effect=send_owned),patch.object(session.proc,'wait',side_effect=wait_owned),patch.object(session.proc,'poll',side_effect=AssertionError('must not reap before group signal')):
+                    close=session.close()
+                self.assertEqual(sent,[(session.proc.pid,signal.SIGKILL)])
+                self.assertTrue(close['process_reaped']);self.assertTrue(close['owned_process_group_kill_sent'])
+                self.assertEqual(close['routing_drain']['close_mode'],'graceful_stdin_eof')
+                # Darwin reaps this orphan; Linux container PID1 may retain a zombie.
+                until=time.monotonic()+2
+                while time.monotonic()<until:
+                    try:os.kill(child,0)
+                    except ProcessLookupError:break
+                    if sys.platform.startswith('linux'):
+                        statfile=Path(f'/proc/{child}/stat')
+                        try:state=statfile.read_text().rsplit(')',1)[1].split()[0]
+                        except FileNotFoundError:break
+                        if state=='Z':break  # stopped, not an absence claim
+                    time.sleep(.01)
+                else:self.fail('owned grandchild still running after group kill')
+            finally:
+                if session.proc.returncode is None:
+                    try:real_killpg(session.proc.pid,signal.SIGKILL)
+                    except ProcessLookupError:pass
+                real_wait(timeout=2)
+                if session.close_result is None:
+                    session.selector.close()
+                    for stream in (session.proc.stdin,session.proc.stdout,session.proc.stderr):stream.close()
+
+    def test_grace_kill_drains_open_pipes_before_wait(self):
+        with tempfile.TemporaryDirectory() as folder:
+            session=self.start(folder,'import sys,time;sys.stdin.buffer.read();time.sleep(30)')
+            close=session.close()
+        self.assertEqual(close['exit_code'],-signal.SIGKILL)
+        self.assertTrue(close['owned_process_group_kill_sent']);self.assertTrue(close['process_reaped'])
+        self.assertEqual(close['routing_drain']['close_mode'],'post_terminal_kill_drained')
+        self.assertTrue(close['routing_drain']['stdout_eof']);self.assertTrue(close['routing_drain']['stderr_eof'])
+
+    def test_descendant_holding_pipes_is_killed_after_grace(self):
+        # Leader exits on EOF, but its same-group child holds both output pipes.
+        code=("import os,sys,time;pid=os.fork();\n"
+              "if pid==0:\n time.sleep(30);os._exit(0)\n"
+              "sys.stdin.buffer.read()\n")
+        with tempfile.TemporaryDirectory() as folder:
+            session=self.start(folder,code);close=session.close()
+        self.assertTrue(close['owned_process_group_kill_sent']);self.assertTrue(close['process_reaped'])
+        self.assertEqual(close['exit_code'],0)
+        self.assertTrue(close['routing_drain']['stdout_eof']);self.assertTrue(close['routing_drain']['stderr_eof'])
+        self.assertEqual(close['routing_drain']['close_mode'],'post_terminal_kill_drained')
+
+    def test_grace_signal_errors_keep_task_reason_and_record_cleanup_uncertainty(self):
+        for error,expected in [(ProcessLookupError(),None),(PermissionError('PRIVATE_SIGNAL'),'signal_failed')]:
+            with self.subTest(error=type(error).__name__),tempfile.TemporaryDirectory() as folder:
+                context,result=self.observed()
+                session=self.start(folder,'import sys,time;sys.stdin.buffer.read();time.sleep(.65)',context=context)
+                with patch.object(protocol.os,'killpg',side_effect=error):close=session.close()
+                self.assertIsNone(result['reason']);self.assertEqual(result['status'],'completed_ungraded')
+                self.assertEqual(close['group_signal_error'],expected);self.assertTrue(close['process_reaped'])
+                self.assertNotIn('PRIVATE_SIGNAL',json.dumps(close))
+                if expected:self.assertEqual(session.routing.reason,'routing_drain')
+
+    def test_late_terminal_preserves_primary_hard_usage_reason(self):
+        context,result=self.observed([usage(total=1,output=2)])
+        self.assertEqual(result['reason'],'usage_shape')
+        with tempfile.TemporaryDirectory() as folder:
+            payload=json.dumps(terminal()).encode()+b'\n'
+            session=self.start(folder,'import os,sys;sys.stdin.buffer.read();os.write(1,'+repr(payload)+')',context=context)
+            session.close()
+        self.assertEqual(result['reason'],'usage_shape')
+        self.assertEqual(result['post_stop_observation'],'terminal_identity')
+        self.assertEqual(result['status'],'blocked')
+
+    def test_late_usage_preserves_prior_hard_stop_diagnostic(self):
+        context,result=self.observed([usage(),usage(total=99)])
+        self.assertEqual(result['reason'],'usage_discontinuity')
+        with tempfile.TemporaryDirectory() as folder:
+            payload=json.dumps(usage(total=1,output=2)).encode()+b'\n'
+            session=self.start(folder,'import os,sys;sys.stdin.buffer.read();os.write(1,'+repr(payload)+')',context=context)
+            session.close()
+        self.assertEqual(result['reason'],'usage_discontinuity')
+        self.assertEqual(result['post_stop_observation'],'usage_shape')
+        self.assertEqual(result['status'],'blocked')
+
+    def test_drain_stream_limit_and_unclaimed_response_fail_closed(self):
+        for mode in ('stream_limit','pending_response'):
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory() as folder:
+                context,result=self.observed()
+                payload=line('codex.user_prompt') if mode=='stream_limit' else b'{"id":999,"result":{}}\n'
+                fd=2 if mode=='stream_limit' else 1
+                session=self.start(folder,f'import os,sys;sys.stdin.buffer.read();os.write({fd},'+repr(payload)+')',context=context)
+                if mode=='stream_limit':session.archive.total=protocol.STREAM_LIMIT-1
+                close=session.close()
+                self.assertEqual(result['status'],'blocked')
+                self.assertEqual(result['reason'],'stream_limit' if mode=='stream_limit' else 'native_response_identity')
+                self.assertEqual(session.routing.reason,'routing_drain');self.assertTrue(close['process_reaped'])
+
+    def test_cleanup_deadline_and_wait_timeout_leave_unknown_receiver(self):
+        with tempfile.TemporaryDirectory() as folder:
+            context,result=self.observed()
+            session=self.start(folder,'import time;time.sleep(30)',context=context)
+            session.cleanup_deadline=time.monotonic()-1
+            try:
+                with patch.object(session.proc,'wait',side_effect=subprocess.TimeoutExpired('synthetic',.001)):
+                    close=session.close()
+                self.assertFalse(close['process_reaped']);self.assertEqual(session.routing.reason,'routing_drain')
+                self.assertEqual(session.routing.finish(True,close['routing_drain'])['activation'],'unknown')
+                self.assertTrue(close['owned_process_group_kill_sent'])
+            finally:session.proc.wait(timeout=2)
 
 
 class RoutingPlanTests(unittest.TestCase):

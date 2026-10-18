@@ -400,6 +400,7 @@ def compare(experiment, completions, current_spec, *, native=None):
               'latency': {'known_records': len(latencies), 'known_total_ms': sum(latencies), 'unknown': len(completions)-len(latencies)+missing},
               'qualification': qualification, 'blockers': blockers, 'live_eligible': False, 'promotion': 'inconclusive'}
     if native is not None:
+        report['latency'] = native.latency(completions, missing)
         report.update(evidence_kind='native_artifact_development_comparison',
                       admission_context_digest=native.context.digest,
                       attempt_observations=json.loads(encoded(native.attempts)),
@@ -435,6 +436,12 @@ def compare(experiment, completions, current_spec, *, native=None):
                       or digest(experiment) != frozen_experiment_digest
                       or (native is not None and not native.valid(experiment, current_spec))):
         report['blockers'].append('grading_identity_changed')
+        if native is not None:
+            if 'explicit_observed_model_projection_unavailable' not in report['blockers']:
+                report['blockers'].append('explicit_observed_model_projection_unavailable')
+            report['selection_evidence'] = 'source_guarded_protocol_not_exported_selection'
+            for attempt in report['attempt_observations']:
+                attempt['observed_client_model'] = None
         if native is not None and native.execution is not None:
             report['execution_accounting'].update(status='blocked', reason='execution_identity_changed')
         for trial in report['trials']:

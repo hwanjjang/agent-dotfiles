@@ -8,7 +8,7 @@
     "output": "docs/architecture/native-routing-workflow.html",
     "repository": {
       "url": "https://github.com/hwanjjang/agent-dotfiles",
-      "revision": "13639c3af0890d33abe2977d01454d5d95b6d1e7",
+      "revision": "048ee7b88c6ff3e4d90c8251b96f166b8449a54f",
       "provider": "github",
       "link_mode": "web"
     }
@@ -41,8 +41,8 @@
         {
           "path": "scripts/improvement/native_trial_plan.py",
           "line": 235,
-          "end_line": 282,
-          "label": "Catalog and frontmatter binding"
+          "end_line": 304,
+          "label": "Closed catalog and frontmatter binding"
         },
         {
           "path": "scripts/improvement/native_trial.py",
@@ -106,8 +106,8 @@
       "sources": [
         {
           "path": "scripts/improvement/native_trial_protocol.py",
-          "line": 433,
-          "end_line": 519,
+          "line": 450,
+          "end_line": 536,
           "label": "Exact selected client model"
         },
         {
@@ -124,8 +124,8 @@
       "col": 4,
       "type": "security",
       "label": "Cleanup and drain",
-      "sublabel": "Owned shutdown + EOF",
-      "tag": "Unknown remains blocked",
+      "sublabel": "Group signal before reap",
+      "tag": "EOF is not absence proof",
       "width": 153,
       "sources": [
         {
@@ -133,6 +133,12 @@
           "line": 1023,
           "end_line": 1148,
           "label": "Owned cleanup and receiver drain"
+        },
+        {
+          "path": "scripts/improvement/native_trial_protocol.py",
+          "line": 208,
+          "end_line": 281,
+          "label": "Signal owned group before leader reap"
         },
         {
           "path": "scripts/improvement/native_trial_protocol.py",
@@ -167,7 +173,7 @@
       "type": "security",
       "label": "Offline admission",
       "sublabel": "Current proof + identities",
-      "tag": "Missing proof blocks",
+      "tag": "Keep bound known cost",
       "width": 153,
       "sources": [
         {
@@ -178,9 +184,9 @@
         },
         {
           "path": "scripts/improvement/trial_admission.py",
-          "line": 457,
-          "end_line": 494,
-          "label": "Final records and timing consistency"
+          "line": 452,
+          "end_line": 575,
+          "label": "Bound receipt, cost and final facts"
         },
         {
           "path": "scripts/improvement/trial_admission.py",
@@ -203,8 +209,14 @@
         {
           "path": "scripts/improvement/evaluation.py",
           "line": 288,
-          "end_line": 455,
-          "label": "Distinct dimensions and blocked reports"
+          "end_line": 462,
+          "label": "Distinct dimensions and late revocation"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 390,
+          "end_line": 404,
+          "label": "Distinct-attempt controller latency"
         }
       ]
     },
@@ -214,21 +226,21 @@
       "col": 4,
       "type": "security",
       "label": "Blocked report",
-      "sublabel": "Missing or invalid proof",
+      "sublabel": "Invalid or changed evidence",
       "tag": "No inferred pass",
       "width": 153,
       "sources": [
         {
           "path": "scripts/improvement/trial_admission.py",
-          "line": 206,
-          "end_line": 307,
-          "label": "Qualification error retained"
+          "line": 578,
+          "end_line": 599,
+          "label": "Retain bound costs, fail completeness"
         },
         {
           "path": "scripts/improvement/evaluation.py",
-          "line": 288,
-          "end_line": 455,
-          "label": "Unqualified evidence stays blocked"
+          "line": 435,
+          "end_line": 460,
+          "label": "Revoke model claim after late drift"
         }
       ]
     }
@@ -328,16 +340,18 @@
       "dot": "amber",
       "title": "Finalization and timing",
       "items": [
-        "Cleanup and complete transport drain precede routing and finalized observations; the receipt must match.",
-        "monotonic_ns measures controller setup, task and cleanup, not provider latency. Missing timing stays unknown."
+        "Cleanup attempts the owned group signal before leader reap; pipe EOF does not establish descendant absence.",
+        "Drain precedes finalized routing and matching receipt. Controller timing deduplicates attempts, not provider latency.",
+        "Late grading/source drift blocks trials and revokes affirmative client-model claims."
       ]
     },
     {
       "dot": "rose",
       "title": "Implementation is not qualification",
       "items": [
-        "Changed-source native qualification is pending. Current offline CLI evidence uses fake qualifications and native journals.",
-        "Outcome and routing are graded separately. Declared held-out scope provides no custody or unseen-case certification."
+        "Bound persisted cost survives routing/model/clock admission failure; incomplete attempts block the next launch.",
+        "Changed-source native qualification is pending; current offline checks use FAKE qualifications and native journals.",
+        "Outcome and routing remain separate. No live, merge/install authority or unseen-case claim follows."
       ]
     }
   ]

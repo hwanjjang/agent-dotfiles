@@ -254,24 +254,46 @@ def validate_routing(value, selected):
         require(data is not None and hashlib.sha256(data).hexdigest() == row['main_sha256'],
                 'routing_catalog')
         try:
-            header = data.decode('utf-8').split('---\n')
-            require(len(header) >= 3 and header[0] == '', 'routing_metadata')
+            lines = data.decode('utf-8').split('\n')
+            require(lines and lines[0] == '---', 'routing_metadata')
+            end = lines.index('---', 1)
             metadata = {}
-            for line in header[1].splitlines():
-                require(not line[:1].isspace(), 'routing_metadata')
-                if line.startswith('disable-model-invocation:'):
-                    require(line.split(':', 1)[1].strip() == 'false', 'routing_metadata')
-                if line.startswith(('name:', 'description:')):
-                    key, raw = line.split(':', 1)
-                    require(key not in metadata, 'routing_metadata')
-                    raw = raw.strip()
-                    quoted = raw.startswith('"')
-                    require(quoted or not any(mark in raw for mark in ('#', ': ', '&', '*', '!')),
+            # Closed inline subset, not a general YAML parser. Unsupported
+            # spelling or scalar semantics must not change native discovery.
+            for line in lines[1:end]:
+                if not line:
+                    continue
+                require(not any(ord(c) < 32 and c != '\t' for c in line) and
+                        not any(c in line for c in ('\x85', '\u2028', '\u2029')),
+                        'routing_metadata')
+                match = re.fullmatch(
+                    r'(name|description|disable-model-invocation|user-invocable):[ \t]+(.+)', line)
+                require(match is not None, 'routing_metadata')
+                key, raw = match.groups()
+                require(key not in metadata, 'routing_metadata')
+                require('\t' not in raw, 'routing_metadata')
+                raw = raw.strip()
+                if key in ('disable-model-invocation', 'user-invocable'):
+                    require(raw in ('true', 'false') and
+                            (key != 'disable-model-invocation' or raw == 'false'),
                             'routing_metadata')
-                    text = json.loads(raw) if quoted else raw
-                    require(isinstance(text, str) and text and not text.startswith(('>', '|', "'"))
-                            and not any(c in text for c in ('\n', '\r')), 'routing_metadata')
-                    metadata[key] = text
+                    metadata[key] = raw == 'true'
+                    continue
+                if raw.startswith('"'):
+                    text = json.loads(raw)
+                else:
+                    # Alphabetic-leading plain strings exclude numbers, dates,
+                    # flow collections and YAML indicator-led values. Quote
+                    # other intended strings using JSON double-quote syntax.
+                    require(raw and raw[0].isalpha() and raw.lower() not in
+                            ('true', 'false', 'null', 'yes', 'no', 'on', 'off', 'y', 'n')
+                            and not any(mark in raw for mark in ('#', '&', '*', '!'))
+                            and re.search(r':(?:\s|$)', raw) is None, 'routing_metadata')
+                    text = raw
+                require(isinstance(text, str) and text and
+                        not any(ord(c) < 32 or 127 <= ord(c) <= 159 or
+                                c in ('\u2028', '\u2029') for c in text), 'routing_metadata')
+                metadata[key] = text
             require(metadata.get('name') == row['name'] and
                     hashlib.sha256(metadata['description'].encode()).hexdigest() ==
                     row['description_sha256'], 'routing_metadata')
