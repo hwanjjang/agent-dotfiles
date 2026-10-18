@@ -55,9 +55,9 @@ Actual status and unchanged-update output. Clean delivery still reports native_a
 
 ## 5. Read the AK SDLC map without overusing it
 
-Open docs/map/workflow.html. Read the route from left to right: Triage, Intent, Investigation, Specification, Design, Plan, Test design, Build, Self-verification, PR review, Correction, Merge and Completion.
-Select only methods your task needs. Focused skills also work directly; a small local task does not automatically need an SDLC lifecycle. Intent offers alternative interview methods, not two mandatory interviews.
-Use + / -, Fit and background drag to navigate. Search dims nonmatching nodes without moving them. Open a node, expand its detail sections and follow Sources. Escape closes the dialog.
+Open docs/map/workflow.html. For SDLC work, use one entry: "Use sdlc for this request, issue URL or PR URL; finish at pre-merge." State the desired outcome and stopping point. Invocation syntax depends on the client.
+SDLC checks current requirements, code, artifacts and dependencies, then starts the earliest unmet prerequisite. The map's stage order is a guide, not a requirement to repeat completed work. Focused skills remain directly usable for small local tasks.
+Use + / -, Fit and background drag. Search dims other nodes. Open a node, expand its details and follow Sources; Escape closes the dialog.
 
 ![Actual map overview. Zoom into a stage to read individual node labels; the overview is for orientation.](screenshots/map-overview.png)
 
@@ -67,9 +67,9 @@ Actual map overview. Zoom into a stage to read individual node labels; the overv
 
 ## 6. Run a first task with an observable outcome
 
-For a small local bug, try a request such as: "Fix the parser so empty input returns the documented error. Use TDD, show the failing check and the passing result, and stop after local verification."
-Open tdd in the map. Start with a check that exposes the missing behavior, make a minimal change, then run focused neighboring checks. If test-first is impractical, record the alternative and its limits.
-For substantial PR work, explicitly state the endpoint: "Use AK SDLC and finish at pre-merge; do not merge." Pre-merge includes review and readiness, not merge authority. Native skill invocation syntax differs by client; inspect what your client actually exposes.
+For a small local bug: "Fix the parser so empty input returns the documented error. Use TDD, show the failing and passing checks, and stop after local verification." Open tdd in the map for its method.
+For an unclear issue: "Use sdlc to establish finishable requirements for this issue; stop at the spec." Investigate code or research first where useful; ask about consequential decisions. Dependent implementation waits for clear requirements.
+For a PR: "Use sdlc to review this PR." Existing evidence determines the next action; a URL alone grants no write or merge authority. An implementation request with a pre-merge endpoint includes verification and review. See docs/verification/sdlc-intake.md for bounded native results and limits.
 
 ![Actual TDD detail dialog. The example request is instructional; it is not a recorded model execution.](screenshots/map-tdd.png)
 
@@ -79,9 +79,9 @@ Actual TDD detail dialog. The example request is instructional; it is not a reco
 
 ## 7. Keep longer work resumable
 
-For work spanning stages or sessions, ask planning-with-files to maintain one named task plan. Keep task_plan.md, findings.md and progress.md under the selected ignored .planning/ directory. Before resuming, compare recorded progress with the current checkout.
-Bind each concurrent host to its own PLAN_ID and PWF_PLAN_ROOT, or use separate worktrees. Setting a variable in one tool subprocess does not bind an already-running agent host. Avoid an ambiguous shared active-plan pointer.
-For another kind of task, use the Anytime band. For example, search glossary and open domain-modeling. A cross-stage method need not start the whole lifecycle.
+For work spanning sessions, use planning-with-files with one named plan under ignored .planning/: task_plan.md, findings.md and progress.md. Bind concurrent hosts to separate PLAN_ID/PWF_PLAN_ROOT selections or worktrees; a subprocess variable does not bind an already-running host.
+On resumption or a consequential scope change, ask sdlc to reassess against the live issue/PR where accessible, checkout, findings and artifact revisions. Reuse valid work and renew affected evidence; preserve task identity, history and iteration counters.
+The assessment records outcome/endpoint, evidence, reusable work, open decisions/dependencies, next method and reason, and stopping condition in existing triage/receipts, or inline without lifecycle state. Source: skills/sdlc/references/intake.md.
 
 ![Actual planning-with-files dialog. Native automatic recovery still needs client-specific hook qualification.](screenshots/map-planning.png)
 

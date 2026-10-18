@@ -85,6 +85,11 @@ The six-step improvement cycle is documented with explicit implemented/planned s
 at that capture baseline. See the current native walkthrough below for the later
 Claude adapter; comparative model evaluation remains future work.
 
+The 2026-10-19 SDLC amendment updates integrated-guide pages 5-7 with the single
+`sdlc` entry, evidence-based next action and resumption. Screenshot capture dates
+remain unchanged. Use the [intake walkthrough](sdlc-intake.pdf) and
+[verification record](../verification/sdlc-intake.md) for separate native evidence.
+
 ## Native Claude collection walkthrough
 
 The [two-page walkthrough](native-observation.pdf) covers finding the collection

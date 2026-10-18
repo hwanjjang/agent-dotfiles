@@ -49,6 +49,22 @@ of the revised protocol or an executed comparison. Use the linked design for
 current requirements. The capture hashes remain historical, not rewritten to
 claim a new capture. PDF source instructions and screenshots were not changed.
 
+## SDLC text amendment - 2026-10-19
+
+Pages 5-7 in both languages now explain the single `sdlc` entry, outcome and
+endpoint, evidence-based method selection, artifact reuse and reassessment on
+resumption or scope change. The source is the [intake method](../../../skills/sdlc/references/intake.md).
+The [native verification record](../../verification/sdlc-intake.md) and
+[separate intake walkthrough](../sdlc-intake.pdf) provide bounded execution evidence;
+these map screenshots do not demonstrate model-driven intake.
+
+Only these three steps changed. Screenshots and their 2026-10-17 capture hashes
+remain historical. Other sections retain their original status statements and
+later amendments above. The two PDFs were rebuilt with Nanum Gothic (SIL OFL 1.1,
+editable embedding permitted); no font file is redistributed. All 36 pages were
+rendered and visually inspected; both editions retain 18 pages, with matching
+JSON/Markdown text and extractable page titles.
+
 ## Edit and rebuild
 
 `manual-en.json` and `manual-ko.json` are direct PDF inputs. Edit matching step IDs

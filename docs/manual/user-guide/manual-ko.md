@@ -55,9 +55,9 @@ MCP 도구 발견과 인증은 연결 검사로 따로 확인합니다. 토큰�
 
 ## 5. AK SDLC map을 필요한 만큼 사용하기
 
-docs/map/workflow.html을 열고 왼쪽부터 읽습니다. Triage → Intent → Investigation → Specification → Design → Plan → Test design → Build → Self-verification → PR review → Correction → Merge → Completion 순서입니다.
-현재 작업에 필요한 방법만 고릅니다. 작은 로컬 작업은 개별 skill을 바로 사용할 수 있습니다. 전체 SDLC를 시작할 필요는 없습니다. Intent의 두 인터뷰는 선택지이며 모두 수행하는 필수 순서가 아닙니다.
-+ / -, Fit과 배경 드래그로 이동합니다. Search는 배치를 유지하면서 관련 없는 노드를 흐리게 만듭니다. 노드를 열고 상세 설명과 Sources를 확인합니다. Escape로 닫습니다.
+docs/map/workflow.html을 엽니다. SDLC 작업은 하나의 진입점으로 요청합니다. "이 요청, 이슈 URL 또는 PR URL을 sdlc로 진행하고 pre-merge까지 완료해줘." 원하는 결과와 종료 지점을 명시하세요. 호출 문법은 클라이언트마다 다릅니다.
+SDLC는 현재 요구사항, 코드, 산출물과 의존성을 확인하고 가장 먼저 충족해야 할 조건부터 처리합니다. 지도 순서는 이미 완료한 작업을 반복하라는 뜻이 아닙니다. 작은 로컬 작업에는 개별 스킬을 직접 사용할 수 있습니다.
++ / -, Fit과 배경 드래그로 이동합니다. 검색은 다른 노드를 흐리게 합니다. 노드를 열어 상세 내용과 Sources를 확인하고 Escape로 닫습니다.
 
 ![현재 지도의 실제 전체 화면입니다. 전체 흐름을 확인한 다음 확대해서 개별 노드를 읽으세요.](screenshots/map-overview.png)
 
@@ -67,9 +67,9 @@ docs/map/workflow.html을 열고 왼쪽부터 읽습니다. Triage → Intent �
 
 ## 6. 확인 가능한 결과가 있는 첫 작업 실행하기
 
-작은 로컬 버그에는 이렇게 요청할 수 있습니다. "빈 입력에서 문서에 정의된 오류를 반환하도록 파서를 수정해줘. TDD로 실패하는 검사와 수정 후 통과 결과를 보여주고, 로컬 검증까지 진행해줘."
-지도에서 tdd를 엽니다. 빠진 동작을 드러내는 검사부터 시작하고, 최소한으로 수정한 뒤 관련 검사도 실행합니다. test-first가 어렵다면 대체 검증과 한계를 기록합니다.
-규모가 있는 PR 작업은 종료 지점을 명시합니다. "AK SDLC로 pre-merge까지 진행하되 merge는 하지 마." pre-merge는 리뷰와 준비 완료이며 merge 권한은 아닙니다. skill 호출 문법은 클라이언트에서 실제 제공하는 방식을 확인하세요.
+작은 로컬 버그: "빈 입력에 문서화된 오류를 반환하도록 파서를 수정해줘. TDD로 실패·통과 검사를 보여주고 로컬 검증에서 멈춰줘." 지도에서 tdd를 열어 방법을 확인합니다.
+모호한 이슈: "이 이슈를 sdlc로 진행해 종료 가능한 요구사항을 확정하고 spec에서 멈춰줘." 코드 분석이나 조사가 도움이 되면 먼저 수행하고 중요한 결정은 질문합니다. 요구사항이 명확해질 때까지 의존하는 구현은 기다립니다.
+PR: "이 PR을 sdlc로 리뷰해줘." 기존 근거로 다음 행동을 정하며 URL 자체는 쓰기나 병합 권한이 아닙니다. 구현 요청의 종료 지점이 pre-merge라면 검증과 리뷰까지 수행합니다. 제한된 네이티브 결과와 한계는 docs/verification/sdlc-intake.md를 참고하세요.
 
 ![실제 TDD 상세 화면입니다. 요청 문장은 사용법 예시이며 모델이 실행한 기록은 아닙니다.](screenshots/map-tdd.png)
 
@@ -79,9 +79,9 @@ docs/map/workflow.html을 열고 왼쪽부터 읽습니다. Triage → Intent �
 
 ## 7. 긴 작업을 중단 후에도 이어가기
 
-여러 단계나 세션에 걸친 작업은 planning-with-files로 이름 있는 계획 하나를 유지합니다. 선택한 비공개 .planning/ 디렉터리에 task_plan.md, findings.md, progress.md를 둡니다. 재개할 때 기록된 진행 상황과 현재 체크아웃을 비교합니다.
-여러 호스트가 동시에 작업하면 각각 PLAN_ID와 PWF_PLAN_ROOT를 지정하거나 별도 worktree를 사용합니다. 도구의 하위 프로세스에서 변수를 설정해도 이미 실행 중인 에이전트 호스트에 적용되지는 않습니다. 모호한 공용 active-plan 포인터에 의존하지 마세요.
-다른 작업에는 Anytime을 이용합니다. 예를 들어 glossary를 검색하고 domain-modeling을 열 수 있습니다. 이런 방법을 쓴다고 전체 lifecycle을 시작해야 하는 것은 아닙니다.
+여러 세션에 걸친 작업은 planning-with-files로 무시되는 .planning/ 아래에 하나의 이름 있는 계획을 유지합니다: task_plan.md, findings.md, progress.md. 동시 호스트는 별도 PLAN_ID/PWF_PLAN_ROOT 또는 worktree를 사용합니다. 하위 프로세스 변수는 실행 중인 호스트를 연결하지 않습니다.
+재개하거나 중요한 범위 변경이 생기면 sdlc가 접근 가능한 실제 이슈·PR, 체크아웃, 리뷰 지적과 산출물 버전을 대조하도록 합니다. 유효한 작업은 재사용하고 영향받은 근거를 갱신하며 작업 식별자, 이력과 반복 횟수는 보존합니다.
+결과·종료 지점, 근거, 재사용할 작업, 미결정 사항·의존성, 다음 방법과 이유, 중단 조건을 기존 triage·receipt에 기록합니다. 수명주기 상태가 없으면 응답에 기록합니다. 기준: skills/sdlc/references/intake.md.
 
 ![실제 planning-with-files 상세 화면입니다. native 자동 복구는 클라이언트별 hook 검증이 별도로 필요합니다.](screenshots/map-planning.png)
 

@@ -10,6 +10,12 @@ this repository's AK SDLC stages and catalog data. The
 The generated HTML is self-contained and works offline. GitHub's HTML file view
 shows source; open the local HTML file to use the map.
 
+Start SDLC work through `sdlc` with the request, issue or PR and desired endpoint.
+The [intake method](../../skills/sdlc/references/intake.md) checks current evidence,
+reuses adequate artifacts and starts the earliest unmet prerequisite. Reassess on
+consequential scope changes or resumption. The columns show stage relationships;
+they do not require repeating completed work or grant authority through a URL.
+
 ## Use the map
 
 - Read the 13 stage columns from left to right. Categories group skills within a
