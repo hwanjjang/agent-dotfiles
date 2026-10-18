@@ -53,6 +53,13 @@ python3 -m unittest discover -s tests -p 'test_native_usage.py'
 Fake Docker/native responses test controller wiring and fixed failures. They do
 not prove actual OS restrictions, authentication or current runtime compatibility.
 
+Exercise real controller setup with a validated catalog-only natural plan that
+omits `entrypoint`, using fake Docker/extraction only at the external boundary.
+Require a deterministic frozen-file write-denial probe, readonly staged inputs,
+unchanged prompt/catalog and no authentication or native launch. Add an
+earlier-sorting file to a forced plan and require its declared entrypoint to stay
+the probe. Wrong readonly facts must still refuse before authentication.
+
 ## Execute only the selected authorized scenario
 
 Follow the guide's `run --plan ... --auth-source ...` invocation only within the
