@@ -1,20 +1,27 @@
 {
-  "title": "Find the account installation and recovery guide",
-  "scenario": "Scenario: workflow-map / account setup. Open docs/map/workflow.html locally. The installer needs Python 3.11+ and Git on a POSIX host. This walkthrough shows where to find commands; it does not apply account changes.",
+  "title": "Check account setup and verification",
+  "scenario": "Scenario: account-verification / workflow-map. Open docs/map/workflow.html locally. Python 3.11+ and Git are required for the CLI. Native checks need the selected client; model checks need an offered low-cost model and authorized provider access. Paseo is optional.",
   "steps": [
     {
       "title": "Check ownership and replacement boundaries",
       "instruction": "Find Account setup & runtime in the Anytime band, or search for account-source. Open the account-source node and expand How it works and Sources.",
       "screenshot": "account-source.png",
       "caption": "The actual account-source dialog with its source guide link.",
-      "expected": "Follow account/README.md for install, update, uninstall and rollback. Preview first; --apply changes the target account. The guide explains preserved Paseo/private settings and exact-plan approval for conflicting files."
+      "expected": "Follow account/README.md for install, update, removal and recovery. Preview exact hook commands and execution effects before approving installation and native trust together. Run doctor after setup."
     },
     {
       "title": "Inspect the selected planning runtime",
       "instruction": "Close the dialog with Escape. Open planning-hooks in the same Anytime group. Expand How it works and Sources, then follow account/hooks/README.md.",
       "screenshot": "account-hooks.png",
       "caption": "The actual planning-hooks dialog describes the selected source and verification boundary.",
-      "expected": "The installer merges owned Codex/Claude hook registrations. The guide identifies runtime files, project precedence and prerequisites. Native trust, effective discovery and selected-plan recovery still need checks in the target client."
+      "expected": "Codex and Claude hook registrations have separate native checks. A changed Codex hook is blocked until reviewed through /hooks. The checker never bypasses trust. Native Claude recovery uses a synthetic selected plan."
+    },
+    {
+      "title": "Exercise an actual installed-skill task",
+      "instruction": "Open Account doctor in the same Anytime group. Expand How it works and Sources. Follow the verification recipe and the account guide for exact commands.",
+      "screenshot": "account-doctor.png",
+      "caption": "The actual account-doctor dialog separates diagnostics, native readiness and real-model evidence.",
+      "expected": "Use --native plus --model-smoke with an exact --model and new private --evidence-dir. Add --scenario routing for natural spec-to-plan selection, or --with-paseo for optional spec checks. Inspect identity and per-client recovery results."
     }
   ]
 }

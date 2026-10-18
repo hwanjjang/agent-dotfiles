@@ -2420,14 +2420,15 @@
       "group": "start",
       "status": "available",
       "source": "account/README.md",
-      "summary": "Install, update, remove and recover a committed account bundle on another POSIX host.",
+      "summary": "Install, update, remove, recover and diagnose a committed account bundle on another POSIX host.",
       "when": [
         "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts."
       ],
-      "usage": "Preview with sh scripts/setup-account.sh install; follow account/README.md before applying or migrating an existing setup.",
+      "usage": "Preview installation with sh scripts/setup-account.sh install; run doctor after setup. Follow account/README.md for native and real-model verification.",
       "behavior": [
         "Resolve paths on the destination host; deliver Codex and Claude skills/policies/hooks, with installed Hermes opt-in.",
-        "Keep receipts and private backups; preserve Paseo, authentication and unrelated settings. Require exact-plan approval for conflicting selected assets."
+        "Keep receipts and private backups; preserve Paseo, authentication and unrelated settings. Require exact-plan approval for conflicting selected assets.",
+        "Use doctor to separate offline ownership, native skill/hook readiness and explicitly selected real-model scenarios; Paseo checks are optional."
       ],
       "outputs": [
         "A preview or explicitly applied account change with a source revision and recovery transaction; native activation requires separate verification."
@@ -2442,35 +2443,43 @@
         "rollback",
         "codex",
         "claude",
-        "hermes"
+        "hermes",
+        "doctor",
+        "verification",
+        "paseo"
       ]
     },
     {
       "id": "observation-store",
-      "title": "Private synthetic observations",
+      "title": "Private observations",
       "kind": "guide",
       "group": "start",
       "status": "available",
       "source": "account/observation/README.md",
-      "summary": "Qualify scoped private records, replay and revocation with synthetic input in a disposable account.",
+      "summary": "Collect synthetic or scoped native metadata with bounded boundary delivery snapshots; inspect capacity, latency and attribution limits.",
       "when": [
-        "Testing the first storage slice of the account improvement loop."
+        "Collecting metadata for one explicitly approved project/client, or checking platform evidence and gaps."
       ],
-      "usage": "Use Python 3.11+ and the disposable-home example; inspect scripts/improvement/observations.py --help before manual CLI operations.",
+      "usage": "Follow account/observation/native.md: create an exact-project Claude or Codex grant, preview --observation-registration ID, apply, then verify actual callbacks. Codex requires native trust of four new definitions. Default installations collect nothing. For performance or source attribution, follow account/observation/capacity.md and the native-observation recipe.",
       "behavior": [
-        "Keep exact project/profile/source grants, consent epochs and private metadata separate from installer state.",
-        "Deduplicate stable IDs, commit imported events with their cursor, and purge revoked evidence.",
-        "Native session collection, task triage and model evaluation remain future work."
+        "One selected client registration per account; grants, epochs and records remain owned by the private store.",
+        "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
+        "Read the native.md platform matrix before relying on another environment: each result is bound to its executed source and scope. A Linux Codex baseline and interruption at source 329dd76 ran after an approved temporary prerequisite; Claude authentication remained unavailable. Cancellation did not prove process termination. Earlier Linux failures and offline/container mock checks retain their historical limits. Native child and WSL coverage remain unverified.",
+        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned.",
+        "SessionStart/Stop snapshots record bounded delivery hashes and gaps; tool events inherit no cached identity and effective exposure stays unknown.",
+        "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior."
       ],
       "outputs": [
-        "Durable synthetic observations and explicit gaps, with a rebuildable index and revocation checks."
+        "Private metadata, boundary-scoped delivery snapshots, reservation gaps and measured capacity/latency limits."
       ],
       "tags": [
         "account",
         "observations",
         "synthetic",
         "privacy",
-        "evaluation"
+        "evaluation",
+        "claude",
+        "codex"
       ]
     },
     {
@@ -2637,7 +2646,8 @@
       "behavior": [
         "Separate outcome, process and exposure checks; test native routing independently of forced invocation.",
         "Use deterministic checks first; qualify blinded model judges against known-good, bad and missing-evidence examples.",
-        "Preserve failed, blocked and inconclusive trials; protect holdouts and require separate bounded inference authorization."
+        "Preserve failed, blocked and inconclusive trials; protect holdouts and require separate bounded inference authorization.",
+        "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion."
       ],
       "outputs": [
         "A candidate-bound comparison report; no model benchmark or automatic pass is claimed."
@@ -2690,7 +2700,8 @@
       "behavior": [
         "Keep source acceptance and account activation separate.",
         "Use guarded rollback while preserving observation records; reproduce production signals before attributing them to a skill.",
-        "Return to step 1 with a new environment identity. Native automatic observation remains planned."
+        "Return to step 1 with a new environment identity. Claude/Codex observation requires explicit project consent and one selected registration; Codex observer definitions also require native trust.",
+        "Use account doctor to recheck delivered setup and affected client behavior; preserve private observations during update or rollback."
       ],
       "outputs": [
         "An observed deployment or guarded rollback; no automatic account activation."
@@ -2700,6 +2711,45 @@
         "eval",
         "account",
         "design"
+      ]
+    },
+    {
+      "id": "account-doctor",
+      "title": "Account doctor and model verification",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/verification/verify-repository/features/account-verification.md",
+      "summary": "Diagnose installed setup, verify actual model identity and skill behavior, and test natural spec-to-plan routing; local Paseo is optional.",
+      "when": [
+        "After installation, updates or client upgrades.",
+        "A skill is missing, a hook stopped running, or actual installed-skill behavior needs evidence."
+      ],
+      "usage": "Run sh scripts/setup-account.sh doctor; add --native for discovery/trust and --model-smoke --client codex --model MODEL_ID --evidence-dir .local/account-checks/new-run for a real scenario. Use --scenario routing for native automatic skill selection; --with-paseo applies to the default spec scenario.",
+      "behavior": [
+        "Reuse the ownership receipt and check overrides, aliases, competing routes and executables.",
+        "Query native clients without a model turn; report changed Codex trust as blocked.",
+        "Verify actual model identity, source use, exact CLI examples and unchanged inputs; report native SessionStart recovery per client.",
+        "For optional Paseo, verify actual provider/model, exact source-content readback and owned-resource cleanup.",
+        "With --scenario routing, choose spec and planning skills from natural requirements, then verify acceptance coverage and task dependencies.",
+        "Qualify setup before eval and after deployment; a successful smoke run is not comparative improvement evidence and never activates observation collection.",
+        "Triage failures into reviewed reproduction cases; distinguish environment and grader faults from skill behavior before changing source.",
+        "When observation delivery is selected, report an expired, revoked or replaced grant as blocked without renewing consent."
+      ],
+      "outputs": [
+        "A pass/fail/blocked/skipped report with next actions and explicit coverage.",
+        "Private model evidence for selected real runs; no implicit trust, setup repair or MCP authentication.",
+        "account_qualification evidence with comparison not_run and promotion_eligible false."
+      ],
+      "tags": [
+        "account",
+        "doctor",
+        "native",
+        "model",
+        "verification",
+        "codex",
+        "claude",
+        "paseo"
       ]
     },
     {
@@ -3233,6 +3283,31 @@
       "from": "improvement-deploy",
       "to": "observation-store",
       "label": "Observe the delivered identity again"
+    },
+    {
+      "from": "account-doctor",
+      "to": "account-source",
+      "label": "uses installation contract"
+    },
+    {
+      "from": "account-doctor",
+      "to": "planning-hooks",
+      "label": "checks readiness"
+    },
+    {
+      "from": "improvement-eval",
+      "to": "account-doctor",
+      "label": "Qualify setup before comparative trials"
+    },
+    {
+      "from": "improvement-deploy",
+      "to": "account-doctor",
+      "label": "Recheck affected clients after delivery"
+    },
+    {
+      "from": "account-doctor",
+      "to": "improvement-case",
+      "label": "Triage failures into reviewed reproductions"
     },
     {
       "from": "improvement-eval",

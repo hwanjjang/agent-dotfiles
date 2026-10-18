@@ -61,3 +61,11 @@ For manual changes pass sanitized screenshots and scenario IDs to
 [screenshot-manual](../../../skills/screenshot-manual/SKILL.md); render and inspect
 PDF pages separately. Existing [catalog manual](../../manual/catalog.pdf) remains
 a general walkthrough; this change does not alter its UI steps.
+
+## Account checks
+
+[Account verification](features/account-verification.md) adds offline/native diagnosis
+and an explicitly selected real model scenario, with optional local Paseo. It is
+not part of the browser helper: run its CLI recipe separately and preserve the
+reported scope and blocked states. The [account guide](../../../account/README.md)
+owns invocation, privacy, quota and native trust requirements.
