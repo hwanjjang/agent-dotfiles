@@ -159,3 +159,14 @@ The single PDF page was rendered with PDFium and visually inspected for readable
 text, complete capture, captions and margins; text and page count were checked
 with pypdf. Rebuild using the screenshot-manual commands above with
 `native-isolation.json`, and recapture when the documented dialog changes.
+
+## Offline development evaluation
+
+[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The actual offline CLI journey retains all eight scheduled synthetic trials, including failure, timeout, duplicate and missing evidence. It qualifies deterministic accounting only; no native model, unseen holdout or promotion claim.
+
+Both evaluation pages were rendered with PDFium and visually checked for readable
+headings, complete intended capture regions, captions and pagination. PDF text and
+page count were checked with pypdf. The first image is an actual catalog dialog;
+the second explicitly renders the actual synthetic CLI result in a browser. Neither
+image demonstrates native model execution. Rebuild with the screenshot-manual
+scripts above using `evaluation.json`; refresh its capture manifest after changes.

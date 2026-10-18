@@ -13,6 +13,7 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | account-verification | Diagnose setup and exercise installed sources through an actual model; optional Paseo | CLI / native clients | [Account verification](account-verification.md) |
 | native-observation | Opt in one project, verify metadata/attribution/capacity and revoke it | Observation CLI / installer / Claude and Codex hooks | [Native observations](native-observation.md) |
 | native-isolation | Qualify a synthetic native client and tool inside an outer OS boundary | Python CLI / existing Docker host | [Native isolation](native-isolation.md) |
+| evaluation-accounting | Freeze development evidence and account for every scheduled trial | Offline Python CLI | [Evaluation accounting](evaluation-accounting.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;

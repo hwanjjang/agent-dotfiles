@@ -486,3 +486,7 @@ Only metadata from the documented synthetic Claude qualification was captured;
 no private task history was ingested or comparative benchmark run. The bounded
 native evidence does not establish full event coverage, evaluation isolation or
 improved task performance.
+
+### Offline accounting implementation
+
+The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. Actual isolated model execution, authenticated evidence and independent holdout custody remain separate incomplete requirements; diagnostic reports cannot authorize promotion.

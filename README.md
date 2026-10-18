@@ -152,6 +152,11 @@ The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md
 provides macOS Python canaries and a guarded Linux native synthetic workflow.
 A passing native fixture does not enable live provider access or promotion.
 
+Offline development comparison is available through
+[deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
+It freezes and grades supplied synthetic evidence; it does not execute models or
+establish holdout or promotion eligibility.
+
 ## Principles
 
 - **Keep shared instructions small.** Put durable defaults in policies and load
