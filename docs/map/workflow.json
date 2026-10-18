@@ -163,7 +163,7 @@
       "handoff": "Focused test plan or justified alternative checks.",
       "steps": [
         {
-          "label": "Use the collection’s single test-first method",
+          "label": "Use the collection\u2019s single test-first method",
           "skills": [
             "tdd"
           ]
@@ -197,7 +197,7 @@
       "title": "Self-verification",
       "phase": "prove",
       "summary": "Exercise the actual integrated candidate and affected scenarios.",
-      "gate": "Use the target project’s verifier",
+      "gate": "Use the target project\u2019s verifier",
       "handoff": "Candidate-bound checks, coverage and explicit gaps.",
       "steps": [
         {
@@ -242,7 +242,7 @@
       "phase": "deliver",
       "summary": "Fix confirmed findings and renew affected verification and review.",
       "gate": "Only when findings require changes",
-      "handoff": "Updated candidate → self-verification → PR review.",
+      "handoff": "Updated candidate \u2192 self-verification \u2192 PR review.",
       "steps": [
         {
           "label": "If the cause is uncertain, diagnose first",
@@ -395,7 +395,7 @@
     "screenshot-manual": "Users need instructions demonstrated with real product screenshots and a rendered, visually checked PDF.",
     "create-verification-skill": "A real project lacks repeatable user-facing verification; establish its verifier and feature recipes.",
     "maintain-verification-skill": "Existing verification recipes may have drifted and a scoped audit or repair has been requested.",
-    "repository-verifier": "You changed this repository’s catalog UI or map generation and need its actual browser and freshness checks.",
+    "repository-verifier": "You changed this repository\u2019s catalog UI or map generation and need its actual browser and freshness checks.",
     "repository-feature-map": "You need to identify the affected repository user journey and find its verification recipe.",
     "policy-architecture": "Code is hard for agents to find, understand or verify, or you are designing a new project boundary.",
     "policy-behavioral-tests": "You are designing tests and need to choose observable behavior instead of implementation details.",
@@ -417,7 +417,7 @@
     "observation-store": "Step 1: opt in one approved client/project, inspect callback/platform limits, verify bounded delivery snapshots and measured collector capacity, then bind selected events to a task and record explicit feedback.",
     "improvement-case": "Step 2: declare a cause with selected feedback evidence; only instruction cases are eligible. Prepare synthetic inputs, inspect the counterpart, review the exact digest and export development data. Caller triage is not automated diagnosis.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
-    "improvement-eval": "Offline synthetic accounting is available. The separate native runner has selected-profile qualification; actual result collection, admission and comparisons remain pending. Follow the linked implementation handoff.",
+    "improvement-eval": "Grade frozen development cases or admit recorded native artifact snapshots through the linked accounting contract. Inspect all trials, attempts and unknown usage. Actual native admission requires matching current-source authenticated qualification; serial reservations and comparisons remain pending.",
     "improvement-review": "Diagnostic recommendations are available for development reports; the live promotion gate and operational eligibility remain unavailable.",
     "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned.",
     "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement.",
@@ -439,10 +439,10 @@
       "Synthesize the agreed scope"
     ],
     "design": [
-      "Design → compare → explain"
+      "Design \u2192 compare \u2192 explain"
     ],
     "plan": [
-      "Decompose → record → ticket"
+      "Decompose \u2192 record \u2192 ticket"
     ],
     "test-design": [
       "Plan observable checks"
@@ -452,13 +452,13 @@
       "2. Optional parallel slices"
     ],
     "self-verification": [
-      "Verify → document when needed"
+      "Verify \u2192 document when needed"
     ],
     "pr-review": [
-      "Prepare → independent review"
+      "Prepare \u2192 independent review"
     ],
     "correction": [
-      "Diagnose → fix → re-verify"
+      "Diagnose \u2192 fix \u2192 re-verify"
     ],
     "merge": [
       "Only with merge authority"

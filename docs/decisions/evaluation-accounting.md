@@ -1,8 +1,10 @@
 # Deterministic evaluation accounting
 
-Status: offline development comparison implemented; actual-evidence admission and
-same-host held-out evaluation remain unavailable in this evaluator. The separate
-[native runner](../native-trials.md) has selected-profile execution qualification. This is the bounded accounting slice of the
+Status: offline synthetic comparison and trusted offline native artifact admission
+are implemented. Current native admission remains blocked until maintained
+qualification records match the frozen sources and include current authenticated
+qualification. Actual comparisons, serial launch reservations and same-host
+held-out evaluation remain incomplete. This is the bounded accounting slice of the
 [account improvement design](account-improvement-loop.md#comparative-evaluation-contract).
 The module does not execute agents, fixtures, traces, shell commands, model calls or
 Git/installer actions. It reads JSON on stdin and writes JSON on stdout.
@@ -26,7 +28,8 @@ A fresh grader source hash requires a new frozen experiment and explicitly linke
 regrade, not silently relabeling the old report. `freeze` deliberately permits a
 historical grader identity so old inventories can be reconstructed and reported
 as stale; it does not authorize collecting fresh results under that identity.
-For a new collection, use the current `evaluation.py` source hash. Frozen payload
+For a new synthetic collection, use the current `evaluation.py` source hash; native
+admission uses the composite identity below. Frozen payload
 comparison uses canonical JSON bytes, distinguishing booleans, integers and floats.
 
 - Cases consume the in-tree reviewed Store export v1 shape: `case_id`, `language`, `purpose`,
@@ -53,7 +56,8 @@ comparison uses canonical JSON bytes, distinguishing booleans, integers and floa
   routing stays inconclusive even when its outcome passes. Value checks measure
   supplied fields; they do not establish authentic native selection.
 - `identities` requires SHA-256 strings for `baseline`, `candidate`, `runner`,
-  `grader`, `environment`. The grader identity is the hash of `evaluation.py`.
+  `grader`, `environment`. For synthetic input, the grader identity is the hash of `evaluation.py`.
+  Native admission uses the fixed composite identity described below.
   `runtime` freezes `provider`, `model`, `client`, `adapter`, `reasoning`,
   `tool_versions` (map), and `capabilities` (list). Hashes are consistency checks,
   not custody, attestation or proof of execution.
@@ -68,10 +72,11 @@ pairs. The frozen digest covers the complete spec and trial inventory. Trial IDs
 and binding digests bind case, contract, arm, repetition and full frozen context.
 Any changed current spec or grader source invalidates all corresponding results.
 
-A completion contains exactly `trial_id`, `experiment_digest`, `binding_digest`,
+A synthetic completion contains exactly `trial_id`, `experiment_digest`, `binding_digest`,
 `status`, `model`, `evidence_kind`, `artifacts`, `observations`, `usage`,
 `latency_ms`. Status is `completed`, `error`, `timeout`, `blocked`, or `cancelled`.
-This version accepts only `evidence_kind: synthetic` for diagnostic grading.
+The original `evaluation.py report` accepts only `evidence_kind: synthetic` for
+diagnostic grading; its three-argument library contract is unchanged.
 Artifacts map names to literal strings. Observations map criterion targets to JSON
 values; a verification observation is `{"exit_code": 2, "claim": "failed"}`.
 Claims are `passed`, `failed`, or `unavailable`. Unknown exit code is `null`.
@@ -108,16 +113,107 @@ adapter for selecting one request/files payload and supervisor binding. It reuse
 this frozen inventory and does not admit real evidence, execute trials or change
 this evaluator's eligibility rules.
 
+## Admit recorded native artifact snapshots
+
+```sh
+python3 scripts/improvement/trial_admission.py report \
+  < /path/to/private-admission-input.json \
+  > /path/to/new-private-admission-report.json
+```
+
+The separate reader accepts exactly `experiment`, `current_spec`, `context_path`
+and `attempts` on stdin (at most 16 MiB). Reuse the frozen inventory. It does not
+launch or recover trials, read authentication, contact Docker or execute trace
+commands. `attempts` contains at most 64 explicit `trial_id`, `attempt_id` and
+private `attempt_path` references. Preserve failed, duplicate and unassigned attempts.
+Exit 0 means a report was produced, not that its trials passed; malformed top-level
+input returns exit 1 with `status=rejected`.
+
+The private context requires version 1 and kind
+`native_artifact_admission_context_v1`, with exactly these fields:
+
+| Field | Binding |
+| --- | --- |
+| `schema_version`, `kind`, `experiment_digest` | Version, typed context and the saved frozen inventory. |
+| `arms` | Each baseline/candidate root, bundle entrypoint and sorted relative file/SHA-256 inventory. |
+| `runtime` | Supported profile, exact source digests, Codex/code-mode/Docker/executor-archive digests, image and metadata digests. |
+| `qualification_refs` | Exact maintained execution, scoped-grading and collection record paths and digests. |
+| `collection_by_trial` | Explicit validated collection declaration for every scheduled trial, covering each artifact criterion. |
+
+The [reader source](../../scripts/improvement/trial_admission.py) owns nested fields
+and limits; no context generator or caller qualification flag exists. Map actual
+frozen files and maintained [execution](../verification/native-trials.json),
+[scoped grading](../verification/scoped-grading-integrity.json) and
+[collection](../verification/native-outcome-collection.json) evidence. Hashes bind
+consistency; they do not establish execution or repair missing qualification.
+For native experiments, `identities.grader` is the canonical digest of the fixed
+three-file map returned by `trial_admission.native_grader_sources()`:
+`evaluation.py`, `trial_admission.py` and `trial_dispatch.py`. Use
+`trial_admission.native_grader_identity()` when freezing that identity. It is
+checked before admission and after grading; changes between invocations require
+an explicitly linked re-freeze/regrade. The original synthetic identity stays the
+single evaluator-file hash.
+
+In the report, `qualification.grader_digest` also remains the hash of
+`evaluation.py` alone: it identifies the calibrated evaluator operators, not the
+native admission composite. Compare that field with the operator source hash;
+use native `identities.grader` for the three-helper frozen identity.
+
+The maintained scoped grading record must additionally bind
+`admission_grader_source_digests` to that exact three-file map. Its existing
+`grader_source_sha256` still names the evaluator operator source; historical
+records must not be relabeled as renewed composite qualification. A missing
+mapping blocks native admission. This is a fixed dependency binding, not a
+caller-defined inventory or a proof against hostile host modification.
+
+The supported declared tuple is OpenAI, GPT-6-Luna, Codex 0.163.0, the pinned
+native profile and low reasoning. Declared selection is not backend attestation.
+
+Private context, manifest and journal files require current-owner regular no-follow
+files with exact 0600 mode; attempt/journal directories require private ownership and modes. The reader
+holds each coordinator lock nonblockingly, validates manifest, dispatch, journal
+sequence, collection intent/result, source and cleanup bindings, and rechecks
+identities through grading. Active writers, evidence drift and missing qualification
+block admission. The current collection source set has credential-free evidence;
+matching authenticated qualification remains unavailable. Preserve recoverable
+attempt costs when outcome admission is blocked.
+
+This route admits artifact snapshots only. Present SHA-256 values are compared
+directly to the expected digest; observed missing files fail that criterion.
+Absent, unsafe or blocked capture stays blocked. Hashes are never reconstructed
+as text or relabeled as synthetic content. Matching bytes do not prove routing,
+exposure, general semantic correctness or quiescent final state.
+
+Native reports use `native_artifact_development_comparison`. Internally, the typed
+reader adds native-only `attempt_id` to the completion projection; callers cannot
+submit that projection as JSON to bypass admission. Duplicate submissions remain
+visible but charge one source attempt once. Distinct and failed attempts retain
+observed cumulative usage; conflicting receipts, missing usage and discontinuities
+leave the affected cost unknown. Known tokens are a subtotal, never a complete
+budget when coverage is missing. Wire requests, billing usage and currency remain
+unobserved. Selected-model evidence is `source_guarded_protocol_not_exported_selection`;
+explicit observed-model export and aggregate launch reservation remain separate work.
+
+The controller, scorer and same-account maintainer are trusted local owners.
+These guards do not contain a malicious same-UID host. Remote protected-file
+checks retain their own source-bound scope. `live_eligible` stays false and
+promotion inconclusive, even when an artifact criterion passes. Current-source
+qualification, real comparisons and same-host held-out evaluation remain distinct
+requirements; this component does not complete issue #26.
+
 ## Report and trust limits
 
-Reports retain every scheduled trial, all submitted completion digests, unknown
+Both report routes retain every scheduled trial, all submitted completion digests, unknown
 or malformed submissions, duplicate completions, paired per-case results, separate
 dimension and arm counts, critical failures, missing coverage, latency and known
 usage. Duplicate submissions block the trial and retain all submitted digests and check
-rows. Critical violations count each distinct completion digest once per trial;
+rows. Critical violations count each distinct completion digest once per trial
+(including native attempt identity for admitted rows);
 resubmitting an identical failing row cannot inflate that count. Distinct failing
-completions remain counted, and neither can replace a failed result. Submitted usage, including duplicate
-or unassigned submissions, remains in cost accounting. Unknown/missing usage makes
+completions remain counted, and neither can replace a failed result. Synthetic
+submitted usage, including duplicate or unassigned submissions, remains in cost
+accounting; native usage follows the source-attempt deduplication above.
+Unknown/missing usage makes
 the total unknown; `known_tokens` is only a subtotal. Dollar cost is unobserved.
 The existing `pairs` field retains one baseline/candidate row per case, variant and
 repetition. `paired_summary` adds `scheduled_pairs`, `overall`, `dimensions` and
@@ -141,23 +237,14 @@ A failed calibration makes grading inconclusive. Calibration covers these closed
 operators, not every possible task or an independent safety qualification. Traces
 are data and cannot supply grading commands or override the frozen criteria.
 
-`live_eligible` is always false, `promotion` is always inconclusive, and the evidence
-kind is `deterministic_development_comparison`. No caller-supplied qualification
-boolean, account-doctor report or mock isolation receipt can change those fields.
-There is no authenticated task-evidence verifier or implemented same-host held-out
-protocol in this evaluator. The separate runner's selected transport qualification
-does not supply those capabilities. The [revised design](account-improvement-loop.md#same-host-held-out-evaluation)
+`live_eligible` is always false and `promotion` is always inconclusive. The original
+synthetic report uses `deterministic_development_comparison`; native admission uses
+the separate evidence kind above. No caller flag, account-doctor result or mock
+isolation receipt establishes qualification. The [revised design](account-improvement-loop.md#same-host-held-out-evaluation)
 requires context separation and exposure records, not an external custodian.
-Existing custody-related blocker strings describe the current implementation;
-consumer/schema/tests must change together before actual evidence is admitted.
-No hidden-answer access test or full issue-26 acceptance is claimed by this slice.
-The OS isolation pilot remains separately qualified.
-
+No full issue-26 acceptance or actual comparative result is claimed by this slice.
 The [implementation handoff](account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
-links task-result collection (#54), protected grading (#55) and their admission
-consumer (#26). Until that integration is implemented and verified, use the
-synthetic-only CLI contract above; do not convert native receipts to synthetic
-completions or set a qualification flag to bypass the boundary.
+links collection (#54), protected grading (#55) and their admission consumer (#26).
 
 The [Anthropic evaluation guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
 (accessed 2026-10-18) distinguishes trials, observable outcomes and grader
