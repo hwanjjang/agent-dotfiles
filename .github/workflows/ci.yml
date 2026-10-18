@@ -55,3 +55,8 @@ jobs:
         run: |
           git diff --check HEAD^1 HEAD
           git diff --exit-code
+          checkout_status=$(git status --porcelain --untracked-files=all)
+          if [ -n "$checkout_status" ]; then
+            printf '%s\n' "$checkout_status"
+            exit 1
+          fi

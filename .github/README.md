@@ -8,6 +8,16 @@ source branch. Merge conflicts or GitHub's fork-workflow approval requirements c
 prevent a run; a missing check is not a pass. A newer run cancels the older run for
 the same PR. This workflow does not configure branch protection or authorize merges.
 
+A base branch advancing does not by itself trigger a new child-PR run. After a
+stacked parent or `main` changes, an earlier green result may describe an old
+merge result. Before integration, compare the recorded head/base/merge revisions
+with the current PR, update the head branch from its intended target through the
+normal review process, and verify a new successful run on that combination.
+Rerunning an old workflow run does not establish coverage of a newer base.
+[Strict required status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging)
+can require the branch to be up to date before merging; that is separate repository
+configuration, not enforcement provided or enabled by this workflow.
+
 The job uses Ubuntu 24.04 and Python 3.11, with a 15-minute limit. Python 3.11 meets
 the account tooling's `tomllib` requirement. The runner installs only the existing
 [screenshot manual dependencies](../skills/screenshot-manual/requirements.txt).
@@ -18,7 +28,10 @@ Tests use their existing disposable synthetic fixtures.
 
 ## Reproduce the checks
 
-Use Python 3.11 in a disposable virtual environment from the checkout root:
+Start from a clean, committed checkout and use Python 3.11 in a disposable virtual
+environment. Resolve an up-to-date local ref for the PR's actual target first;
+`origin/main` below is an example, and a stacked PR must name its parent branch.
+The commands do not fetch, rebase or merge for you.
 
 ```sh
 python3.11 -m venv .local/ci-venv
@@ -28,14 +41,43 @@ python3.11 -m venv .local/ci-venv
 .local/ci-venv/bin/python -m unittest discover -s skills/sdlc/scripts -p 'test_*.py' -v
 .local/ci-venv/bin/python scripts/build_map.py --check
 .local/ci-venv/bin/python scripts/build_workflow.py --check
+
+.local/ci-venv/bin/python - <<'PY'
+import json
+import subprocess
+from pathlib import Path
+
+paths = subprocess.check_output(['git', 'ls-files', '-z', '*.json']).decode().split('\0')
+for name in filter(None, paths):
+    json.loads(Path(name).read_text(encoding='utf-8'))
+print('Tracked JSON is valid.')
+PY
+
+CI_TARGET_REF=origin/main  # Replace with the PR's actual local target ref.
+git diff --check "$CI_TARGET_REF"...HEAD
 git diff --check
+git diff --exit-code
+checkout_status=$(git status --porcelain --untracked-files=all)
+if [ -n "$checkout_status" ]; then
+  printf '%s\n' "$checkout_status"
+  exit 1
+fi
 ```
 
-The workflow fetches the merge commit and its parents, checks whitespace in
-`git diff --check HEAD^1 HEAD` (the PR merge result against its target parent),
-parses all tracked JSON, and requires tests to leave tracked
-source unchanged (`git diff --exit-code`). Its inline JSON step can be run locally
-with the same interpreter. The map builders validate catalog/workflow schemas and
+The local three-dot diff checks committed branch changes since the merge base;
+it is not an exact simulation of GitHub's merge result. In CI, checkout fetches
+the proposed merge commit and its parents, and the whitespace command is instead:
+
+```sh
+git diff --check HEAD^1 HEAD
+```
+
+Use that command only on the actual proposed merge checkout, where `HEAD^1` is
+the target parent. The local block additionally checks working-tree whitespace.
+Both paths check preservation: CI's committed-diff check covers PR whitespace,
+while `git diff --exit-code` and the porcelain status guard refuse tracked changes
+and nonignored untracked files. Ignored local outputs such as `.local/` remain
+allowed; the guard is not a secret scanner. The map builders validate catalog/workflow schemas and
 their repository source links. This is not a complete Markdown-link, secret,
 outgoing-history, browser, cross-platform, native-client or live-model audit.
 The imported Archify package's separate Node/browser suite is not included.
