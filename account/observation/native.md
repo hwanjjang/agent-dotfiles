@@ -139,8 +139,9 @@ Paseo and Codex observation are not qualified by this run.
 
 [The verification recipe](../../docs/verification/verify-repository/features/native-observation.md)
 owns repeatable checks. [The improvement design](../../docs/decisions/account-improvement-loop.md)
-owns later task feedback, isolated comparison and promotion; none is implied by
-successful event capture.
+owns task feedback and reviewed synthetic cases, plus the remaining isolated
+comparison and promotion design. Successful event capture alone establishes none
+of their completion or eligibility claims.
 
 This is original MIT-licensed repository code, not imported hook middleware.
 The [Claude hook reference](https://code.claude.com/docs/en/hooks), inspected

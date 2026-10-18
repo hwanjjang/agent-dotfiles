@@ -73,3 +73,12 @@ receipt, and `effective_exposure_exact` must remain false. Preserve grant/epoch 
 revocation checks before probes. No test of receipt identity qualifies model usage
 or excludes a mid-turn edit. The [capacity walkthrough](../../../manual/collector-capacity.json)
 illustrates these distinctions using browser-rendered actual benchmark summaries.
+
+## Native metadata through task feedback and cases
+
+Run `python3.11 -m unittest discover -s tests -p test_native_task_integration.py -v`
+to exercise supplied Claude/Codex hook payloads through the real native adapter,
+explicit and interval task selections, feedback, case review/export and revocation.
+Check reservation gaps, unknown actors and the distinct failure/unknown outcome
+eligibility. These deterministic fixtures make no native-client or model call
+and do not extend the platform matrix.

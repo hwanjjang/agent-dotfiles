@@ -455,7 +455,8 @@ class Store:
                 start, end = selection.get('start_sequence'), selection.get('end_sequence')
                 require(integer(start) and integer(end) and start <= end, 'task_interval')
                 events = [e for e in events if start <= e['sequence'] <= end]
-                basis = 'synthetic_receipt_interval'
+                basis = ('synthetic_receipt_interval' if grant['client'] == 'synthetic'
+                         else 'native_receipt_interval')
             require(bool(events), 'empty_selection')
             selected_ids.update(e['event_id'] for e in events)
             require(len(selected_ids) <= 128, 'task_event_limit')

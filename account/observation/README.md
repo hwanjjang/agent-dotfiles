@@ -395,3 +395,14 @@ The [native guide](native.md) documents implemented Claude and Codex delivery an
 qualification. Default installations still collect nothing. Run
 `python3.11 -m unittest discover -s tests -p 'test_observation_native.py'` and the
 installer tests for native scope, deduplication, neutral delivery and coexistence.
+
+Native task intervals record `native_receipt_interval`; synthetic intervals retain
+`synthetic_receipt_interval`. Native sequence reservations can leave gaps. An
+interval selects recorded receipts only and does not prove complete tool history
+or infer missing actors, failures or task outcomes. Existing task rows are not
+rewritten.
+
+A Claude `PostToolUseFailure` supplies failed-tool metadata for an explicitly
+triaged outcome case. Codex `PostToolUse` keeps status unknown, even if a supplied
+payload contains an exit code; it cannot satisfy failed-tool evidence. Routing
+cases remain eligible when their other explicit requirements are met.

@@ -165,6 +165,8 @@ The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md
 provides macOS Python canaries and a guarded Linux native synthetic workflow.
 A passing native fixture does not enable live provider access or promotion.
 
+Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
+
 ## Principles
 
 - **Keep shared instructions small.** Put durable defaults in policies and load
@@ -301,5 +303,3 @@ Technical references:
 ## License
 
 [MIT](LICENSE).
-
-Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
