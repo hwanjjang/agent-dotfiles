@@ -152,11 +152,44 @@ following native results are separate from those synthetic checks.
 
 ### Native platform evidence — 2026-10-18
 
+This matrix owns the collection qualification status. Read the source boundary and
+remaining limit with every result. A client initialized successfully, a native
+callback arrived, a tool ran and a model completed a turn are distinct observations;
+none establishes task success, complete delivery or cross-platform support.
+Historical evidence remains attached to its original runtime, even when later
+source has focused or synthetic checks.
+
 | Platform/client | Actual evidence | Remaining limit |
 | --- | --- | --- |
 | macOS, Codex 0.163.0 / GPT-6-Luna low, corrected runtime | Fresh native turn: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; eleven reviewed definitions trusted | One synthetic task; no delivery-completeness, subagent or environment-exposure claim |
 | Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, historical pre-guard | Actual callbacks: session start 1, tool starts 4, tool ends 2, response end 1; planning marker present; eleven definitions trusted | Full fixture blocked by `bwrap: Failed RTM_NEWADDR`; apply_patch failed and intended exit 3 was not reached; sandbox was not weakened |
 | Linux aarch64, Claude Code 2.1.302, historical pre-guard | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
+| macOS, optional Paseo 0.11.4 / Codex 0.163.0 / GPT-6-Luna low, source `70ec2e9` | Baseline: SessionStart 1, PreToolUse 3, PostToolUse 3, Stop 1; planning marker present; native shell exits 0, 0, 3 | PostToolUse outcomes remain unknown; this bounded task does not establish effective exposure or complete delivery |
+| Same Paseo agent, planned interruption at source `70ec2e9` | Native `turn_aborted` with reason `interrupted`; one additional PreToolUse, no corresponding PostToolUse or Stop | The shell continued after the turn aborted and exited 0 with its finished marker; cancellation is not process-kill proof, and missing callbacks remain visible |
+| Native provider-created subagents, any client | No actual native-child collection scenario has run | Actor/parent remain unknown; do not infer parentage from nearby records or Paseo's worker ownership |
+| WSL | No test host was available | Unverified; no WSL native collection claim |
+
+The optional Paseo baseline and interruption exercised collector source
+`70ec2e9bd079566e45457477bb9eb07d124f32a7`, including the capacity/attribution
+runtime, in a disposable account/project. This is an external native qualification
+of that source, not a model run against this later documentation-only revision.
+Paseo's managed parent relationship was observed separately; stored native
+actor/parent identities remained null. Do not substitute that managed relationship
+for provider-created child lineage. The final ledger had nine records: eight from
+the baseline and one additional tool start from the interrupted turn. The latter
+is an unresolved boundary, not evidence of a successful tool or completed task.
+
+A log-format parser failed after the valid baseline; the baseline was
+not repeated, and only the planned interruption turn resumed. A cleanup assertion
+was corrected to expect revocation's purge rather than the pre-revoke count; the
+failed receipts remain preserved. Cleanup evidence confirmed the owned agent was
+archived. Archival does not establish deletion of Paseo-managed history; history
+deletion was not verified. The owned project/workspace registry entries, temporary
+project, authentication copy and native state were
+removed; the existing parent workspace was retained. The grant was revoked, its
+records purged, and a direct
+post-revoke callback returned neutral output with zero records; this was not a
+third model turn. Existing account configuration and source remained unchanged.
 
 The fresh corrected macOS payload fixture is `edf5b11ca47140602563869a1ff11bbf0c052dac`.
 Collector, store, dispatcher and installation-harness hashes match the corrected
@@ -190,6 +223,14 @@ or trust were enabled, and no real model/provider request occurred. This qualifi
 that synthetic transport/tool boundary; it does not replace the earlier approved
 live fixture's bubblewrap blocker or qualify observer delivery, subscription
 transport, holdout efficacy or promotion.
+
+Native-child coverage is still untried. Codex's pinned tool-hook schemas can name
+an emitting agent but do not provide a parent edge. This adapter never populates
+actor/parent fields: the store writes null with `actor_id_not_observed` and
+`parent_actor_id_not_observed` gaps. It does not register SubagentStart/SubagentStop.
+Paseo ownership of a worker is not native model-created child lineage. Missing identities stay unknown.
+The synthetic capacity check that interrupts a dispatcher after reservation proves
+reservation recovery only; it is not a native provider-turn cancellation test.
 
 The versioned input schemas reviewed for Codex CLI 0.163.0 are at
 [upstream commit 8308618](https://github.com/openai/codex/tree/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/hooks/schema/generated).

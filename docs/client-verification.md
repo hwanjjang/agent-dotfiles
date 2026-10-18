@@ -20,25 +20,16 @@ runtime and synthetic fixture, not a new native model run or all platforms.
 ## Native observation platform coverage — 2026-10-18
 
 The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
-is the authoritative per-platform record. A fresh macOS Codex/Luna run with
-matching corrected parent-native collector/store/dispatcher and installer-harness hashes
-exercised all four observer kinds, planning coexistence and intentional exit 3
-with unknown observer outcomes. Focused and installed-dispatcher checks separately
-verify out-of-project pre-read rejection. The native fixture is one synthetic task,
-not complete delivery, subagent ancestry or effective configuration exposure.
-Later capacity/attribution code has separate synthetic qualification and is not
-covered by that native model run.
+is the single source of truth for per-platform results, source revisions, cleanup
+and remaining gaps. Read its result and source boundary together: actual callbacks,
+usable tools, authenticated model behavior and interruption are separate checks.
+A historical native run does not requalify a later collector revision. Likewise,
+the separate Linux container's synthetic transport/tool proof does not qualify
+live observation delivery.
 
-Linux results remain historical pre-guard fixtures: Codex produced genuine
-callbacks/planning context but its full tool fixture was blocked by bubblewrap;
-Claude initialized and emitted SessionStart with no usable model authentication.
-They do not qualify corrected Linux runtime. The [Codex walkthrough](manual/codex-observation.pdf)
-shows the fresh macOS result alongside those historical Linux limits.
-
-A separate whole-client Linux Docker experiment later passed native Codex command
-and synthetic transport canaries without authentication, model calls or observer
-hook activation. It establishes a bounded synthetic execution route; the earlier
-live observer fixture remains partial for its recorded environment.
+The [historical Codex walkthrough](manual/codex-observation.pdf) retains its original
+macOS/Linux captures. New platform status documentation supplements that evidence;
+it does not rewrite the older receipts or imply WSL/native-child coverage.
 
 ## Doctor review corrections — 2026-10-18
 

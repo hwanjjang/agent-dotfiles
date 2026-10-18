@@ -2464,7 +2464,7 @@
       "behavior": [
         "One selected client registration per account; grants, epochs and records remain owned by the private store.",
         "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
-        "Fresh macOS Codex callbacks/planning passed for the corrected parent native collector. Later capacity/attribution code has synthetic qualification only. Linux results are historical pre-guard fixtures: Codex tools were blocked; Claude proves SessionStart only, with authentication unavailable.",
+        "Read the native.md platform matrix before relying on another environment: each native result is bound to its executed runtime. Historical Linux Codex tools were blocked and Claude authentication was unavailable; synthetic container execution does not qualify live observer delivery. Native child and WSL coverage remain unverified.",
         "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned.",
         "SessionStart/Stop snapshots record bounded delivery hashes and gaps; tool events inherit no cached identity and effective exposure stays unknown.",
         "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior."

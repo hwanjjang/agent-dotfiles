@@ -28,7 +28,17 @@ configurations and synthetic content; never register real projects implicitly.
    with genuine callbacks is partial, not a full PASS. Initialization/SessionStart
    without usable authentication does not qualify model/tool/Stop behavior. WSL or
    subagent lineage needs its own evidence; do not reuse a macOS result for Linux.
-6. Verify stored metadata excludes fixture contents, file paths, raw tool names,
+6. When qualifying interruption, use an authorized disposable session and a
+   bounded shell command with synthetic start/finish markers. After actual tool
+   start, cancel that owned turn through the client. Record the native terminal
+   event and reason (or their unavailability), whether the process continued, its
+   observed exit (or unknown),
+   and callback counts before/after cancellation. Keep unpaired tool starts
+   unresolved; neither cancellation nor a later shell exit proves a missing
+   callback or task success. Wait for or stop only owned processes within the
+   authorized bound before cleanup. Do not infer process termination from turn
+   cancellation or report a requested delay as measured elapsed time.
+7. Verify stored metadata excludes fixture contents, file paths, raw tool names,
    prompts and output. Inspect owned-file drift. Revoke, check old-epoch direct
    callback no-op, then remove the owned installation/state and retain private
    evidence. Label the post-revoke check as direct dispatcher proof if no native
