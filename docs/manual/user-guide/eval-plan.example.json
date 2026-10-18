@@ -16,7 +16,7 @@
     "fresh state per trial",
     "deny live account history and credentials",
     "deny other arm artifacts",
-    "deny updater access to evaluator-owned holdouts",
+    "do not supply held-out tasks/answers to candidate-author context; record supplied material, known reads and available access",
     "deny model judge access to hidden answer files"
   ],
   "order": "randomized or counterbalanced, recorded before each trial",
@@ -38,9 +38,9 @@
     "predeclare target benefit and regression tolerance",
     "no observed critical policy violation",
     "qualified deterministic checks and blinded judge where needed",
-    "evaluator-controlled heldout check",
+    "same-host held-out check under issue #56",
     "independent review of exact candidate and sanitized report"
   ],
   "verdict": "not_run",
-  "holdouts": "Not included in this public development example; maintained by a separate evaluator."
+  "holdouts": "Not included in this public development example. Prepare privately on the existing host/account using fresh contexts and record exposure; no external custodian or additional environment required."
 }
