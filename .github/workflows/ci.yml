@@ -1,0 +1,57 @@
+name: Pull request CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  repository:
+    name: Repository checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # Release provenance and local reproduction: ../README.md
+      - name: Check out the pull request merge result
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.11'
+      - name: Install existing manual test dependencies
+        run: python -m pip install --disable-pip-version-check -r skills/screenshot-manual/requirements.txt
+      - name: Require manual test dependencies
+        run: python -c "import reportlab, pypdf, PIL"
+      - name: Run repository tests
+        run: python -m unittest discover -s tests -v
+      - name: Run SDLC tests
+        run: python -m unittest discover -s skills/sdlc/scripts -p 'test_*.py' -v
+      - name: Check maps and mapped source links
+        run: |
+          python scripts/build_map.py --check
+          python scripts/build_workflow.py --check
+      - name: Parse tracked JSON
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          paths = subprocess.check_output(['git', 'ls-files', '-z', '*.json']).decode().split('\0')
+          for name in filter(None, paths):
+              json.loads(Path(name).read_text(encoding='utf-8'))
+          print('Tracked JSON is valid.')
+          PY
+      - name: Check whitespace and source preservation
+        run: |
+          git diff --check HEAD^1 HEAD
+          git diff --exit-code
