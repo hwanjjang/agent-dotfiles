@@ -3,9 +3,10 @@
 The runner in [native_execution.py](../../scripts/improvement/native_execution.py)
 prepares one fixed synthetic Codex app-server workflow. It is a reusable
 qualification fixture, not a live evaluation or authenticated-provider API.
-The extracted runner now has both local fake-process coverage and one fresh
-actual native mock qualification with Codex 0.163.0. That qualification covers
-the selected synthetic workflow, not authentication or every tool route.
+The corrected runner has local fake-process coverage and a source-bound actual
+native mock with Codex 0.163.0. That result covers the selected normal workflow,
+not authentication or every tool route. A separate controller-deadline probe
+completed before injection and remains unqualified; it was not retried.
 
 ## Run and ownership
 
@@ -39,9 +40,10 @@ VM, creates a container, installs a client or changes real account settings.
 The trusted host harness is outside the executor OS boundary.
 
 The fixed synthetic provider permits at most two accepted submission positions:
-one code-mode cell and one completion. It retains the count of observed parsed
-POST submissions, including a rejected excess submission. Malformed HTTP before
-body parsing is a provider error, not an inferred model attempt. Its counter is
+one code-mode cell and one completion. It counts shape-valid complete POST
+bodies before JSON parsing, including malformed JSON and rejected excess bodies.
+Rejected HTTP shapes and incomplete bodies are provider errors outside that
+submission counter, not inferred model attempts. Its counter is
 not a counter for first-party inference, authentication recovery or real retries.
 The actual returned tool output must contain the assigned skill body/reference
 and disabled-collaboration refusal; echoed prompt text cannot satisfy this check.
@@ -49,7 +51,11 @@ The matching thread/turn terminal must complete without error. A zero process
 exit is insufficient. Unexpected native server requests are refused.
 
 One deadline covers nonblocking app-server writes and reads, including pipe
-backpressure. Independent cleanup kills only the Popen-owned process group,
+backpressure. Active HTTP sockets are closed at the absolute deadline, including
+stalled headers and dribbling bodies. Listener and watchdog joins share a
+one-second cleanup bound; an unconfirmed stop is reported as incomplete.
+Independent cleanup signals only the Popen-owned process group before reaping
+its leader,
 reaps the direct child, closes local provider listeners and removes owned
 HOME/project state. Escaped process groups and external executor resources are
 explicitly unverified and remain the caller's responsibility. The fixture never
@@ -67,7 +73,8 @@ attempts are retained rather than overwritten. The receipt contains:
 - schema_version 1, kind `native-remote-fixture`, status `mock_complete` or
   `blocked`, failure reason and actual mock submission count;
 - declared model/reasoning and source/component/executable/config hashes;
-- native terminal identity/status/error when observed;
+- bounded native terminal identity/status/error summaries with a digest of the
+  full archived terminal when observed;
 - wall/archive limits and elapsed time; real token usage is unknown;
 - owned cleanup outcomes, external/escaped-resource uncertainty, and the raw
   archive digest and byte count.
@@ -82,7 +89,11 @@ a caller-provided success flag or rehashed fabricated archive is insufficient.
 
 The archive cap includes retained base64-framed native stdin/stdout/stderr,
 mock request/response bodies, launch/config/terminal events and the final receipt.
-8192 bytes are reserved for the receipt. HTTP headers, OS pipe buffers, removed
+8192 bytes are reserved for the receipt. Oversized future summaries produce a
+minimal blocked fallback receipt with archive identity, rather than losing the
+receipt. Executable/source hashes are computed before creating an archive.
+Final provider state is checked after listeners close, so a late excess body
+cannot retain an earlier success status. HTTP headers, OS pipe buffers, removed
 temporary files and caller reports are excluded. A read can observe a bounded
 chunk before refusing to retain it; this is a retained-artifact cap, not a hard
 provider token/spend or universal wire-output ceiling. No guessed
@@ -99,8 +110,8 @@ The official current docs were checked 2026-10-18; 0.163 behavior is bound to th
 pinned source, since current documentation can drift. Native prototype evidence
 showed disabled agents must include `[agents] enabled=false` and
 `multi_agent_v2=false`, and that plain capability-root discovery works with
-plugins disabled. This runner preserves those choices. On 2026-10-18, one fresh actual native
-qualification completed two synthetic submissions and one code-mode cell with a
+plugins disabled. This runner preserves those choices. On 2026-10-18, one renewed actual native
+qualification of the corrected runtime completed two synthetic submissions and one code-mode cell with a
 matching completed terminal. It verified assigned executor skill list/body/
 reference reads, disabled collaboration dispatch, V8/catalog restrictions, empty
 host hooks and effective MCP inventory, missing-server refusal, bundled host
@@ -111,20 +122,30 @@ and network restrictions. This image differs from the historical prototypes.
 
 A separate bounded supervisor observed native/helper parent and process-start
 identities, then confirmed its exact owned containers, volume and processes
-absent. Its evidence supplements the unchanged inner receipt's external-cleanup
+absent. Its evidence supplements the current inner receipt's external-cleanup
 unknowns for this attempt only. The supervisor is a private qualification harness,
-not part of the reusable runner's cleanup API. Total elapsed time was 8.653 seconds;
-retained runtime evidence was 198,209 of 262,144 bytes under the stated archive
+not part of the reusable runner's cleanup API. Total elapsed time was 8.621 seconds;
+retained runtime evidence was 198,689 of 262,144 bytes under the stated archive
 denominator. No real inference or authentication was used. Deliberate executor
 disconnect and other command/patch/image/stdin route probes were not repeated in
 this run; their historical results are not a fresh all-route qualification.
+
+A separate controller-deadline probe observed the first response but did not
+observe an owned helper before completion and did not inject its planned stop. The native
+turn completed; the supervisor correctly retained a partial result with
+`expected_native_deadline_not_observed`. Its 198,505 retained bytes and 8.205
+seconds are attempt evidence, not deadline qualification. No retry followed.
+Independent checks found both attempts' owned resources absent and no process
+with the exact helper executable. The earlier pre-correction native result is
+preserved separately and is not reused as current-runtime proof.
 
 [The focused manual](../manual/native-execution.json) provides editable steps and
 [the rendered walkthrough](../manual/native-execution.pdf) shows sanitized actual
 CLI/mock evidence. [Capture provenance](../manual/native-execution-capture.json)
 binds the runtime component hashes. Any
-runtime change requires renewed relevant checks. Eleven focused local tests
-exercise fake-process failure, timeout, backpressure and cleanup behavior; those
+runtime change requires renewed relevant checks. Twenty focused local tests
+exercise fake-process failures, HTTP deadline stalls/dribbles, bounded terminal
+receipts, late submissions, privacy guards, backpressure and cleanup; those
 results remain distinct from the actual native mock qualification.
 
 Community validation remains limited and this selection is provisional on that

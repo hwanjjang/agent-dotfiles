@@ -79,7 +79,16 @@ class Archive:
                 'denominator': 'Retained base64-framed protocol events plus final receipt; excludes HTTP headers, OS pipe buffers, removed temporary files and caller reports.'}
             raw = encoded(receipt)
             if len(raw) > RESERVE:
-                raise Refusal('receipt_reserve_exceeded')
+                # Preserve a durable, fail-closed receipt even if a future
+                # summary field accidentally exceeds the reserved allowance.
+                receipt = {'schema_version': 1, 'kind': 'native-remote-fixture',
+                    'status': 'blocked', 'reason': 'receipt_summary_exceeded_reserve',
+                    'attempt_id': str(receipt.get('attempt_id', 'unknown'))[:128],
+                    'live_eligible': False, 'authentication_qualified': False,
+                    'isolation_qualified': False, 'archive': receipt['archive'],
+                    'oversized_summary_sha256': hashlib.sha256(raw).hexdigest(),
+                    'cleanup': {'details': 'unknown; oversized summary refused'}}
+                raw = encoded(receipt)
             path = self.path/'receipt.json'
             with path.open('xb') as stream:
                 path.chmod(0o600)
@@ -130,7 +139,9 @@ class Session:
                     if 'method' in value and 'id' in value:
                         raise Refusal('unexpected_native_server_request')
                     self.pending.append(value)
-        if not self.selector.get_map() and self.proc.poll() is not None and not self.pending:
+        # Leave the Popen leader unreaped until close() signals its owned
+        # process group, preventing reuse of that PID before killpg.
+        if not self.selector.get_map() and not self.pending:
             raise Refusal('native_eof')
 
     def send(self, value):
@@ -165,10 +176,18 @@ class Session:
 
     def close(self):
         # Group ownership comes from this Popen(start_new_session=True), never a receipt PID.
+        signal_error = None
+        signaled = False
         try:
             os.killpg(self.proc.pid, signal.SIGKILL)
+            signaled = True
         except ProcessLookupError:
             pass
+        except OSError as exc:
+            # Some hosts refuse signaling an already-exited unreaped group.
+            # Preserve that uncertainty, but still reap our own child and
+            # close descriptors; never fall back to another PID/group.
+            signal_error = type(exc).__name__+':'+str(exc)[:160]
         try:
             self.proc.wait(timeout=2)
             reaped = True
@@ -178,7 +197,8 @@ class Session:
         for stream in (self.proc.stdin, self.proc.stdout, self.proc.stderr):
             stream.close()
         return {'process_reaped': reaped, 'exit_code': self.proc.returncode,
-                'owned_process_group_kill_sent': True,
+                'owned_process_group_kill_sent': signaled,
+                'group_signal_error': signal_error,
                 'escaped_descendants_verified_absent': False}
 
 
@@ -204,6 +224,10 @@ class FixtureProvider:
         self.lock = threading.Lock()
         self.servers = []
         self.threads = []
+        self.connections = set()
+        self.connection_lock = threading.Lock()
+        self.closing = threading.Event()
+        self.watchdog = None
 
     def response(self, raw):
         with self.lock:
@@ -251,61 +275,119 @@ class FixtureProvider:
         class Handler(http.server.BaseHTTPRequestHandler):
             def log_message(self, *args):
                 pass
+            def setup(self):
+                # This is before request-line/header parsing. The watchdog
+                # also closes active sockets at the absolute deadline, so
+                # dribbling bytes cannot renew the overall allowance.
+                self.request.settimeout(max(.01, owner.deadline-time.monotonic()))
+                super().setup()
             def do_POST(self):
                 body = b''
                 status = 400
                 try:
-                    self.connection.settimeout(max(.01, min(1, owner.deadline-time.monotonic())))
                     length = int(self.headers.get('Content-Length', '-1'))
                     if self.path != '/v1/responses' or self.headers.get('Transfer-Encoding') or not 0 <= length <= MAX_BYTES:
                         raise Refusal('mock_http_shape')
                     if time.monotonic() >= owner.deadline:
                         raise Refusal('deadline')
                     raw = self.rfile.read(length)
+                    if time.monotonic() >= owner.deadline or owner.closing.is_set():
+                        raise Refusal('deadline')
                     if len(raw) != length:
                         raise Refusal('mock_truncated_body')
                     body = owner.response(raw)
                     status = 200
                 except Exception as exc:
                     owner.error = type(exc).__name__+':'+str(exc)[:160]
-                self.send_response(status)
-                self.send_header('Content-Length', str(len(body)))
-                self.send_header('Connection', 'close')
-                if status == 200:
-                    self.send_header('Content-Type', 'text/event-stream')
-                self.end_headers()
-                if body:
-                    self.wfile.write(body)
+                try:
+                    self.send_response(status)
+                    self.send_header('Content-Length', str(len(body)))
+                    self.send_header('Connection', 'close')
+                    if status == 200:
+                        self.send_header('Content-Type', 'text/event-stream')
+                    self.end_headers()
+                    if body:
+                        self.wfile.write(body)
+                except OSError:
+                    pass  # Closed by deadline/cleanup; primary error retained.
                 self.close_connection = True
             def do_GET(self):
                 self.send_response(405)
                 self.send_header('Content-Length', '0')
                 self.end_headers()
-        class V6(http.server.HTTPServer):
+        class Server(http.server.HTTPServer):
+            timeout = .05
+            def get_request(self):
+                connection, address = super().get_request()
+                with owner.connection_lock:
+                    if owner.closing.is_set():
+                        connection.close()
+                        raise OSError('listener closing')
+                    owner.connections.add(connection)
+                return connection, address
+            def close_request(self, request):
+                try:
+                    super().close_request(request)
+                finally:
+                    with owner.connection_lock:
+                        owner.connections.discard(request)
+            def handle_error(self, *args):
+                owner.error = owner.error or 'mock_http_handler_error'
+        class V6(Server):
             address_family = socket.AF_INET6
             def server_bind(self):
                 self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
                 super().server_bind()
         try:
-            self.servers.append(http.server.HTTPServer(('127.0.0.1', 0), Handler))
+            self.servers.append(Server(('127.0.0.1', 0), Handler))
             port = self.servers[0].server_port
             self.servers.append(V6(('::1', port), Handler))
             for server in self.servers:
-                thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval': .05}, daemon=True)
+                thread = threading.Thread(target=self.serve, args=(server,), daemon=True)
                 thread.start()
                 self.threads.append(thread)
+            self.watchdog = threading.Thread(target=self.expire, daemon=True)
+            self.watchdog.start()
             return port
         except Exception:
             self.close()
             raise
 
+    def serve(self, server):
+        while not self.closing.is_set():
+            try:
+                server.handle_request()
+            except (OSError, ValueError):
+                if not self.closing.is_set():
+                    self.error = self.error or 'mock_listener_error'
+                break
+
+    def expire(self):
+        if not self.closing.wait(max(0, self.deadline-time.monotonic())):
+            self.error = self.error or 'deadline'
+            self.stop_connections()
+
+    def stop_connections(self):
+        self.closing.set()
+        with self.connection_lock:
+            for connection in self.connections:
+                try:
+                    connection.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
+                connection.close()
+
     def close(self):
-        for server, thread in zip(self.servers, self.threads):
-            server.shutdown()
-            thread.join(2)
+        # Never call HTTPServer.shutdown(): a stalled handler can make that
+        # call wait forever. Close active sockets and bound all thread joins.
+        self.stop_connections()
         for server in self.servers:
             server.server_close()
-        return all(not thread.is_alive() for thread in self.threads)
+        deadline = time.monotonic()+1
+        threads = self.threads+([self.watchdog] if self.watchdog else [])
+        for thread in threads:
+            thread.join(max(0, deadline-time.monotonic()))
+        return all(not thread.is_alive() for thread in threads)
 
 
 PROFILE = '''model="gpt-6-luna"
@@ -351,6 +433,9 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             raise ValueError('invalid_argv')
         if not Path(argv[0]).is_absolute() or not Path(argv[0]).is_file():
             raise ValueError('absolute_executable_required')
+    identities = {'host_executable_sha256': sha(command[0]), 'executor_program_sha256': sha(executor[0]),
+                  'runner_sha256': sha(__file__), 'catalog_sha256': sha(SOURCE/'native_execution_catalog.py'),
+                  'cell_sha256': sha(SOURCE/'native_execution_cell.js')}
     archive = Archive(destination, limit)
     start = time.monotonic()
     deadline = start+timeout
@@ -362,9 +447,7 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
         'reason': None, 'live_eligible': False, 'authentication_qualified': False,
         'isolation_qualified': False, 'source_revision': PIN,
         'model': {'declared': 'gpt-6-luna', 'reasoning': 'low', 'actual_inference': False},
-        'identities': {'host_executable_sha256': sha(command[0]), 'executor_program_sha256': sha(executor[0]),
-                       'runner_sha256': sha(__file__), 'catalog_sha256': sha(SOURCE/'native_execution_catalog.py'),
-                       'cell_sha256': sha(SOURCE/'native_execution_cell.js')},
+        'identities': identities,
         'limits': {'wall_seconds': timeout, 'mock_submissions': 2, 'archive_bytes': limit,
                    'generated_token_ceiling': None, 'dollar_ceiling': None},
         'usage': {'tokens': None, 'reason': 'Synthetic provider; no actual inference or real usage.'},
@@ -422,7 +505,13 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
         t = terminal['params']['turn']
         if terminal['params']['threadId'] != thread or t['id'] != turn:
             raise Refusal('terminal_identity_mismatch')
-        receipt['terminal'] = {'status': t['status'], 'thread_id': thread, 'turn_id': turn, 'error': t.get('error')}
+        error = t.get('error')
+        receipt['terminal'] = {'status': str(t['status'])[:64],
+            'thread_id': str(thread)[:128], 'turn_id': str(turn)[:128],
+            'error': None if error is None else {'preview': encoded(error).decode()[:160],
+                'sha256': hashlib.sha256(encoded(error)).hexdigest()},
+            'sha256': hashlib.sha256(encoded(terminal)).hexdigest(),
+            'full_value': 'retained in events.jsonl'}
         if t['status'] != 'completed' or t.get('error') or not provider.completed or provider.error:
             raise Refusal('native_or_fixture_incomplete')
         if sentinel.read_text() != 'synthetic host-only canary':
@@ -435,17 +524,23 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
         if session:
             try:
                 receipt['cleanup']['harness'] = session.close()
-                safe_to_remove = receipt['cleanup']['harness']['process_reaped']
+                safe_to_remove = receipt['cleanup']['harness']['process_reaped'] and not receipt['cleanup']['harness'].get('group_signal_error')
             except Exception as exc:
                 receipt['cleanup']['harness_error'] = type(exc).__name__+':'+str(exc)[:160]
         if provider:
-            receipt['mock_submissions_observed'] = provider.requests
-            receipt['provider_error'] = provider.error
             try:
                 receipt['cleanup']['listeners_closed'] = provider.close()
             except Exception as exc:
                 receipt['cleanup']['listener_error'] = type(exc).__name__+':'+str(exc)[:160]
                 receipt['cleanup']['listeners_closed'] = False
+            # Snapshot final state after handlers are stopped, not at terminal
+            # arrival: late excess submissions must invalidate earlier success.
+            receipt['mock_submissions_observed'] = provider.requests
+            receipt['provider_error'] = provider.error
+            if provider.error or provider.requests != 2 or not provider.completed:
+                receipt['status'] = 'blocked'
+                receipt['reason'] = receipt['reason'] or 'final_mock_protocol_incomplete'
+            safe_to_remove = safe_to_remove and receipt['cleanup']['listeners_closed']
         else:
             receipt['mock_submissions_observed'] = 0
         if temporary:
@@ -457,7 +552,7 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             receipt['cleanup']['temporary_home_absent'] = not temporary.exists()
             if temporary.exists():
                 receipt['cleanup']['retained_temporary_root'] = str(temporary)
-        if not safe_to_remove or receipt['cleanup'].get('listeners_closed') is False or receipt['cleanup'].get('temporary_home_absent') is False:
+        if not safe_to_remove or receipt['cleanup'].get('harness', {}).get('group_signal_error') or receipt['cleanup'].get('listeners_closed') is False or receipt['cleanup'].get('temporary_home_absent') is False:
             receipt['status'] = 'blocked'
             receipt['reason'] = receipt['reason'] or 'owned_cleanup_incomplete'
         receipt['elapsed_seconds'] = round(time.monotonic()-start, 6)
