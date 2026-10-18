@@ -270,6 +270,11 @@ rather than silently changing the native catalog. Quoted Unicode escapes in the
 surrogate range U+D800–U+DFFF refuse, including pairs that JSON would combine but
 the pinned native YAML loader rejects. Actual UTF-8 characters, compatible BMP
 escapes and literal escaped backslashes remain supported.
+This restriction follows the pinned
+[Codex 0.163.0 frontmatter parser](https://github.com/openai/codex/blob/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/skills/src/parser.rs)
+and its
+[unsafe-libyaml 0.2.11 escape scanner](https://github.com/dtolnay/unsafe-libyaml/blob/0.2.11/src/scanner.rs).
+Source inspection supports compatibility; it does not qualify a native run.
 
 `mode=natural` omits `inputs.entrypoint` from the native plan. The controller sends
 the task prompt without a forced read instruction, and native discovery chooses
