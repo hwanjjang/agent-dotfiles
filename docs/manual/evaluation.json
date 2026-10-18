@@ -1,20 +1,20 @@
 {
-  "title": "Compare development evidence",
-  "scenario": "Offline accounting of supplied synthetic development evidence, Python 3.11+. The export producer is an unmerged PR #35 dependency; see the source contract. No credentials or model calls.",
+  "title": "Compare reviewed development cases",
+  "scenario": "Python 3.11+. Generate and explicitly review synthetic cases with the in-tree Store, then freeze and report supplied observations. Four English/Korean development cases; no credentials or model calls.",
   "steps": [
     {
-      "title": "Freeze the complete comparison",
-      "instruction": "Open the improvement-eval map entry. Run evaluation.py qualify, then freeze a reviewed spec containing both arms, reproduction/counterpart cases, repetitions, exact identities and time/token/request budgets. Save the frozen JSON before collecting completions.",
+      "title": "Freeze reviewed public exports",
+      "instruction": "Prepare a synthetic case with evidence-bound instruction triage, review its exact digest, and export the detached public v1 JSON. Run evaluation.py qualify, then freeze a reviewed spec with both arms, reproduction/counterpart inputs, identities, repetitions and declared budgets. The producer and evaluator are in this checkout.",
       "screenshot": "evaluation-map.png",
-      "caption": "Actual upper portion of the local catalog dialog; follow its source link for the full contract.",
-      "expected": "One stable inventory identifies every scheduled trial. No agent or command is launched."
+      "caption": "Actual upper portion of the current catalog dialog; its source link opens the complete contract.",
+      "expected": "One frozen inventory binds all scheduled trials. Private feedback and lineage are excluded. Unknown or changed export fields are refused."
     },
     {
-      "title": "Retain failures and unknowns",
-      "instruction": "Run evaluation.py report with the frozen experiment, unchanged current spec and supplied synthetic completions. Inspect trial rows, missing/duplicate counts, critical violations and unknown usage before reading aggregate scores.",
+      "title": "Inspect every matched pair",
+      "instruction": "Run evaluation.py report with the unchanged spec and supplied synthetic completions. Read counts and coverage, then paired_summary.overall and paired_summary.dimensions[primary_metric]. Missing, duplicate, blocked and inconclusive evidence stays unresolved. Retain separate routing, adherence and MCP dimensions.",
       "screenshot": "evaluation-result.png",
-      "caption": "Browser-rendered summary from the actual synthetic CLI smoke; not a terminal capture.",
-      "expected": "Eight scheduled trials remain visible: four pass, one fail, two blocked and one inconclusive. Unknown tokens remain null. Live eligibility is false and promotion is inconclusive."
+      "caption": "Browser-rendered summary from the actual 30-call disposable CLI workflow; not a terminal capture.",
+      "expected": "All 16 scheduled trials remain visible. Eight pairs: one improved, one regressed, one both-pass, one both-fail and four unresolved. Unknown tokens remain null; live eligibility is false and promotion is inconclusive."
     }
   ]
 }

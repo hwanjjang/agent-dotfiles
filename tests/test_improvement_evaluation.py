@@ -144,6 +144,108 @@ class EvaluationTests(unittest.TestCase):
         c['case_digest'] = hashlib.sha256(wire).hexdigest()
         return s
 
+    def test_paired_summary_keeps_all_scheduled_pairs(self):
+        self.spec['repetitions'] = 4
+        self.plan = ev.freeze(self.spec)
+        # Eight pairs, independent of randomized arm order. None is omitted.
+        outcomes = [('fail', 'pass'), ('pass', 'fail'), ('pass', 'pass'),
+                    ('fail', 'fail'), ('missing', 'pass'), ('pass', 'duplicate'),
+                    ('timeout', 'pass'), ('fail', 'missing')]
+        rows = []
+        for trial in self.plan['trials']:
+            index = ev.VARIANTS.index(trial['variant']) * 4 + trial['repetition']
+            state = outcomes[index][ev.ARMS.index(trial['arm'])]
+            if state == 'missing':
+                continue
+            row = completion(self.plan, trial)
+            if state == 'fail':
+                row['observations']['check']['claim'] = 'unavailable'
+            if state == 'timeout':
+                row['status'] = 'timeout'
+            rows.append(row)
+            if state == 'duplicate':
+                rows.append(copy.deepcopy(row))
+        report = self.report(rows)
+        expected = dict(improved=1, regressed=1, both_pass=1, both_fail=1, unresolved=4)
+        summary = report['paired_summary']
+        self.assertEqual(summary['scheduled_pairs'], 8)
+        self.assertEqual(summary['overall'], expected)
+        self.assertEqual(summary['dimensions']['outcome'], expected)
+        self.assertEqual(summary['primary_metric'], 'outcome')
+        self.assertEqual(summary['dimensions']['routing']['unresolved'], 8)
+        self.assertEqual(len(report['pairs']), 8)
+        self.assertEqual(self.report(list(reversed(rows)))['paired_summary'], summary)
+        # Unassigned submissions and duplicate costs never add scheduled pairs.
+        extra = dict(rows[0], trial_id='unscheduled')
+        self.assertEqual(self.report(rows + [extra])['paired_summary'], summary)
+        for tally in [summary['overall'], *summary['dimensions'].values()]:
+            self.assertEqual(sum(tally.values()), 8)
+
+    def test_paired_primary_dimension_is_independent_of_overall(self):
+        self.spec['primary_metric'] = 'routing'
+        self.spec['repetitions'] = 1
+        for variant in ev.VARIANTS:
+            self.spec['checks']['verification-en'][variant]['criteria'].append(dict(
+                id='route', dimension='routing', kind='value_equals', target='selected',
+                expected='to-spec', critical=False))
+        self.plan = ev.freeze(self.spec)
+        rows = []
+        for trial in self.plan['trials']:
+            row = completion(self.plan, trial)
+            row['observations']['selected'] = 'to-spec' if trial['arm'] == 'baseline' else 'wrong'
+            if trial['arm'] == 'baseline':
+                row['observations']['check']['claim'] = 'unavailable'
+            rows.append(row)
+        summary = self.report(rows)['paired_summary']
+        self.assertEqual(summary['primary_metric'], 'routing')
+        self.assertEqual(summary['dimensions']['outcome']['improved'], 2)
+        self.assertEqual(summary['dimensions']['routing']['regressed'], 2)
+        self.assertEqual(summary['overall']['both_fail'], 2)
+        self.assertEqual(summary['dimensions']['adherence']['unresolved'], 2)
+
+    def test_definite_failure_with_missing_criterion_stays_failed(self):
+        self.spec['repetitions'] = 1
+        for variant in ev.VARIANTS:
+            self.spec['checks']['verification-en'][variant]['criteria'].append(dict(
+                id='extra-outcome', dimension='outcome', kind='value_equals',
+                target='extra-result', expected=True, critical=False))
+        self.plan = ev.freeze(self.spec)
+        rows = []
+        for trial in self.plan['trials']:
+            row = completion(self.plan, trial)
+            if trial['arm'] == 'baseline':
+                # Definite incorrect claim plus missing extra criterion.
+                row['observations']['check']['claim'] = 'unavailable'
+            else:
+                row['observations']['extra-result'] = True
+            rows.append(row)
+        report = self.report(rows)
+        for trial in report['trials']:
+            if trial['arm'] == 'baseline':
+                self.assertEqual([c['verdict'] for c in trial['checks']], ['fail', 'inconclusive'])
+                self.assertEqual(trial['verdict'], 'fail')
+                self.assertEqual(trial['dimensions']['outcome'], 'fail')
+        expected = dict(improved=2, regressed=0, both_pass=0, both_fail=0, unresolved=0)
+        self.assertEqual(report['paired_summary']['overall'], expected)
+        self.assertEqual(report['paired_summary']['dimensions']['outcome'], expected)
+        self.assertEqual(report['paired_summary']['scheduled_pairs'], 2)
+
+    def test_invalid_or_unqualified_pairs_remain_unresolved(self):
+        rows = [completion(self.plan, t) for t in self.plan['trials']]
+        changed = copy.deepcopy(self.spec)
+        changed['identities']['candidate'] = 'e' * 64
+        reports = [self.report(rows, changed), self.report([
+            dict(row, evidence_kind='os_qualified_real') for row in rows])]
+        with patch.object(ev, 'grade_check', return_value='pass'):
+            reports.append(self.report(rows))
+        for report in reports:
+            summary = report['paired_summary']
+            self.assertEqual(summary['overall'], dict(
+                improved=0, regressed=0, both_pass=0, both_fail=0, unresolved=4))
+            self.assertTrue(all(d['unresolved'] == 4 for d in summary['dimensions'].values()))
+            self.assertFalse(report['live_eligible'])
+            self.assertEqual(report['promotion'], 'inconclusive')
+
     def test_export_v1_boundary_ids_and_unicode_paths_are_accepted(self):
         for case_id, path in [('@case:1', 'check.txt'), ('.' + 'a' * 159, 'check.txt'),
                               ('verification-en', '가' * 156 + '.txt')]:

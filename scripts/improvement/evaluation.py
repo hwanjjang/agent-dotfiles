@@ -222,6 +222,27 @@ def counts(values):
     return {v: values.count(v) for v in VERDICTS}
 
 
+def paired_summary(trials, primary_metric):
+    """Count each scheduled two-arm pair once, including unresolved evidence."""
+    pairs = {}
+    for trial in trials:
+        key = (trial['case_id'], trial['variant'], trial['repetition'])
+        pairs.setdefault(key, {})[trial['arm']] = trial
+
+    def tally(dimension=None):
+        result = dict(improved=0, regressed=0, both_pass=0, both_fail=0, unresolved=0)
+        for pair in pairs.values():
+            values = tuple(pair[arm]['verdict'] if dimension is None
+                           else pair[arm]['dimensions'][dimension] for arm in ARMS)
+            category = {('fail', 'pass'): 'improved', ('pass', 'fail'): 'regressed',
+                        ('pass', 'pass'): 'both_pass', ('fail', 'fail'): 'both_fail'}.get(values, 'unresolved')
+            result[category] += 1
+        return result
+
+    return {'scheduled_pairs': len(pairs), 'primary_metric': primary_metric,
+            'overall': tally(), 'dimensions': {d: tally(d) for d in DIMENSIONS}}
+
+
 def usage_summary(rows, missing):
     known, unknown = [], missing
     for row in rows:
@@ -326,6 +347,7 @@ def compare(experiment, completions, current_spec):
                            if t['case_id'] == c['case_id'] and t['variant'] == v and t['arm'] == a])
                            for a in ARMS} for v in VARIANTS} for c in spec['cases']},
               'pairs': [dict(case_id=k[0], variant=k[1], repetition=k[2], **v) for k, v in pairs.items()],
+              'paired_summary': paired_summary(trials, spec['primary_metric']),
               'critical_violations': sum(t['critical_violations'] for t in trials),
               'coverage': {'missing': missing, 'duplicate_trials': sum(len(v) > 1 for v in by_id.values()), 'unassigned': len(unassigned)},
               'usage': usage_summary(completions, missing),

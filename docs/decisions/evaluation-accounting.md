@@ -28,7 +28,7 @@ as stale; it does not authorize collecting fresh results under that identity.
 For a new collection, use the current `evaluation.py` source hash. Frozen payload
 comparison uses canonical JSON bytes, distinguishing booleans, integers and floats.
 
-- Cases consume the provisional export v1 shape from the out-of-tree dependency below: `case_id`, `language`, `purpose`,
+- Cases consume the in-tree reviewed Store export v1 shape: `case_id`, `language`, `purpose`,
   `inputs`, `outcome_contract`, `counterpart`, `schema_version`, `classification`,
   `artifact_hashes`, `case_digest`. Public inputs are always `development`; a renamed
   public fixture cannot become a holdout. Fixture hashes and the whole export digest
@@ -78,27 +78,22 @@ Usage is `null` or `{"input_tokens": 123, "output_tokens": 45}`. Latency is an
 integer number of milliseconds or `null`. Unknown usage never becomes zero.
 
 
-## Unmerged producer dependency
+## In-tree reviewed producer
 
-The export producer is **out of tree and unmerged** in this PR baseline. It belongs
-to [PR #35](https://github.com/hwanjjang/agent-dotfiles/pull/35) / issue #24,
-not to this consumer. Compatibility is provisional until that prerequisite lands
-and an in-tree producer/consumer regression can replace the hand-built contract
-fixtures. This PR does not satisfy the full issue #26 dependency or execution gate.
+The producer from [PR #35](https://github.com/hwanjjang/agent-dotfiles/pull/35)
+and evaluator from [PR #36](https://github.com/hwanjjang/agent-dotfiles/pull/36)
+are integrated in this checkout. The [Store guide](../../account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
+owns consent, task/feedback lineage, evidence-bound caller triage, exact-digest
+review and detached export. Supply the exported file to `freeze`, never the private
+case preview or triage envelope. Public v1 fields remain unchanged. The
+[integration tests](../../tests/test_improvement_integration.py) exercise the actual
+Store export and evaluator together, including English/Korean cases and boundary
+inputs. No second private state owner or producer copy is introduced.
 
-The separate local compatibility run used producer revision
-[`5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1`](https://github.com/hwanjjang/agent-dotfiles/commit/5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1),
-with these SHA-256 identities:
-
-| Producer source at that revision | SHA-256 |
-| --- | --- |
-| `account/observation/cases.py` | `2dedc5d2abfe7cdf3f6b6c054b534bf24bee0624c72ed46365a46ffa6322d095` |
-| `account/observation/files.py` | `bbab8cbee0131350719851a6f3eb126c33037aa9292eec6acad93ab0ac08ce3e` |
-| `account/observation/store.py` | `6ffb64d5a6c6ec911601790937ec21646ff06032b5cd93117ee7c5962d13b9bd` |
-
-This source-bound local run is not evidence that the producer exists in this
-checkout. Review the linked producer separately; do not infer baseline integration
-from the consumer tests or screenshot manual.
+Historical PR36 compatibility evidence used out-of-tree producer `5adfbf9`;
+its dated manual/capture receipt remains in Git history at `a8fa3b1` and cannot
+establish the current integration. Current same-checkout verification is a separate run. Neither
+integration nor deterministic operator checks establish actual model execution.
 
 The local CLI accepts at most 16 MiB of JSON input and bounds completion count,
 but expanded per-completion checks can produce much larger output and memory use.
@@ -116,9 +111,21 @@ resubmitting an identical failing row cannot inflate that count. Distinct failin
 completions remain counted, and neither can replace a failed result. Submitted usage, including duplicate
 or unassigned submissions, remains in cost accounting. Unknown/missing usage makes
 the total unknown; `known_tokens` is only a subtotal. Dollar cost is unobserved.
-The `pairs` field contains baseline/candidate rows, not a concordant/discordant
-paired tally. That tally remains part of open issue #26. These aggregates are
-diagnostics, not significance or non-inferiority estimates.
+The existing `pairs` field retains one baseline/candidate row per case, variant and
+repetition. `paired_summary` adds `scheduled_pairs`, `overall`, `dimensions` and
+`primary_metric` (the frozen dimension name). Each tally contains `improved`
+(fail to pass), `regressed` (pass to fail), `both_pass`, `both_fail`, and `unresolved`
+(either arm blocked or inconclusive). All five counts sum to `scheduled_pairs`,
+including missing, duplicate, terminal-error, stale and unqualified trials.
+Dimensions use their own verdicts; the primary metric refers to its dimension,
+not the aggregate outcome. A passing outcome does not resolve unknown routing.
+Dimensions with no defined criteria are unmeasured and also appear as unresolved;
+inspect the frozen criteria and trial checks to distinguish them from lost evidence.
+A primary metric with no criteria is accepted but remains entirely unresolved.
+A definite failed criterion takes precedence over another missing criterion in the
+same arm: that arm remains failed, and its pair is classified from that verdict.
+These are descriptive development counts, not statistical significance,
+non-inferiority estimates or evidence of improved model performance.
 
 The grader calibrates its current implementation against known-good, wrong,
 subtle artifact error, fabricated success, missing and injected-data examples.

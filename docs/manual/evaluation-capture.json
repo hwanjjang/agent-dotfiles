@@ -1,33 +1,42 @@
 {
   "captured": "2026-10-18",
-  "baseline": "48b854b",
-  "status": "hash_bound_candidate",
-  "scenario": "evaluation-accounting",
+  "baseline": "41d3e04d760f35bb72f978bc9db3a77ddec7f0e1",
+  "integrated_evaluator_parent": "a8fa3b1413540e03745b061484ff2a617f5d4a47",
+  "status": "hash_bound_integration_candidate",
+  "scenario": "reviewed-export-paired-development",
   "source_sha256": {
-    "scripts/improvement/evaluation.py": "204cbc967e8b0ee71960a99bd4db00bc7fa3552f71a8688fc961614010ca8d7c",
-    "docs/map/catalog.json": "60f2618ec8e2016dd3d2daf3619dd5281bb722cac991d1937141e13955271562",
-    "docs/map/index.html": "15fdf6155acd99b77957480e2056dd0390cbe85384835a4d2136caf833fba0c0",
-    "docs/map/workflow.html": "77607464231441cd4e486d000e4aa761e072adb81dbe76bab1a05165a6abb9cb",
-    "docs/decisions/evaluation-accounting.md": "71191b929650e6b4c00bad46bec960dfb1a26ea271c5022eee354494fcacd831",
-    "docs/verification/verify-repository/features/evaluation-accounting.md": "0e12c63a3ee77c05a8931367f93cc74e568432f6766120317a08a9804f3e0cee",
-    "docs/manual/evaluation.json": "29dc4784dce64755896db2e050074106b57f17807b3e67697903432fbeb66dac",
-    "docs/map/workflow.json": "abc998c2da5e25abca2acbc05c2a6c2475ca29769486d646b40bd8c3c3bd71b3",
-    "docs/verification/verify-repository/scripts/check-workflow.cjs": "f609b1c8b9d43d0ef9844c0074323e1f98d94fcdf8a6360bbd9352dfdbe4b8b5"
+    "account/observation/store.py": "c979532903606e60aeb964d34bae6068e99b08870b2e89bf767acb4629f977cd",
+    "account/observation/cases.py": "2dedc5d2abfe7cdf3f6b6c054b534bf24bee0624c72ed46365a46ffa6322d095",
+    "account/observation/files.py": "594e89ce37d6b33362bad96c2ec7a131d6e9ee9f68eb9232483fc2b915421e53",
+    "scripts/improvement/cases.py": "bbc3ea3a22d104d5d9082368ef5085419dfab673c8af274f083882f93abda551",
+    "scripts/improvement/evaluation.py": "cdc32c9bf15ab15de9a68ecd87d14a7c9c1f12e652e4b59e6b11c299aade4bbc",
+    "docs/map/catalog.json": "371836b0942eb289e094bf058715435e38c8ec94c754387ed5b0af543657d56f",
+    "docs/map/index.html": "6d823900797748f4720a182514e7be1e2f1bf204d608501854749ed4939efef3",
+    "docs/map/workflow.json": "23e15bde8bcfb80f408b0d2ef1ae1de171bc99623d34f999d7d9366c548b23a0",
+    "docs/map/workflow.html": "074d5c96fad644d8d0671e8606bca1ce4871bf6d2d3d78b364693898d9c90966",
+    "docs/decisions/evaluation-accounting.md": "647a92471ea8f29b067d88472b1ac0b949df681a200f5ee92fd43f404f4857ec",
+    "docs/verification/verify-repository/features/evaluation-accounting.md": "5360e69de9b4c98f9390667fae8ff4faba184ca3324a9c30a94449955b861065",
+    "docs/manual/evaluation.json": "fa9f048dbe412111001a2196536a47fa1d51648cb14324eeb3c00fbf8586ddca",
+    "docs/verification/verify-repository/scripts/check-workflow.cjs": "7da16af06eb2dd1e02836400ef3d1afc14f98ef98956051e5e8f063363cccbdc",
+    "scripts/improvement/observations.py": "2fb05a4ac409b01728336e9325243527a02cdf5f65fde018ff55f67f490833ed",
+    "tests/fixtures/improvement/cases/development.json": "3a2c47a3fea11e4974239a6a9d97002384bf11c1e25a3a2646f08265ad032a5d",
+    "tests/test_improvement_integration.py": "14f854680bf31d8ba282581e6f63e00ab42c1cf648fec1ded4cab17e81d12bc5"
   },
   "images": {
-    "evaluation-map.png": "1f35f28151135e6feda04fdca141d3e0577ac49a8795aaea9e94b5676161d2ea",
-    "evaluation-result.png": "d5885ae43a638e984116a34e12325857bad54873efa75f542587b473ae1269ce"
+    "evaluation-map.png": "0724e1a4ea5d3bcd97b9e3da13cde3c7ad134f191add625f69ea0dbe64338c62",
+    "evaluation-result.png": "0e237a43e9b15373ad2aa665392f63bae965a0fbf421b6ba8492ea96412d82ef"
   },
-  "notes": [
-    "Actual catalog screenshot and explicitly browser-rendered actual CLI results; synthetic data only.",
-    "Fresh captures and two rendered PDF pages visually inspected after review corrections.",
-    "Producer compatibility uses an out-of-tree unmerged PR35 snapshot at 5adfbf9a94ae06a3c3d32589eba18d4ce9be1bd1, not an in-tree prerequisite.",
-    "Source/image/PDF hashes bind this candidate; raw synthetic CLI inputs/outputs and helpers remain private reviewer evidence.",
-    "Neither image qualifies native inference, independent holdout custody or promotion."
-  ],
-  "pdf_sha256": "e0012b12685428aa2cc1475bd42bfc8b07f66db564fc85e98a9f536b175e6529",
-  "browser": "Isolated Chrome via Playwright, actual local catalog and explicitly rendered actual synthetic CLI summary",
+  "pdf_sha256": "42d5ea7146d9fdbf235e0009c0036ed23da26d1f4dd5def52489a46697cbf05e",
+  "browser": "Actual local Chrome catalog and explicitly browser-rendered actual disposable CLI summary",
   "pdf_pages": 2,
   "pdf_text_checked": true,
-  "all_rendered_pages_visually_checked": true
+  "all_rendered_pages_visually_checked": true,
+  "notes": [
+    "Four real in-tree reviewed English/Korean development exports; actual30-callCLIjourney supplies synthetic observations.",
+    "16scheduledtrials and8matchedpairs:improved1,regressed1,bothpass1,bothfail1,unresolved4. Unknownusage remainsnull.",
+    "Producer runtime matches reviewed41d3e04; local integration consumes reviewedPR36history without mainmerge.",
+    "Earlier eight-trial/out-of-tree compatibility captures remain historical in Git history, not current integration evidence.",
+    "No native model execution, live transport, independent holdout custody or promotion qualification.",
+    "Review correction refresh: actual current catalog and CLI-summary captures are byte-identical to the previously visually inspected images; editable source and two-page PDF are unchanged. Observation CLI and fixture/integration source hashes are now included. Updated stale-report wording appears below the intentionally cropped dialog region."
+  ]
 }

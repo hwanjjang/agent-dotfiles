@@ -2660,8 +2660,8 @@
       "behavior": [
         "Freeze case and counterpart, both arms, model/tools/environment identities, repetitions and time/token/request budgets.",
         "Calibrate deterministic checks; separate outcome, routing, adherence, exposure and MCP dimensions.",
-        "Keep every missing, failed, duplicate and blocked trial in the denominator; unknown usage never becomes zero.",
-        "Reject stale or forged qualification claims. Diagnostic results cannot authorize promotion or installation.",
+        "Keep every missing, failed, duplicate and blocked trial in the denominator; summarize improved, regressed, concordant and unresolved pairs by dimension. Unknown usage never becomes zero.",
+        "Report stale experiments as blocked; forged qualification claims cannot enable live grading. Diagnostic results cannot authorize promotion or installation.",
         "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion."
       ],
       "outputs": [

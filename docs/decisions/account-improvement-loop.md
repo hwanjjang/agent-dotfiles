@@ -53,7 +53,7 @@ this design, not additional state-machine stages or installed capabilities.
 | 1. Observe | Synthetic store/CLI and opt-in Claude hook delivery exist; Codex collection remains planned. |
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
-| 4. Eval | Frozen comparisons, isolation and qualified grading are designed; the model runner is not implemented. |
+| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. Isolated model execution and independent holdout qualification remain unavailable. |
 | 5. Review | Existing independent review methods apply; the automated promotion gate is planned. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
@@ -148,8 +148,9 @@ locations, including immutable task selections and explicit feedback. The manual
 case CLI prepares caller-supplied synthetic inputs and requires exact-digest review
 before export. Caller-declared categories are checked against selected evidence;
 only instruction cases qualify, and outcome cases require an actual failed tool.
-This is reported attribution, not verified diagnosis. Automated diagnosis and
-evaluation remain unimplemented. The installer includes
+This is reported attribution, not verified diagnosis. The in-tree evaluator consumes
+reviewed public exports for offline development accounting. Automated diagnosis
+and comparative model execution remain unimplemented. The installer includes
 `account/` source but excludes `scripts/` from its bundle; maintenance CLIs run
 from the checkout. A later installer change must explicitly own any new observation entry
 point and opt-in registration, preserving other hooks. Observation data is never
