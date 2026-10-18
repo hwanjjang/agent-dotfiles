@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "vague",
+      "request": "Use sdlc to handle issue.md. Prepare what is needed next; implementation is authorized only for settled requirements.",
+      "files": {"issue.md": "# Better task selection\nUsers cannot find important tasks. Make selection smarter. We have not decided what important means or whether default ordering should change.\n"},
+      "expectations": ["Inspect existing selection behavior before asking discoverable facts", "Ask for the unresolved importance/order decision, without inventing it", "Do not change taskboard.py or claim implementation readiness"]
+    },
+    {
+      "id": "large",
+      "request": "Use sdlc to plan issue.md. Finish with a reviewable implementation plan; do not implement or publish tickets.",
+      "files": {"issue.md": "# Task selection suite\nSettled scope: exact status filtering preserves input order; owner filtering composes with status using AND; JSON CLI accepts an array on stdin and writes the selected array with exit 0; malformed JSON prints an error on stderr and exits 2; document examples for the library and CLI. No persistence, network, sorting, auth, or dependencies. These are the complete requirements.\n"},
+      "expectations": ["Cover every requirement including library/CLI connecting work and error handling", "Separate executable tasks and coherent PR boundaries with dependencies and verification", "Do not implement or publish tickets"]
+    },
+    {
+      "id": "blocked",
+      "request": "Use sdlc to handle issue.md. You may implement locally when prerequisites are ready.",
+      "files": {"issue.md": "# Export service status filtering\nFilter by the export service's canonical status IDs and reject unsupported IDs. Dependency EXPORT-7 owns that vocabulary. See dependency.md. No provisional vocabulary or fallback is authorized.\n", "dependency.md": "EXPORT-7 is open. Canonical status IDs and the versioned schema are not published. The taskboard currently stores free-form strings; those are not the service vocabulary.\n"},
+      "expectations": ["Identify the missing EXPORT-7 schema as an objective blocker", "Do not infer canonical IDs from local data or implement a substitute", "Record a useful next action and the blocked scope"]
+    },
+    {
+      "id": "ready",
+      "settled": true,
+      "request": "Use sdlc to implement issue.md locally and verify it. Existing spec and plan are approved. Stop at local results.",
+      "expectations": ["Reuse docs/spec.md and docs/plan.md without a new interview", "Implement only exact status filtering", "Run actual tests and a separate functional check; report observed results"]
+    },
+    {
+      "id": "review",
+      "settled": true,
+      "implementation": "wrong",
+      "request": "Use sdlc to review the local PR described by pr.md. Review only; do not modify files or implement fixes. Return findings inline.",
+      "expectations": ["Inspect requirements and actual base-to-head diff", "Find that filtering reads state instead of status", "Leave all project files unchanged and do not claim a published review"]
+    },
+    {
+      "id": "correction",
+      "settled": true,
+      "implementation": "wrong",
+      "request": "Use sdlc to address R1 in pr.md locally. Fix and verify the finding, then return the candidate for review. No publishing or merging.",
+      "expectations": ["Correct the status-key defect without expanding scope", "Execute affected checks and preserve finding R1 in the review handoff", "Do not mark independent review or remote publication complete"]
+    },
+    {
+      "id": "resume",
+      "settled": true,
+      "implementation": "correct",
+      "request": "Use sdlc to continue this task from handoff.md. Complete the remaining authorized local work.",
+      "files": {"handoff.md": "Status filtering is implemented. docs/spec.md and docs/plan.md remain authoritative. Verification has not run. Preserve settled requirements and existing code where correct. Next: verify the actual candidate and report local completion. No remote writes.\n"},
+      "expectations": ["Compare the handoff with code, spec and current changes", "Run missing verification without recreating implementation or re-interview", "Distinguish current verification from the unverified handoff"]
+    },
+    {
+      "id": "done",
+      "settled": true,
+      "implementation": "correct",
+      "request": "Use sdlc to handle issue.md. Check what remains and finish the local task.",
+      "expectations": ["Recognize the implementation already satisfies the request after verification", "Do not duplicate implementation or invent features", "Do not claim issue closure or remote synchronization"]
+    },
+    {
+      "id": "standalone",
+      "request": "Explain what select_tasks in taskboard.py currently does. Do not change files.",
+      "expectations": ["Explain actual behavior", "Do not initialize an SDLC lifecycle, create plans or implement"]
+    }
+  ]
+}

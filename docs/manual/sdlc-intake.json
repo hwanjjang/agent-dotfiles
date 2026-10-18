@@ -1,0 +1,20 @@
+{
+  "title": "SDLC intake: choose the next useful action",
+  "scenario": "Use an installed SDLC skill with a request, issue or PR and an explicit endpoint. These screenshots show exact excerpts from synthetic native Sonnet 5.5 runs on 2026-10-18; they are browser-rendered transcript excerpts, not terminal screenshots. Full verification and limits are in docs/verification/sdlc-intake.md.",
+  "steps": [
+    {
+      "title": "Clarify only the decisions that block progress",
+      "instruction": "Ask: Use sdlc to handle this issue; prepare what is needed next. Provide the issue or URL and the desired endpoint. The agent inspects available facts and identifies consequential unanswered decisions before dependent implementation.",
+      "screenshot": "sdlc-intake-vague.png",
+      "caption": "Actual vague-request response excerpt. No implementation was made in this run.",
+      "expected": "You receive the next question or bounded investigation with evidence, rather than invented product behavior."
+    },
+    {
+      "title": "Continue from adequate work and inspect evidence",
+      "instruction": "For a settled spec and plan, ask sdlc to implement locally or finish at your chosen PR endpoint. Check actual changed files and executed verification. Review-only requests keep their endpoint; resumption reuses valid work.",
+      "screenshot": "sdlc-intake-ready.png",
+      "caption": "Actual ready-task response excerpt from a fresh-context repeat. The original run had a scratch-path violation; that failure remains in the verification record.",
+      "expected": "Valid artifacts are reused and real checks support the result. Local fixture results do not establish live tracker synchronization or universal model reliability."
+    }
+  ]
+}

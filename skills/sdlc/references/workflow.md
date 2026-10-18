@@ -16,6 +16,10 @@ Record exclusions in the artifact index with a reason. Independent assessment is
 
 ## Skill methods
 
+Use [intake and readiness](intake.md) to select the next applicable work from
+current evidence, including on consequential changes and resumption. The mode
+paths above describe dependencies, not a requirement to repeat adequate stages.
+
 Use [stage-to-skill routing](skill-routing.md) for preparation, investigation,
 design, task planning, implementation, verification and correction. This is the
 single routing table; skill methods do not create competing stage records.
@@ -75,7 +79,7 @@ The [stage templates](../assets/stage-deliverables.md) define minimum content. R
 
 | Stable stage ID | Deliverable and next consumer |
 | --- | --- |
-| triage | `R/triage.md`: source, mode, repository/base, existing changes, facts, limits, applicability → intent. |
+| triage | `R/triage.md`: source, endpoint, current evidence, reusable work, readiness gaps, next method and stopping condition → selected applicable work. |
 | intent | Canonical intent: problem, outcome, scope/exclusions, constraints, observable AC IDs, source/authority, risks/questions, revision/gate → investigation/spec and final assessment. |
 | investigation | `R/investigation.md`: question, facts versus hypotheses, code/source locations, checks/results, unknowns, implications → spec or review-only completion. |
 | spec | Canonical spec produced with [to-spec](../../to-spec/SKILL.md), linked to the consumed intent/investigation revisions; assess readiness and unresolved decisions → design/plan/review. |

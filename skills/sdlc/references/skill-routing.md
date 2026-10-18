@@ -6,6 +6,10 @@ method. It does not introduce additional stages or require every skill on every
 task. Preserve the existing non-PR scope rule: focused skills can run directly
 without initializing the SDLC state machine.
 
+For SDLC requests, apply [intake and readiness](intake.md) before this table to
+identify missing prerequisites and reusable work. Then load and execute the
+selected method; the table alone is not evidence that its procedure ran.
+
 Resolve skills from the host catalog or this checkout's sibling directories. Read
 the actual SKILL.md before use and record the resolved source with the stage's
 inputs. Source files can be read directly when native invocation is unavailable;
