@@ -177,7 +177,11 @@ these commands do not enable comparative evaluation or account activation. A
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
 
 The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
-links the remaining result-collection, grading, pilot, custody and delivery work.
+links the remaining result-collection, grading, pilot, same-host held-out evaluation and delivery work.
+The [held-out protocol](docs/decisions/account-improvement-loop.md#same-host-held-out-evaluation)
+uses fresh contexts on the current host/account; additional hosts, accounts and
+external custodians are not required. It is planned, not implemented; account
+application remains deferred pending maintainer direction.
 It distinguishes a completed development experiment from an eligible candidate:
 no improvement is a valid result, and neither fixture tests nor a recommendation
 authorize account activation.

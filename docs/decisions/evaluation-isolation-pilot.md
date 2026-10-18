@@ -67,8 +67,9 @@ Receipts bind the runner/probe, actual profile, executable and OS identity by di
 live execution. Digests provide consistency, not signatures, custody or independent
 review. Runtime dependency-tree freezing, whole-client native-tool checks, model
 broker authentication/budgets and complete descendant cleanup belong to the next
-qualification slice. An unrestricted updater still cannot serve as an independent
-holdout custodian.
+qualification slice. These probes do not establish same-account secrecy. The planned
+[same-host held-out protocol](account-improvement-loop.md#same-host-held-out-evaluation)
+uses context separation and exposure tracking without an external custodian.
 
 ## Evidence and source limits
 

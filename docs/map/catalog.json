@@ -2692,8 +2692,8 @@
         "Apply the frozen primary metric, per-case regression margin and explicit token/time rule; candidate critical failures reject despite aggregate gain.",
         "Expose critical counts by arm: baseline defects remain diagnostic when the candidate fixes them; only candidate critical violations reject.",
         "Unknown usage and incomplete trials remain inconclusive. Currency is required only when the frozen rule explicitly declares it.",
-        "A positive synthetic arithmetic result does not establish live evidence or independent holdout custody; promotion_eligible, merge_authorized and install_authorized stay false.",
-        "A bounded comparison may correctly find no improvement; independent unseen custody remains required for operational recommendation. Do not repeat experiments until a candidate wins."
+        "A positive synthetic arithmetic result does not establish actual task or same-host held-out evidence; current promotion_eligible, merge_authorized and install_authorized stay false.",
+        "A bounded comparison may correctly find no improvement. Planned same-host held-out checks use fresh contexts and exposure tracking without external custodians or new accounts. Do not repeat experiments until a candidate wins; account application remains deferred."
       ],
       "outputs": [
         "Reject or inconclusive recommendation with fixed reasons and canonical source/evidence references."

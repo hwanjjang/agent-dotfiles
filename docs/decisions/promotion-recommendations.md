@@ -2,7 +2,7 @@
 
 Status: pure diagnostic rule calculation and fail-closed review recommendation
 implemented. Operational eligibility remains unavailable until qualified live
-comparison and independent holdout evidence exist. This does not complete the
+comparison and same-host held-out evidence are integrated and verified. This does not complete the
 live eligible-report acceptance criterion. The
 [account improvement design](account-improvement-loop.md#source-promotion-and-account-delivery)
 remains authoritative for source review, merge and account delivery.
@@ -30,7 +30,7 @@ verifier is still required before real eligibility can be supported.
 The in-tree evaluation contract consumes the reviewed Store export from PR #35,
 integrated by PR #40. This pure recommendation slice still consumes supplied
 development evidence only. Producer integration does not establish authenticated
-live evidence, independent holdout custody or operational eligibility; see the
+live evidence, same-host held-out evaluation or operational eligibility; see the
 linked contract for producer validation and compatibility limits.
 
 ## CLI refusal contract
@@ -92,14 +92,17 @@ benefit requirements from another rule.
 
 The [implementation handoff](account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
 links the remaining owners. #28 will consume trusted actual reports from #26/#27,
-verify the committed source diff and require #56's independent custody for
-operational recommendation. That integration is not implemented by the current CLI.
+verify the committed source diff and consume #56's frozen case/context/exposure
+evidence under the [same-host protocol](account-improvement-loop.md#same-host-held-out-evaluation).
+No external custodian, additional host or OS account is required. That integration
+is not implemented by the current CLI; actual account application remains deferred.
 
 A correct rejection or inconclusive actual report does not require repeated
 experiments until a candidate wins. Positive conformance fixtures test the engine;
 they cannot establish an accepted improvement. Disposable installer/rollback
 mechanics belong to #57, while #29 retains actual accepted-candidate delivery.
-Unavailable custody or an ineligible candidate must keep operational delivery blocked.
+Missing required held-out evidence or an ineligible candidate prevents a positive
+recommendation. A recommendation never authorizes installation.
 
 ## Recommendation and remaining boundary
 
@@ -110,12 +113,13 @@ the gate's source digest and its own canonical recommendation digest. Treat thes
 as change-detection references, not signatures or proof of independent authority.
 
 Current reports contain only public development cases, unverified synthetic
-observations and no independent holdout custody. Therefore operational
+observations and no implemented same-host held-out evidence admission. Therefore
 `promotion_eligible`, `merge_authorized`, and `install_authorized` are always false.
-The already accepted design requires unseen holdout qualification for actual
-promotion; this pilot does not create a new custodian or pretend another folder
-satisfies it. A self-described OS receipt, a mock pilot and a rehashed boolean
-cannot establish trusted live provenance. No input flag disables this boundary.
+The revised design retains held-out evaluation and replaces external custody with
+context separation and exposure accounting. Current custody-related blocker strings
+remain implementation facts until the verifier, consumers and tests are updated;
+changing this design does not make an existing synthetic report eligible.
+A mock receipt or rehashed boolean cannot establish actual task provenance.
 
 Keep original evidence when regrading. A changed evaluator requires a new frozen
 identity and a separate report linked to its predecessor. This program reads

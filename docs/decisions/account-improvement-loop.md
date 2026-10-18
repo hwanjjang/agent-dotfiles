@@ -59,7 +59,7 @@ this design, not additional state-machine stages or installed capabilities.
 | 1. Observe | Synthetic store/CLI and opt-in Claude/Codex hook delivery exist; consent, native trust and source-bound platform limits remain explicit. |
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
-| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner has selected-profile qualification; actual task-result admission, comparisons and independent holdout qualification remain pending. |
+| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner has selected-profile qualification; actual task-result admission, comparisons and same-host held-out evaluation remain pending. |
 | 5. Review | Existing independent review methods and diagnostic source-review recommendations apply; operational eligibility and automatic promotion remain unavailable. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
@@ -147,7 +147,7 @@ content; it owns normalization, the final epoch check and durable persistence.
 | Observation store | `account/observation/` | Immutable records/manifests, task links, feedback, bounded-import cursors, retention and derived index |
 | Improvement workflow | `scripts/improvement/` | Manual evidence selection, finding classification, synthetic case preparation and candidate provenance |
 | Evaluation runner | `scripts/improvement/` | Frozen experiment plan, isolated trials, artifacts, budgets and comparison report |
-| Evaluator owner | Maintained synthetic checks plus separately controlled holdouts | Grading contracts, qualification and promotion recommendation; the updater cannot write these during an experiment |
+| Evaluator owner | Maintained checks plus same-host held-out cases | Grading contracts, qualification and promotion recommendation; the updater cannot write these during an experiment |
 | Existing installer | `scripts/setup_account.py`, `scripts/account_storage.py` | Runtime delivery, selected hook registration, source revision, transaction recovery and rollback |
 
 The observation library and synthetic maintenance CLI occupy the first two
@@ -364,7 +364,7 @@ links identify the next consumers; they do not describe implemented commands.
 | Protected development grading inputs | [#55](https://github.com/hwanjjang/agent-dotfiles/issues/55), using the qualified execution boundary |
 | Actual evidence admission and all-trial accounting | [#26](https://github.com/hwanjjang/agent-dotfiles/issues/26), consuming #54 and #55 |
 | Frozen EN/KO development comparison | [#27](https://github.com/hwanjjang/agent-dotfiles/issues/27), consuming #26 |
-| Independently unseen custody and recommendation | [#56](https://github.com/hwanjjang/agent-dotfiles/issues/56) supplies custody to [#28](https://github.com/hwanjjang/agent-dotfiles/issues/28) |
+| Same-host held-out evaluation and recommendation | [#56](https://github.com/hwanjjang/agent-dotfiles/issues/56) supplies frozen case/exposure evidence to [#28](https://github.com/hwanjjang/agent-dotfiles/issues/28) |
 | Disposable delivery mechanics and accepted-source proof | [#57](https://github.com/hwanjjang/agent-dotfiles/issues/57) verifies mechanics; [#29](https://github.com/hwanjjang/agent-dotfiles/issues/29) requires an actually eligible, reviewed and accepted committed candidate |
 
 The runner currently retains typed execution/usage/cleanup facts, not general task
@@ -379,11 +379,12 @@ required observations must block the trial. Backend weights or silent provider s
 are not attested by that interface and remain unknown. The exact observable identity
 requirement belongs to #27; selecting a model does not prove server internals.
 
-Protected development grading inputs must be inaccessible to trial/updater processes
-under the tested boundary. Public cases still count as exposed development data.
-Independent unseen custody adds a separately controlled evaluator and exposure policy
-for operational recommendation; it does not gate the development pilot. Neither a
-new directory nor a self-described custody flag establishes that separation.
+Protect grading inputs from task execution using the existing qualified boundary,
+and freeze grader identities so candidate changes cannot silently change scoring.
+Public cases remain exposed development data. The same-host held-out protocol below
+adds context separation and exposure tracking; it requires no external custodian,
+additional host, OS account or newly provisioned environment. It does not claim
+hostile same-account access prevention.
 
 A complete, valid comparison may find no benefit. Keep that result and stop at the
 predeclared bounds; never retry until a preferred candidate wins. Recommendation
@@ -391,6 +392,74 @@ engine conformance and disposable installer mechanics can be verified independen
 of benefit. Synthetic conformance fixtures cannot authorize an actual candidate.
 Without an eligible accepted candidate, #29 and parent #17 retain their unmet delivery
 criteria; no account activation or automatic candidate search follows.
+
+### Same-host held-out evaluation
+
+Design decision, 2026-10-18: retain problems not supplied to the candidate author,
+but replace the earlier independently controlled custodian requirement. This is a
+planned protocol, not a claim that the current synthetic-only evaluator implements it.
+Use the current host and account; the same model may serve separate fresh sessions.
+
+1. Prepare a small held-out pack in a fresh session from requirements and behavior
+   categories, without the candidate patch or author transcript. Freeze task inputs,
+   expected outcomes, grading rules and the scheduled comparison before running it.
+   Include intended improvements, normal behavior and adjacent negative cases.
+2. Keep pack contents out of the candidate author's workspace, prompt, conversation,
+   shared memory and planning/session recovery inputs. Use ignored local storage;
+   do not commit the cases, keys or raw evidence. Record the author's supplied input
+   inventory and known exposure. A different directory is not a security boundary.
+3. Freeze baseline and candidate revisions. Run each arm in fresh task context with
+   only its assigned task input, not answer keys, other trials or author history.
+   Evaluate the frozen candidate without editing it. Reuse the existing qualified
+   execution boundary and match client/model settings, budgets and declared repeats.
+4. Collect actual outcomes and grade with the existing deterministic evaluator.
+   Check frozen identities before and after execution. Preserve every scheduled
+   trial, failure, missing result and known usage; a model's success claim is not
+   sufficient evidence. Missing or changed evidence cannot produce a pass.
+5. Release aggregate feedback only after the scheduled comparison. Detailed case or
+   answer exposure reclassifies those cases as development/regression material.
+   Once any held-out feedback informs a new candidate, use fresh cases for another
+   unseen-evaluation claim. Record unknown exposure as unknown; do not certify it
+   from a boolean or hash. No-benefit is a valid conclusion, not a reason to retry
+   until a candidate wins or to change thresholds after seeing the result.
+
+The claimed scope is **not supplied to the candidate-author context during this
+experiment**. It is not organizational independence, complete same-account access
+prevention, or proof that the underlying model never saw similar public material.
+Existing execution and credential protections remain in force. Evaluation produces
+a recommendation; it grants no merge, installation or self-deployment authority.
+Actual account application remains deferred by the maintainer.
+
+### Recommended implementation and execution order
+
+This sequence is proposed for maintainer confirmation; this documentation update
+starts no implementation, model trial, infrastructure provisioning or installation.
+
+1. Reconcile the documentation and dispatch PR #48 with current main.
+2. Implement #54 bounded observations and #55 grading integrity in parallel once
+   their shared result contract is fixed. Prepare #56's local context/exposure
+   protocol and #57's disposable installer mechanics alongside them.
+3. Integrate #54/#55 in #26. Use credential-free known-good/bad/missing-result
+   scenarios before renewing only affected native execution qualification.
+4. Freeze the small #27 development comparison. Prepare and freeze #56's actual
+   held-out cases without exposing them to the candidate author, before scoring;
+   freeze the candidate before either comparison can inform another modification.
+5. Execute the declared #27 development comparison and #56 held-out schedule with
+   fresh per-arm state. Retain all results and stop at the frozen bounds.
+6. Complete #28 recommendation from actual reports and exposure evidence. Report
+   recommend/reject/inconclusive without changing account settings. Complete #57
+   mechanics after its #55 boundary dependency is verified.
+7. Leave #29 actual accepted-candidate delivery and account activation deferred.
+   Resume only with an eligible reviewed candidate and explicit maintainer direction.
+
+The same-host choice is a local scope decision. [Anthropic's evaluation guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
+(2026-01-09; checked 2026-10-18) supports small outcome-based suites, deterministic
+checks and balanced positive/negative cases, not a same-account secrecy guarantee.
+A [developer discussion](https://www.reddit.com/r/AI_Agents/comments/1wdox9j/how_to_write_evals_for_your_agents_make_your/)
+(checked 2026-10-18; displayed as one month old) reports a failing assertion being
+skipped and recommends fresh-session evidence checks. The author and relevant
+commenter promote related tools; corroboration is limited and establishes neither
+community consensus nor security qualification for this local protocol.
 
 ### Frozen comparison
 
@@ -432,11 +501,9 @@ Model judges receive approved outputs and criteria only, with no filesystem or
 tool access to hidden answer files. Only sealed deterministic grading code may
 read those files in the evaluator-owned environment.
 
-Development cases and graders may be reviewed in public source. Held-out cases
-and answer keys remain outside updater and executor mounts; the executor receives
-only its current task inputs. A separate custodian releases a bounded summary.
-Repeated tuning against that summary consumes holdout independence, requiring
-rotation. Moving a public fixture outside the checkout does not make it unseen.
+Development cases and graders may be reviewed in public source. Held-out evaluation
+follows the [same-host protocol](#same-host-held-out-evaluation); public or previously
+revealed fixtures cannot be reclassified as unseen by moving their files.
 
 Reports retain all trials with pass/fail/blocked/inconclusive distinctions,
 paired per-case counts, critical violations, coverage, latency and known token
@@ -549,4 +616,4 @@ improved task performance.
 
 ### Offline accounting implementation
 
-The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner has selected-profile execution qualification; task-result admission, authenticated evaluator evidence and independent holdout custody remain incomplete. Diagnostic reports cannot authorize promotion.
+The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner has selected-profile execution qualification; task-result admission, authenticated evaluator evidence and same-host held-out evaluation remain incomplete. Diagnostic reports cannot authorize promotion.
