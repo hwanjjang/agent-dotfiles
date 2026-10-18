@@ -5,7 +5,9 @@ Sonnet 5.5 runs exercised that path and reused adequate artifacts. This is a
 bounded qualification of intake, not a claim that the full SDLC always succeeds.
 The [recipe](verify-repository/features/sdlc-intake.md),
 [fixtures](../../tests/fixtures/sdlc-intake/cases.json) and
-[run identities](sdlc-intake-runs.json) make the observations reproducible.
+[run identities](sdlc-intake-runs.json) make the selected observations traceable. The public recipe reproduces the nine
+seeded scenarios; connected setup and complete historical baseline/harness
+snapshots remain private, so those runs are not fully reproducible from this index.
 Raw traces, absolute paths and session data remain private.
 
 ## Comparison and actual actions
