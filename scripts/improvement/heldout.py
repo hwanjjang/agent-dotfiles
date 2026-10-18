@@ -21,6 +21,10 @@ class Unavailable(ValueError):
     pass
 
 
+class Exposed(ValueError):
+    pass
+
+
 def _closed(value, fields):
     require(ev.keys(value, fields), 'heldout_schema')
 
@@ -55,11 +59,13 @@ def _anchor(ref, payload):
     _closed(ref,'repository issue_number comment_id created_at body_sha256')
     require(isinstance(ref['repository'],str) and re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',ref['repository'])
             and ev.integer(ref['issue_number'],1) and ev.integer(ref['comment_id'],1), 'heldout_anchor')
-    created = _stamp(ref['created_at']); value = _comment(ref); body = ev.encoded(payload).decode()
-    require(isinstance(value,dict) and type(value.get('id')) is int and value['id'] == ref['comment_id']
-        and value['issue_url'] == f"https://api.github.com/repos/{ref['repository']}/issues/{ref['issue_number']}"
-        and value['created_at'] == value['updated_at'] == created and value['body'] == body
-        and hashlib.sha256(body.encode()).hexdigest() == ref['body_sha256'], 'heldout_anchor')
+    created = _stamp(ref['created_at']); body = ev.encoded(payload).decode()
+    require(hashlib.sha256(body.encode()).hexdigest() == ref['body_sha256'], 'heldout_anchor')
+    value = _comment(ref)
+    if not (isinstance(value,dict) and type(value.get('id')) is int and value['id'] == ref['comment_id']
+        and value.get('issue_url') == f"https://api.github.com/repos/{ref['repository']}/issues/{ref['issue_number']}"
+        and value.get('created_at') == value.get('updated_at') == created and value.get('body') == body):
+        raise Unavailable('heldout_anchor_changed')
     return {k:value[k] for k in ('id','created_at','updated_at','body','issue_url')}
 
 
@@ -92,12 +98,16 @@ def _prepare(path, source=None):
         require(type(value['schema_version']) is int and value['schema_version']==1 and value['kind']=='candidate_author_inputs_v1'
             and value['context_id']==ref['context_id'] and ev.text(ref['context_id'],256)
             and value['candidate_commit']==source['candidate_commit']
-            and not p.absolute(m['content']['path'],'pack_path').is_relative_to(p.absolute(value['workspace'],'workspace'))
+            and not p.absolute(m['content']['path'],'pack_path').resolve(strict=True).is_relative_to(p.absolute(value['workspace'],'workspace').resolve(strict=True))
             and isinstance(value['materials'],list) and len(value['materials'])<=64, 'heldout_author')
         for material in value['materials']:
             _closed(material,'kind path sha256')
-            require(material['kind'] in ('requirements','development','source') and material['path']!=m['content']['path']
-                and guard.read(Path(material['path']),p.MAX_FILE_BYTES,private=True,retain=False)[1]==material['sha256'], 'heldout_author')
+            material_path = p.absolute(material['path'],'heldout_author')
+            require(material['kind'] in ('requirements','development','source')
+                and guard.read(material_path,p.MAX_FILE_BYTES,private=True,retain=False)[1]==material['sha256'], 'heldout_author')
+            if (material_path.resolve(strict=True)==Path(m['content']['path']).resolve(strict=True)
+                    or material['sha256']==m['content']['sha256']):
+                raise Exposed('heldout_exposed')
         authors.append(ref['context_id']);author_hashes.append(ref['sha256'])
     require(len(authors)==len(set(authors)), 'heldout_authors')
     ref = m['contexts']['preparation'];_closed(ref,'context_id input_evidence_path sha256')
@@ -135,11 +145,12 @@ def _prepare(path, source=None):
         and created['pack_id']==m['pack_id'] and created['pack_digest']==ev.digest(pack), 'heldout_metadata_only')
     candidate_payload = dict(kind='committed_candidate_freeze_v1',source=source)
     candidate = _anchor(chron['candidate_freeze_anchor'],candidate_payload)
-    require(candidate['created_at'] < _stamp(call['observed_at']) <= _stamp(created['observed_at']) <= _stamp(returned['observed_at']), 'heldout_chronology')
+    require(_stamp(call['observed_at']) <= _stamp(created['observed_at']) <= _stamp(returned['observed_at']), 'heldout_chronology')
+    if not candidate['created_at'] < call['observed_at']:raise Unavailable('heldout_anchor_order')
     payload = dict(kind='same_host_heldout_freeze_v1',**expected,experiment_digest=experiment['experiment_digest'],context_digest=ctx.digest,
         source=source,dispatch_receipt_digest=d['receipt_digest'],author_receipt_digests=author_hashes)
     anchor = _anchor(m['freeze'],payload)
-    require(returned['observed_at'] <= anchor['created_at'], 'heldout_chronology')
+    if not returned['observed_at'] <= anchor['created_at']:raise Unavailable('heldout_anchor_order')
     refs = x['attempts'];require(isinstance(refs,list) and len(refs)==len(experiment['trials'])<=64, 'heldout_tasks')
     for trial,ref in zip(experiment['trials'],refs):
         _closed(ref,'trial_id attempt_id attempt_path')
@@ -169,6 +180,13 @@ def assess(path, development, development_report, source):
         require(same(ctx.spec['identities'],development.context.spec['identities']) and same(ctx.spec['runtime'],development.context.spec['runtime'])
             and all(same(ctx.spec[k],development.context.spec[k]) for k in ('primary_metric','regression_margin','promotion_rule'))
             and ctx.data.get('execution_root')!=development.context.data.get('execution_root'), 'heldout_comparison_binding')
+        require('evaluation_scope' not in development.context.spec
+            and development_report.get('classification')=='development'
+            and development_report.get('evidence_kind')=='native_artifact_development_comparison', 'development_scope_required')
+        # Stable category IDs may repeat; an already-visible task may not.
+        def contents(spec):
+            return {ev.digest(part['inputs']) for case in spec['cases'] for part in (case,case['counterpart'])}
+        require(not contents(ctx.spec).intersection(contents(development.context.spec)), 'heldout_cases_overlap')
         batch = ad.read_attempts(ctx,m['experiment']['attempts'])
         report = ev.compare(ctx.experiment,[],ctx.spec,native=batch)
         require(same(_read(guard,m['experiment']['report_path']),report), 'heldout_report')
@@ -182,18 +200,19 @@ def assess(path, development, development_report, source):
         for event in exposure['events']:
             _closed(event,'context_id material phase')
             require(ev.text(event['context_id'],256) and event['material'] in ('pack','case','answer','pack_read','aggregate_feedback','candidate_edit','unknown_delivery')
-                and event['phase'] in ('during_comparison','after_comparison'), 'heldout_exposure')
+                and event['phase'] in ('before_comparison','during_comparison','after_comparison'), 'heldout_exposure')
             if event['material']=='candidate_edit': raise ev.Invalid('heldout_candidate_edited')
             if event['context_id'] in authors:
                 result['future_classification']='development_regression'
-                if event['phase']=='during_comparison':
+                if event['phase'] in ('before_comparison','during_comparison'):
                     unknown |= event['material']=='unknown_delivery';exposed |= event['material']!='unknown_delivery'
         metrics = gate.evaluate_rule(ctx.experiment,report);metrics['scope']='source_guarded_same_host_heldout_rule_diagnostic'
         allowed = {'diagnostic_only','same_host_heldout_unimplemented','same_host_heldout_unverified'}
-        blockers = sorted(set(report['blockers']+development_report['blockers'])-allowed)
+        blockers = sorted((set(report['blockers'])-allowed) | (set(development_report['blockers'])-{'diagnostic_only','same_host_heldout_unimplemented'}))
         require(guard.check() and ctx.guard.check() and batch.guard.check(), 'heldout_changed')
-        for ref,payload,value in anchors:require(same(_anchor(ref,payload),value), 'heldout_anchor_changed')
-        require(guard.check(), 'heldout_changed')
+        for ref,payload,value in anchors:
+            if not same(_anchor(ref,payload),value):raise Unavailable('heldout_anchor_changed')
+        require(guard.check() and ctx.guard.check() and batch.guard.check(), 'heldout_changed')
         if not batch.valid(ctx.experiment,ctx.spec) or not development.valid(development.context.experiment,development.context.spec):
             blockers.append('heldout_native_unavailable')
         if not batch.observed_models_complete() or not development.observed_models_complete():blockers.append('heldout_model_unavailable')
@@ -203,8 +222,16 @@ def assess(path, development, development_report, source):
         elif unknown:result.update(status='inconclusive',reasons=['heldout_delivery_unknown'])
         elif blockers:result['status']='inconclusive'
         else:result.update(status='verified',claim='not_supplied_to_recorded_author_context_during_comparison')
-    except (OSError,Unavailable):pass
-    except (ValueError,TypeError,KeyError,RecursionError):result.update(status='invalid',reasons=['invalid_heldout_evidence'])
+        require(guard.check() and ctx.guard.check() and batch.guard.check(), 'heldout_changed')
+    except Exposed:
+        result.update(status='exposed',reasons=['heldout_exposed'],future_classification='development_regression')
+    except Unavailable as error:
+        reason = str(error) if str(error) in ('anchor_unavailable','heldout_anchor_changed','heldout_anchor_order') else 'heldout_unavailable'
+        result.update(status='inconclusive',reasons=[reason])
+    except OSError:pass
+    except (ValueError,TypeError,KeyError,RecursionError) as error:
+        reason = str(error) if str(error) in ('heldout_cases_overlap','development_scope_required') else 'invalid_heldout_evidence'
+        result.update(status='invalid',reasons=[reason],claim=None)
     finally:
         if batch is not None:batch.close()
     return result
@@ -224,7 +251,8 @@ def run_next(record_path, plan_path, auth_source):
             ad.nt.private_write(path,ev.encoded(expected))
         require(same(_read(guard,path),expected) and lease.check() and guard.check(), 'heldout_preflight')
     finally:lease.close()
-    for ref,payload,value in anchors:require(same(_anchor(ref,payload),value), 'heldout_anchor_changed')
+    for ref,payload,value in anchors:
+        if not same(_anchor(ref,payload),value):raise Unavailable('heldout_anchor_changed')
     require(guard.check() and ctx.guard.check(), 'heldout_changed')
     return reservation.run_next(ctx.data['execution_root'],ctx.experiment,ctx.spec,m['experiment']['context_path'],plan_path,auth_source)
 
@@ -235,7 +263,7 @@ def main():
     args=parser.parse_args()
     try:
         result=run_next(args.record,args.plan,Path(args.auth_source));print(ev.encoded(result).decode(),end='');return 0
-    except (OSError,ValueError,KeyError,TypeError,RecursionError):
+    except (OSError,ValueError,KeyError,TypeError,RecursionError,subprocess.SubprocessError):
         print('{"status":"refused","reason":"heldout_preflight_unavailable"}');return 2
 
 

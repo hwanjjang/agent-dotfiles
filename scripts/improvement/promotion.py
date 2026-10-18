@@ -277,12 +277,17 @@ def verify_source(context, *, repository, baseline_commit, candidate_commit, com
         source_diff_digest=ev.digest(changes),changes=changes)
 
 
+def _source_unavailable(error):
+    return (isinstance(error, subprocess.TimeoutExpired) or
+            isinstance(error, ValueError) and str(error) in ('source_read_limit', 'git_unavailable'))
+
+
 def recommend_native(*, experiment, current_spec, context_path, attempts, report_path,
                      repository, baseline_commit, candidate_commit, component_roots, heldout_record_path=None):
     """Recompute a sealed native report and verify committed source; never deploy."""
     ad = _admission(); guard = ad.Guard(); batch = None
     outcome, reasons, metrics, review, gate_digest = 'inconclusive', [], None, {}, None
-    assessment = None
+    assessment = None; source = None; source_remaining = 0
     try:
         gate_digest = guard.read(Path(__file__).resolve(), retain=False)[1]
         supplied = guard.json(report_path, private=True)
@@ -290,17 +295,19 @@ def recommend_native(*, experiment, current_spec, context_path, attempts, report
         batch = ad.read_attempts(ctx, attempts)
         report = ev.compare(experiment, [], current_spec, native=batch)
         frozen_inputs = ev.digest([experiment, current_spec]); deadline = time.monotonic() + 12
-        if not ad.same(supplied, report):
+        if ('evaluation_scope' in current_spec or report.get('classification')!='development'
+                or report.get('evidence_kind')!='native_artifact_development_comparison'):
+            outcome, reasons = 'reject', ['development_scope_required']
+        elif not ad.same(supplied, report):
             outcome, reasons = 'reject', ['report_evidence_mismatch']
         else:
             try:
                 source = verify_source(ctx, repository=repository, baseline_commit=baseline_commit,
                     candidate_commit=candidate_commit, component_roots=component_roots, _deadline=deadline)
-            except (OSError, ValueError, KeyError, TypeError, UnicodeError, subprocess.SubprocessError):
+            except (OSError, ValueError, KeyError, TypeError, UnicodeError, subprocess.SubprocessError) as error:
                 source = None
-            if source is None:
-                outcome, reasons = 'reject', ['source_verification_failed']
-            else:
+                outcome, reasons = ('inconclusive', ['source_unavailable']) if _source_unavailable(error) else ('reject', ['source_verification_failed'])
+            if source is not None:
                 review = dict(source=source, report_digest=report['report_digest'],
                     experiment_digest=experiment['experiment_digest'], admission_context_digest=ctx.digest,
                     baseline=ctx.spec['identities']['baseline'], candidate=ctx.spec['identities']['candidate'])
@@ -308,9 +315,7 @@ def recommend_native(*, experiment, current_spec, context_path, attempts, report
                 metrics['scope'] = 'source_guarded_native_rule_diagnostic'
                 reasons = metrics['reasons'] + report['blockers'] + ['same_host_heldout_unverified']
                 if metrics['verdict'] == 'reject': outcome = 'reject'
-                again = verify_source(ctx, repository=repository, baseline_commit=baseline_commit,
-                    candidate_commit=candidate_commit, component_roots=component_roots, _deadline=deadline)
-                ev.require(ad.same(source, again), 'source_changed')
+                source_remaining = deadline - time.monotonic()
         if heldout_record_path is not None and metrics is not None:
             if __package__:
                 from . import heldout
@@ -324,6 +329,18 @@ def recommend_native(*, experiment, current_spec, context_path, attempts, report
                 if outcome=='recommend':
                     reasons=[r for r in reasons if r not in ('diagnostic_only','same_host_heldout_unimplemented','same_host_heldout_unverified')]
             reasons += assessment['reasons']
+        if source is not None:
+            # The second source check follows remote assessment. Preserve the
+            # remaining Git/read budget without charging remote transport time.
+            try:
+                ev.require(source_remaining > 0, 'source_read_limit')
+                again = verify_source(ctx, repository=repository, baseline_commit=baseline_commit,
+                    candidate_commit=candidate_commit, component_roots=component_roots,
+                    _deadline=time.monotonic() + source_remaining)
+                ev.require(ad.same(source, again), 'source_changed')
+            except (OSError, ValueError, KeyError, TypeError, UnicodeError, subprocess.SubprocessError) as error:
+                if not _source_unavailable(error):raise
+                outcome, reasons = 'inconclusive', reasons + ['source_unavailable']
         if (not guard.check() or not ctx.guard.check() or not batch.guard.check()
                 or frozen_inputs != ev.digest([experiment, current_spec])
                 or (not batch.valid(experiment, current_spec) and not batch.execution_error)):

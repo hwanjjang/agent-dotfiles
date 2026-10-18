@@ -3,6 +3,7 @@ import copy
 import os
 import shutil
 import tempfile
+from types import SimpleNamespace
 from unittest.mock import patch
 import hashlib
 import unittest
@@ -266,6 +267,35 @@ class NativePromotionTests(unittest.TestCase):
         for key in ('source_accepted','promotion_eligible','merge_authorized','install_authorized'):
             self.assertIs(result[key],False)
 
+    def test_second_source_check_follows_assessment_without_charging_remote_wait(self):
+        from scripts.improvement import heldout
+        source=self.source();clock=[100.0];events=[];deadlines=[]
+        def verify(*args,**kwargs):
+            events.append('source');deadlines.append(kwargs['_deadline']);clock[0]+=2
+            return source
+        def assess(*args):
+            events.append('assessment');clock[0]+=20
+            return dict(status='inconclusive',reasons=['heldout_unavailable'])
+        with patch.object(gate,'time',SimpleNamespace(monotonic=lambda:clock[0])),patch.object(gate,'verify_source',side_effect=verify),patch.object(heldout,'assess',side_effect=assess):
+            self.recommend(heldout_record_path='/synthetic/never-read')
+        self.assertEqual(events,['source','assessment','source'])
+        self.assertEqual(deadlines,[112.0,132.0])
+
+    def test_source_resource_failures_are_inconclusive_at_both_checks(self):
+        source=self.source()
+        for error in (ev.Invalid('source_read_limit'),ev.Invalid('git_unavailable'),subprocess.TimeoutExpired(['git'],1)):
+            for late in (False,True):
+                with self.subTest(reason=type(error).__name__+str(error),late=late):
+                    with patch.object(gate,'verify_source',side_effect=[source,error] if late else error):
+                        result=self.recommend()
+                    self.assertEqual(result['recommendation'],'inconclusive')
+                    self.assertIn('source_unavailable',result['reasons'])
+        for late in (False,True):
+            with patch.object(gate,'verify_source',side_effect=[source,ev.Invalid('source_object')] if late else ev.Invalid('source_object')):
+                result=self.recommend()
+            self.assertEqual(result['recommendation'],'reject')
+            self.assertNotIn('source_unavailable',result['reasons'])
+
     def test_missing_results_are_inconclusive_and_batch_is_closed(self):
         self.refs = []; self.refresh()
         reader = self.ad.read_attempts; batches = []
@@ -339,7 +369,8 @@ class NativePromotionTests(unittest.TestCase):
     def test_source_and_report_late_drift_invalidate_even_after_arithmetic(self):
         source = self.source()
         with patch.object(gate,'verify_source',side_effect=[source,subprocess.TimeoutExpired('fixed',1)]):
-            self.assertEqual(self.recommend()['recommendation'],'reject')
+            result=self.recommend();self.assertEqual(result['recommendation'],'inconclusive')
+            self.assertIn('source_unavailable',result['reasons'])
         original = gate.evaluate_rule
         for name in ('report','arm'):
             with self.subTest(name=name):

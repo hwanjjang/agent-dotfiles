@@ -1,6 +1,8 @@
 """SYNTHETIC selected receipts/clock/journals, real disposable Git and serial gate."""
 import copy
 import hashlib
+import io
+import contextlib
 import json
 import subprocess
 from pathlib import Path
@@ -16,12 +18,13 @@ sha = lambda path: hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 class FakeHeldout:
-    def __init__(self, execute=True):
+    def __init__(self, execute=True, *, dev_held=False, overlap=None):
         self.base = native_fixture.NativePromotionTests(); self.base.setUp()
         self.root = self.base.root; self.comments = {}; self.source = self.base.source()
         self.author = self.root/'author'; self.author.mkdir()
         self.area = self.root/'private'; self.area.mkdir(mode=0o700)
-        self.dev = self.schedule('dev',False); self.held = self.schedule('held',True)
+        self.overlap = overlap
+        self.dev = self.schedule('dev',dev_held); self.held = self.schedule('held',True)
         self.pinned = patch.object(ad.p,'PINNED_RUNTIME',self.dev.f.runtime['runtime_digests']); self.pinned.start()
         for s in (self.dev,self.held): reservation.initialize(s.state,s.f.experiment,s.f.spec,s.f.context_path,s.plans)
         self.score(self.dev)
@@ -68,11 +71,18 @@ class FakeHeldout:
             self.score(self.held);self.refresh()
 
     def schedule(self,name,held):
+        overlap = self.overlap
         class Fixed(RoutedAttempts):
             def __init__(self,root):
                 super().__init__(root);self.spec['promotion_rule']='quality_gain_v1'
                 if held:
                     for c in self.spec['cases']:
+                        if name=='held':
+                            old=c['case_id']
+                            if overlap!='identity':c['case_id']='held-'+old
+                            self.spec['checks'][c['case_id']]=self.spec['checks'].pop(old)
+                            if overlap!='content':
+                                for part in (c,c['counterpart']):part['inputs']['request']+=' Separate synthetic heldout task.'
                         c['classification']='same_host_heldout';c['case_digest']=ev.digest({k:v for k,v in c.items() if k!='case_digest'})
                     self.spec['evaluation_scope']=dict(kind='same_host_heldout',pack_digest=ev.digest({k:self.spec[k] for k in ('cases','checks')}))
         folder=self.root/name;folder.mkdir(mode=0o700)
@@ -129,7 +139,118 @@ class HeldoutTests(unittest.TestCase):
     def test_remote_body_edit_or_wrong_issue_cannot_qualify(self):
         for key,value in [('body','forged'),('updated_at','2026-10-18T01:05:00Z'),('issue_url','https://api.github.com/repos/example/public/issues/99')]:
             old=self.f.comments[12][key];self.f.comments[12][key]=value
-            self.assertNotEqual(self.f.recommend()['recommendation'],'recommend');self.f.comments[12][key]=old
+            result=self.f.recommend();self.assertEqual(result['recommendation'],'inconclusive')
+            self.assertIn('heldout_anchor_changed',result['reasons']);self.f.comments[12][key]=old
+    def test_scoped_development_is_not_development_evidence(self):
+        other=FakeHeldout(dev_held=True)
+        try:
+            result=other.recommend()
+            self.assertEqual(result['recommendation'],'reject')
+            self.assertIn('development_scope_required',result['reasons'])
+        finally:other.close()
+
+    def test_heldout_input_reuse_rejects_but_category_identity_may_repeat(self):
+        for overlap in ('identity','content'):
+            with self.subTest(overlap=overlap):
+                other=FakeHeldout(overlap=overlap)
+                try:
+                    result=other.recommend()
+                    if overlap=='content':
+                        self.assertEqual(result['recommendation'],'reject')
+                        self.assertIn('heldout_cases_overlap',result['reasons'])
+                    else:self.assertEqual(result['recommendation'],'recommend')
+                finally:other.close()
+
+    def test_remote_missing_malformed_and_late_changes_are_inconclusive(self):
+        old=self.f.comments[12]
+        for value in (None,[],{},dict(old,body=None),{k:v for k,v in old.items() if k!='issue_url'}):
+            with self.subTest(value=value):
+                self.f.comments[12]=value;result=self.f.recommend()
+                self.assertEqual(result['recommendation'],'inconclusive')
+                self.assertIn('heldout_anchor_changed',result['reasons'])
+        self.f.comments[12]=old
+        original=heldout._anchor;calls=0
+        def late(ref,payload):
+            nonlocal calls
+            calls+=1
+            if calls==4:self.f.comments[12]=dict(old,body='edited during refresh')
+            return original(ref,payload)
+        with patch.object(heldout,'_anchor',side_effect=late):
+            result=self.f.recommend();self.assertEqual(result['recommendation'],'inconclusive')
+            self.assertIn('heldout_anchor_changed',result['reasons'])
+        self.f.comments[12]=old
+
+    def test_remote_unknown_does_not_erase_independent_development_failure(self):
+        for trial,ref in zip(self.f.dev.f.experiment['trials'],self.f.refs(self.f.dev)):
+            if trial['arm']=='candidate':
+                self.f.dev.f.mutate(ref,'collection_result',lambda row:row['snapshot']['files'][0].update(sha256='f'*64))
+                self.f.dev.f.mutate(ref,'receipt',lambda row:row['collection']['snapshot']['files'][0].update(sha256='f'*64))
+        original=self.f.comments[12]
+        for remote in (None,dict(original,body='edited remote record')):
+            self.f.comments[12]=remote;result=self.f.recommend()
+            self.assertEqual(result['recommendation'],'reject')
+            self.assertIn('critical_violation',result['reasons'])
+            self.assertIn('heldout_anchor_changed',result['reasons'])
+            self.assertEqual(result['heldout']['status'],'inconclusive')
+
+    def test_malformed_local_anchor_remains_invalid(self):
+        self.f.m['freeze']['body_sha256']='0'*64
+        self.f.m['record_digest']=ev.digest({k:v for k,v in self.f.m.items() if k!='record_digest'})
+        save(self.f.record,self.f.m)
+        result=self.f.recommend();self.assertEqual(result['recommendation'],'reject')
+        self.assertEqual(result['heldout']['status'],'invalid')
+
+    def test_before_comparison_exposure_is_counted(self):
+        for material,status in [('answer','exposed'),('unknown_delivery','inconclusive')]:
+            save(self.f.exposure,dict(schema_version=1,kind='same_host_exposure_v1',events=[dict(context_id='author',material=material,phase='before_comparison')]))
+            result=self.f.recommend();self.assertEqual(result['recommendation'],'inconclusive')
+            self.assertEqual(result['heldout']['status'],status)
+            self.assertEqual(result['heldout']['future_classification'],'development_regression')
+
+    def test_known_pack_copy_in_author_materials_is_exposure(self):
+        alias=self.f.author/'requirements-copy.json';alias.write_bytes(self.f.pack.read_bytes());alias.chmod(0o600)
+        receipt=json.loads(self.f.author_receipt.read_text())
+        receipt['materials']=[dict(kind='requirements',path=str(alias),sha256=sha(alias))]
+        save(self.f.author_receipt,receipt)
+        self.f.m['contexts']['author'][0]['sha256']=sha(self.f.author_receipt)
+        self.f.m['record_digest']=ev.digest({k:v for k,v in self.f.m.items() if k!='record_digest'})
+        save(self.f.record,self.f.m)
+        result=self.f.recommend();self.assertEqual(result['recommendation'],'inconclusive')
+        self.assertEqual(result['heldout']['status'],'exposed')
+        self.assertEqual(result['heldout']['future_classification'],'development_regression')
+
+    def test_workspace_alias_cannot_hide_pack_containment(self):
+        alias=self.f.root/'workspace-alias';alias.symlink_to(self.f.area,target_is_directory=True)
+        receipt=json.loads(self.f.author_receipt.read_text());receipt['workspace']=str(alias)
+        save(self.f.author_receipt,receipt);m=copy.deepcopy(self.f.m)
+        m['contexts']['author'][0]['sha256']=sha(self.f.author_receipt)
+        m['record_digest']=ev.digest({k:v for k,v in m.items() if k!='record_digest'});save(self.f.record,m)
+        with patch.object(heldout,'_comment',side_effect=lambda ref:self.f.comments[ref['comment_id']]),self.assertRaisesRegex(ValueError,'heldout_author'):
+            heldout._prepare(str(self.f.record),self.f.source)
+
+    def test_last_model_observation_cannot_hide_exposure_drift(self):
+        original=ad.NativeBatch.observed_models_complete
+        def late(batch):
+            result=original(batch)
+            if batch.context.data.get('execution_root')==str(self.f.held.state):
+                self.f.exposure.write_bytes(self.f.exposure.read_bytes()+b' ')
+            return result
+        with patch.object(ad.NativeBatch,'observed_models_complete',late):
+            result=self.f.recommend();self.assertNotEqual(result['recommendation'],'recommend')
+
+    def test_source_is_rechecked_after_synchronous_assessment(self):
+        original=heldout.assess
+        oid=self.f.source['candidate_commit'];obj=self.f.base.repo/'.git'/'objects'/oid[:2]/oid[2:]
+        def late(*args):
+            result=original(*args);obj.write_bytes(b'corrupt owned synthetic object');return result
+        with patch.object(heldout,'assess',side_effect=late):
+            result=self.f.recommend();self.assertNotEqual(result['recommendation'],'recommend')
+
+    def test_run_next_cli_subprocess_failure_is_bounded_refusal(self):
+        with patch('sys.argv',['heldout.py','run-next','--record','/synthetic/record','--plan','/synthetic/plan','--auth-source','/synthetic/auth']),patch.object(heldout,'run_next',side_effect=subprocess.TimeoutExpired(['git'],1)),contextlib.redirect_stdout(io.StringIO()) as stdout:
+            self.assertEqual(heldout.main(),2)
+        self.assertEqual(json.loads(stdout.getvalue()),dict(status='refused',reason='heldout_preflight_unavailable'))
+
     def test_missing_preflight_unknown_delivery_and_known_exposure_block(self):
         receipt=self.f.preflight.read_bytes();self.f.preflight.unlink();self.assertNotEqual(self.f.recommend()['recommendation'],'recommend');self.f.preflight.write_bytes(receipt);self.f.preflight.chmod(0o600)
         for material in ('unknown_delivery','answer','candidate_edit'):
