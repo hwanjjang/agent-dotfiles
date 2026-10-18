@@ -23,9 +23,9 @@ The [native qualification matrix](../account/observation/native.md#native-platfo
 is the single source of truth for per-platform results, source revisions, cleanup
 and remaining gaps. Read its result and source boundary together: actual callbacks,
 usable tools, authenticated model behavior and interruption are separate checks.
-A historical native run does not requalify a later collector revision. Likewise,
-the separate Linux container's synthetic transport/tool proof does not qualify
-live observation delivery.
+A historical native run does not requalify a later collector revision. The matrix
+also links the later offline Linux prerequisite check; that check and the separate
+container's synthetic transport/tool proof do not qualify live observation delivery.
 
 The [historical Codex walkthrough](manual/codex-observation.pdf) retains its original
 macOS/Linux captures. New platform status documentation supplements that evidence;
