@@ -147,7 +147,7 @@ content; it owns normalization, the final epoch check and durable persistence.
 | Observation store | `account/observation/` | Immutable records/manifests, task links, feedback, bounded-import cursors, retention and derived index |
 | Improvement workflow | `scripts/improvement/` | Manual evidence selection, finding classification, synthetic case preparation and candidate provenance |
 | Evaluation runner | `scripts/improvement/` | Frozen experiment plan, isolated trials, artifacts, budgets and comparison report |
-| Evaluator owner | Maintained checks plus same-host held-out cases | Grading contracts, qualification and promotion recommendation; the updater cannot write these during an experiment |
+| Evaluator owner | Maintained checks plus same-host held-out cases | Grading contracts, qualification and promotion recommendation; the updater must not change these during an experiment; frozen identities detect drift |
 | Existing installer | `scripts/setup_account.py`, `scripts/account_storage.py` | Runtime delivery, selected hook registration, source revision, transaction recovery and rollback |
 
 The observation library and synthetic maintenance CLI occupy the first two
@@ -315,8 +315,10 @@ connects it to the observation but is not published with the case.
 
 The updater receives development cases and proposes one minimal change against
 an immutable baseline. It may edit a skill, policy, MCP template or deterministic
-check; the hypothesis names which behavior should improve. It cannot rewrite the
-grading contract, read held-out answers or install the candidate on the live account.
+check; the hypothesis names which behavior should improve. It must not rewrite the
+grading contract or install the candidate on the live account. Held-out answers are
+not supplied to its author context; this is procedural separation with recorded
+exposure, not enforced denial of the same-account author's filesystem access.
 
 ## Comparative evaluation contract
 
@@ -404,20 +406,32 @@ Use the current host and account; the same model may serve separate fresh sessio
    categories, without the candidate patch or author transcript. Freeze task inputs,
    expected outcomes, grading rules and the scheduled comparison before running it.
    Include intended improvements, normal behavior and adjacent negative cases.
-2. Keep pack contents out of the candidate author's workspace, prompt, conversation,
-   shared memory and planning/session recovery inputs. Use ignored local storage;
-   do not commit the cases, keys or raw evidence. Record the author's supplied input
-   inventory and known exposure. A different directory is not a security boundary.
+   Before scoring, publish only an opaque pack identifier and the pack/grader/
+   schedule digests in the existing #56 issue or PR freeze record. Preserve that
+   dated record and compare against it; a mutable digest beside the pack alone is
+   insufficient. Publish no cases, answers, private paths or raw evidence. This is
+   a durable comparison anchor, not protection against a hostile account owner.
+2. Keep pack contents outside the candidate author's normal workspace and out of
+   its prompt, conversation, shared memory and planning/session recovery inputs.
+   Use private local storage on the same account, never public Git. Record three
+   separate facts: material supplied to the author, known reads/feedback delivered
+   to that context, and available filesystem access (which may be unrestricted).
+   Tool accessibility alone neither proves a read nor establishes secrecy. A
+   different directory is not a security boundary; do not claim enforced non-access.
+   Missing observation remains unknown rather than proof that no read occurred.
 3. Freeze baseline and candidate revisions. Run each arm in fresh task context with
    only its assigned task input, not answer keys, other trials or author history.
    Evaluate the frozen candidate without editing it. Reuse the existing qualified
    execution boundary and match client/model settings, budgets and declared repeats.
-4. Collect actual outcomes and grade with the existing deterministic evaluator.
+4. Collect actual outcomes and grade with the deterministic evaluator once #26
+   implements and verifies actual-evidence admission.
    Check frozen identities before and after execution. Preserve every scheduled
    trial, failure, missing result and known usage; a model's success claim is not
    sufficient evidence. Missing or changed evidence cannot produce a pass.
 5. Release aggregate feedback only after the scheduled comparison. Detailed case or
-   answer exposure reclassifies those cases as development/regression material.
+   answer exposure to any context that authors or later modifies a candidate
+   reclassifies those cases as development/regression material. A reviewer-only
+   context may inspect evidence; if it later authors a candidate, that exposure counts.
    Once any held-out feedback informs a new candidate, use fresh cases for another
    unseen-evaluation claim. Record unknown exposure as unknown; do not certify it
    from a boolean or hash. No-benefit is a valid conclusion, not a reason to retry
