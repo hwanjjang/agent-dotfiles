@@ -267,18 +267,19 @@
           "isolation_qualified": false
         },
         "private_attestation": {
-          "attempt": "V9",
-          "scope": "Private bridge combines the public runner mock_complete result with outer protected-sentinel and owned-cleanup checks; private coordinator separately checks resource absence and VM stop. coordinator_attested_credential_free_profile is not a public native_execution CLI status.",
+          "attempt": "V7",
+          "scope": "Preserved V7 private bridge combined the public runner mock_complete result with outer protected-sentinel and owned-cleanup checks; its private coordinator separately checked resource absence and VM stop. V7 emitted qualified_credential_free_profile as a private attestation, not a public native_execution CLI status.",
           "artifacts_public": false,
           "artifact_digests": {
-            "fixture_run.py": "324a7e249ee7ff9c81a4254c01961c1fc74ebd8f1e8a5335067adc375f59cc61",
-            "coordinate_fixture.py": "f5846714d116e596fe3569ec67af4881c874d5e853693e2fb39d0b21dced38d7",
-            "release-scope.json": "92a9a89aefa10d2c97f8c2459adba56792ff613180049d6df40d8f72e3a4dabc",
-            "root-final-audit.json": "2bf5c4d61cf37de366ff2148bef5e9b8cad2ddbc104da61015d6089c28710c08",
-            "inner-receipt.json": "19a7c07b45b4ebda893bf806aa742391a77b7ca336e7c22018f300fd4ecd0a14",
-            "outer-receipt.json": "f65021ca2091b0b6ce226fc8bf0bb97465fe30b33dd81bddb312c2a7cd410090"
+            "fixture_run.py": "e3fa2eb749949e44302361cd19570a23ecf183d81c80fb0be80850cdab00cecf",
+            "coordinate_fixture.py": "98c68f5d435a6ea19923d8126bf22ac2b0d46ece1a6c7aec32fbbef543a98a92",
+            "release-scope.json": "ad3bee6abb63213742665ae53311210fe55079f4a3b275145a94d7b80ab1bb9f",
+            "inner-receipt.json": "752eaba1fcc4defb5ee2b558b877a38410bb64c4294ae32b215fe56355164908",
+            "outer-receipt.json": "c0dbe4d8c83959bdde658a39003b63a218286aaf08d34c256358752a4bd7943f",
+            "root-final-audit.json": "309c74ae0da4cdb2be3b7701409a7abd165af4f1a465203251956dc3ffbc7e8c"
           },
-          "digest_limit": "Artifact digests identify private retained bytes; they do not make the bridge public, independently reproducible or an authenticated proof."
+          "digest_limit": "Artifact digests identify private retained bytes; they do not make the bridge public, independently reproducible or an authenticated proof.",
+          "provenance": "Retrospectively identified from retained original V7 files; these private artifacts were not part of the original public eleven-file source binding."
         }
       },
       "authenticated": {
@@ -318,7 +319,7 @@
           }
         }
       },
-      "scope": "Historical selected V7/V8 source-bound results are preserved; renewed V9/V10 evidence below applies to corrected sources."
+      "scope": "Historical selected V7/V8 source-bound results are preserved; renewed V9/V10 evidence above applies to corrected sources."
     }
   ]
 }
