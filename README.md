@@ -164,6 +164,10 @@ establish holdout or promotion eligibility.
 The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md)
 provides macOS Python canaries and a guarded Linux native synthetic workflow.
 A passing native fixture does not enable live provider access or promotion.
+The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
+and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
+receipts and selected native-route checks; authenticated comparison remains
+unqualified.
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
 

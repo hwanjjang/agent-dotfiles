@@ -1,0 +1,481 @@
+#!/usr/bin/env python3
+"""Fixed credential-free Codex remote-executor fixture; no live-provider API."""
+import argparse
+import base64
+import datetime
+import hashlib
+import http.server
+import json
+import os
+from pathlib import Path
+import selectors
+import shutil
+import signal
+import socket
+import subprocess
+import tempfile
+import threading
+import time
+import uuid
+
+try:
+    from .native_execution_catalog import catalog, gate
+except ImportError:
+    from native_execution_catalog import catalog, gate
+
+SOURCE = Path(__file__).resolve().parent
+PIN = '83086188ae0614bd882818ff1aa23f3194962012'
+MAX_BYTES = 262144
+RESERVE = 8192
+
+
+def encoded(value):
+    return (json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True)+'\n').encode()
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(65536), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+class Refusal(RuntimeError):
+    pass
+
+
+class Archive:
+    """Exclusive private archive; cap covers stored events + reserved receipt bytes."""
+    def __init__(self, path, limit):
+        self.path = Path(path)
+        self.path.mkdir(mode=0o700, parents=False, exist_ok=False)
+        self.limit = limit
+        self.used = 0
+        self.lock = threading.Lock()
+        self.events = self.path/'events.jsonl'
+        self.stream = self.events.open('xb')
+        self.events.chmod(0o600)
+
+    def record(self, kind, value):
+        line = encoded({'kind': kind, 'value': value})
+        with self.lock:
+            if self.used+len(line) > self.limit-RESERVE:
+                raise Refusal('archive_limit')
+            self.stream.write(line)
+            self.stream.flush()
+            self.used += len(line)
+
+    def raw(self, kind, payload):
+        self.record(kind, {'base64': base64.b64encode(payload).decode()})
+
+    def finish(self, receipt):
+        with self.lock:
+            self.stream.flush()
+            os.fsync(self.stream.fileno())
+            self.stream.close()
+            receipt['archive'] = {'sha256': sha(self.events), 'event_bytes': self.used,
+                'limit_bytes': self.limit, 'receipt_reserve_bytes': RESERVE,
+                'denominator': 'Retained base64-framed protocol events plus final receipt; excludes HTTP headers, OS pipe buffers, removed temporary files and caller reports.'}
+            raw = encoded(receipt)
+            if len(raw) > RESERVE:
+                raise Refusal('receipt_reserve_exceeded')
+            path = self.path/'receipt.json'
+            with path.open('xb') as stream:
+                path.chmod(0o600)
+                stream.write(raw)
+                stream.flush()
+                os.fsync(stream.fileno())
+        return receipt
+
+
+class Session:
+    """One POSIX process group, nonblocking stdin/stdout/stderr, one deadline."""
+    def __init__(self, argv, cwd, env, archive, deadline):
+        self.archive, self.deadline = archive, deadline
+        self.proc = subprocess.Popen(argv, cwd=cwd, env=env, stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, start_new_session=True)
+        self.selector = selectors.DefaultSelector()
+        self.buffer = bytearray()
+        self.pending = []
+        self.next_id = 0
+        for stream in (self.proc.stdin, self.proc.stdout, self.proc.stderr):
+            os.set_blocking(stream.fileno(), False)
+        for stream in (self.proc.stdout, self.proc.stderr):
+            self.selector.register(stream, selectors.EVENT_READ)
+
+    def pump(self):
+        remaining = self.deadline-time.monotonic()
+        if remaining <= 0:
+            raise Refusal('deadline')
+        for key, _ in self.selector.select(min(.05, remaining)):
+            data = os.read(key.fd, 4096)
+            if not data:
+                self.selector.unregister(key.fileobj)
+                if key.fileobj is self.proc.stdout and self.buffer:
+                    raise Refusal('truncated_native_json')
+                continue
+            self.archive.raw('native_stdout' if key.fileobj is self.proc.stdout else 'native_stderr', data)
+            if key.fileobj is self.proc.stdout:
+                self.buffer.extend(data)
+                while b'\n' in self.buffer:
+                    raw, _, rest = self.buffer.partition(b'\n')
+                    self.buffer = bytearray(rest)
+                    try:
+                        value = json.loads(raw)
+                    except (ValueError, UnicodeError) as exc:
+                        raise Refusal('malformed_native_json') from exc
+                    if not isinstance(value, dict):
+                        raise Refusal('malformed_native_message')
+                    if 'method' in value and 'id' in value:
+                        raise Refusal('unexpected_native_server_request')
+                    self.pending.append(value)
+        if not self.selector.get_map() and self.proc.poll() is not None and not self.pending:
+            raise Refusal('native_eof')
+
+    def send(self, value):
+        raw = encoded(value)
+        self.archive.raw('native_stdin_attempt', raw)
+        offset = 0
+        while offset < len(raw):
+            if time.monotonic() >= self.deadline:
+                raise Refusal('deadline')
+            try:
+                offset += os.write(self.proc.stdin.fileno(), raw[offset:])
+            except BlockingIOError:
+                self.pump()
+            except BrokenPipeError as exc:
+                raise Refusal('native_stdin_closed') from exc
+
+    def until(self, predicate):
+        while True:
+            for i, value in enumerate(self.pending):
+                if predicate(value):
+                    return self.pending.pop(i)
+            self.pump()
+
+    def rpc(self, method, params):
+        self.next_id += 1
+        identity = self.next_id
+        self.send({'id': identity, 'method': method, 'params': params})
+        value = self.until(lambda v: v.get('id') == identity)
+        if 'error' in value or 'result' not in value:
+            raise Refusal('native_rpc_error:'+method)
+        return value['result']
+
+    def close(self):
+        # Group ownership comes from this Popen(start_new_session=True), never a receipt PID.
+        try:
+            os.killpg(self.proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        try:
+            self.proc.wait(timeout=2)
+            reaped = True
+        except subprocess.TimeoutExpired:
+            reaped = False
+        self.selector.close()
+        for stream in (self.proc.stdin, self.proc.stdout, self.proc.stderr):
+            stream.close()
+        return {'process_reaped': reaped, 'exit_code': self.proc.returncode,
+                'owned_process_group_kill_sent': True,
+                'escaped_descendants_verified_absent': False}
+
+
+def actual_outputs(request):
+    for item in request.get('input', []):
+        if item.get('type') in ('function_call_output', 'custom_tool_call_output'):
+            value = item.get('output', [])
+            if isinstance(value, str):
+                yield value
+            elif isinstance(value, list):
+                for part in value:
+                    if isinstance(part, dict) and isinstance(part.get('text'), str):
+                        yield part['text']
+
+
+class FixtureProvider:
+    """Exactly one fixed tool cell then final message; no upstream or credential input."""
+    def __init__(self, archive, deadline, host_uri):
+        self.archive, self.deadline, self.host_uri = archive, deadline, host_uri
+        self.requests = 0
+        self.error = None
+        self.completed = False
+        self.lock = threading.Lock()
+        self.servers = []
+        self.threads = []
+
+    def response(self, raw):
+        with self.lock:
+            self.requests += 1  # Failed/rejected submissions remain in the denominator.
+            self.archive.raw('mock_request', raw)
+            if self.requests > 2:
+                raise Refusal('mock_request_limit')
+            data = json.loads(raw)
+            if data.get('model') != 'gpt-6-luna' or data.get('stream') is not True:
+                raise Refusal('unexpected_mock_model_or_stream')
+            if any(marker in raw.decode() for marker in ('HOST_STARTUP_INSTRUCTION_CANARY', 'HOST_PROJECT_INSTRUCTION_CANARY')):
+                raise Refusal('host_instruction_marker_exposed')
+            gate(catalog(data))
+            if self.requests == 1:
+                code = (SOURCE/'native_execution_cell.js').read_text().replace('HOST_URI', json.dumps(self.host_uri))
+                items = [{'type': 'function_call', 'namespace': 'collaboration', 'name': 'list_agents',
+                          'call_id': 'disabled_agents', 'arguments': '{}'},
+                         {'type': 'custom_tool_call', 'name': 'exec', 'call_id': 'fixed_cell', 'input': code}]
+            else:
+                outputs = list(actual_outputs(data))
+                # Only actual returned tool output, never prompt/source-text matches.
+                if 'unsupported call: collaborationlist_agents' not in outputs or 'CELL1_COMPLETED' not in outputs:
+                    raise Refusal('fixture_tool_output_missing')
+                checks = {}
+                for line in outputs:
+                    if line.startswith('{'):
+                        obj = json.loads(line)
+                        if 'check' in obj:
+                            checks[obj['check']] = obj['result']
+                for name, marker in [('assigned_body', 'ASSIGNED_REMOTE_SKILL_BODY'), ('assigned_reference', 'ASSIGNED_REMOTE_SKILL_REFERENCE')]:
+                    if marker not in checks.get(name, {}).get('contents', ''):
+                        raise Refusal('assigned_skill_evidence_missing')
+                self.completed = True
+                items = [{'id': 'done', 'type': 'message', 'role': 'assistant', 'status': 'completed',
+                          'content': [{'type': 'output_text', 'text': 'REMOTE_FIXTURE_COMPLETE', 'annotations': []}]}]
+            events = [{'type': 'response.created', 'response': {'id': 'fixture_'+str(self.requests)}}]
+            events += [{'type': 'response.output_item.done', 'output_index': i, 'item': item} for i, item in enumerate(items)]
+            events += [{'type': 'response.completed', 'response': {'id': 'fixture_'+str(self.requests), 'status': 'completed', 'output': items}}]
+            body = ''.join('event: '+e['type']+'\ndata: '+json.dumps(e)+'\n\n' for e in events).encode()
+            self.archive.raw('mock_response', body)
+            return body
+
+    def start(self):
+        owner = self
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+            def do_POST(self):
+                body = b''
+                status = 400
+                try:
+                    self.connection.settimeout(max(.01, min(1, owner.deadline-time.monotonic())))
+                    length = int(self.headers.get('Content-Length', '-1'))
+                    if self.path != '/v1/responses' or self.headers.get('Transfer-Encoding') or not 0 <= length <= MAX_BYTES:
+                        raise Refusal('mock_http_shape')
+                    if time.monotonic() >= owner.deadline:
+                        raise Refusal('deadline')
+                    raw = self.rfile.read(length)
+                    if len(raw) != length:
+                        raise Refusal('mock_truncated_body')
+                    body = owner.response(raw)
+                    status = 200
+                except Exception as exc:
+                    owner.error = type(exc).__name__+':'+str(exc)[:160]
+                self.send_response(status)
+                self.send_header('Content-Length', str(len(body)))
+                self.send_header('Connection', 'close')
+                if status == 200:
+                    self.send_header('Content-Type', 'text/event-stream')
+                self.end_headers()
+                if body:
+                    self.wfile.write(body)
+                self.close_connection = True
+            def do_GET(self):
+                self.send_response(405)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+        class V6(http.server.HTTPServer):
+            address_family = socket.AF_INET6
+            def server_bind(self):
+                self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
+                super().server_bind()
+        try:
+            self.servers.append(http.server.HTTPServer(('127.0.0.1', 0), Handler))
+            port = self.servers[0].server_port
+            self.servers.append(V6(('::1', port), Handler))
+            for server in self.servers:
+                thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval': .05}, daemon=True)
+                thread.start()
+                self.threads.append(thread)
+            return port
+        except Exception:
+            self.close()
+            raise
+
+    def close(self):
+        for server, thread in zip(self.servers, self.threads):
+            server.shutdown()
+            thread.join(2)
+        for server in self.servers:
+            server.server_close()
+        return all(not thread.is_alive() for thread in self.threads)
+
+
+PROFILE = '''model="gpt-6-luna"
+model_reasoning_effort="low"
+model_provider="fixture"
+approval_policy="never"
+web_search="disabled"
+check_for_update_on_startup=false
+cli_auth_credentials_store="file"
+[features]
+apps=false
+plugins=false
+memories=false
+multi_agent=false
+multi_agent_v2=false
+code_mode=false
+code_mode_host=true
+goals=false
+[agents]
+enabled=false
+[model_providers.fixture]
+name="Synthetic fixture"
+base_url="http://127.0.0.1:PORT/v1"
+wire_api="responses"
+requires_openai_auth=false
+supports_websockets=false
+request_max_retries=0
+stream_max_retries=0
+stream_idle_timeout_ms=10000
+'''
+
+
+def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
+    """Trusted caller supplies exact executable argv; this does not create an OS boundary.
+
+    No endpoint/auth overrides, retries, installation, containers or VM lifecycle.
+    Caller owns executor isolation and independently verified escaped-child cleanup.
+    """
+    if os.name != 'posix' or not 0 < timeout <= 180 or type(limit) is not int or not RESERVE+4096 <= limit <= MAX_BYTES:
+        raise ValueError('unsupported_platform_or_bounds')
+    for argv in (command, executor):
+        if not isinstance(argv, list) or not argv or not all(isinstance(x, str) and '\x00' not in x for x in argv):
+            raise ValueError('invalid_argv')
+        if not Path(argv[0]).is_absolute() or not Path(argv[0]).is_file():
+            raise ValueError('absolute_executable_required')
+    archive = Archive(destination, limit)
+    start = time.monotonic()
+    deadline = start+timeout
+    session = provider = None
+    temporary = None
+    receipt = {'schema_version': 1, 'kind': 'native-remote-fixture', 'status': 'blocked',
+        'attempt_id': str(uuid.uuid4()),
+        'started_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'reason': None, 'live_eligible': False, 'authentication_qualified': False,
+        'isolation_qualified': False, 'source_revision': PIN,
+        'model': {'declared': 'gpt-6-luna', 'reasoning': 'low', 'actual_inference': False},
+        'identities': {'host_executable_sha256': sha(command[0]), 'executor_program_sha256': sha(executor[0]),
+                       'runner_sha256': sha(__file__), 'catalog_sha256': sha(SOURCE/'native_execution_catalog.py'),
+                       'cell_sha256': sha(SOURCE/'native_execution_cell.js')},
+        'limits': {'wall_seconds': timeout, 'mock_submissions': 2, 'archive_bytes': limit,
+                   'generated_token_ceiling': None, 'dollar_ceiling': None},
+        'usage': {'tokens': None, 'reason': 'Synthetic provider; no actual inference or real usage.'},
+        'cleanup': {'executor_resources': 'external_owner_unverified', 'escaped_descendants': 'unverified'}}
+    try:
+        temporary = Path(tempfile.mkdtemp(prefix='native-fixture-')).resolve()
+        root = temporary
+        home = root/'home'
+        project = root/'project'
+        codehome = home/'.codex'
+        codehome.mkdir(parents=True, mode=0o700)
+        project.mkdir(mode=0o700)
+        (home/'AGENTS.md').write_text('HOST_STARTUP_INSTRUCTION_CANARY\n')
+        (project/'AGENTS.md').write_text('HOST_PROJECT_INSTRUCTION_CANARY\n')
+        sentinel = root/'host-only'
+        sentinel.write_text('synthetic host-only canary')
+        provider = FixtureProvider(archive, deadline, sentinel.as_uri())
+        port = provider.start()
+        profile = PROFILE.replace('PORT', str(port))
+        environments = 'default="trial"\ninclude_local=false\n[[environments]]\nid="trial"\nprogram='+json.dumps(executor[0])+'\nargs='+json.dumps(executor[1:])+'\n'
+        (codehome/'config.toml').write_text(profile)
+        (codehome/'environments.toml').write_text(environments)
+        archive.record('launch', {'command': command, 'executor': executor,
+            'profile': profile, 'environments': environments})
+        receipt['identities']['profile_sha256'] = hashlib.sha256(profile.encode()).hexdigest()
+        receipt['identities']['environments_sha256'] = hashlib.sha256(environments.encode()).hexdigest()
+        env = {'HOME': str(home), 'CODEX_HOME': str(codehome), 'LANG': 'C.UTF-8',
+               'PATH': str(Path(command[0]).parent)+':/usr/bin:/bin'}
+        session = Session(command, project, env, archive, deadline)
+        session.rpc('initialize', {'clientInfo': {'name': 'remote_fixture', 'version': '1'}, 'capabilities': {'experimentalApi': True}})
+        session.send({'method': 'initialized', 'params': {}})
+        hooks = session.rpc('hooks/list', {'cwds': [str(project)]})
+        if any(d.get('hooks') or d.get('errors') for d in hooks['data']):
+            raise Refusal('host_hooks_not_empty')
+        skills = session.rpc('skills/list', {'cwds': [str(project)], 'forceReload': True})
+        for row in skills['data']:
+            for skill in row['skills']:
+                path = Path(skill['path']).resolve()
+                if not path.is_relative_to(codehome):
+                    raise Refusal('unexpected_host_skill_path')
+                session.rpc('skills/config/write', {'path': str(path), 'enabled': False})
+        skills = session.rpc('skills/list', {'cwds': [str(project)], 'forceReload': True})
+        if any(s['enabled'] for row in skills['data'] for s in row['skills']):
+            raise Refusal('host_skill_enabled')
+        thread = session.rpc('thread/start', {'model': 'gpt-6-luna', 'cwd': str(project), 'approvalPolicy': 'never',
+            'ephemeral': True, 'environments': [{'environmentId': 'trial', 'cwd': '/work/project', 'runtimeWorkspaceRoots': ['/work/project']}],
+            'selectedCapabilityRoots': [{'id': 'assigned', 'location': {'type': 'environment', 'environmentId': 'trial', 'path': '/work/project/assigned-capability'}}]})['thread']['id']
+        mcp = session.rpc('mcpServerStatus/list', {'threadId': thread, 'detail': 'full', 'limit': 10})
+        if mcp['data'] or mcp.get('nextCursor'):
+            raise Refusal('host_mcp_not_empty')
+        turn = session.rpc('turn/start', {'threadId': thread, 'input': [{'type': 'text', 'text': 'Execute the fixed synthetic fixture.'}],
+            'sandboxPolicy': {'type': 'externalSandbox', 'networkAccess': 'restricted'}, 'approvalPolicy': 'never'})['turn']['id']
+        terminal = session.until(lambda x: x.get('method') == 'turn/completed')
+        archive.record('terminal', terminal)
+        t = terminal['params']['turn']
+        if terminal['params']['threadId'] != thread or t['id'] != turn:
+            raise Refusal('terminal_identity_mismatch')
+        receipt['terminal'] = {'status': t['status'], 'thread_id': thread, 'turn_id': turn, 'error': t.get('error')}
+        if t['status'] != 'completed' or t.get('error') or not provider.completed or provider.error:
+            raise Refusal('native_or_fixture_incomplete')
+        if sentinel.read_text() != 'synthetic host-only canary':
+            raise Refusal('host_canary_changed')
+        receipt['status'] = 'mock_complete'
+    except (Exception, KeyboardInterrupt) as exc:
+        receipt['reason'] = type(exc).__name__+':'+str(exc)[:240]
+    finally:
+        safe_to_remove = session is None
+        if session:
+            try:
+                receipt['cleanup']['harness'] = session.close()
+                safe_to_remove = receipt['cleanup']['harness']['process_reaped']
+            except Exception as exc:
+                receipt['cleanup']['harness_error'] = type(exc).__name__+':'+str(exc)[:160]
+        if provider:
+            receipt['mock_submissions_observed'] = provider.requests
+            receipt['provider_error'] = provider.error
+            try:
+                receipt['cleanup']['listeners_closed'] = provider.close()
+            except Exception as exc:
+                receipt['cleanup']['listener_error'] = type(exc).__name__+':'+str(exc)[:160]
+                receipt['cleanup']['listeners_closed'] = False
+        else:
+            receipt['mock_submissions_observed'] = 0
+        if temporary:
+            if safe_to_remove:
+                try:
+                    shutil.rmtree(temporary)
+                except Exception as exc:
+                    receipt['cleanup']['temporary_error'] = type(exc).__name__+':'+str(exc)[:160]
+            receipt['cleanup']['temporary_home_absent'] = not temporary.exists()
+            if temporary.exists():
+                receipt['cleanup']['retained_temporary_root'] = str(temporary)
+        if not safe_to_remove or receipt['cleanup'].get('listeners_closed') is False or receipt['cleanup'].get('temporary_home_absent') is False:
+            receipt['status'] = 'blocked'
+            receipt['reason'] = receipt['reason'] or 'owned_cleanup_incomplete'
+        receipt['elapsed_seconds'] = round(time.monotonic()-start, 6)
+    return archive.finish(receipt)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--plan', required=True, type=Path, help='Private JSON with command and executor argv; never credentials')
+    parser.add_argument('--output', required=True, type=Path, help='New exclusive private evidence directory')
+    args = parser.parse_args()
+    plan = json.loads(args.plan.read_text())
+    if set(plan)-{'command', 'executor', 'timeout', 'limit'}:
+        parser.error('Unknown plan fields; live/auth/provider overrides are unsupported')
+    result = run_fixture(args.output, **plan)
+    print(json.dumps({'status': result['status'], 'live_eligible': False, 'reason': result['reason']}))
+    return 0 if result['status'] == 'mock_complete' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

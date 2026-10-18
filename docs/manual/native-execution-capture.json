@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "capture_kind": "browser-rendered sanitized actual result summaries",
+  "native_date": "2026-10-18",
+  "not_terminal_capture": true,
+  "real_inference": false,
+  "runtime_sha256": {
+    "scripts/improvement/native_execution.py": "d028a955aee6b07ae503b8bd5a436e6b44866e8452d822d2b471f83f89f92f24",
+    "scripts/improvement/native_execution_catalog.py": "a0ca81202530693d01069de0c8cb06764a44e693c9fdd89b824dc7b82c57acc6",
+    "scripts/improvement/native_execution_cell.js": "d3581f3ca142910e5cd6d803121097d5a5c302dc668eba2ddafd24cb72fb86e1"
+  },
+  "upstream_source_revision": "83086188ae0614bd882818ff1aa23f3194962012",
+  "native_result_sha256": "9393f284d7155876cd8784c0b8368d69b443b88f747fee151fec0ceb58a43e8d",
+  "native_artifact_receipt_sha256": "ff1d96de50434738ad747906c5cfdb1bd6e00b998f397ceb56cdd2747e7ee1eb",
+  "native_source_manifest_sha256": "e33276f4a26ca17a7717d6dfd0312aedad475aa7d0bf8e44ca643c02dd206675",
+  "native_image_id": "sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
+  "native_observed": {
+    "submissions": 2,
+    "code_mode_cells": 1,
+    "completed_terminal": true,
+    "elapsed_s": 8.653033582959324,
+    "retained_bytes": 198209,
+    "retained_limit_bytes": 262144,
+    "owned_resource_absence": true,
+    "auth": false,
+    "full_routes": false
+  },
+  "CLI_checks": {
+    "success": {
+      "exit_code": 0,
+      "stdout": {
+        "status": "mock_complete",
+        "live_eligible": false,
+        "reason": null
+      },
+      "receipt_sha256": "eca44974de779287690da983da9cbbf9bf8d0ebeab7d16ec102541937ae5bebb"
+    },
+    "blocked": {
+      "exit_code": 1,
+      "stdout": {
+        "status": "blocked",
+        "live_eligible": false,
+        "reason": "Refusal:native_or_fixture_incomplete"
+      },
+      "receipt_sha256": "bb2867f4bf52473b1ed29587390d21914dfb75e75c7d30a8914731823f1c9982"
+    }
+  },
+  "scope_limits": [
+    "Fresh native integration covers selected skill/guard routes only.",
+    "Separate private supervisor proves exact observed owned cleanup; inner reusable receipt retains external/escaped cleanup unknowns.",
+    "Existing image differs from old prototypes; other route checks remain historical.",
+    "No authentication, real inference, subscription or full-route qualification."
+  ],
+  "guide": "../decisions/native-execution-fixture.md",
+  "artifacts_sha256": {
+    "native-execution.json": "87178ff04b1b4fbb079fa053aa63faa5ceeb97682746c438b7688c766a609c85",
+    "native-execution-summary.html": "9a60930b33028f30ed3be4ade9b0b0cafcc09cb873899e8bd238fbac813ddb66",
+    "native-execution-cli.png": "6f062e82086b2c6cfa8952b14e9e8d68f825c14a1fad83681a498187cfd0a832",
+    "native-execution-native.png": "f3b4bd336c0e6bf389ab6ffdfe433fe09394f6aea0af36bd1b5051afe8031b38",
+    "native-execution.pdf": "9478b3ac5fd97ef5beec82bf83711dd25aea563e26bb2fe097587acee617c7c7"
+  },
+  "guide_sha256": "30c59f1de33732b65f1a8db410109c23becc77583508d7e1aa7736dceaaba212",
+  "verification": {
+    "actual_browser": "installed Google Chrome through existing Playwright",
+    "viewport": {
+      "width": 1000,
+      "height": 640,
+      "deviceScaleFactor": 2
+    },
+    "browser_capture_passed": true,
+    "overflow_check_passed": true,
+    "PDF_pages": 2,
+    "PDF_text_check_passed": true,
+    "every_page_rendered_and_visually_reviewed": true,
+    "visual_result": "Readable labels; no clipping, overlap, missing glyphs or private host content.",
+    "screenshot_context": "Browser-rendered actual stdout/result summaries; not terminal screenshots.",
+    "runtime_files_unchanged": true,
+    "new_native_or_auth_run_for_manual": false
+  },
+  "capture_guide_sha256": "de3493551c08ea0deefd7e981f902a543a71b9a02823c07b8602017995f93a99",
+  "integration_note": "Transferred onto reviewed integration tree f0a7304; only a bounded community-evidence paragraph was added to the guide after capture. Runtime, screenshots, editable steps and PDF remain unchanged. The historical actual native mock is not rerun or extended."
+}

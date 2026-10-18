@@ -1,0 +1,20 @@
+{
+  "title": "Native executor fixture: read the result",
+  "scenario": "Maintainer workflow for a credential-free mock. Requires an authorized isolated executor, a pinned native client and a new private evidence directory. Screenshots are browser-rendered summaries of actual results, not terminal captures or real inference.",
+  "steps": [
+    {
+      "title": "Run once and inspect the receipt",
+      "instruction": "Prepare the exact private command/executor plan from the fixture guide. Run native_execution.py with a new --output directory. Read status, reason, terminal and cleanup in receipt.json; retain every blocked attempt. The examples below are fresh public CLI checks using a local fake app-server.",
+      "screenshot": "native-execution-cli.png",
+      "caption": "Browser-rendered actual CLI stdout: local fake-process success exits 0; terminal failure exits 1. Displayed paths are generalized.",
+      "expected": "A blocked terminal stays blocked. mock_complete describes the mock protocol; live_eligible, authentication_qualified and isolation_qualified remain false."
+    },
+    {
+      "title": "Check actual native evidence and its limits",
+      "instruction": "Before reusing a native result, match all runtime hashes and review actual tool outputs, terminal identity and separate executor cleanup evidence. This source-bound native mock was run once; authentication and additional routes require their own qualification.",
+      "screenshot": "native-execution-native.png",
+      "caption": "Browser-rendered sanitized summary of the actual 2026-10-18 native mock. It is not a terminal screenshot or a live model result.",
+      "expected": "Two synthetic submissions, one cell and a completed native terminal. Exact owned resources were absent afterward. No retry, auth, real inference or full-route claim."
+    }
+  ]
+}

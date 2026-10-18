@@ -1,0 +1,137 @@
+# Credential-free native executor fixture
+
+The runner in [native_execution.py](../../scripts/improvement/native_execution.py)
+prepares one fixed synthetic Codex app-server workflow. It is a reusable
+qualification fixture, not a live evaluation or authenticated-provider API.
+The extracted runner now has both local fake-process coverage and one fresh
+actual native mock qualification with Codex 0.163.0. That qualification covers
+the selected synthetic workflow, not authentication or every tool route.
+
+## Run and ownership
+
+Use an already authorized, separately isolated executor containing
+`/work/project/assigned-capability/skills/assigned/SKILL.md` with the body marker
+`ASSIGNED_REMOTE_SKILL_BODY` and `references/details.md` containing
+`ASSIGNED_REMOTE_SKILL_REFERENCE`. The capability root is a plain skills folder,
+without a plugin manifest. Disabled plugins can otherwise filter that root.
+
+Supply a private JSON plan with `command` (absolute app-server executable plus
+`app-server --listen stdio://`), `executor` (absolute stdio transport executable
+plus its arguments), `timeout` (at most 180 seconds), and `limit` (at most 262144 bytes).
+No endpoint, provider, authentication, environment-variable or model overrides
+are accepted. Commands are trusted maintainer inputs, not untrusted case content.
+The executor program is not launched directly by this script: the native client
+uses its explicit `environments.toml` transport. An argv or its hash does not
+establish OS isolation. Review mount/network/ownership separately before use.
+
+```sh
+python3 scripts/improvement/native_execution.py \
+  --plan /path/to/private-fixture-plan.json \
+  --output /path/to/new-private-evidence-directory
+```
+
+The runner creates an exclusive evidence directory and temporary HOME/project,
+uses `include_local=false`, disables agents/plugins/apps/web/goals, checks empty
+host hooks and effective MCP servers, and disables discovered bundled host skills.
+Only a local synthetic Responses provider is configured. Ambient account keys and
+HOME are not inherited. It never reads an existing authentication file, starts a
+VM, creates a container, installs a client or changes real account settings.
+The trusted host harness is outside the executor OS boundary.
+
+The fixed synthetic provider permits at most two accepted submission positions:
+one code-mode cell and one completion. It retains the count of observed parsed
+POST submissions, including a rejected excess submission. Malformed HTTP before
+body parsing is a provider error, not an inferred model attempt. Its counter is
+not a counter for first-party inference, authentication recovery or real retries.
+The actual returned tool output must contain the assigned skill body/reference
+and disabled-collaboration refusal; echoed prompt text cannot satisfy this check.
+The matching thread/turn terminal must complete without error. A zero process
+exit is insufficient. Unexpected native server requests are refused.
+
+One deadline covers nonblocking app-server writes and reads, including pipe
+backpressure. Independent cleanup kills only the Popen-owned process group,
+reaps the direct child, closes local provider listeners and removes owned
+HOME/project state. Escaped process groups and external executor resources are
+explicitly unverified and remain the caller's responsibility. The fixture never
+labels process-group termination as proof that every native helper or remote
+process is absent. Cleanup failure preserves the primary failure and receipt;
+uncertain harness cleanup retains its temporary root for its owner to inspect.
+No broad process scan/kill or externally supplied PID is used.
+
+## Receipt contract for downstream accounting
+
+Each attempt writes `events.jsonl` and `receipt.json` once. Both are private 0600
+files inside a 0700 directory. An existing output directory is rejected; failed
+attempts are retained rather than overwritten. The receipt contains:
+
+- schema_version 1, kind `native-remote-fixture`, status `mock_complete` or
+  `blocked`, failure reason and actual mock submission count;
+- declared model/reasoning and source/component/executable/config hashes;
+- native terminal identity/status/error when observed;
+- wall/archive limits and elapsed time; real token usage is unknown;
+- owned cleanup outcomes, external/escaped-resource uncertainty, and the raw
+  archive digest and byte count.
+
+`live_eligible`, `authentication_qualified` and `isolation_qualified` are always
+false, including `mock_complete`. The latter means this fixed mock protocol
+finished; it does not mean all emitted tools or OS boundaries were qualified.
+A downstream evaluator must not accept this receipt as live evidence. Digests
+bind bytes, not authority or provenance. Future consumers need a runner-owned
+archive outside executor mounts and independent source/ownership verification;
+a caller-provided success flag or rehashed fabricated archive is insufficient.
+
+The archive cap includes retained base64-framed native stdin/stdout/stderr,
+mock request/response bodies, launch/config/terminal events and the final receipt.
+8192 bytes are reserved for the receipt. HTTP headers, OS pipe buffers, removed
+temporary files and caller reports are excluded. A read can observe a bounded
+chunk before refusing to retain it; this is a retained-artifact cap, not a hard
+provider token/spend or universal wire-output ceiling. No guessed
+`model_max_output_tokens`, required API key, dollar ceiling or development
+holdout requirement is introduced. Authentication and live limits need their
+own later qualification.
+
+## Evidence and sources
+
+The design follows the maintained
+[app-server lifecycle](https://learn.chatgpt.com/docs/app-server) and pinned
+[exec-server implementation](https://github.com/openai/codex/tree/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/exec-server).
+The official current docs were checked 2026-10-18; 0.163 behavior is bound to the
+pinned source, since current documentation can drift. Native prototype evidence
+showed disabled agents must include `[agents] enabled=false` and
+`multi_agent_v2=false`, and that plain capability-root discovery works with
+plugins disabled. This runner preserves those choices. On 2026-10-18, one fresh actual native
+qualification completed two synthetic submissions and one code-mode cell with a
+matching completed terminal. It verified assigned executor skill list/body/
+reference reads, disabled collaboration dispatch, V8/catalog restrictions, empty
+host hooks and effective MCP inventory, missing-server refusal, bundled host
+skill disable/reload, and host/remote instruction markers. The existing Linux
+image and readonly named runtime volume were inspected; synthetic OS preflights
+confirmed the expected user, capabilities, no-new-privileges, seccomp, root-write
+and network restrictions. This image differs from the historical prototypes.
+
+A separate bounded supervisor observed native/helper parent and process-start
+identities, then confirmed its exact owned containers, volume and processes
+absent. Its evidence supplements the unchanged inner receipt's external-cleanup
+unknowns for this attempt only. The supervisor is a private qualification harness,
+not part of the reusable runner's cleanup API. Total elapsed time was 8.653 seconds;
+retained runtime evidence was 198,209 of 262,144 bytes under the stated archive
+denominator. No real inference or authentication was used. Deliberate executor
+disconnect and other command/patch/image/stdin route probes were not repeated in
+this run; their historical results are not a fresh all-route qualification.
+
+[The focused manual](../manual/native-execution.json) provides editable steps and
+[the rendered walkthrough](../manual/native-execution.pdf) shows sanitized actual
+CLI/mock evidence. [Capture provenance](../manual/native-execution-capture.json)
+binds the runtime component hashes. Any
+runtime change requires renewed relevant checks. Eleven focused local tests
+exercise fake-process failure, timeout, backpressure and cleanup behavior; those
+results remain distinct from the actual native mock qualification.
+
+Community validation remains limited and this selection is provisional on that
+axis. A [firsthand report opened 2026-10-02](https://github.com/openai/codex/issues/50374)
+observed executor selection changing during desktop Remote Control continuation
+with CLI 0.157.1 and separate Linux containers. That is a different client path
+and version from this fixed 0.163 API fixture; the report has no visible
+independent corroboration and does not establish a defect here or community
+consensus. Its limitation supports retaining route-specific qualification rather
+than extrapolating the mock result to other clients.

@@ -2780,17 +2780,19 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-isolation-pilot.md",
-      "summary": "Run a pinned Codex synthetic workflow inside an existing restricted Linux Docker container before adding live transport.",
+      "summary": "Qualify a fixed credential-free native workflow inside a restricted Linux executor; retain source-bound mock receipts before adding live transport.",
       "when": [
         "You need evidence that the whole native client and its tools stay inside an outer OS boundary."
       ],
-      "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands.",
+      "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands. For the reusable app-server/remote-executor fixture, follow docs/decisions/native-execution-fixture.md and run native_execution.py with a reviewed private plan and a new private output directory. This separate fixture needs Python 3.11+ and an already isolated executor.",
       "behavior": [
         "Initializes the real client, discovers a synthetic skill and exercises a mock Responses turn and native command.",
         "Checks the exact image/runtime/namespace/resource boundary, observed seccomp mode and IPv4/IPv6 TCP denial; cleanup targets only this run’s ownership label.",
         "Requires positive fixture operations, denied outside file and IPv4/IPv6 probes, observed tool exit 3, turn completion and cleanup.",
         "Native synthetic qualification does not qualify live authentication, model quality, holdout custody or promotion.",
-        "Preserves the primary failure and reports timed-out container creation as uncertain cleanup with retained staging."
+        "Preserves the primary failure and reports timed-out container creation as uncertain cleanup with retained staging.",
+        "The reusable remote-executor fixture retains success and blocked attempts, requires actual skill body/reference outputs and a matching native terminal, and checks selected disabled-tool routes.",
+        "One source-bound native mock qualified the selected workflow; live_eligible, authentication_qualified and isolation_qualified remain false in this reusable fixture receipt. Its supervisor owns separate OS and escaped-resource checks."
       ],
       "outputs": [
         "A private source-bound receipt and native trace; live transport and promotion remain false."

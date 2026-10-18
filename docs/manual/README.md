@@ -232,3 +232,18 @@ with pypdf. Rebuild using the screenshot-manual commands above with
 ## Development recommendation
 
 [promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive.
+
+## Native executor fixture walkthrough
+
+The [two-page walkthrough](native-execution.pdf), [editable source](native-execution.json)
+and [capture receipt](native-execution-capture.json) explain receipt interpretation
+and selected source-bound native mock evidence. The [CLI image](native-execution-cli.png)
+and [native summary image](native-execution-native.png) are browser renderings of
+actual results, not terminal or real-model screenshots. Both PDF pages were
+rendered and visually checked. The [fixture guide](../decisions/native-execution-fixture.md)
+owns prerequisites and limits. Rebuild with the screenshot-manual scripts above
+using `native-execution.json`; recapture after result or behavior changes.
+
+The earlier native-isolation map screenshot retains its dated capture; the current
+dialog additionally links this reusable fixture. The browser recipe verifies the
+current dialog separately; this supplement does not requalify older captures.
