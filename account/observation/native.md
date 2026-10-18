@@ -171,8 +171,13 @@ source has focused or synthetic checks.
 | Linux aarch64, Codex 0.163.0 / GPT-6-Luna low, source `329dd76` | Authenticated baseline: SessionStart 1, PreToolUse 2, PostToolUse 2, Stop 1; synthetic read/write and native exits 0 and 3; planning marker injected | Two tool-end statuses remain unknown; one bounded task after a separately approved temporary prerequisite, not complete delivery or efficacy |
 | Same Linux source, separate interruption session | Native `turn_aborted` with reason `interrupted`; SessionStart 1 and PreToolUse 1, no PostToolUse or Stop | The command continued and wrote its finished marker after abort; its final process exit was not observed; an additional read of owned distributed instructions is disclosed below |
 | Linux aarch64, Claude Code 2.1.302, source `329dd76` | Credential-free initialization and one SessionStart; fresh auth check after the approved file copy returned `loggedIn=false` | No Haiku model invocation, tool or Stop qualification; no authentication retry, new login or Keychain extraction |
-| Native provider-created subagents, any client | No actual native-child collection scenario has run | Actor/parent remain unknown; do not infer parentage from nearby records or Paseo's worker ownership |
-| WSL | No test host was available | Unverified; no WSL native collection claim |
+| Ubuntu 24.04.4 x86_64, Codex 0.163.0 / GPT-6-Luna low, source `7ada8e2` | Baseline: SessionStart 1, PreToolUse 2, PostToolUse 2, Stop 1; native exits 0 and 3; planning recovery in native hook entries | Collector tool outcomes remain unknown; one bounded fixture, not complete delivery |
+| Same x86_64 Codex source, interruption | Native turn status `interrupted`; SessionStart 1, PreToolUse 1; command wrote its finish marker after interruption | No PostToolUse/Stop or observed final process exit; sandbox PID was not treated as a host PID |
+| Ubuntu x86_64, Claude Code 2.1.302 / Haiku 5.5, source `7ada8e2` | Authenticated baseline: SessionStart 1, PreToolUse 4, tool ends 4, Stop 1; planning recovery, Read/Write, deliberate shell and Read failures | Two failure callbacks have failure status; successful tool ends remain unknown |
+| Same x86_64 Claude source, interruption | Actual start marker, SIGINT and native interruption error; SessionStart 1, PreToolUse 1; CLI exited 0 | No paired tool end/Stop; no finish marker or owned survivor after the observation bound; exact shell exit unknown |
+| Ubuntu x86_64, optional Paseo 0.11.2 / Codex 0.163.0 / GPT-6-Luna low, source `7ada8e2` | Baseline exits 0 and 3 with 18 records; corrected cancellation produced `turn_aborted: interrupted`; native command later exited 0 after 22.172848391 seconds; corrected launch recovered planning | Original interruption attempt returned stoppedCount 0; corrected session has an unpaired tool start and no Stop; collector outcomes remain unknown |
+| Native provider-created children, x86_64 Claude and Codex, source `7ada8e2` | One child per client read the synthetic marker; native Claude parent-tool linkage and Codex explicit parent-thread metadata were observed separately | Collector actor/parent remain null; no separate child-scoped Codex collector events or child lifecycle coverage claim |
+| WSL | Earlier runs had no test host; excluded from the x86_64 qualification scope | Unverified; no WSL native collection claim |
 
 The optional Paseo baseline and interruption exercised collector source
 `70ec2e9bd079566e45457477bb9eb07d124f32a7`, including the capacity/attribution
@@ -345,13 +350,56 @@ runtime cleanup, not forensic disk rollback. Native discovery, direct post-revok
 remain distinct evidence; no comparative efficacy or later-source qualification
 is implied. The existing screenshot manuals retain their historical capture scope.
 
-Native-child coverage is still untried. Codex's pinned tool-hook schemas can name
-an emitting agent but do not provide a parent edge. This adapter never populates
+These historical runs did not exercise native children. The x86_64 qualification
+below adds separate native lineage evidence. Codex's pinned tool-hook schemas can
+name an emitting agent but do not provide a parent edge. This adapter never populates
 actor/parent fields: the store writes null with `actor_id_not_observed` and
 `parent_actor_id_not_observed` gaps. It does not register SubagentStart/SubagentStop.
 Paseo ownership of a worker is not native model-created child lineage. Missing identities stay unknown.
 The synthetic capacity check that interrupts a dispatcher after reservation proves
 reservation recovery only; it is not a native provider-turn cancellation test.
+
+### Ubuntu x86_64 qualification
+
+On 2026-10-18, a native Ubuntu 24.04.4 LTS x86_64 host, kernel
+6.8.0-142-generic and Python 3.12.3, exercised committed source
+`7ada8e20c4f0f7a0e04b585d6d1820dad8fa0a16`. This replaces the proposed additional
+Ubuntu VM run for this task; earlier aarch64 evidence keeps its original scope.
+WSL was explicitly excluded. Separate disposable accounts/projects isolated the
+Claude, Codex and optional Paseo lanes. Only existing file credentials were copied;
+no login, real-account observation registration or global permission change was
+performed. Codex definitions were reviewed/trusted through the native Hooks UI.
+
+The offline Codex canary used the discovered built-in profile
+`codex sandbox -P :workspace -- ...`: workspace writes passed, outside writes
+returned EROFS (30), IPv4/IPv6 returned EPERM (1), and deliberate exit 3 was
+preserved. Plain `codex sandbox` had selected read-only despite legacy
+`sandbox_mode` configuration; `workspace-write` was not a valid named profile.
+Those preparation failures made no model calls and remain recorded. No temporary
+package, AppArmor profile or sysctl change was needed. Native Codex/Paseo turn
+contexts independently confirmed workspace-write with network disabled.
+
+Claude ran three parent invocations and one native child; Codex did the same.
+Paseo used three parent turns across two owned agents: baseline, an unsuccessful
+interruption attempt and one corrected interruption. Baselines were not repeated.
+Final per-lane ledgers contained 18 Claude, 16 Codex and 24 Paseo records. The
+[sanitized execution record](../../docs/decisions/linux-x86-native-qualification.md)
+details counts, source identities, the failed interruption attempt and limitations.
+The native traces establish child execution and explicit provider relationships;
+the collector still records no actor/parent identity. Codex produced no events
+with the child's own session ID, and neither client establishes separate child
+lifecycle delivery. No binding is inferred from nearby events.
+
+All grants were revoked and direct old-epoch callbacks returned neutral output
+with zero records. Copied credentials and owned homes/projects/processes were
+removed; owned Paseo agents were deleted and its workspace/project entries
+removed or archived as recorded. The original account configuration
+hashes and symlink targets matched their initial snapshot. These are bounded
+runtime cleanup checks, not forensic erasure or a complete client-history audit.
+The 202 selected observation/setup/doctor/native-task tests passed once without
+failures or skips; they are separate from authenticated native evidence. Existing
+PDF screenshots remain historical captures. These results do not establish
+complete callbacks, process cancellation, effective exposure or task efficacy.
 
 The versioned input schemas reviewed for Codex CLI 0.163.0 are at
 [upstream commit 8308618](https://github.com/openai/codex/tree/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/hooks/schema/generated).
