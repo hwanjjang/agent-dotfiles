@@ -39,6 +39,16 @@ affected checks on drift. The
 and [workflow diagram](architecture/native-trial-workflow.html) retain their own
 source/capture provenance.
 
+## Next consumer: evaluation
+
+The [implementation handoff](decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
+tracks bounded task-result collection and trusted evaluator admission separately.
+The current receipt does not contain general task answers/artifacts and must not
+be treated as a graded completion or relabeled as synthetic comparison evidence.
+The development pilot's identity requirement covers observed native-client model
+selection and reroute checks; it does not change this runner's explicit unknown
+backend identity or qualify natural routing.
+
 ## Prepare a frozen plan
 
 Keep plans, credentials, selected inputs and attempt journals private. Public

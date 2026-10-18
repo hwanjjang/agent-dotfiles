@@ -1,7 +1,8 @@
 # Deterministic evaluation accounting
 
-Status: offline development comparison implemented; live execution and independent
-holdout evaluation remain unavailable. This is the bounded accounting slice of the
+Status: offline development comparison implemented; actual-evidence admission and
+same-host held-out evaluation remain unavailable in this evaluator. The separate
+[native runner](../native-trials.md) has selected-profile execution qualification. This is the bounded accounting slice of the
 [account improvement design](account-improvement-loop.md#comparative-evaluation-contract).
 The module does not execute agents, fixtures, traces, shell commands, model calls or
 Git/installer actions. It reads JSON on stdin and writes JSON on stdout.
@@ -100,6 +101,13 @@ but expanded per-completion checks can produce much larger output and memory use
 There is no output-size cap. Keep inputs small and inspect duplicate counts; this
 is a local diagnostic command, not a service or arbitrary-input execution endpoint.
 
+## Selected-trial execution input
+
+The [frozen-trial preparation guide](frozen-trial-dispatch.md) describes the pure
+adapter for selecting one request/files payload and supervisor binding. It reuses
+this frozen inventory and does not admit real evidence, execute trials or change
+this evaluator's eligibility rules.
+
 ## Report and trust limits
 
 Reports retain every scheduled trial, all submitted completion digests, unknown
@@ -136,10 +144,20 @@ are data and cannot supply grading commands or override the frozen criteria.
 `live_eligible` is always false, `promotion` is always inconclusive, and the evidence
 kind is `deterministic_development_comparison`. No caller-supplied qualification
 boolean, account-doctor report or mock isolation receipt can change those fields.
-There is no authenticated real-evidence verifier, qualified native transport or
-independent holdout custodian here. Holding grader data in another folder would
-not establish custody. No hidden-answer access test or full issue-26 acceptance
-is claimed by this slice. The OS isolation pilot remains separately qualified.
+There is no authenticated task-evidence verifier or implemented same-host held-out
+protocol in this evaluator. The separate runner's selected transport qualification
+does not supply those capabilities. The [revised design](account-improvement-loop.md#same-host-held-out-evaluation)
+requires context separation and exposure records, not an external custodian.
+Existing custody-related blocker strings describe the current implementation;
+consumer/schema/tests must change together before actual evidence is admitted.
+No hidden-answer access test or full issue-26 acceptance is claimed by this slice.
+The OS isolation pilot remains separately qualified.
+
+The [implementation handoff](account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
+links task-result collection (#54), protected grading (#55) and their admission
+consumer (#26). Until that integration is implemented and verified, use the
+synthetic-only CLI contract above; do not convert native receipts to synthetic
+completions or set a qualification flag to bypass the boundary.
 
 The [Anthropic evaluation guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
 (accessed 2026-10-18) distinguishes trials, observable outcomes and grader

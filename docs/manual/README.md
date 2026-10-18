@@ -247,3 +247,12 @@ using `native-execution.json`; recapture after result or behavior changes.
 The earlier native-isolation map screenshot retains its dated capture; the current
 dialog additionally links this reusable fixture. The browser recipe verifies the
 current dialog separately; this supplement does not requalify older captures.
+
+## Frozen-trial preparation walkthrough
+
+The [preparation PDF](frozen-trial-dispatch.pdf), [editable source](frozen-trial-dispatch.json)
+and [capture receipt](frozen-trial-dispatch-capture.json) show the supervisor/payload
+boundary and an actual synthetic Store export -> freeze -> prepare journey. Images
+are browser renderings of sanitized CLI summaries, not terminal or model captures.
+The [preparation guide](../decisions/frozen-trial-dispatch.md) owns the contract;
+actual trial execution and evidence admission remain separate.

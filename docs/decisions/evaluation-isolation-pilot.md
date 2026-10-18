@@ -3,8 +3,10 @@
 Status: macOS Python canaries and Linux native **synthetic** qualification. The
 [improvement-loop design](account-improvement-loop.md) owns evaluation requirements.
 Neither verifier qualifies live provider transport, comparative evaluation or
-promotion. Real model execution remains blocked.
-No credentials, account settings or real session history are used.
+promotion. These pilot commands do not enable real model execution. The separate
+[frozen native-trial runner](../native-trials.md) has its own selected source-bound
+authenticated qualification; its evidence does not broaden these pilots.
+No credentials, account settings or real session history are used by these pilots.
 
 ## macOS Python canaries
 
@@ -65,8 +67,9 @@ Receipts bind the runner/probe, actual profile, executable and OS identity by di
 live execution. Digests provide consistency, not signatures, custody or independent
 review. Runtime dependency-tree freezing, whole-client native-tool checks, model
 broker authentication/budgets and complete descendant cleanup belong to the next
-qualification slice. An unrestricted updater still cannot serve as an independent
-holdout custodian.
+qualification slice. These probes do not establish same-account secrecy. The planned
+[same-host held-out protocol](account-improvement-loop.md#same-host-held-out-evaluation)
+uses context separation and exposure tracking without an external custodian.
 
 ## Evidence and source limits
 

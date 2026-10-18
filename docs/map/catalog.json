@@ -2652,7 +2652,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Freeze and grade development comparisons offline; actual model execution and holdout qualification remain unavailable.",
+      "summary": "Offline synthetic grading is available; the separate native runner has selected-profile qualification, while actual task-result admission and comparisons remain pending.",
       "when": [
         "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting."
       ],
@@ -2662,7 +2662,8 @@
         "Calibrate deterministic checks; separate outcome, routing, adherence, exposure and MCP dimensions.",
         "Keep every missing, failed, duplicate and blocked trial in the denominator; summarize improved, regressed, concordant and unresolved pairs by dimension. Unknown usage never becomes zero.",
         "Report stale experiments as blocked; forged qualification claims cannot enable live grading. Diagnostic results cannot authorize promotion or installation.",
-        "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion."
+        "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion.",
+        "Follow the improvement-loop implementation handoff for task-result collection and protected grading; native execution receipts alone are not graded completions."
       ],
       "outputs": [
         "Frozen trial inventory and deterministic development report with explicit live_eligible=false and promotion=inconclusive."
@@ -2691,7 +2692,8 @@
         "Apply the frozen primary metric, per-case regression margin and explicit token/time rule; candidate critical failures reject despite aggregate gain.",
         "Expose critical counts by arm: baseline defects remain diagnostic when the candidate fixes them; only candidate critical violations reject.",
         "Unknown usage and incomplete trials remain inconclusive. Currency is required only when the frozen rule explicitly declares it.",
-        "A positive synthetic arithmetic result does not establish live evidence or independent holdout custody; promotion_eligible, merge_authorized and install_authorized stay false."
+        "A positive synthetic arithmetic result does not establish actual task or same-host held-out evidence; current promotion_eligible, merge_authorized and install_authorized stay false.",
+        "A bounded comparison may correctly find no improvement. Planned same-host held-out checks use fresh contexts and exposure tracking without external custodians or new accounts. Do not repeat experiments until a candidate wins; account application remains deferred."
       ],
       "outputs": [
         "Reject or inconclusive recommendation with fixed reasons and canonical source/evidence references."
@@ -2719,7 +2721,8 @@
         "Keep source acceptance and account activation separate.",
         "Use guarded rollback while preserving observation records; reproduce production signals before attributing them to a skill.",
         "Return to step 1 with a new environment identity. Claude/Codex observation requires explicit project consent and one selected registration; Codex observer definitions also require native trust.",
-        "Use account doctor to recheck delivered setup and affected client behavior; preserve private observations during update or rollback."
+        "Use account doctor to recheck delivered setup and affected client behavior; preserve private observations during update or rollback.",
+        "Disposable fixture delivery can verify mechanics independently; actual accepted-candidate delivery still requires eligible evidence and separate source acceptance."
       ],
       "outputs": [
         "An observed deployment or guarded rollback; no automatic account activation."
@@ -2830,6 +2833,34 @@
         "qualification",
         "frozen",
         "recovery"
+      ]
+    },
+    {
+      "id": "frozen-trial-dispatch",
+      "title": "Prepare one frozen trial",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/frozen-trial-dispatch.md",
+      "summary": "Project one exact frozen trial into supervisor bindings and selected executor input; actual execution/admission remains separate.",
+      "when": [
+        "A reviewed frozen experiment needs one selected request/files payload without exposing its grading material."
+      ],
+      "usage": "Run trial_dispatch.py prepare on JSON containing experiment,current_spec,trial_id,attempt_id. Keep the whole envelope with the trusted supervisor; release only executor_input.",
+      "behavior": [
+        "Reuse the evaluator freeze and exact inventory; refuse stale/tampered spec, grader and trial identities.",
+        "Only selected request/files go to the executor; checks, expected answers, other-arm data and the experiment-wide budget stay outside.",
+        "Runtime fields are requested declarations; digests do not establish execution or provenance.",
+        "Cross-call attempt reservation and shared budget enforcement remain supervisor responsibilities; no new ledger, grader or live evidence admission."
+      ],
+      "outputs": [
+        "A deterministic development_trial_dispatch envelope, not a model completion or promotion decision."
+      ],
+      "tags": [
+        "eval",
+        "self-improvement",
+        "synthetic",
+        "dispatch"
       ]
     }
   ],
@@ -3373,6 +3404,11 @@
       "from": "native-trials",
       "to": "improvement-eval",
       "label": "later admission remains separate"
+    },
+    {
+      "from": "improvement-eval",
+      "to": "frozen-trial-dispatch",
+      "label": "Prepare one selected executor input"
     }
   ]
 }
