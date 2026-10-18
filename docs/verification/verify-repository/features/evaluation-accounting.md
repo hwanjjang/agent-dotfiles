@@ -30,3 +30,62 @@ Changed source identities need a new freeze or explicitly linked regrade.
 Earlier pinned-producer/manual runs remain historical. Use the workflow-map
 verifier and catalog verifier after status changes. Current integration still
 qualifies only offline development accounting, not isolated model execution.
+
+## Trusted offline artifact admission
+
+Read the [admission contract](../../../decisions/evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
+for exact input and ownership requirements. Run:
+
+```sh
+python3 scripts/improvement/trial_admission.py --help
+python3 -m unittest discover -s tests -p 'test_trial_admission.py'
+```
+
+The focused tests use synthetic qualification records and native journals. They
+exercise artifact digest grading, observed missing versus absent capture, active
+ownership locks, helper changes after freeze and during grading, missing composite
+qualification mappings, duplicate and distinct attempts, unknown usage and
+caller-flag refusal. They do not qualify real authentication or a native runtime.
+
+For a separately retained operator smoke, prepare an owned disposable fixture and
+invoke the actual `native_trial_results.py` collector on known correct binary,
+wrong and missing files. Connect those actual snapshots to explicitly fake journal
+and qualification fixtures, then invoke `trial_admission.py report` using the
+contract above. Require pass/fail/fail artifact outcomes, an unsubmitted scheduled
+trial remaining inconclusive, and `live_eligible=false`. Submit one attempt twice:
+require duplicate coverage with one cumulative usage charge. An arbitrary
+qualification flag must reject. Preserve both collector and admission outputs,
+unknown totals, and removal of only the owned disposable fixture.
+
+This smoke demonstrates collector/reader/evaluator integration with synthetic
+lifecycle evidence, not a real native trial. There is no public one-command fixture
+generator; preserve the explicit setup and commands in the verification record.
+Actual retained attempts with missing or mismatched current authenticated
+qualification must remain blocked. Never rewrite qualification or evidence digests
+to obtain a pass. The browser helper checks catalog navigation separately and
+does not execute this CLI recipe.
+
+## Serial reservation gate
+
+Follow the [authoritative serial contract](../../../decisions/evaluation-accounting.md#serial-native-launch-reservations)
+for `initialize`, `status`, `run-next`, frozen stdin and private-root requirements.
+Run `python3 scripts/improvement/trial_reservation.py --help` and
+`python3 -m unittest discover -s tests -p 'test_trial_reservation.py'` separately
+from the browser helper. Tests use synthetic qualifications, journals and fixed
+native-run stubs; they do not establish real native execution or authentication.
+
+In an owned synthetic CLI/process fixture, retain initialization, ordered
+reservation and status results, concurrent-lock refusal, wrong-order and extra-field
+refusal, and a crash-gap or failed attempt that blocks the next launch. Check that
+initial-turn slots and declared phase-time never refund, unknown cost remains
+unknown, and an overshoot stops later launches. Audit with omitted completion
+references: `execution_accounting` must still include every reserved attempt.
+Record actual parser/process results separately from the fixed stub's fake native
+facts. There is no public fixture-generator command or caller qualification flag.
+
+The unmodified CLI with current public qualification must refuse initialization
+when that qualification is stale; do not rewrite proof to enable a real run.
+Require `hard_provider_cap=false`, unknown wire/billing data and
+`live_eligible=false`. Preserve original failed attempts and owned cleanup evidence.
+These checks verify the cooperating-host gate, not provider hard caps, natural
+routing, comparative benefit or account activation.

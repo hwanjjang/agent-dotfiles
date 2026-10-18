@@ -26,10 +26,6 @@ class ReservationTests(unittest.TestCase):
                        expected_manifest_digest='b'*64)
             controller.assert_not_called()
 
-    def test_serial_reservation_interface_is_available(self):
-        self.assertIsNotNone(importlib.util.find_spec('scripts.improvement.trial_reservation'),
-                             'durable aggregate launch gate is not implemented')
-
 
 class SyntheticSchedule:
     """Existing synthetic journal factory, moved out of the not-yet-run state root."""

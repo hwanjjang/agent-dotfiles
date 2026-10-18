@@ -11,8 +11,10 @@ The [capacity guide](../../account/observation/capacity.md) records the qualifie
 latency and other environments remain unqualified. Offline evaluation accounting
 and diagnostic source-review recommendations are implemented. The
 [frozen native-trial runner](../native-trials.md) has selected source-bound
-credential-free and authenticated qualification; task-result admission and actual
-comparisons are not implemented. Automated diagnosis,
+historical credential-free and authenticated qualification.
+[Trusted offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
+and [serial launch reservations](evaluation-accounting.md#serial-native-launch-reservations)
+are implemented; current-source authenticated admission and actual comparisons remain pending. Automated diagnosis,
 authenticated comparative trials, operational promotion and automatic delivery
 remain unqualified or planned. No persistent real-account collection or scheduled
 work was activated by this implementation.
@@ -59,7 +61,7 @@ this design, not additional state-machine stages or installed capabilities.
 | 1. Observe | Synthetic store/CLI and opt-in Claude/Codex hook delivery exist; consent, native trust and source-bound platform limits remain explicit. |
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
-| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner has selected-profile qualification; actual task-result admission, comparisons and same-host held-out evaluation remain pending. |
+| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner retains historical selected-profile qualification; [offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented; current authenticated admission, comparisons and same-host held-out evaluation remain pending. |
 | 5. Review | Existing independent review methods and diagnostic source-review recommendations apply; operational eligibility and automatic promotion remain unavailable. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
@@ -374,8 +376,9 @@ declared, bounded artifact metadata/hashes with present or missing observations.
 The [collection guide](../native-trials.md#declare-bounded-output-collection) owns
 that implemented contract and its current source-bound limits. No artifact bodies
 or general final-answer text are retained. `completed_ungraded` is not an evaluator
-completion; trusted actual-evidence admission must still connect the components
-before an actual comparison can pass. Changed runtime sources require renewed affected
+completion. The [offline admission contract](evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
+now connects recorded artifact snapshots; current authenticated qualification,
+observed-model export remains required before actual comparison. The [serial gate](evaluation-accounting.md#serial-native-launch-reservations) implements cooperating-host reservations; changed runtime sources require renewed affected
 qualification; historical qualification cannot be relabeled as current evidence.
 
 The development pilot must use the requested and observed native-client model selection,
@@ -402,7 +405,7 @@ criteria; no account activation or automatic candidate search follows.
 
 Design decision, 2026-10-18: retain problems not supplied to the candidate author,
 but replace the earlier independently controlled custodian requirement. This is a
-planned protocol, not a claim that the current synthetic-only evaluator implements it.
+planned protocol, not a claim that current offline accounting implements it.
 Use the current host and account; the same model may serve separate fresh sessions.
 
 1. Prepare a small held-out pack in a fresh session from requirements and behavior
@@ -429,7 +432,7 @@ Use the current host and account; the same model may serve separate fresh sessio
    Evaluate the frozen candidate without editing it. Reuse the existing qualified
    execution boundary and match client/model settings, budgets and declared repeats.
 4. Collect actual outcomes and grade with the deterministic evaluator once #26
-   implements and verifies actual-evidence admission.
+   completes current-source admission qualification and required accounting.
    Check frozen identities before and after execution. Preserve every scheduled
    trial, failure, missing result and known usage; a model's success claim is not
    sufficient evidence. Missing or changed evidence cannot produce a pass.
@@ -451,8 +454,9 @@ Actual account application remains deferred by the maintainer.
 
 ### Recommended implementation and execution order
 
-This sequence is proposed for maintainer confirmation; this documentation update
-starts no implementation, model trial, infrastructure provisioning or installation.
+The maintainer confirmed this dependency order on 2026-10-18. Implementation is
+underway; current capability and qualification limits are recorded above. This
+sequence does not grant model/authentication scope or account activation.
 
 1. Reconcile the documentation and dispatch PR #48 with current main.
 2. Implement #54 bounded observations and #55 grading integrity in parallel once
@@ -636,4 +640,4 @@ improved task performance.
 
 ### Offline accounting implementation
 
-The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner has selected-profile execution qualification; task-result admission, authenticated evaluator evidence and same-host held-out evaluation remain incomplete. Diagnostic reports cannot authorize promotion.
+The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner retains historical selected-profile qualification. [Trusted offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented; current authenticated admission, actual comparisons and same-host held-out evaluation remain incomplete. Diagnostic reports cannot authorize promotion.

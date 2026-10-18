@@ -159,10 +159,9 @@ The [isolation qualification guide](docs/decisions/evaluation-isolation-pilot.md
 provides macOS Python canaries and a guarded Linux native synthetic workflow.
 A passing native fixture does not enable live provider access or promotion.
 
-Offline development comparison is available through
+Offline development comparison and recorded-artifact admission are implemented in
 [deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
-It freezes and grades supplied synthetic evidence; it does not execute models or
-establish holdout or promotion eligibility. The [selected-trial preparation adapter](docs/decisions/frozen-trial-dispatch.md)
+Neither executes models or establishes held-out or promotion eligibility. The [selected-trial preparation adapter](docs/decisions/frozen-trial-dispatch.md)
 projects one executor input without exposing the grading envelope; it performs
 no execution or real-evidence admission.
 
@@ -179,10 +178,13 @@ these commands do not enable comparative evaluation or account activation. A
 The [scoped grading-integrity evidence](docs/verification/scoped-grading-integrity.json)
 records scoped credential-free native/child access checks and grading-drift tests.
 The [collection record](docs/verification/native-outcome-collection.json) adds
-current 12-source bounded artifact collection with present/missing, unsafe and
-interrupted cases. Changed sources still require affected authenticated renewal;
-task-result admission,
-natural routing and comparisons remain pending. The trusted host controller keeps
+historical 12-source bounded artifact collection with present/missing, unsafe and
+interrupted cases. Actual artifact admission requires current-source qualification,
+including affected authenticated renewal; it remains blocked. The
+[serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
+now binds ordered initial turns, declared phase-time and observed soft-token
+accounting. It does not impose a hard provider budget. Natural routing, observed-model
+export and actual comparisons remain pending. The trusted host controller keeps
 normal account access; no external evaluator environment is required.
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.

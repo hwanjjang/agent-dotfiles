@@ -282,3 +282,59 @@ owns repeatable checks. Rebuild with the screenshot-manual scripts above using
 For this collection walkthrough, the private native bridge supplies the observation
 projection and its own coordinator receipt. Production setup/cleanup/capture are
 exercised; production `observe`/`finish` collection gates have unit coverage only.
+
+## Offline native artifact admission walkthrough
+
+The [two-page walkthrough](native-artifact-admission.pdf),
+[editable source](native-artifact-admission.json) and
+[capture manifest](native-artifact-admission-capture.json) explain the existing
+[evaluation-accounting contract](../decisions/evaluation-accounting.md#admit-recorded-native-artifact-snapshots).
+The [artifact summary](native-artifact-admission-check.png) and
+[duplicate/refusal summary](native-artifact-admission-result.png) are actual browser
+renders of retained collector and admission CLI results. Native journals,
+qualification records and usage are explicitly **fake fixtures**, not actual
+native execution or authentication evidence.
+
+The smoke observed one artifact pass, two fails and one unsubmitted inconclusive;
+known synthetic usage is a subtotal and total usage remains unknown. Duplicate
+submissions charge one source attempt once, caller qualification flags reject,
+and the owned disposable fixture was removed. Three grader sources and twelve
+runner sources match checkpoint `fa2ae1202398` after execution; the commit followed
+the run. The capture manifest retains those exact bindings rather than claiming
+execution at an already-existing revision.
+
+Both captures and both rendered PDF pages were visually inspected, with no
+clipping or overlap. PDF page count/text and browser overflow checks passed.
+Current real qualification remains blocked and `live_eligible` is false; no actual
+comparison, candidate benefit or full issue-26 completion is established. Follow
+the [feature recipe](../verification/verify-repository/features/evaluation-accounting.md)
+for separate CLI verification. Rebuild using the screenshot-manual commands above
+with `native-artifact-admission.json`; recapture on relevant source or behavior drift.
+
+## Serial native trial reservation walkthrough
+
+The [two-page walkthrough](native-trial-reservations.pdf),
+[editable source](native-trial-reservations.json) and
+[capture manifest](native-trial-reservations-capture.json) cover the
+[serial reservation contract](../decisions/evaluation-accounting.md#serial-native-launch-reservations).
+The [order/status summary](native-trial-reservations-check.png) and
+[interruption summary](native-trial-reservations-result.png) are browser-rendered
+actual CLI/process results, not terminal screenshots. Positive lifecycle results
+use a fixed native-run **STUB** with fake qualification, journals and usage; the
+unmodified public initialize command actually refused without creating state.
+
+The renewed smoke ran at the already-existing `b57ea16629b1` checkpoint. Thirteen
+runner and three grader source hashes match the capture manifest. Two stubbed
+attempts reserve two initial turns and 630 declared seconds; a real process crash
+leaves a third reservation, 945 declared seconds and an unknown total token cost.
+The known synthetic subtotal remains 320 tokens. Six separate processes confirmed
+lock refusal before task work and after stubbed cleanup. Reservations are not
+refunded, and the post-use token guard is soft, not a provider hard cap.
+
+Both browser captures and both rendered PDF pages passed visual inspection,
+overflow, page-count and text checks. No authentication, native client, model or VM
+was used. Current changed-source qualification remains blocked; neither natural
+skill routing, a candidate benefit nor full issue-26 completion is claimed. See
+the [feature recipe](../verification/verify-repository/features/evaluation-accounting.md)
+for separate checks. Rebuild with the screenshot-manual commands above and
+`native-trial-reservations.json`; renew evidence on source or behavior drift.
