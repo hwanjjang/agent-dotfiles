@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "feature_id": "evaluation-accounting",
+  "scope": "Actual public initialize refusal and renewed CLI/parser/process smoke using a fixed native-run STUB with fake qualification, journals and usage. No current native qualification.",
+  "capture_surface": "Browser-rendered sanitized actual CLI/process result summary; not terminal images.",
+  "source_checkpoint": "b57ea16629b10f1c20c79ff6907120d88a4ae342",
+  "execution_at_existing_checkpoint": true,
+  "source_digests": {
+    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "d37dd07350227d43028be6f28eb53a4a403410892a044b781de9b8053a7ab4d1",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "0e6236c34b17dc4e53a2c6a67fae63c0e1033498dc35a2f0a5b0d7598031faab",
+    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
+    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
+  },
+  "grader_source_digests": {
+    "evaluation.py": "6ef4f4ad1575033105003c0e0cd2aee87d8be697fdff936b7e0a4389670fbea6",
+    "trial_admission.py": "c1b1d119116cbf1761decb21e47ed39a5b4d3b320be116370eef7c2fb51a9573",
+    "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
+  },
+  "source_identity": "47816b30d2c9f69f01b05cea2a3bf121f38457a7bd0ec2c5d12bfb9c1747b7a2",
+  "grader_identity": "fb64d5d7c230b4101777957a939ac5cfe24d63cdc912faf80126e0284854fe14",
+  "retained_smoke_sha256": "3231cc710d5ba9998daa59de632f6aa0625ed3930a62834de767a68575ec7c9f",
+  "retained_renewal_handoff_sha256": "78dbfd3a179094e864f423378dd4621ba13ceb4211ce88cb0dffa5f7d39c83e1",
+  "capture_method": {
+    "browser": "Existing Google Chrome",
+    "transport": "Archify ChromeVisualBrowser direct DevTools pipe",
+    "viewport": {
+      "width": 1100,
+      "height": 690
+    },
+    "overflow_check": "PASS",
+    "captures_visually_inspected": 2,
+    "browser_close_completed": true
+  },
+  "pdf_validation": {
+    "builder": "screenshot-manual build_manual.py",
+    "renderer": "PDFium via render_pages.py",
+    "page_count": 2,
+    "text_check": "PASS",
+    "pages_visually_inspected": 2,
+    "visual_check": "PASS"
+  },
+  "actual_result_summary": {
+    "public_initialize": {
+      "status": "refused",
+      "reason": "reservation_unavailable",
+      "exit_code": 2,
+      "state_created": false
+    },
+    "fixed_stub_cli_calls": 15,
+    "fixed_stub_native_runner_calls": 3,
+    "actual_lock_probe_processes": 6,
+    "crash_exit": 23,
+    "after_two_stub_attempts": {
+      "status": "ready",
+      "reserved": 2,
+      "declared_seconds": 630,
+      "known_synthetic_tokens": 320,
+      "total_synthetic_tokens": 320
+    },
+    "after_crash": {
+      "status": "blocked",
+      "exit_code": 1,
+      "reserved": 3,
+      "declared_seconds": 945,
+      "known_synthetic_tokens": 320,
+      "total_tokens": null,
+      "unknown_attempts": 1
+    },
+    "next_launch_after_crash": "refused"
+  },
+  "limits": {
+    "current_native_source_qualification": "blocked",
+    "positive_lifecycle": "fixed test stub",
+    "authentication_read_or_copy": false,
+    "native_sessions": 0,
+    "model_calls": 0,
+    "vm_actions": 0,
+    "hard_provider_cap": false,
+    "live_eligible": false,
+    "actual_inference": false,
+    "natural_skill_routing_proven": false,
+    "candidate_benefit_claimed": false,
+    "issue26_complete": false,
+    "declared_seconds": "Permanent setup + wall + cleanup limits, not measured elapsed time",
+    "reserved_turns": "Initial-turn slots, not provider HTTP attempts",
+    "tokens": "Post-use soft guard; unknown usage blocks and overshoot is possible"
+  },
+  "artifact_sha256": {
+    "native-trial-reservations.json": "79d4b814c915859eaecce3b239a012d37b896d2e411449efe6ca8cfa4e0ca04e",
+    "native-trial-reservations.pdf": "76af28e5410b14455366f426b8bfcbcb0c559173f245463a98437ffdb9407030",
+    "native-trial-reservations-check.html": "17bcce69df49bce658846ee7c5a2d7ccebe41691ee3a254bfeee98eac06301fd",
+    "native-trial-reservations-check.png": "91c687288f7cc0c07dac8cd1d259be4ccd7c5c0a4b06170c41d61bfbb6e222e5",
+    "native-trial-reservations-result.html": "ad16e18ad68ea416d589fd67eeede83e4d6a539d3e3869bd9052d9b337d72c18",
+    "native-trial-reservations-result.png": "641af81076cad6873bceeb61fa74abbe2ef5c0290e06c3fd5ee5bca2960d8b5a"
+  }
+}

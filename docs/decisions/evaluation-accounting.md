@@ -3,11 +3,12 @@
 Status: offline synthetic comparison and trusted offline native artifact admission
 are implemented. Current native admission remains blocked until maintained
 qualification records match the frozen sources and include current authenticated
-qualification. Actual comparisons, serial launch reservations and same-host
-held-out evaluation remain incomplete. This is the bounded accounting slice of the
+qualification. Cooperating-host serial launch reservations are implemented; actual
+comparisons and same-host held-out evaluation remain incomplete. This is the bounded accounting slice of the
 [account improvement design](account-improvement-loop.md#comparative-evaluation-contract).
-The module does not execute agents, fixtures, traces, shell commands, model calls or
-Git/installer actions. It reads JSON on stdin and writes JSON on stdout.
+The evaluator and admission reader do not launch agents or execute trace commands.
+The separate serial gate below can invoke one explicitly authorized native trial;
+none of these commands performs Git or installer actions.
 
 ## Usage and frozen contract
 
@@ -130,7 +131,8 @@ Exit 0 means a report was produced, not that its trials passed; malformed top-le
 input returns exit 1 with `status=rejected`.
 
 The private context requires version 1 and kind
-`native_artifact_admission_context_v1`, with exactly these fields:
+`native_artifact_admission_context_v1`, with the required fields below and optional
+`execution_root` for the [serial gate](#serial-native-launch-reservations):
 
 | Field | Binding |
 | --- | --- |
@@ -174,8 +176,8 @@ files with exact 0600 mode; attempt/journal directories require private ownershi
 holds each coordinator lock nonblockingly, validates manifest, dispatch, journal
 sequence, collection intent/result, source and cleanup bindings, and rechecks
 identities through grading. Active writers, evidence drift and missing qualification
-block admission. The current collection source set has credential-free evidence;
-matching authenticated qualification remains unavailable. Preserve recoverable
+block admission. Maintained collection evidence covers its recorded prior source
+set; changed reservation sources have not renewed current native qualification. Preserve recoverable
 attempt costs when outcome admission is blocked.
 
 This route admits artifact snapshots only. Present SHA-256 values are compared
@@ -192,7 +194,8 @@ observed cumulative usage; conflicting receipts, missing usage and discontinuiti
 leave the affected cost unknown. Known tokens are a subtotal, never a complete
 budget when coverage is missing. Wire requests, billing usage and currency remain
 unobserved. Selected-model evidence is `source_guarded_protocol_not_exported_selection`;
-explicit observed-model export and aggregate launch reservation remain separate work.
+explicit observed-model export remains separate work. An optional `execution_root`
+adds the separate reservation audit described below.
 
 The controller, scorer and same-account maintainer are trusted local owners.
 These guards do not contain a malicious same-UID host. Remote protected-file
@@ -200,6 +203,86 @@ checks retain their own source-bound scope. `live_eligible` stays false and
 promotion inconclusive, even when an artifact criterion passes. Current-source
 qualification, real comparisons and same-host held-out evaluation remain distinct
 requirements; this component does not complete issue #26.
+
+## Serial native launch reservations
+
+The [serial gate](../../scripts/improvement/trial_reservation.py) coordinates one
+frozen experiment among cooperating trusted-host callers. It does not provide a
+hard provider request, token or spending cap. Current real execution remains
+blocked until source-bound qualification is renewed; fixed-stub verification is
+not native qualification or natural-routing evidence. The
+[workflow diagram](../architecture/native-experiment-workflow.html) shows the
+reservation, audit and refusal paths; this section owns the operator contract.
+
+Use Python 3.11+ and a frozen native admission context whose optional
+`execution_root` names an existing, empty, current-owner 0700 directory. Every
+selected plan must use that same `state_root`. The context and private files keep
+the admission ownership rules above; the current runner source inventory includes
+`trial_reservation.py`. Supply one frozen plan for every scheduled trial, in the
+saved inventory order, with its exact attempt identity and limits.
+
+```sh
+python3 scripts/improvement/trial_reservation.py initialize \
+  --root /path/to/private-experiment < /path/to/private-initialize-input.json
+python3 scripts/improvement/trial_reservation.py status \
+  --root /path/to/private-experiment < /path/to/private-experiment-input.json
+python3 scripts/improvement/trial_reservation.py run-next \
+  --root /path/to/private-experiment \
+  --plan /path/to/next-frozen-plan.json \
+  --auth-source /path/to/explicitly-authorized-auth.json \
+  < /path/to/private-experiment-input.json
+```
+
+All stdin objects contain exactly `experiment`, `current_spec` and `context_path`;
+`initialize` additionally requires ordered `plan_paths`. The CLI does not accept
+caller success flags. `initialize` validates qualifications and plans, then writes
+an exclusive header and journal without launching a process or opening auth.
+`status` audits existing records. Only `run-next` calls the native runner, using
+the separate explicit authentication source and the guide's existing execution
+authority. These commands do not start a VM, change Docker context or install
+account settings. There is no automatic loop or automatic retry.
+
+One stable nonblocking experiment lock is acquired before native attempt locks
+and held through the launch and its cleanup. The gate durably records the next
+scheduled reservation before the launch boundary; the runner rechecks its exact
+reserved manifest digest before auth or execution. A wrong-order or changed plan,
+busy lock, exhausted allowance or incomplete prior attempt prevents that launch.
+A reserved slot is permanent: crash, refusal, interruption and recovery do not
+refund it or reset the schedule. Preserve blocked state and original receipts.
+
+The frozen `model_requests` allowance counts reserved **initial turns**, not HTTP
+requests or provider retries. Each reservation permanently charges the declared
+`setup_seconds + wall_seconds + cleanup_seconds` against `budget.seconds`; this
+is declared phase-time accounting, not measured provider time or refunded elapsed
+time. Before another turn, known cumulative usage plus the next plan's
+`soft_total_tokens` must fit the remaining token allowance. Observed overshoot,
+unknown or incomplete prior evidence stops further launches. Token checks are
+post-use soft observations and may overshoot; wire requests, billing and currency
+remain unknown. Do not describe this as a hard provider budget.
+
+| Status | Meaning |
+| --- | --- |
+| `ready` | Existing reservations have complete bound cost/cleanup facts and another scheduled slot remains; not a task-quality verdict. |
+| `complete` | All scheduled slots have complete bound facts within the recorded limits; not native qualification, grading success or promotion. |
+| `blocked` | A reserved attempt is unknown/incomplete or a recorded allowance is exceeded. Known usage may still be retained. |
+| `refused` | Input, ownership, qualification, order or operation validation refused. Preserve prior state. |
+
+The CLI exits 0 for `ready`/`complete`, 1 for `blocked`, and 2 for caught refusal.
+`reserved_initial_turns` counts durable reservations; the separate
+`initial_turn_requests_attempted` list records observed per-attempt facts and may
+contain unknowns. Neither is a provider wire-request count. `unknown_attempts`
+includes incomplete attempts even when some tokens are known, so inspect status
+alongside `known_tokens` and nullable `total_tokens`.
+
+When the admission context includes `execution_root`, `trial_admission.py report`
+locks and audits **every reservation**, independently of supplied completion
+references. Its `execution_accounting` retains this audit; omitting an attempt
+cannot remove its reserved allowance, known spend or uncertainty. The ordinary
+`usage` field still describes submitted evidence, so do not sum the two views.
+An unavailable or blocked audit cannot enable eligibility. Contexts without
+`execution_root` retain offline admission behavior and its unavailable-reservation
+blocker. All reports keep `live_eligible=false`; observed-model export, real
+comparisons and same-host held-out evaluation remain separate requirements.
 
 ## Report and trust limits
 
