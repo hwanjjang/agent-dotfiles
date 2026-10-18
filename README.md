@@ -160,6 +160,8 @@ its PASS does not establish improvement over a baseline.
   future work. Prefer a structural fix or an executable check when it can prevent
   a recurring mistake.
 
+[Pull request CI](.github/README.md) documents the repository checks and their scope.
+
 ## Working loop
 
 ```text
