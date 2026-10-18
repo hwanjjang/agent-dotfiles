@@ -64,11 +64,14 @@ def token(value):
     return isinstance(value, str) and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,127}', value) is not None
 
 
-def case_valid(c):
+def case_valid(c, expected_classification='development'):
     require(keys(c, 'case_id language purpose inputs outcome_contract counterpart schema_version classification artifact_hashes case_digest'), 'case_fields')
     require(isinstance(c['case_id'], str) and re.fullmatch('[A-Za-z0-9_.:@-]{1,160}', c['case_id']) is not None
             and c['language'] in ('en', 'ko') and c['purpose'] in ('outcome', 'routing', 'adherence'), 'case_identity')
-    require(type(c['schema_version']) is int and c['schema_version'] == 1 and c['classification'] == 'development', 'development_only')
+    require(type(c['schema_version']) is int and c['schema_version'] == 1
+            and expected_classification in ('development', 'same_host_heldout')
+            and c['classification'] == expected_classification, 'development_only'
+            if expected_classification == 'development' else 'case_classification')
     require(keys(c['counterpart'], 'inputs outcome_contract'), 'counterpart_fields')
     hashes = {}
     for variant in VARIANTS:
@@ -102,7 +105,14 @@ def criterion_valid(check):
 
 def freeze(spec):
     require(len(encoded(spec)) <= 1024 * 1024, 'spec_size')
-    require(keys(spec, 'cases checks identities runtime budget repetitions seed primary_metric regression_margin promotion_rule'), 'spec_fields')
+    fields = 'cases checks identities runtime budget repetitions seed primary_metric regression_margin promotion_rule'
+    require(keys(spec, fields) or keys(spec, fields + ' evaluation_scope'), 'spec_fields')
+    classification = 'development'
+    if 'evaluation_scope' in spec:
+        scope = spec['evaluation_scope']
+        require(keys(scope, 'kind pack_digest') and scope['kind'] == 'same_host_heldout'
+                and sha(scope['pack_digest']), 'evaluation_scope')
+        classification = 'same_host_heldout'
     require(keys(spec['identities'], 'baseline candidate runner grader environment') and all(sha(v) for v in spec['identities'].values()), 'identities')
     require(keys(spec['runtime'], 'provider model client adapter reasoning tool_versions capabilities'), 'runtime_fields')
     runtime = spec['runtime']
@@ -119,7 +129,7 @@ def freeze(spec):
     require(isinstance(spec['cases'], list) and 1 <= len(spec['cases']) <= 64, 'cases')
     ids = []
     for case in spec['cases']:
-        case_valid(case)
+        case_valid(case, classification)
         ids.append(case['case_id'])
     require(len(ids) == len(set(ids)) and isinstance(spec['checks'], dict) and set(spec['checks']) == set(ids), 'case_checks')
     for c in spec['cases']:
@@ -134,6 +144,9 @@ def freeze(spec):
                 criterion_valid(check)
             require(len({v['id'] for v in checkset['criteria']}) == len(checkset['criteria']), 'criterion_duplicate')
             require(any(v['dimension'] == 'outcome' for v in checkset['criteria']), 'outcome_required')
+    if 'evaluation_scope' in spec:
+        require(spec['evaluation_scope']['pack_digest'] ==
+                digest({k: spec[k] for k in ('cases', 'checks')}), 'pack_digest_mismatch')
     # Copies sever mutable references. No grader/answer paths are passed to an executor.
     spec = json.loads(encoded(spec))
     spec_digest = digest(spec)
@@ -398,6 +411,14 @@ def compare(experiment, completions, current_spec, *, native=None):
                                'explicit_observed_model_projection_unavailable']
         if native.context.qualification_error:
             report['blockers'].append(native.context.qualification_error)
+    if 'evaluation_scope' in spec:
+        # A frozen declaration does not verify context separation or exposure.
+        report.update(classification='same_host_heldout_declared',
+                      evaluation_scope=json.loads(encoded(spec['evaluation_scope'])),
+                      development_exposure='not_assessed',
+                      evidence_kind=('native_artifact_' if native is not None else 'deterministic_')
+                                    + 'same_host_heldout_declared_comparison')
+        report['blockers'].append('same_host_heldout_unverified')
     # Detect drift after scoring as well as at entry. The trusted local scorer
     # retains filesystem access; this is evidence invalidation, not containment.
     if not stale and (current_grader_identity() != frozen_grader or digest(current_spec) != frozen_spec_digest

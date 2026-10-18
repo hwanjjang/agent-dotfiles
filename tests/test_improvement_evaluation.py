@@ -407,4 +407,108 @@ class EvaluationTests(unittest.TestCase):
         with self.assertRaises(ev.Invalid):ev.freeze(dict(self.spec,budget=dict(self.spec['budget'],model_requests=-1)))
 
 
+class HeldoutScopeTests(unittest.TestCase):
+    """Existing synthetic fixture reclassified for declaration conformance only."""
+    def scoped(self):
+        value = spec()
+        for c in value['cases']:
+            c['classification'] = 'same_host_heldout'
+            c['case_digest'] = ev.digest({k:v for k,v in c.items() if k != 'case_digest'})
+        value['evaluation_scope'] = dict(kind='same_host_heldout',
+            pack_digest=ev.digest({k:value[k] for k in ('cases','checks')}))
+        return value
+
+    def test_declared_scope_freezes_detached_inventory_and_ids(self):
+        value = self.scoped(); frozen = ev.freeze(value)
+        self.assertEqual(frozen['spec']['evaluation_scope'], value['evaluation_scope'])
+        self.assertEqual(frozen, ev.freeze(json.loads(ev.encoded(value))))
+        self.assertNotEqual(frozen['spec_digest'], ev.freeze(spec())['spec_digest'])
+        self.assertTrue(set(t['trial_id'] for t in frozen['trials']).isdisjoint(
+            t['trial_id'] for t in ev.freeze(spec())['trials']))
+        value['evaluation_scope']['pack_digest'] = '0'*64
+        self.assertNotEqual(frozen['spec']['evaluation_scope'], value['evaluation_scope'])
+
+    def test_declared_report_never_certifies_not_supplied_or_eligibility(self):
+        value = self.scoped(); frozen = ev.freeze(value)
+        report = ev.compare(frozen, [completion(frozen,t) for t in frozen['trials']], value)
+        self.assertEqual(report['counts']['pass'], 8)
+        self.assertEqual(report['classification'], 'same_host_heldout_declared')
+        self.assertEqual(report['evidence_kind'], 'deterministic_same_host_heldout_declared_comparison')
+        self.assertEqual(report['evaluation_scope'], value['evaluation_scope'])
+        self.assertEqual(report['development_exposure'], 'not_assessed')
+        self.assertIsNone(report['holdout_custody'])
+        self.assertIn('same_host_heldout_unverified', report['blockers'])
+        self.assertFalse(report['live_eligible']); self.assertEqual(report['promotion'],'inconclusive')
+        report['evaluation_scope']['pack_digest'] = '0'*64
+        self.assertNotEqual(report['evaluation_scope'], frozen['spec']['evaluation_scope'])
+
+    def test_default_development_shape_and_case_validator_stay_compatible(self):
+        value = spec(); frozen = ev.freeze(value); report = ev.compare(frozen,[],value)
+        self.assertNotIn('evaluation_scope', frozen['spec'])
+        self.assertNotIn('evaluation_scope', report)
+        self.assertEqual(report['classification'],'development')
+        self.assertEqual(report['development_exposure'],'all_cases_visible')
+        self.assertEqual(report['evidence_kind'],'deterministic_development_comparison')
+        ev.case_valid(value['cases'][0])
+        with self.assertRaises(ev.Invalid): ev.case_valid(self.scoped()['cases'][0])
+
+    def test_malformed_scope_and_self_certification_refuse(self):
+        for scope in (None, True, {}, {'kind':'development','pack_digest':'a'*64},
+                      {'kind':'same_host_heldout','pack_digest':True},
+                      {'kind':'same_host_heldout','pack_digest':'a'*64},
+                      dict(self.scoped()['evaluation_scope'],unseen=True)):
+            with self.subTest(scope=scope), self.assertRaises(ev.Invalid):
+                ev.freeze(dict(self.scoped(),evaluation_scope=scope))
+
+    def test_classification_must_match_scope_for_every_case(self):
+        heldout = self.scoped(); default = copy.deepcopy(heldout); del default['evaluation_scope']
+        with self.assertRaises(ev.Invalid): ev.freeze(default)
+        for mixed in (False, True):
+            value = self.scoped(); c = case()
+            if mixed:
+                c['case_id'] = 'second-synthetic'
+                c['case_digest'] = ev.digest({k:v for k,v in c.items() if k != 'case_digest'})
+                value['cases'].append(c); value['checks'][c['case_id']] = value['checks']['verification-en']
+            else: value['cases'] = [c]
+            value['evaluation_scope']['pack_digest'] = ev.digest({k:value[k] for k in ('cases','checks')})
+            with self.subTest(mixed=mixed), self.assertRaises(ev.Invalid): ev.freeze(value)
+
+    def test_pack_checks_and_current_scope_drift_cannot_reuse_results(self):
+        value = self.scoped(); frozen = ev.freeze(value)
+        changed = copy.deepcopy(value)
+        changed['checks']['verification-en']['reproduction']['criteria'][0]['expected'] = 7
+        with self.assertRaises(ev.Invalid): ev.freeze(changed)
+        changed['evaluation_scope']['pack_digest'] = ev.digest({k:changed[k] for k in ('cases','checks')})
+        self.assertNotEqual(ev.freeze(changed)['experiment_digest'], frozen['experiment_digest'])
+        report = ev.compare(frozen, [completion(frozen,t) for t in frozen['trials']], changed)
+        self.assertEqual(report['counts']['blocked'],8)
+        self.assertIn('stale_experiment',report['blockers'])
+
+    def test_native_scoped_projection_preserves_independent_false_boundaries(self):
+        import tempfile
+        from test_trial_admission import SyntheticAttempts, save
+        from scripts.improvement import trial_admission as ad
+        with tempfile.TemporaryDirectory() as folder:
+            f = SyntheticAttempts(Path(folder).resolve())
+            c = f.spec['cases'][0]; c['classification'] = 'same_host_heldout'
+            c['case_digest'] = ev.digest({k:v for k,v in c.items() if k != 'case_digest'})
+            f.spec['evaluation_scope'] = dict(kind='same_host_heldout',
+                pack_digest=ev.digest({k:f.spec[k] for k in ('cases','checks')}))
+            f.experiment = ev.freeze(f.spec)
+            declaration = next(iter(f.context['collection_by_trial'].values()))
+            f.context.update(experiment_digest=f.experiment['experiment_digest'],
+                collection_by_trial={t['trial_id']:declaration for t in f.experiment['trials']})
+            save(f.context_path,f.context)
+            with patch.object(ad,'ROOT',f.root):
+                ctx = ad.load_context(f.experiment,f.spec,f.context_path)
+                batch = ad.read_attempts(ctx,[f.attempt(0)])
+                try: report = ev.compare(f.experiment,[],f.spec,native=batch)
+                finally: batch.close()
+            self.assertEqual(report['evidence_kind'],'native_artifact_same_host_heldout_declared_comparison')
+            self.assertEqual(report['classification'],'same_host_heldout_declared')
+            self.assertIn('same_host_heldout_unverified',report['blockers'])
+            self.assertFalse(report['backend_identity_verified']); self.assertFalse(report['live_eligible'])
+            self.assertFalse(report['quiescent_state_verified'])
+
+
 if __name__=='__main__':unittest.main()
