@@ -118,5 +118,24 @@ class RoutingMetadataTests(unittest.TestCase):
             sources.append((name,text,description))
         self.validate_sources(sources)
 
+    def test_json_surrogate_escape_pairs_refuse_native_yaml_incompatibility(self):
+        for raw in (r'"\ud83d\ude00"', r'"\uD83D\uDE00"',
+                    r'"\ud800\udc00"', r'"\udbff\udfff"',
+                    r'"\\\ud83d\ude00"'):
+            with self.subTest(raw=raw):
+                self.refused(f'---\nname: first\ndescription: {raw}\n---\n',
+                             json.loads(raw))
+
+    def test_utf8_bmp_and_literal_backslash_unicode_spelling_remain_supported(self):
+        values = [('"Useful 😀 work"', 'Useful 😀 work'),
+                  (r'"\ud55c\uae00 \u263a"', '한글 ☺'),
+                  (r'"\ud7ff\ue000"', '\ud7ff\ue000')]
+        for text in (r'\ud83d\ude00', r'\\ud800', r'\uDFFF literal',
+                     r'ordinary \\ text'):
+            values.append((json.dumps(text), text))
+        for raw, text in values:
+            with self.subTest(raw=raw):
+                self.validate(f'---\nname: first\ndescription: {raw}\n---\n', text)
+
 
 if __name__ == '__main__':unittest.main()

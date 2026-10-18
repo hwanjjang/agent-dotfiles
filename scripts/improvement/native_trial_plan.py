@@ -280,6 +280,13 @@ def validate_routing(value, selected):
                     metadata[key] = raw == 'true'
                     continue
                 if raw.startswith('"'):
+                    # Native YAML rejects each surrogate escape, even a pair
+                    # JSON would combine. Consume escaped backslashes first so
+                    # literal backslash-u text remains an ordinary string.
+                    escapes = re.findall(r'\\(?:u[0-9a-fA-F]{4}|.)', raw)
+                    require(not any(escape.startswith('\\u') and
+                                    0xD800 <= int(escape[2:], 16) <= 0xDFFF
+                                    for escape in escapes), 'routing_metadata')
                     text = json.loads(raw)
                 else:
                     # Alphabetic-leading plain strings exclude numbers, dates,
