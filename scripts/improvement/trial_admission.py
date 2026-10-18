@@ -480,6 +480,13 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
     trial, files = bind_manifest(ctx, manifest)
     require(receipt['mode'] == 'trial', 'trial_binding')
     row['binding_digest'] = trial['binding_digest']
+    timing = receipt.get('controller_timing')
+    if timing is not None:
+        require(ev.keys(timing, 'clock scope elapsed_ms') and timing['clock'] == 'monotonic_ns'
+                and timing['scope'] == 'controller_setup_task_cleanup'
+                and ev.integer(timing['elapsed_ms']), 'controller_timing')
+        row['latency_ms'] = timing['elapsed_ms']
+        info['latency_scope'] = timing['scope']
     observed_model = model_selection(observation['model_selection'], ctx.spec['runtime']['model']) if 'model_selection' in observation else None
     require('routing' not in manifest or observed_model is not None, 'model_selection_unavailable')
     boundary = _one(records, 'executor_boundary')

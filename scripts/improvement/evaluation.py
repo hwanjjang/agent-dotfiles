@@ -404,7 +404,8 @@ def compare(experiment, completions, current_spec, *, native=None):
                       admission_context_digest=native.context.digest,
                       attempt_observations=json.loads(encoded(native.attempts)),
                       quiescent_state_verified=False, backend_identity_verified=False,
-                      selection_evidence='source_guarded_protocol_not_exported_selection')
+                      selection_evidence='source_guarded_protocol_not_exported_selection',
+                      latency_measurement='source_guarded_controller_setup_task_cleanup')
         report['blockers'] = [b for b in report['blockers'] if b not in
             ('live_evidence_verifier_unavailable', 'independent_holdout_custody_unavailable')]
         report['blockers'] += ['aggregate_launch_reservation_unavailable', 'same_host_heldout_unimplemented',
