@@ -109,9 +109,8 @@ class OwnerTests(unittest.TestCase):
         self.assertFalse(r['home_absent'])
 
     def test_external_copy_interruption_cleans_owned_partial_file(self):
-        import native_trial_plan
         real_write = m.os.write
-        for index, error in enumerate((native_trial_plan.Refusal('synthetic timeout'), KeyboardInterrupt('synthetic interrupt'))):
+        for index, error in enumerate((ValueError('synthetic timeout'), KeyboardInterrupt('synthetic interrupt'))):
             with self.subTest(interruption=type(error).__name__):
                 destination = self.root/('interrupted-home-'+str(index))
                 def interrupted_write(fd, data):
@@ -149,10 +148,9 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual((moved/'auth.json').read_bytes(), b'syn')
 
     def test_cleanup_interruption_retains_partial_owner_for_runner_finally(self):
-        import native_trial_plan
         caught = None
         try:
-            with patch.object(m.os, 'write', side_effect=native_trial_plan.Refusal('synthetic timeout')), \
+            with patch.object(m.os, 'write', side_effect=ValueError('synthetic timeout')), \
                  patch.object(m.NativeHome, 'cleanup', side_effect=KeyboardInterrupt('cleanup interrupt')):
                 self.owner()
         except BaseException as exc:
