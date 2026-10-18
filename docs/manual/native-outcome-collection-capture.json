@@ -3,7 +3,7 @@
   "observed_date": "2026-10-18",
   "capture_kind": "Browser-rendered sanitized actual CLI and native-result summaries; not terminal or model-performance screenshots",
   "evidence": "../verification/native-outcome-collection.json",
-  "evidence_sha256": "9a62df203ba5a894372b99478fd05e3c416e7ae76cd6d9bd41cb4a25a261813c",
+  "evidence_sha256": "d71363cd2a23a66a3d0d01ebc73c9cac431e3fb818bad867a8e17bcb164414e2",
   "source_checkpoint": "1d831bf6e62e5656ca091cb5d8af1588e7480b3c",
   "source_checkpoint_note": "Source bytes were exercised before this checkpoint commit; all 12 runtime digests were independently matched afterwards. This is not a claim that the smoke ran at that Git HEAD.",
   "runtime_source_digests": {
@@ -100,15 +100,16 @@
   "every_page_rendered_and_visually_reviewed": true,
   "visual_result": "Both final browser captures and both PDF page renders inspected. All labels, instructions, captures, captions and footers readable; no clipping, overlaps, missing glyphs or private paths.",
   "correction_history": [
-    "Initial check-summary capture overflowed at the bottom note; retained privately. Reduced spacing, captured both final pages under a new local version, then rendered and inspected the complete PDF."
+    "Initial check-summary capture overflowed at the bottom note; retained privately. Reduced spacing, captured both final pages under a new local version, then rendered and inspected the complete PDF.",
+    "ReviewR1 clarified that private bridge projects observation/coordinator receipt; production observe/finish collection gates have unit coverage only. Two summaries recaptured and two PDF pages rerendered/textchecked/visuallyinspected. Actual native cases were not rerun or relabeled."
   ],
   "artifacts_sha256": {
-    "native-outcome-collection.json": "0380b64acd7a96afc84dacf91fb2fecddb748f9a17023fcea391faba778028e8",
-    "native-outcome-collection.pdf": "397f3ad813b4c7a4d7a6a0d4cccbe791c3fb40c93d2cf8810a92f123d3566f12",
+    "native-outcome-collection.json": "f11f865b94c47906e9f58593cf0b90a95a7f1d6cd0822b0eee5d099a02a159db",
+    "native-outcome-collection.pdf": "86250f7dfcfcc18956cf279cd4ae4a16516226c6825c5c6b688ab47740b0a4b5",
     "native-outcome-collection-check.html": "d7c4209ae48c8a12703927e23f86405abaee827b74f91d2f1e84c57041594512",
-    "native-outcome-collection-result.html": "a3d9637c27147de7e93946ac52482da41149d7f13ecbcb8bd3535d9fa44aed6c",
+    "native-outcome-collection-result.html": "028de5d15db9928a481cc0642e96809a7525924d9626cde9895af6740e27f14b",
     "native-outcome-collection-check.png": "a0606634536bd25b51c8c1cbbf581f6e49b45ba6069bca350775f4bd24a8eaf3",
-    "native-outcome-collection-result.png": "57b07a5030e6bf86e35b36f79f9cd34162eba03b33697ffaf283922a73239be2"
+    "native-outcome-collection-result.png": "abf7a95445ed3bdb6640c27e802860952d0b696cbb27fa3e87f965a0aeb43eb8"
   },
   "limits": [
     "Images summarize recorded actual results. This documentation operation does not rerun native tasks or authenticate.",
@@ -116,6 +117,7 @@
     "Public native statuses remain mock_complete or blocked. Independent ownership/cleanup and VM restoration are private coordinator attestations represented in sanitized evidence.",
     "Captured interrupted-task artifacts do not change its blocked task state. Missing is an observation; unsafe collection has no partial rows.",
     "Per-file snapshots are not atomic or quiescent final state; trusted host/controller/scorer access remains. Recovery never recaptures.",
-    "Exact source-byte/profile evidence only; authenticated qualification, evaluator admission, natural routing, comparison and promotion remain separate."
+    "Exact source-byte/profile evidence only; authenticated qualification, evaluator admission, natural routing, comparison and promotion remain separate.",
+    "Private bridge supplies observation/coordinator receipt; production observe/finish collection gates have unit coverage only."
   ]
 }
