@@ -4,6 +4,27 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Native observation platform coverage — 2026-10-18
+
+The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
+is the authoritative per-platform record. A fresh macOS Codex/Luna run with
+matching corrected collector/store/dispatcher and installer-harness hashes
+exercised all four observer kinds, planning coexistence and intentional exit 3
+with unknown observer outcomes. Focused and installed-dispatcher checks separately
+verify out-of-project pre-read rejection. The native fixture is one synthetic task,
+not complete delivery, subagent ancestry or effective configuration exposure.
+
+Linux results remain historical pre-guard fixtures: Codex produced genuine
+callbacks/planning context but its full tool fixture was blocked by bubblewrap;
+Claude initialized and emitted SessionStart with no usable model authentication.
+They do not qualify corrected Linux runtime. The [Codex walkthrough](manual/codex-observation.pdf)
+shows the fresh macOS result alongside those historical Linux limits.
+
+A separate whole-client Linux Docker experiment later passed native Codex command
+and synthetic transport canaries without authentication, model calls or observer
+hook activation. It establishes a bounded synthetic execution route; the earlier
+live observer fixture remains partial for its recorded environment.
+
 ## Doctor review corrections — 2026-10-18
 
 The corrected doctor harness was exercised with actual Codex GPT-6-Luna and

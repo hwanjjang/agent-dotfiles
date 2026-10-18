@@ -162,7 +162,7 @@ def codex_checks(home, receipt, skills, project, env, timeout):
                           f'{len(data["errors"])} native discovery errors.',
                           'Inspect conflicting skill paths or client errors locally.' if missing or data['errors'] else ''))
         if not receipt['hooks'].get('.codex/hooks.json'):
-            rows.append(check('native.codex.hooks', 'skipped', 'Planning hooks were not selected.'))
+            rows.append(check('native.codex.hooks', 'skipped', 'Owned hooks were not selected.'))
             return rows
         try:
             hooks = process.call(3, 'hooks/list', dict(cwds=[str(project)]))['data'][0]
@@ -209,7 +209,7 @@ def claude_checks(home, receipt, skills, project, env, timeout):
                       f'{len(skills) - len(missing)}/{len(skills)} native skill commands discovered; source paths checked offline.',
                       'Inspect /skills and client version locally.' if missing else '')]
         if not receipt['hooks'].get('.claude/settings.json'):
-            rows.append(check('native.claude.session-start', 'skipped', 'Planning hooks were not selected.'))
+            rows.append(check('native.claude.session-start', 'skipped', 'Owned hooks were not selected.'))
             return rows
         def completed(row):
             return row.get('type') == 'system' and row.get('subtype') == 'hook_response' and row.get('hook_event') == 'SessionStart'
