@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "feature_id": "evaluation-accounting",
+  "scope": "Actual offline routing-admission and scope-declaration CLI processes with explicitly FAKE qualification, native journals, lifecycle and usage. No current native qualification.",
+  "capture_surface": "Browser-rendered sanitized actual CLI summaries; not terminal images.",
+  "source_checkpoint": "82a83a4e5e28e22d0ffb44d521ae6a2e81ce2075",
+  "execution_at_existing_checkpoint": true,
+  "source_digests": {
+    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "c7d2a0cf3480025edec132ccf2ff4fec67931056f2cc451b65af56d67c781ebc",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "837e5f3565947c5b60936bfaa7560d0b3a37a96d411cbd9d11110858d6669bcd",
+    "native_trial_protocol.py": "3d08da133a649e9e60551b77e379703bca514af08b3b047531d92bc83ca8051d",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
+    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
+  },
+  "grader_source_digests": {
+    "evaluation.py": "3ba16bb9013597840d48a1070f2eb7390a6a6dfa35f9ea6c2ad7d1adc6a7f2db",
+    "trial_admission.py": "5d33e89736a68c8478f9f838278234a28a71bfd3303058f5b8c7bb1cc8ea54fb",
+    "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
+  },
+  "source_identity": "88b77a161b742a122d96261ec441a7b2eacc1c24a26d32d8f640c74727cc9458",
+  "grader_identity": "d17d1b5598ddea68035d5f27d4d790a34525f75af779ed228dcc470886c6f718",
+  "retained_evidence_sha256": {
+    "routing-cli-311.json": "ee94e2315578cc56f30ded50f767c150e3805a9731a3ad6443eda9c74b064638",
+    "result.json": "57e4a54f352e6362d211735b6a185d7da08749d6155e0126550430c2a9965706",
+    "routing-cli.py": "522bdc5b0d294962930cefa229d70289801ee4e347f769d1f6495a2c7d63c373",
+    "p0-cli.py": "e607133afb614e9745c570e013af5efa19b4a532836b14a1f695a10cf272537d",
+    "combined311.txt": "75eec1f0051887e1eb44ab8521234aa36faec7e4eea98ec571e287d56db9ab66",
+    "combined314.txt": "017ba7c0d93c9b336148f40084eabccc2bd74ee979569c5447d47d9bc69dcaf3"
+  },
+  "command_provenance": "Current retained routing CLI argv records actual sys.executable; matching P0 argv uses the same Python3.11 interpreter. Personal executable paths are omitted from public summaries. Prior v1/v2 receipts remain historical, unmodified.",
+  "capture_method": {
+    "browser": "Existing Google Chrome",
+    "transport": "Archify ChromeVisualBrowser direct DevTools pipe",
+    "viewport": {
+      "width": 1100,
+      "height": 690
+    },
+    "overflow_check": "PASS",
+    "captures_visually_inspected": 2,
+    "browser_close_completed": true
+  },
+  "pdf_validation": {
+    "builder": "screenshot-manual build_manual.py",
+    "renderer": "PDFium via render_pages.py",
+    "page_count": 2,
+    "text_check": "PASS",
+    "pages_visually_inspected": 2,
+    "visual_check": "PASS",
+    "create_marker_count": 1
+  },
+  "actual_result_summary": {
+    "routing_cli_scenarios": [
+      {
+        "scenario": "implicit_read",
+        "cli_exit": 0,
+        "counts": {
+          "blocked": 0,
+          "fail": 0,
+          "inconclusive": 0,
+          "pass": 4
+        },
+        "dimensions": {
+          "adherence": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "exposure": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_static": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_task": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_tool": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "outcome": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 0,
+            "pass": 4
+          },
+          "routing": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 0,
+            "pass": 4
+          }
+        },
+        "selection_evidence": "persisted_thread_start_client_model",
+        "live_eligible": false,
+        "backend_identity_verified": false
+      },
+      {
+        "scenario": "healthy_none",
+        "cli_exit": 0,
+        "counts": {
+          "blocked": 0,
+          "fail": 4,
+          "inconclusive": 0,
+          "pass": 0
+        },
+        "dimensions": {
+          "adherence": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "exposure": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_static": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_task": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_tool": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "outcome": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 0,
+            "pass": 4
+          },
+          "routing": {
+            "blocked": 0,
+            "fail": 4,
+            "inconclusive": 0,
+            "pass": 0
+          }
+        },
+        "selection_evidence": "persisted_thread_start_client_model",
+        "live_eligible": false,
+        "backend_identity_verified": false
+      },
+      {
+        "scenario": "tampered_fake_qualification",
+        "cli_exit": 0,
+        "counts": {
+          "blocked": 4,
+          "fail": 0,
+          "inconclusive": 0,
+          "pass": 0
+        },
+        "dimensions": {
+          "adherence": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "exposure": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_static": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_task": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "mcp_tool": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "outcome": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          },
+          "routing": {
+            "blocked": 0,
+            "fail": 0,
+            "inconclusive": 4,
+            "pass": 0
+          }
+        },
+        "selection_evidence": "source_guarded_protocol_not_exported_selection",
+        "live_eligible": false,
+        "backend_identity_verified": false
+      }
+    ],
+    "synthetic_known_tokens_per_routing_scenario": 640,
+    "scope_cli_calls": 8,
+    "scope_classification": "same_host_heldout_declared",
+    "scope_verification": "unverified",
+    "development_exposure": "not_assessed",
+    "holdout_custody": null,
+    "scope_invalid_input_refusals": 3,
+    "stale_current_scope_blocked": true
+  },
+  "limits": {
+    "actual_native_execution": false,
+    "authentication_access": false,
+    "model_calls": 0,
+    "vm_actions": 0,
+    "current_native_source_qualification": "blocked",
+    "live_eligible": false,
+    "backend_identity_verified": false,
+    "semantic_adherence_verified": false,
+    "all_skill_pages_verified": false,
+    "unseen_data_certified": false,
+    "candidate_benefit_claimed": false,
+    "actual_comparison_completed": false,
+    "heldout_cases_generated": false,
+    "latency_measurement_contract": "source_guarded_controller_setup_task_cleanup; no provider-latency measurement demonstrated in these screenshots"
+  },
+  "artifact_sha256": {
+    "native-routing-admission.json": "a68f1120edf8b2dd53c8e47b483754a186015082cfc186467d3a8aedd0204b81",
+    "native-routing-admission.pdf": "1939cc9751ace0ce12d4f4dfb527d6c6a541bf8a0780ccbdf7ebc45bc3d3dc36",
+    "native-routing-admission-check.html": "56c3c280eb9f9d1765a34e1cec742f4b8ad26acaf5fd52e34d620b03de1c6100",
+    "native-routing-admission-check.png": "e4c32d28bfb36a679e9e197e465ca33573a25ee64b46c80b9e5315da8125c95c",
+    "native-routing-admission-result.html": "3e95c18a3ee796d0c1c621f0d0c924ad733d0f6f214d9f303c43b989c90b51a8",
+    "native-routing-admission-result.png": "137460a91d40c7fc17af71c5e6e652e42f5861fd37e81ce46710259d8b8ccf2d"
+  },
+  "renewal": {
+    "reason": "Recovery schema-2 refusal fix changed native_trial.py; all current thirteen runtime and three grader hashes renewed after fresh offline CLI runs.",
+    "prior_capture_sha256": "157458b3915e0466bd784ec6b0555427758603c09dfa664751779d4f99ba064c",
+    "prior_versions_preserved": true,
+    "source_checkpoint_precedes_execution": true,
+    "combined_tests_per_python_version": 325,
+    "diagram_reuse": "The maintained diagram stays pinned to 13639c3. Its mapped functions and AST ranges are unchanged by the later read_recovery edit; no new diagram qualification or capture is claimed.",
+    "pdf_marker": "Existing create marker reused; no additional marker invoked."
+  }
+}

@@ -377,8 +377,9 @@ The [collection guide](../native-trials.md#declare-bounded-output-collection) ow
 that implemented contract and its current source-bound limits. No artifact bodies
 or general final-answer text are retained. `completed_ungraded` is not an evaluator
 completion. The [offline admission contract](evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
-now connects recorded artifact snapshots; current authenticated qualification,
-observed-model export remains required before actual comparison. The [serial gate](evaluation-accounting.md#serial-native-launch-reservations) implements cooperating-host reservations; changed runtime sources require renewed affected
+now connects recorded artifact snapshots. The [routing/client-model component](evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
+admits bound receiver and selected-client-model records offline; current authenticated
+and routing qualification remains required before actual comparison. The [serial gate](evaluation-accounting.md#serial-native-launch-reservations) implements cooperating-host reservations; changed runtime sources require renewed affected
 qualification; historical qualification cannot be relabeled as current evidence.
 
 The development pilot must use the requested and observed native-client model selection,
@@ -402,6 +403,10 @@ Without an eligible accepted candidate, #29 and parent #17 retain their unmet de
 criteria; no account activation or automatic candidate search follows.
 
 ### Same-host held-out evaluation
+
+The implemented [optional scope declaration](evaluation-accounting.md#optional-same-host-scope-declaration)
+binds a declared case/check pack only. It does not implement the custody, exposure
+or actual evaluation steps below; reports retain unverified/not-assessed/null facts.
 
 Design decision, 2026-10-18: retain problems not supplied to the candidate author,
 but replace the earlier independently controlled custodian requirement. This is a

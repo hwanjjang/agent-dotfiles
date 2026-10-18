@@ -1,0 +1,344 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Native routing records and offline admission",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/architecture/native-routing-workflow.html",
+    "repository": {
+      "url": "https://github.com/hwanjjang/agent-dotfiles",
+      "revision": "13639c3af0890d33abe2977d01454d5d95b6d1e7",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "lanes": [
+    {
+      "id": "execute",
+      "label": "Source-bound optional serial execution / trusted host receiver"
+    },
+    {
+      "id": "grade",
+      "label": "Trusted offline scorer / current qualification required"
+    },
+    {
+      "id": "stop",
+      "label": "Separate outcome grade or blocked evidence"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "catalog",
+      "lane": "execute",
+      "col": 0,
+      "type": "database",
+      "label": "Frozen catalog",
+      "sublabel": "3-5 declared skill mains",
+      "tag": "Natural or forced mode",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial_plan.py",
+          "line": 235,
+          "end_line": 282,
+          "label": "Catalog and frontmatter binding"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 37,
+          "end_line": 42,
+          "label": "Natural prompt versus forced read"
+        }
+      ]
+    },
+    {
+      "id": "reserve",
+      "lane": "execute",
+      "col": 1,
+      "type": "security",
+      "label": "Serial reservation",
+      "sublabel": "Ordered initial turn",
+      "tag": "Current proof before run",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 194,
+          "end_line": 219,
+          "label": "Lock, durable reserve, fixed launch"
+        }
+      ]
+    },
+    {
+      "id": "native",
+      "lane": "execute",
+      "col": 2,
+      "type": "backend",
+      "label": "Owned native trial",
+      "sublabel": "Trusted host + executor",
+      "tag": "One initial turn",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1230,
+          "end_line": 1261,
+          "label": "Setup, observe, finally cleanup"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 919,
+          "end_line": 967,
+          "label": "Selected environment and observer"
+        }
+      ]
+    },
+    {
+      "id": "project",
+      "lane": "execute",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Whitelist facts",
+      "sublabel": "Client model + read signal",
+      "tag": "No arbitrary native text",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial_protocol.py",
+          "line": 433,
+          "end_line": 519,
+          "label": "Exact selected client model"
+        },
+        {
+          "path": "scripts/improvement/native_trial_protocol.py",
+          "line": 52,
+          "end_line": 161,
+          "label": "Finite correlated receiver projection"
+        }
+      ]
+    },
+    {
+      "id": "shutdown",
+      "lane": "execute",
+      "col": 4,
+      "type": "security",
+      "label": "Cleanup and drain",
+      "sublabel": "Owned shutdown + EOF",
+      "tag": "Unknown remains blocked",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1023,
+          "end_line": 1148,
+          "label": "Owned cleanup and receiver drain"
+        },
+        {
+          "path": "scripts/improvement/native_trial_protocol.py",
+          "line": 137,
+          "end_line": 161,
+          "label": "Receiver completeness facts"
+        }
+      ]
+    },
+    {
+      "id": "final",
+      "lane": "execute",
+      "col": 5,
+      "type": "database",
+      "label": "Final observations",
+      "sublabel": "Ordered durable records",
+      "tag": "Receipt equals finalized",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1150,
+          "end_line": 1222,
+          "label": "Routing, finalized observation, receipt"
+        }
+      ]
+    },
+    {
+      "id": "admit",
+      "lane": "grade",
+      "col": 5,
+      "type": "security",
+      "label": "Offline admission",
+      "sublabel": "Current proof + identities",
+      "tag": "Missing proof blocks",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 206,
+          "end_line": 307,
+          "label": "Source and qualification validation"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 457,
+          "end_line": 494,
+          "label": "Final records and timing consistency"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 165,
+          "end_line": 196,
+          "label": "Actual routing qualification predicates"
+        }
+      ]
+    },
+    {
+      "id": "grade",
+      "lane": "stop",
+      "col": 5,
+      "type": "backend",
+      "label": "Separate dimensions",
+      "sublabel": "Routing versus outcome",
+      "tag": "No live eligibility",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/evaluation.py",
+          "line": 288,
+          "end_line": 455,
+          "label": "Distinct dimensions and blocked reports"
+        }
+      ]
+    },
+    {
+      "id": "blocked",
+      "lane": "stop",
+      "col": 4,
+      "type": "security",
+      "label": "Blocked report",
+      "sublabel": "Missing or invalid proof",
+      "tag": "No inferred pass",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 206,
+          "end_line": 307,
+          "label": "Qualification error retained"
+        },
+        {
+          "path": "scripts/improvement/evaluation.py",
+          "line": 288,
+          "end_line": 455,
+          "label": "Unqualified evidence stays blocked"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "catalog-reserve",
+      "from": "catalog",
+      "to": "reserve"
+    },
+    {
+      "id": "reserve-native",
+      "from": "reserve",
+      "to": "native"
+    },
+    {
+      "id": "native-project",
+      "from": "native",
+      "to": "project"
+    },
+    {
+      "id": "project-shutdown",
+      "from": "project",
+      "to": "shutdown"
+    },
+    {
+      "id": "shutdown-final",
+      "from": "shutdown",
+      "to": "final"
+    },
+    {
+      "id": "final-admit",
+      "from": "final",
+      "to": "admit"
+    },
+    {
+      "id": "admit-grade",
+      "from": "admit",
+      "to": "grade",
+      "label": "Bound facts",
+      "variant": "emphasis"
+    },
+    {
+      "id": "admit-blocked",
+      "from": "admit",
+      "to": "blocked",
+      "label": "Unqualified",
+      "role": "error",
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "catalog",
+    "reserve",
+    "native",
+    "project",
+    "shutdown",
+    "final",
+    "admit",
+    "grade"
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "catalog"
+    ],
+    "allowedTerminals": [
+      "grade",
+      "blocked"
+    ],
+    "requiredEdges": [
+      {
+        "from": "admit",
+        "to": "blocked"
+      },
+      {
+        "from": "shutdown",
+        "to": "final"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "catalog",
+        "to": "grade"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "What the receiver establishes",
+      "items": [
+        "A correlated implicit main-file first-page read, or healthy complete none, within the declared catalog.",
+        "Client-selected model is persisted; backend identity, all pages and semantic adherence are not verified."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Finalization and timing",
+      "items": [
+        "Cleanup and complete transport drain precede routing and finalized observations; the receipt must match.",
+        "monotonic_ns measures controller setup, task and cleanup, not provider latency. Missing timing stays unknown."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Implementation is not qualification",
+      "items": [
+        "Changed-source native qualification is pending. Current offline CLI evidence uses fake qualifications and native journals.",
+        "Outcome and routing are graded separately. Declared held-out scope provides no custody or unseen-case certification."
+      ]
+    }
+  ]
+}
