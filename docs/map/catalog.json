@@ -2456,19 +2456,22 @@
       "group": "start",
       "status": "available",
       "source": "account/observation/README.md",
-      "summary": "Opt one Claude or Codex project into bounded native metadata collection, or use the private synthetic store.",
+      "summary": "Collect synthetic or scoped native metadata with bounded boundary delivery snapshots; inspect capacity, latency and attribution limits.",
       "when": [
         "Collecting metadata for one explicitly approved project/client, or checking platform evidence and gaps."
       ],
-      "usage": "Follow account/observation/native.md: create an exact-project Claude or Codex grant, preview --observation-registration ID, apply, then verify actual callbacks. Codex requires native trust of four new definitions. Default installations collect nothing.",
+      "usage": "Follow account/observation/native.md: create an exact-project Claude or Codex grant, preview --observation-registration ID, apply, then verify actual callbacks. Codex requires native trust of four new definitions. Default installations collect nothing. For performance or source attribution, follow account/observation/capacity.md and the native-observation recipe.",
       "behavior": [
         "One selected client registration per account; grants, epochs and records remain owned by the private store.",
         "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
-        "Fresh macOS Codex callbacks/planning passed with corrected process-scope runtime hashes. Linux results are historical pre-guard fixtures: Codex tools were blocked; Claude proves SessionStart only, with authentication unavailable.",
-        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned."
+        "Fresh macOS Codex callbacks/planning passed for the corrected parent native collector. Later capacity/attribution code has synthetic qualification only. Linux results are historical pre-guard fixtures: Codex tools were blocked; Claude proves SessionStart only, with authentication unavailable.",
+        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned.",
+        "SessionStart/Stop snapshots record bounded delivery hashes and gaps; tool events inherit no cached identity and effective exposure stays unknown.",
+        "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior."
+
       ],
       "outputs": [
-        "Private synthetic or native metadata, client-specific evidence and explicit gaps."
+        "Private metadata, boundary-scoped delivery snapshots, reservation gaps and measured capacity/latency limits."
       ],
       "tags": [
         "account",

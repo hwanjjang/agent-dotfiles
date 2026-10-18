@@ -1,4 +1,4 @@
-"""Opt-in private observations. No transcript reading, account probes or network IO."""
+"""Opt-in private metadata with bounded delivery probes; no transcripts or network IO."""
 from contextlib import contextmanager
 import hashlib
 import json
@@ -16,7 +16,8 @@ from .files import BusyStore, Files, ROOT, encoded
 EVENT_LIMIT = 16384
 BATCH_LIMIT = 65536
 MAX_BATCH_EVENTS = 128
-MAX_RECORDS = 4096
+MAX_RECORDS = 16384
+MAX_SYNTHETIC_RECORDS = 4096
 TOKEN = re.compile(r'[A-Za-z0-9_.:@-]{1,160}\Z')
 KEY = re.compile(r'[a-f0-9]{64}\Z')
 EPOCH = re.compile(r'[a-f0-9]{32}\Z')
@@ -164,33 +165,109 @@ class Store:
         with self._locked() as files:
             return self._grant(files, registration_id)
 
+    def _validate_record(self, record, grant, record_id):
+        require(isinstance(record, dict), 'corrupt_record')
+        require(record.get('registration_id') == grant['registration_id']
+                and record.get('record_id') == record_id
+                and isinstance(record.get('epoch'), str)
+                and EPOCH.fullmatch(record['epoch'])
+                and type(record.get('schema_version')) is int
+                and record['schema_version'] == 1
+                and integer(record.get('high_water'))
+                and (record.get('next_offset') is None or integer(record['next_offset']))
+                and isinstance(record.get('events'), list)
+                and isinstance(record.get('event_ids'), list), 'corrupt_record')
+        if record['epoch'] != grant['epoch']:
+            return  # Valid old-epoch records never become active evidence.
+        require(all(isinstance(event, dict) and token(event.get('event_id'))
+                    and event.get('registration_id') == grant['registration_id']
+                    and event.get('epoch') == grant['epoch']
+                    and integer(event.get('sequence'))
+                    and event['sequence'] <= record['high_water'] for event in record['events']), 'corrupt_record')
+
     def _records(self, files, grant):
         names = files.names(('records', grant['registration_id']))
-        require(len(names) <= MAX_RECORDS, 'store_capacity')
+        limit = MAX_SYNTHETIC_RECORDS if grant['client'] == 'synthetic' else MAX_RECORDS
+        require(len(names) <= limit, 'store_capacity')
         records = []
         for name in names:
             if not re.fullmatch(r'[a-f0-9]{64}\.json', name):
                 continue  # Interrupted pending files never become committed evidence.
             record = files.read(('records', grant['registration_id'], name))
-            require(isinstance(record, dict), 'corrupt_record')
-            require(record.get('registration_id') == grant['registration_id']
-                    and record.get('record_id') == name[:-5]
-                    and isinstance(record.get('epoch'), str)
-                    and EPOCH.fullmatch(record['epoch'])
-                    and type(record.get('schema_version')) is int
-                    and record['schema_version'] == 1
-                    and integer(record.get('high_water'))
-                    and (record.get('next_offset') is None or integer(record['next_offset']))
-                    and isinstance(record.get('events'), list)
-                    and isinstance(record.get('event_ids'), list), 'corrupt_record')
+            self._validate_record(record, grant, name[:-5])
             if record.get('epoch') != grant['epoch']:
-                continue  # Copied records from revoked epochs cannot resurrect.
-            require(all(isinstance(event, dict) and token(event.get('event_id'))
-                        and event.get('registration_id') == grant['registration_id']
-                        and event.get('epoch') == grant['epoch']
-                        and integer(event.get('sequence')) for event in record['events']), 'corrupt_record')
+                continue
             records.append(record)
         return records
+
+    def _capture_native(self, files, grant, stream):
+        from .native import envelope
+        value = envelope(stream, grant)
+        rid, epoch = grant['registration_id'], grant['epoch']
+        require(integer(grant.get('high_water')) and integer(grant.get('start_after'))
+                and grant['high_water'] >= grant['start_after'], 'invalid_native_frontier')
+        version = grant.get('native_sequence_version')
+        require('native_sequence_version' not in grant
+                or (type(version) is int and version in (1, 2)), 'unknown_native_frontier')
+        if version != 2:
+            # One legacy reconciliation; copied old epochs never allocate sequences.
+            records = self._records(files, grant)
+            # Legacy interrupted temp files may predate sequence reservations.
+            # Burn positions conservatively; no event or source history is invented.
+            entries = len(files.names(('records', rid)))
+            grant['high_water'] = max([grant['high_water'], grant['start_after'] + entries]
+                                      + [r['high_water'] for r in records])
+            grant['native_sequence_version'] = 2
+            files.write(('grants', rid + '.json'), grant)
+        identity = value['source_event_id']
+        event_id = digest([rid, epoch, value['session_id'], identity]) if identity else None
+        record_id = digest(['event', event_id]) if event_id else None
+        if record_id:
+            try:
+                replay = files.read(('records', rid, record_id + '.json'))
+            except FileNotFoundError:
+                replay = None
+            if replay is not None:
+                self._validate_record(replay, grant, record_id)
+                require(replay['epoch'] == epoch and len(replay['events']) == 1
+                        and replay['event_ids'] == [event_id]
+                        and replay['high_water'] <= grant['high_water'], 'corrupt_record')
+                previous = replay['events'][0]
+                value['sequence'] = previous['sequence']
+                event = normalize(encoded(value), grant)
+                # Attribution describes the original capture, never today's replay.
+                event['manifest'], event['gaps'] = previous['manifest'], previous['gaps']
+                require(previous == event, 'identity_conflict')
+                with files.directory(('records', rid)) as directory:
+                    os.fsync(directory)
+                return {'status': 'duplicate', 'event_ids': [event_id]}
+        # Each native record or orphan temp follows a durable reservation. This
+        # upper bound includes crash gaps, so enumerate only near the ceiling;
+        # gaps must not permanently exhaust otherwise available file capacity.
+        if grant['high_water'] - grant['start_after'] >= MAX_RECORDS - 1:
+            require(len(files.names(('records', rid))) < MAX_RECORDS - 1, 'store_capacity')
+        require(grant['high_water'] < 2**63 - 1, 'native_sequence_exhausted')
+        value['sequence'] = grant['high_water'] + 1
+        event = normalize(encoded(value), grant)
+        if event['event_kind'] in ('session_start', 'response_end'):
+            from .environment import snapshot
+            event['manifest'] = snapshot(self.home, grant, event['event_kind'])
+            if event['manifest']['status'] == 'observed':
+                event['gaps'].remove('environment_not_observed')
+            event['gaps'].append('effective_environment_not_exact')
+        else:
+            event['gaps'].append('environment_boundary_not_observed')
+        event['gaps'].append('native_sequence_reservation_gaps_possible')
+        record_id = digest(['event', event['event_id']])
+        # A durable reservation can outlive an interrupted write. Such holes are
+        # not events or acknowledgments, and the sequence is never reused.
+        grant['high_water'] = value['sequence']
+        files.write(('grants', rid + '.json'), grant)
+        record = dict(schema_version=1, record_id=record_id, registration_id=rid,
+                      epoch=epoch, recorded_at=time.time(), events=[event],
+                      event_ids=[event['event_id']], high_water=value['sequence'], next_offset=None)
+        files.write(('records', rid, record_id + '.json'), record)
+        return {'status': 'recorded', 'event_ids': [event['event_id']]}
 
     def _capture(self, registration_id, epoch, payload, offset=None, native_stream=None):
         require(isinstance(epoch, str) and EPOCH.fullmatch(epoch), 'epoch')
@@ -203,12 +280,10 @@ class Store:
             if native_stream is not None:
                 from .native import validate_process_scope
                 validate_process_scope(grant)
+                return self._capture_native(files, grant, native_stream)
             limit = EVENT_LIMIT if offset is None else BATCH_LIMIT
             records = self._records(files, grant)
             existing = {event['event_id']: event for record in records for event in record['events']}
-            if native_stream is not None:
-                from .native import adapt
-                payload = adapt(native_stream, grant, existing.values())
             require(isinstance(payload, bytes) and len(payload) <= limit, 'payload_size')
             if offset is None:
                 events = [normalize(payload, grant)]
@@ -248,7 +323,7 @@ class Store:
                 with files.directory(('records', registration_id)) as directory:
                     os.fsync(directory)
                 return {'status': 'duplicate', 'event_ids': [e['event_id'] for e in events]}
-            require(len(records) < MAX_RECORDS - 1, 'store_capacity')
+            require(len(records) < MAX_SYNTHETIC_RECORDS - 1, 'store_capacity')
             record = dict(schema_version=1, record_id=record_id, registration_id=registration_id,
                           epoch=epoch, recorded_at=time.time(), events=fresh,
                           event_ids=[e['event_id'] for e in events],

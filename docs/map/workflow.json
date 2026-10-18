@@ -413,7 +413,7 @@
     "account-source": "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts.",
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
     "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting.",
-    "observation-store": "Step 1: register one approved Claude or Codex project, review delivery/native trust, verify callbacks and retain platform-specific limits.",
+    "observation-store": "Step 1: opt in one approved client/project, inspect callback/platform limits, or verify bounded delivery snapshots and measured collector capacity.",
     "improvement-case": "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration. Planned: turn bounded observations and feedback into a synthetic reproducible case.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
     "improvement-eval": "A candidate needs evidence of task improvement and regression limits before promotion. Planned: compare current and candidate behavior through isolated trials and qualified graders.",

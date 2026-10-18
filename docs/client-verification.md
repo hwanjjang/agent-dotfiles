@@ -4,15 +4,30 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Collector capacity and boundary snapshots — 2026-10-18
+
+The later [capacity qualification](../account/observation/capacity.md) executed
+10,000 installed dispatcher subprocesses with four writers, verified all expected
+records, preserved replay identity and recovered an interrupted reservation. It
+passed capacity/recovery and the p95 under 50 ms target (48.16 ms observed) on one
+PostToolUse-only reference-host run, excluding boundary probes. Before review
+corrections, the prior version-2 run measured 48.04 ms; the version-1 candidate measured 64.71 ms; that
+historical miss remains documented rather than being relabeled as a pass.
+Two synthetic installed boundary probes also captured delivery snapshots; exact
+effective exposure remains false. These results qualify their frozen collector
+runtime and synthetic fixture, not a new native model run or all platforms.
+
 ## Native observation platform coverage — 2026-10-18
 
 The [native qualification matrix](../account/observation/native.md#native-platform-evidence--2026-10-18)
 is the authoritative per-platform record. A fresh macOS Codex/Luna run with
-matching corrected collector/store/dispatcher and installer-harness hashes
+matching corrected parent-native collector/store/dispatcher and installer-harness hashes
 exercised all four observer kinds, planning coexistence and intentional exit 3
 with unknown observer outcomes. Focused and installed-dispatcher checks separately
 verify out-of-project pre-read rejection. The native fixture is one synthetic task,
 not complete delivery, subagent ancestry or effective configuration exposure.
+Later capacity/attribution code has separate synthetic qualification and is not
+covered by that native model run.
 
 Linux results remain historical pre-guard fixtures: Codex produced genuine
 callbacks/planning context but its full tool fixture was blocked by bubblewrap;

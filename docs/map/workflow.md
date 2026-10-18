@@ -138,3 +138,10 @@ hashes, dependencies and adaptations. The [MIT license](vendor/super-board/LICEN
 is retained alongside the source and embedded in generated HTML. Selected reference
 explanations inform locally verified summaries; the full upstream skill catalog,
 comparative rankings, author logos and plugin installation are not included.
+
+The Observe guide also links the implemented bounded delivery snapshots and the
+10,000-callback qualification. Capacity/recovery passed the measured synthetic
+PostToolUse-only workload; the capacity guide owns the final p95 and its
+reference-host limit. SessionStart/Stop boundary probes are outside that timing. Boundary receipt hashes do not
+establish exact model exposure. The native-observation recipe owns repeatable
+checks, and the capacity guide owns its limits and measurements.

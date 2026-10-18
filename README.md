@@ -140,11 +140,14 @@ with scoped grants, durable records, batch replay and revocation. Optional
 [Claude and Codex native collection](account/observation/native.md) use explicit
 project consent and one selected client registration; default installations collect
 nothing. Codex requires native trust for four observer definitions. A fresh macOS
-Codex fixture verifies the corrected pre-read scope guard with matching runtime
-hashes; Linux results are historical pre-guard partial fixtures with explicit
+Codex fixture verifies the corrected pre-read scope guard in the parent native
+collector; later capacity/attribution changes have synthetic qualification only; Linux results are historical pre-guard partial fixtures with explicit
 blockers. Comparative model evaluation remains future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
 qualifies setup and bounded model behavior before experiments or after deployment;
 its PASS does not establish improvement over a baseline.
+The [collector capacity guide](account/observation/capacity.md) records bounded
+delivery attribution and 10,000 synthetic callback recovery, including the measured
+p95 latency and its reference-host limit. Delivery identity never implies exact model exposure.
 
 ## Principles
 

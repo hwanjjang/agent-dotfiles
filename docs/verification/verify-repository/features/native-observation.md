@@ -38,3 +38,28 @@ Record exact runtime hashes/revision, client/model, event counts, blocked steps
 and cleanup. The [Codex screenshot manual](../../../manual/codex-observation.json)
 uses this scenario; browser-rendered results illustrate evidence without replacing
 it. No metadata result establishes task success, complete delivery or efficacy.
+
+## Capacity and attribution subset
+
+Reuse this scenario ID for the [capacity guide](../../../../account/observation/capacity.md).
+Run the observation suite plus `test_collector_qualification.py`, then use the
+guide's bounded 10,000-callback command in a new ignored evidence directory. No
+model/authentication is required. Check actual callback attempts against expected
+ledger IDs, unique sequences, interrupted reservation evidence and unchanged replay
+count, actual SIGKILL/zero pre-retry records/one gap and neutral replay outputs;
+the qualifier must gate all these conditions. Retain its full result including
+source hashes and latency summary. Neutral stdout alone never establishes durable
+persistence. Report p95 and
+its 50 ms target separately from capacity, retaining failed/incomplete attempts.
+The timed workload is PostToolUse only; it excludes SessionStart/Stop boundary
+probes and does not establish mixed-boundary latency. Preserve the separate
+4,096-entry synthetic capture/import bound. Small subprocess tests also exercise
+simultaneous stable-ID duplicates and revocation during an in-flight callback.
+
+Check boundary manifests with disposable receipts: SessionStart/Stop freshness,
+missing/oversized/changed receipts, component drift and budget refusal. Tool events
+must not inherit a cached snapshot, historical imports must not borrow today's
+receipt, and `effective_exposure_exact` must remain false. Preserve grant/epoch and
+revocation checks before probes. No test of receipt identity qualifies model usage
+or excludes a mid-turn edit. The [capacity walkthrough](../../../manual/collector-capacity.json)
+illustrates these distinctions using browser-rendered actual benchmark summaries.

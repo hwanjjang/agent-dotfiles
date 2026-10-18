@@ -101,8 +101,11 @@ scope deduplicate. Codex tool events without a turn ID retain duplicate
 uncertainty rather than inventing identity. Start/end/failure callbacks
 remain separate. Missing stable IDs, including SessionStart and Stop, retain
 `possible_duplicate`; repeated text is not identity. Actor/parent identity, Claude turn identity, source
-event time, environment revision, effective skill exposure and task outcome remain
-unknown. These records cannot establish a false-success claim without separately
+event time, effective skill exposure and task outcome remain unknown. SessionStart
+and Stop additionally capture bounded delivery snapshots: observed receipt/source
+identity, four component hashes, drift and explicit coverage gaps. Tool events do
+not inherit these snapshots; mid-turn identity remains unknown. See
+[capacity and attribution](capacity.md). These records cannot establish a false-success claim without separately
 selected feedback or evidence. Not all denied, interrupted or rejected tools emit
 the registered callbacks; do not derive task success or a complete failure rate.
 
@@ -113,8 +116,14 @@ returns decisions on success, rejection, disabled consent or handled failure. It
 approves permissions, injects context or requests continuation. Slow storage,
 malformed/oversized input, contention and crashes can lose callbacks. There is no
 background retry or delivery-loss counter; completeness is explicitly unknown.
-The existing 4,095-record cap and ledger scan remain. This is a bounded pilot,
-not the design's 10,000-event/p95 latency qualification.
+Native capture reserves sequence numbers durably before writing each immutable
+record. Interrupted reservations leave gaps and never count as events or success.
+Direct replay lookup avoids rereading the ledger. Fresh version-2 captures below
+the conservative reservation bound do not enumerate filenames; at or above that
+bound they enumerate under the same store guard. The 10,000-event subprocess qualification
+passes capacity/recovery and measured p95 48.16 ms against the proposed under-50 ms
+target on one reference-host run; this is not a cross-host latency guarantee. The hard ceiling is 16,383 records, with only 10,000 qualified by
+that run; native host scheduling and field delivery completeness remain unknown.
 
 ## Qualification and references
 
@@ -150,8 +159,8 @@ following native results are separate from those synthetic checks.
 | Linux aarch64, Claude Code 2.1.302, historical pre-guard | Native initialization and one actual SessionStart record | Existing auth copy was unusable (`loggedIn=false`); model/tool/Stop run was not attempted |
 
 The fresh corrected macOS payload fixture is `edf5b11ca47140602563869a1ff11bbf0c052dac`.
-Collector, store, dispatcher and installation-harness hashes match this corrected
-candidate; the public [capture manifest](../../docs/manual/codex-observation-capture.json)
+Collector, store, dispatcher and installation-harness hashes match the corrected
+parent native candidate, before the later capacity/attribution changes; the public [capture manifest](../../docs/manual/codex-observation-capture.json)
 records their identity separately from the fixture commit. The native run verifies
 the pre-read process-directory guard in its normal granted-project route. Focused
 and installed-dispatcher checks separately exercise rejection outside that root.
