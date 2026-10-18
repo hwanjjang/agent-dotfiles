@@ -124,9 +124,14 @@ A separate bounded supervisor observed native/helper parent and process-start
 identities, then confirmed its exact owned containers, volume and processes
 absent. Its evidence supplements the current inner receipt's external-cleanup
 unknowns for this attempt only. The supervisor is a private qualification harness,
-not part of the reusable runner's cleanup API. Total elapsed time was 8.621 seconds;
-retained runtime evidence was 198,689 of 262,144 bytes under the stated archive
-denominator. No real inference or authentication was used. Deliberate executor
+not part of the reusable runner's cleanup API. Total elapsed time was 8.621 seconds.
+The supervisor retained 198,689 of 262,144 bytes: outer command, identity and
+cleanup JSON plus the inner event archive and receipt. This total is distinct
+from the inner runner's 220,000-byte limit. The inner event archive contained
+164,740 bytes and its receipt 2,230 bytes (166,970 bytes combined). The supervisor
+denominator excludes frozen sources, HTTP headers, bounded control-plane
+process queries, OS buffers, removed temporary files and later analysis.
+No real inference or authentication was used. Deliberate executor
 disconnect and other command/patch/image/stdin route probes were not repeated in
 this run; their historical results are not a fresh all-route qualification.
 

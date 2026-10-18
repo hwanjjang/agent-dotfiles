@@ -24,7 +24,8 @@
     "retained_limit_bytes": 262144,
     "owned_resource_absence": true,
     "auth": false,
-    "full_routes": false
+    "full_routes": false,
+    "denominator": "Supervisor total: retained outer command/identity/cleanup JSON plus inner event archive and receipt; excludes frozen sources, HTTP headers, bounded control-plane process queries, OS buffers, removed temporary files and later analysis. Distinct from the inner runner limit of 220000 bytes (164740 event bytes plus 2230 receipt bytes in this run)."
   },
   "deadline_probe": {
     "status": "partial",
@@ -63,7 +64,7 @@
     "No auth, real inference, subscription, disconnect or full-route qualification."
   ],
   "guide": "../decisions/native-execution-fixture.md",
-  "guide_sha256": "eb9c14c407667fd27f2188d323d99e3b1b1a985bff63976e63fc05051f1f69ea",
+  "guide_sha256": "95b688e2508498239e0c2bd0706318fa2b108397a72a676dc3bfcda0e2293248",
   "artifacts_sha256": {
     "native-execution.json": "397fbbcc782ba953b707ab71326eca818d8d474f1cd0996ea56e6de66e97df1d",
     "native-execution-summary.html": "1f1c4507991ee8088571a56766fcb4182a686447025f6dfc58ebf526cc8bab77",
@@ -93,5 +94,6 @@
     "capture_sha256": "21805dc97aaf81f47ca3e1b37a2046a2117f041c130af65070eb55c1a2b4d962",
     "native_result_sha256": "9393f284d7155876cd8784c0b8368d69b443b88f747fee151fec0ceb58a43e8d",
     "scope": "Historical pre-correction result remains preserved; not current runtime qualification."
-  }
+  },
+  "integration_note": "Guide and capture metadata clarify the supervisor versus inner-runner byte denominators. Capture-time images, editable manual and PDF are unchanged; no re-render or new native qualification was performed for this clarification."
 }
