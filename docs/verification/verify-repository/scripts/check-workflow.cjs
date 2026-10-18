@@ -171,8 +171,9 @@ async function main() {
       if (id === 'improvement-eval') {
         const detail = await page.locator('#pop').innerText();
         assert.match(detail, /4\. Eval \/ offline/);
-        assert.match(detail, /Offline accounting is available/);
-        assert.match(detail, /live runner and independent holdout qualification remain planned/);
+        assert.match(detail, /Offline synthetic accounting is available/);
+        assert.match(detail, /native runner has selected-profile qualification/);
+        assert.match(detail, /actual result collection, admission and comparisons remain pending/);
       }
       if (id === 'improvement-review') {
         const detail = await page.locator('#pop').innerText();
