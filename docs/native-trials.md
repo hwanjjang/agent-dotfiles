@@ -3,7 +3,7 @@
 The source implements `check`, `run` and guarded `recover` for one pinned native
 trial. Historical V9/V10 credential-free and authenticated results apply only to
 their recorded sources. The [12-source collection evidence](verification/native-outcome-collection.json)
-records current credential-free native collection and the fixed scoped grading
+records historical credential-free native collection and the fixed scoped grading
 probes. The earlier [grading record](verification/scoped-grading-integrity.json)
 retains its own 11-source provenance; changed sources have not renewed authenticated
 qualification. Other hosts, natural routing and comparative evaluation
@@ -44,7 +44,7 @@ source/capture provenance.
 
 ## Scoped grading integrity
 
-The [current scoped evidence](verification/scoped-grading-integrity.json) verifies
+The [historical scoped evidence](verification/scoped-grading-integrity.json) verifies
 actual task read/write/readback and known protected grading, other-arm and synthetic
 installer receipt/journal read/write/create probes through a native command and an
 explicit Python child. The owner creates those eight synthetic protected files
@@ -75,14 +75,15 @@ connects exact recorded artifact collections to the existing evaluator through
 `trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
 the reader checks frozen attempt, dispatch, source, collection and maintained
 qualification bindings. Current qualification has not been renewed for the
-reservation sources, so real admission remains blocked. The reader does
+current reservation, model-selection and routing sources, so real admission remains blocked. The reader does
 not execute or recover trials; preserve failed attempts and unknown costs.
 
-Matching artifact bytes do not establish natural routing, exposure or general task
-correctness. Source-guarded protocol evidence is not an exported selected-model
-observation. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
-now coordinates scheduled launches and audits every reserved attempt. Explicit
-observed-model export and actual comparisons remain separate work. Backend identity remains unknown.
+Matching artifact bytes do not establish routing, exposure or general task
+correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
+now defines optional arm catalogs, finalized receiver records and persisted
+client-model admission. Its actual current-source qualification remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+now coordinates scheduled launches and audits every reserved attempt. Actual
+current-source routing/admission qualification and comparisons remain separate work. Backend identity remains unknown.
 
 ## Prepare a frozen plan
 
@@ -98,19 +99,21 @@ and an already available image digest. Review the outer VM and host-share state
 separately. An executor container without bind mounts is not proof that its VM
 has no host shares.
 
-A version-1 plan requires these fields; only `collection` is optional:
+A version-1 plan requires the fields below, with optional `collection`. A version-2
+trial plan additionally requires `routing`; version 1 rejects that field.
 
 | Field | Required content |
 | --- | --- |
-| `schema_version`, `profile`, `mode` | `1`, the supported profile, and `trial` or `qualification`. |
+| `schema_version`, `profile`, `mode` | `1` for the original plan or `2` for a routed trial, the supported profile, and `trial` or `qualification` (version 1 only). |
 | `identity` | Frozen `trial_id`, `binding_digest`, `experiment_digest`, `case_id`, `arm`, `variant`, `repetition`, and a fresh `attempt_id`. Digests bind the selected inventory; names do not establish custody. |
-| `inputs` | Absolute `root`, bundle-relative `entrypoint`, and explicit `files` records containing `kind` (`case` or `bundle`), relative `path` and `sha256`. |
+| `inputs` | Absolute `root`, bundle-relative `entrypoint` (omitted for natural routing), and explicit `files` records containing `kind` (`case` or `bundle`), relative `path` and `sha256`. |
 | `prompt` | The selected bounded task text. Qualification mode uses the controller's fixed challenge workflow. |
 | `runtime` | Absolute `codex`, `code_mode_host`, `docker`, `executor_archive` paths, their `hashes`, image digest, `docker_host` and frozen `metadata_digest`. |
 | `limits` | Every limit named below, explicitly supplied. |
 | `sources` | Exact source filename-to-SHA256 mapping required by `SOURCE_NAMES` in the validator. Missing, extra or changed sources refuse. |
 | `state_root` | Existing private, current-owner 0700 directory for new trial/attempt state. |
 | `collection` (optional) | Trial-only fixed artifact declaration described below. Qualification mode rejects it. |
+| `routing` (required in version 2) | Trial-only catalog and mode from the [authoritative routing contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations). Natural mode omits the plan entrypoint; qualification mode rejects routing. |
 
 Inputs are limited to 64 files, 512 KiB per file and 4 MiB total. Unsafe paths,
 symlink traversal, duplicates, changed bytes and an existing attempt are refused.
@@ -142,8 +145,8 @@ For `mode: "trial"`, add an explicit declaration before freezing the plan:
 The native path accepts 1-8 unique relative paths, at most 160 characters and 16 parts
 each. Credential names, `.env` names, traversal and unsafe file types/links refuse
 or block capture. Bounds can be reduced. Include `native_trial_results.py` in the
-exact `sources` inventory; old 11-source manifests do not validate this 12-source
-runner. The standalone collector supports a wider 64-path domain, while native
+exact `sources` inventory; the current inventory has thirteen files including
+`trial_reservation.py`. Historical 11/12-source manifests do not validate it. The standalone collector supports a wider 64-path domain, while native
 receipt size/cleanup policy deliberately limits collection to 8.
 
 After owned host shutdown and known native-home purge, the controller re-inspects
@@ -170,7 +173,7 @@ snapshot. `completed_ungraded` still means ungraded. Recovery only reconciles
 owned residue and never recaptures outputs.
 
 The [selected collection record](verification/native-outcome-collection.json)
-retains exact current 12-source, runtime and three credential-free cases:
+retains its exact historical 12-source, runtime and three credential-free cases:
 present/missing, unsafe symlink and interrupted native task. The fixed task wrote
 the artifact through a real native tool call, not coordinator materialization.
 An actual turn/start acknowledgment was counted and correlated to its terminal;
@@ -180,7 +183,7 @@ setup/cleanup/capture, while production `observe`/`finish` collection gates have
 unit-test coverage only. The existing native fixture's
 `mock_complete`/`blocked` result and the outer private attestation stay distinct.
 There were no model calls or authentication reads/copies. Current-source
-authenticated renewal, natural routing and comparative admission remain pending.
+authenticated/routing renewal and comparative admission remain pending.
 
 See the [collection flow](architecture/native-outcome-workflow.html) and
 [screenshot walkthrough](manual/native-outcome-collection.pdf) for this sequence.

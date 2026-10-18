@@ -1,0 +1,20 @@
+{
+  "title": "Routing admission and declared evaluation scope",
+  "scenario": "Python 3.11 actual offline CLI summaries, rendered in Chrome. Native qualification, journals, lifecycle and usage are FAKE. Not terminal images or real native/model evidence. Current-source native qualification remains blocked.",
+  "steps": [
+    {
+      "title": "Compare routing and outcome dimensions separately",
+      "instruction": "Read the routing/model contract before freezing a declared arm catalog. Run trial_admission.py report only with owned bound attempts and required source qualification. This demonstration uses synthetic qualification and native journals in a disposable copied-source fixture, not a qualified native run.",
+      "screenshot": "native-routing-admission-check.png",
+      "caption": "Current checkpoint 82a83a4e5e28 existed before renewed smoke. Three actual offline CLI scenarios each contain four trials; thirteen runtime and three grader source hashes match. Each scenario records 640 synthetic tokens, not measured model usage.",
+      "expected": "Implicit first-page reads satisfy the expected-read criterion. Healthy none fails that criterion while all four artifact outcomes pass. Tampered qualification blocks all four trials. Client-model selection is not backend attestation; unobserved adherence and exposure stay inconclusive."
+    },
+    {
+      "title": "Retain declaration limits and stale-scope failures",
+      "instruction": "Use evaluation.py freeze/report with the optional evaluation_scope only to bind a declared same-host case/check pack. Inspect scope, custody and blockers independently of deterministic checks. Keep exposed development data distinct from actual held-out preparation.",
+      "screenshot": "native-routing-admission-result.png",
+      "caption": "Eight actual pure CLI calls used existing synthetic fixtures. Three invalid inputs rejected; changing current scope produced stale_experiment. No held-out cases or answers were generated and no auth, native client, model or VM was used.",
+      "expected": "The declared report remains unverified with development_exposure not_assessed, holdout_custody null, live_eligible false and inconclusive promotion. The ordinary development route remains unchanged; current native qualification, EN/KO runs and held-out evaluation are separate pending work."
+    }
+  ]
+}
