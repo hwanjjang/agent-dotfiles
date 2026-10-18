@@ -186,8 +186,10 @@ interrupted cases. Actual artifact admission requires current-source qualificati
 including affected authenticated renewal; it remains blocked. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
-accounting. It does not impose a hard provider budget. Natural routing, observed-model
-export and actual comparisons remain pending. The trusted host controller keeps
+accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
+now admits bound receiver records offline; current native qualification and actual
+comparisons remain pending. An optional [same-host scope declaration](docs/decisions/evaluation-accounting.md#optional-same-host-scope-declaration)
+is explicitly unverified, with no custody or unseen-case claim. The trusted host controller keeps
 normal account access; no external evaluator environment is required.
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.

@@ -357,3 +357,34 @@ skill routing, a candidate benefit nor full issue-26 completion is claimed. See
 the [feature recipe](../verification/verify-repository/features/evaluation-accounting.md)
 for separate checks. Rebuild with the screenshot-manual commands above and
 `native-trial-reservations.json`; renew evidence on source or behavior drift.
+
+## Offline routing admission and declared-scope walkthrough
+
+The [two-page walkthrough](native-routing-admission.pdf),
+[editable source](native-routing-admission.json) and
+[capture manifest](native-routing-admission-capture.json) explain the
+[routing/client-model contract](../decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
+and [optional scope declaration](../decisions/evaluation-accounting.md#optional-same-host-scope-declaration).
+The [routing summary](native-routing-admission-check.png) and
+[scope summary](native-routing-admission-result.png) are browser-rendered actual
+offline CLI results. Qualification records, native journals, lifecycle and usage
+are explicitly **FAKE fixtures**, not real native/model evidence or terminal images.
+
+At the already-existing `a2d607bb936c` checkpoint, three routing CLI scenarios
+showed four expected-read passes, four healthy-none routing fails despite four
+artifact passes, and four blocked rows after qualification tampering. Each
+scenario has 640 synthetic tokens. Eight separate pure CLI calls exercised scope
+declaration and refusals. Declared scope remains unverified, exposure not assessed
+and custody null; self-certification does not qualify unseen data.
+
+Thirteen runtime and three grader source hashes match the capture manifest. The
+renewed routing result records its actual interpreter argv, matching the separate
+Python3.11 scope run. Earlier v1/v2/v3/v4 captures remain historical. This renewal follows
+the PR67 native-YAML surrogate-escape compatibility fix; 351 combined checks passed
+under each supported Python version. The manual independently renewed three
+routing and eight scope CLI calls per version after that checkpoint. Both screenshots
+and both PDF pages passed actual visual, text/page-count and overflow checks.
+No auth, native client, model or VM was used. Current native qualification, actual
+EN/KO comparison and held-out case preparation remain pending. Rebuild with the
+screenshot-manual commands above and `native-routing-admission.json`; retain old
+evidence and renew captures on source/behavior drift.

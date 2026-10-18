@@ -144,10 +144,46 @@ class AdmissionTests(unittest.TestCase):
         r=self.report([ref]);self.assertEqual(r['counts']['pass'],0)
         self.assertIn('qualification_unavailable',r['blockers']);self.assertEqual(r['usage']['known_tokens'],160)
 
+    def test_source_clock_duration_projects_and_missing_stays_unknown(self):
+        ref = self.fixture.attempt()
+        self.fixture.mutate(ref, 'receipt', lambda r:r.update(controller_timing={
+            'clock':'monotonic_ns','scope':'controller_setup_task_cleanup','elapsed_ms':2456}))
+        report = self.report([ref])
+        self.assertEqual(report['counts']['pass'], 1)
+        self.assertEqual(report['latency'], {'known_records':1,'known_total_ms':2456,'unknown':3})
+        missing = self.report([self.fixture.attempt(attempt='missing-clock')])
+        self.assertEqual(missing['counts']['pass'],1)
+        self.assertEqual(missing['latency']['known_records'],0)
+        self.assertEqual(missing['latency']['unknown'],4)
+
+    def test_invalid_receipt_clock_cannot_become_known_latency(self):
+        for index, change in enumerate(({'elapsed_ms':True},{'elapsed_ms':-1},
+                {'scope':'provider_api_latency'},{'clock':'wall_clock'},{'verified':True})):
+            ref = self.fixture.attempt(attempt='bad-clock-'+str(index))
+            timing = {'clock':'monotonic_ns','scope':'controller_setup_task_cleanup','elapsed_ms':2}
+            timing.update(change)
+            self.fixture.mutate(ref,'receipt',lambda r:r.update(controller_timing=timing))
+            report = self.report([ref])
+            self.assertEqual(report['counts']['blocked'],1)
+            self.assertEqual(report['latency']['known_records'],0)
+
     def test_duplicate_same_attempt_does_not_double_charge(self):
-        ref=self.fixture.attempt();r=self.report([ref,ref])
+        ref=self.fixture.attempt()
+        self.fixture.mutate(ref,'receipt',lambda r:r.update(controller_timing=dict(clock='monotonic_ns',scope='controller_setup_task_cleanup',elapsed_ms=2456)))
+        r=self.report([ref,ref])
         self.assertEqual(r['coverage']['duplicate_trials'],1);self.assertEqual(r['usage']['known_tokens'],160)
         self.assertEqual(r['usage']['known_records'],1);self.assertEqual(r['usage']['submissions'],2)
+        self.assertEqual(r['latency'],{'known_records':1,'known_total_ms':2456,'unknown':3})
+
+    def test_duplicate_unknown_clock_is_one_unknown_attempt(self):
+        ref=self.fixture.attempt();report=self.report([ref,ref])
+        self.assertEqual(report['latency'],{'known_records':0,'known_total_ms':0,'unknown':4})
+
+    def test_distinct_attempt_clocks_are_counted_separately(self):
+        refs=[self.fixture.attempt(attempt=name) for name in ('one','two')]
+        for ref,millis in zip(refs,(12,34)):
+            self.fixture.mutate(ref,'receipt',lambda r,n=millis:r.update(controller_timing=dict(clock='monotonic_ns',scope='controller_setup_task_cleanup',elapsed_ms=n)))
+        self.assertEqual(self.report(refs)['latency'],{'known_records':2,'known_total_ms':46,'unknown':3})
 
     def assert_blocked_attempt_accounting(self, report, ref, known_tokens):
         trial=next(row for row in report['trials'] if row['trial_id']==ref['trial_id'])
@@ -379,3 +415,203 @@ class AdmissionTests(unittest.TestCase):
             if accepted:self.assertEqual(ad.trial_dispatch.prepare(*args)['kind'],'development_trial_dispatch')
             else:
                 with self.assertRaises(ev.Invalid):ad.trial_dispatch.prepare(*args)
+
+
+class RoutedAttempts(SyntheticAttempts):
+    """Explicitly FAKE qualification/journals for offline structural checks only."""
+    model = dict(requested='gpt-6-luna', observed_thread_start='gpt-6-luna',
+                 source='thread/start.result.model', match=True, backend_identity_verified=False, rerouted=False)
+    proof_path = 'docs/verification/native-routing-observer.json'
+
+    def __init__(self, root):
+        super().__init__(root)
+        for arm, value in self.context['arms'].items():
+            rows=[];value.update(entrypoint=None,files=[])
+            for slot,name in enumerate(('first','second','third')):
+                description=f'Synthetic {arm} {name} description.'
+                raw=f'---\nname: {name}\ndescription: {description}\n---\nSynthetic body\n'.encode()
+                resource=f'skills/{name}/SKILL.md';path=Path(value['root'])/resource
+                path.parent.mkdir(parents=True);path.write_bytes(raw)
+                digest=hashlib.sha256(raw).hexdigest()
+                value['files'].append(dict(path=resource,sha256=digest))
+                rows.append(dict(slot=slot,name=name,main_resource=resource,main_sha256=digest,
+                                 description_sha256=hashlib.sha256(description.encode()).hexdigest()))
+            value['routing']=dict(mode='natural',observer='implicit-stderr-json-v1',
+                catalog_scope='declared_experiment_subset',catalog_digest=p.digest(rows),catalog=rows)
+            self.spec['identities'][arm]=ev.digest({k:value[k] for k in ('entrypoint','files','routing')})
+        for variants in self.spec['checks'].values():
+            for checks in variants.values():checks['criteria'].append(dict(id='native-read',dimension='routing',
+                kind='value_equals',target='native.routing.implicit_read.first',expected=True,critical=False))
+        self.experiment=ev.freeze(self.spec)
+        declaration=next(iter(self.context['collection_by_trial'].values()))
+        self.context.update(experiment_digest=self.experiment['experiment_digest'],
+            collection_by_trial={t['trial_id']:declaration for t in self.experiment['trials']})
+        route=self.context['arms']['baseline']['routing']; summary=self.summary(route)
+        cleanup=dict(complete=True,processes_stopped=True,control_absent=True,volume_absent=True,
+            native_home={'home_absent':True,'auth_absent':True},process_query_uncertain=False,watch_uncertain=False)
+        proof={k:self.runtime[k] for k in ('profile','source_digests','runtime_digests','image_digest')}
+        proof.update(schema_version=1,kind='native_routing_observer_qualification_v1',
+            admission_grader_source_digests=ad.native_grader_sources(),
+            observer_profile_digest=summary['observer_profile_digest'],
+            catalog_normalization='inline-frontmatter-unique-slot-name-resource-v1',fixture_routing=route,
+            assigned_slot=0,cases=[dict(kind=kind,execution_kind='actual_native_codex',
+                routing_observation=self.summary(route,read=kind=='assigned_main'),model_selection=self.model,cleanup=cleanup)
+                for kind in ('assigned_main','list_only','reference_only','failed_main')],
+            falsification={'false_marker_no_activation':True})
+        # Claims above are synthetic: only exercising the fixed maintained-record predicate.
+        path=root/self.proof_path;save(path,proof)
+        self.context['qualification_refs']['routing']={'path':self.proof_path,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+        save(self.context_path,self.context)
+
+    def summary(self, route, *, read=True):
+        from test_native_routing import line,drained
+        config,env=nt.routing_profile({'routing':route})
+        profile=p.digest({'config':config,'env':env,'sources':self.sources})
+        observer=nt.protocol.RoutingObserver(route,profile);observer.bind('thread','turn')
+        observer.feed(line('codex.user_prompt'))
+        if read:observer.feed(line())
+        value=observer.finish(True,drained());value['transport']['projected_records_written']=1
+        return value
+
+    def attempt(self, index=0, *, read=True, **kwargs):
+        ref=super().attempt(index,**kwargs);folder=Path(ref['attempt_path'])
+        manifest=json.loads((folder/'manifest.json').read_text())
+        route=self.context['arms'][manifest['identity']['arm']]['routing']
+        manifest.update(schema_version=2,routing=route);manifest['inputs'].pop('entrypoint')
+        save(folder/'manifest.json',manifest);digest=p.digest(manifest)
+        entries=[]
+        for path in sorted((folder/'records').iterdir()):
+            label=path.name.split('-',1)[1][:-5];value=json.loads(path.read_text());path.unlink()
+            if label in ('frozen_binding','collection_result','receipt'):value['manifest_digest']=digest
+            if label=='receipt':
+                final=copy.deepcopy(value['observation']);final.update(model_selection=self.model,routing_observation=self.summary(route,read=read))
+                entries.extend([('routing_observation',final['routing_observation']),('observation_finalized',final)])
+                value.update(observation=final);value['collection']['manifest_digest']=digest
+            entries.append((label,value))
+        for i,(label,value) in enumerate(entries,1):save(folder/'records'/f'{i:03d}-{label}.json',value)
+        return ref
+
+
+class RoutingAdmissionTests(unittest.TestCase):
+    report=AdmissionTests.report
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name).resolve();self.fixture=RoutedAttempts(self.root)
+        self.patch=patch.object(ad,'ROOT',self.root);self.patch.start();self.addCleanup(self.patch.stop)
+
+    def test_natural_versions_and_final_observation_join(self):
+        f=self.fixture;refs=[f.attempt(i) for i in range(len(f.experiment['trials']))]
+        report=self.report(refs)
+        self.assertEqual(report['counts']['pass'],len(refs))
+        self.assertEqual(report['dimensions']['routing']['pass'],len(refs))
+        self.assertNotIn('explicit_observed_model_projection_unavailable',report['blockers'])
+        self.assertIn('aggregate_launch_reservation_unavailable',report['blockers'])
+        self.assertFalse(report['backend_identity_verified']);self.assertFalse(report['live_eligible'])
+        ctx=ad.load_context(f.experiment,f.spec,f.context_path)
+        manifest=json.loads((Path(refs[0]['attempt_path'])/'manifest.json').read_text())
+        self.assertEqual(ad.bind_manifest(ctx,manifest)[0]['trial_id'],refs[0]['trial_id'])
+
+
+    def change_final(self, ref, change):
+        self.fixture.mutate(ref,'observation_finalized',change)
+        self.fixture.mutate(ref,'receipt',lambda r:change(r['observation']))
+
+    def test_healthy_none_projects_false_and_remains_outcome_independent(self):
+        f=self.fixture;ref=f.attempt(read=False);ctx=ad.load_context(f.experiment,f.spec,f.context_path)
+        batch=ad.read_attempts(ctx,[ref])
+        try:
+            self.assertEqual(batch.rows[0]['observations'],{'native.routing.none':True,
+                **{'native.routing.implicit_read.'+n:False for n in ('first','second','third')}})
+            report=ev.compare(f.experiment,[],f.spec,native=batch)
+            self.assertEqual(report['trials'][0]['dimensions']['outcome'],'pass')
+            self.assertEqual(report['trials'][0]['dimensions']['routing'],'fail')
+            self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+        finally:batch.close()
+
+    def test_finalized_usage_not_initial_snapshot_is_charged_once(self):
+        f=self.fixture;ref=f.attempt();folder=Path(ref['attempt_path'])/'records'
+        snapshot=json.loads(next(folder.glob('*-usage_snapshot.json')).read_text())
+        snapshot['sequence']=2;snapshot['total']['totalTokens']=170
+        self.change_final(ref,lambda r:r['usage'].update(latest=snapshot))
+        entries=[]
+        for path in sorted(folder.iterdir()):
+            label=path.name.split('-',1)[1][:-5];value=json.loads(path.read_text());path.unlink()
+            if label=='cleanup':entries.append(('usage_snapshot',snapshot))
+            entries.append((label,value))
+        for i,(label,value) in enumerate(entries,1):save(folder/f'{i:03d}-{label}.json',value)
+        report=self.report([ref]);self.assertEqual(report['usage']['known_tokens'],170)
+        self.assertEqual(report['counts']['pass'],1)
+
+    def test_final_model_and_receiver_falsifiers_cannot_use_initial_success(self):
+        changes=[lambda r:r['model_selection'].update(rerouted=True),
+            lambda r:r['model_selection'].update(observed_thread_start='other'),
+            lambda r:r['model_selection'].update(backend_identity_verified=True),
+            lambda r:r.pop('model_selection')]
+        for key,value in [('health',{'user_prompt_seen':False,'scope':'single_initial_turn_thread'}),
+                ('implicit_reads',[{'slot':3,'count':1}]),('implicit_reads',[{'slot':0,'count':True}]),
+                ('implicit_reads',[{'slot':0,'count':1},{'slot':0,'count':1}]),('explicit_count',1)]:
+            changes.append(lambda r,k=key,v=value:r['routing_observation'].update({k:v}))
+        for key,value in [('stderr_eof',False),('pending_records',1),('native_written_count',0)]:
+            changes.append(lambda r,k=key,v=value:r['routing_observation']['transport'].update({k:v}))
+        for i,change in enumerate(changes):
+            with self.subTest(falsifier=i):
+                ref=self.fixture.attempt(attempt=f'invalid-{i}');self.change_final(ref,change)
+                final=json.loads(next((Path(ref['attempt_path'])/'records').glob('*-observation_finalized.json')).read_text())
+                self.fixture.mutate(ref,'routing_observation',lambda r:r.update(final['routing_observation']))
+                report=self.report([ref])
+                self.assertEqual(report['counts'],{'blocked':1,'pass':0,'fail':0,'inconclusive':len(report['trials'])-1})
+                self.assertEqual(report['trials'][0]['verdict'],'blocked')
+                self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+                self.assertFalse(report['backend_identity_verified'])
+        ref=self.fixture.attempt(attempt='no-final');folder=Path(ref['attempt_path'])/'records'
+        next(folder.glob('*-observation_finalized.json')).unlink()
+        entries=[]
+        for path in sorted(folder.iterdir()):
+            entries.append((path.name.split('-',1)[1][:-5],json.loads(path.read_text())));path.unlink()
+        for i,(label,value) in enumerate(entries,1):save(folder/f'{i:03d}-{label}.json',value)
+        _,records=nt.Journal.resume(folder,p.LIMITS['retained_bytes'])
+        self.assertNotIn('observation_finalized',records)
+        report=self.report([ref])
+        self.assertEqual(report['counts'],{'blocked':1,'pass':0,'fail':0,'inconclusive':len(report['trials'])-1})
+        self.assertEqual(report['trials'][0]['verdict'],'blocked')
+        self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+        self.assertFalse(report['backend_identity_verified'])
+
+    def test_manifest_key_and_qualification_drift_fail_closed(self):
+        f=self.fixture;ref=f.attempt();ctx=ad.load_context(f.experiment,f.spec,f.context_path)
+        manifest=json.loads((Path(ref['attempt_path'])/'manifest.json').read_text())
+        manifest['inputs']['entrypoint']=None
+        with self.assertRaises(ev.Invalid):ad.bind_manifest(ctx,manifest)
+        path=self.root/f.proof_path;original=json.loads(path.read_text())
+        for change in (lambda r:r.update(observer_profile_digest='a'*64),
+                lambda r:r['cases'].pop(),lambda r:r.update(qualified=True)):
+            proof=copy.deepcopy(original);change(proof);save(path,proof)
+            f.context['qualification_refs']['routing']['sha256']=hashlib.sha256(path.read_bytes()).hexdigest()
+            save(f.context_path,f.context)
+            report=self.report([ref])
+            self.assertIn('qualification_unavailable',report['blockers'])
+            self.assertEqual(report['counts'],{'blocked':1,'pass':0,'fail':0,'inconclusive':len(report['trials'])-1})
+            self.assertEqual(report['trials'][0]['verdict'],'blocked')
+            self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+            self.assertFalse(report['backend_identity_verified'])
+
+
+    def test_routing_proof_changed_after_read_invalidates_admission(self):
+        f=self.fixture;refs=[f.attempt(i) for i in range(len(f.experiment['trials']))]
+        report=self.report(refs,lambda _:save(self.root/f.proof_path,{'qualified':True}))
+        self.assertEqual(report['counts']['pass'],0)
+        self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+
+    def test_late_guard_revokes_all_observed_model_claims(self):
+        f=self.fixture;refs=[f.attempt(i) for i in range(len(f.experiment['trials']))]
+        original=ad.NativeBatch.observed_models_complete
+        def drift(batch):
+            complete=original(batch);self.assertTrue(complete)
+            proof=self.root/f.proof_path;proof.write_bytes(proof.read_bytes()+b' ')
+            return complete
+        with patch.object(ad.NativeBatch,'observed_models_complete',drift):report=self.report(refs)
+        self.assertIn('grading_identity_changed',report['blockers'])
+        self.assertIn('explicit_observed_model_projection_unavailable',report['blockers'])
+        self.assertEqual(report['selection_evidence'],'source_guarded_protocol_not_exported_selection')
+        self.assertTrue(all(row.get('observed_client_model') is None for row in report['attempt_observations']))
+        self.assertEqual(report['counts']['blocked'],len(refs))

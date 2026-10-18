@@ -2656,12 +2656,12 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Offline grading, trusted recorded-artifact admission and serial reservations are implemented; current-source authenticated qualification, observed-model export and actual comparisons remain pending.",
+      "summary": "Offline artifact/routing admission, client-model observations and serial reservations are implemented; current native qualification and real comparisons remain pending. Held-out scope is declaration only.",
       "when": [
         "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting.",
         "Recorded native artifact snapshots need trusted offline admission without relabeling receipts as synthetic completions."
       ],
-      "usage": "Run evaluation.py qualify, freeze a reviewed spec, and report every scheduled synthetic completion; recorded artifacts use trial_admission.py report. The linked serial contract adds trial_reservation.py initialize/status/run-next with a frozen private context. Only run-next launches an explicitly authorized native attempt; current qualification remains required.",
+      "usage": "Run evaluation.py qualify, freeze a reviewed spec, and report every scheduled synthetic completion; recorded artifacts use trial_admission.py report. The linked serial contract adds trial_reservation.py initialize/status/run-next with a frozen private context. Only run-next launches an explicitly authorized native attempt; current qualification remains required. Routed contexts follow the linked catalog/model/finalization contract. Optional evaluation_scope only declares a same-host pack; it does not verify unseen data.",
       "behavior": [
         "Freeze case and counterpart, both arms, model/tools/environment identities, repetitions and time/token/request budgets.",
         "Calibrate deterministic checks; separate outcome, routing, adherence, exposure and MCP dimensions.",
@@ -2670,7 +2670,8 @@
         "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion.",
         "Admit only source-bound owned attempt journals with matching maintained execution/grading/collection qualification; missing current authenticated proof remains blocked. Artifact hashes do not establish routing, exposure or quiescent task state.",
         "Native attempts preserve all submissions and unknown costs, charge one observed cumulative usage total per distinct attempt, and keep failed or unassigned attempts visible.",
-        "Audit every serial reservation independently of submitted completions. Reserve initial turns and declared phase-time permanently; stop on unknown/incomplete prior facts or observed token overshoot. This is not a hard provider request, token or spending cap."
+        "Audit every serial reservation independently of submitted completions. Reserve initial turns and declared phase-time permanently; stop on unknown/incomplete prior facts or observed token overshoot. This is not a hard provider request, token or spending cap.",
+        "Grade qualified first-page routing signals separately from artifacts; healthy none can fail an expected read. Persisted client-model facts do not verify backend identity. Declared same-host scope retains unverified/not-assessed/null custody limits."
       ],
       "outputs": [
         "Frozen trial inventory and deterministic development report with explicit live_eligible=false and promotion=inconclusive.",
@@ -2821,19 +2822,20 @@
       "group": "start",
       "status": "available",
       "source": "docs/native-trials.md",
-      "summary": "Check, run and recover frozen trials with optional artifact snapshots and a cooperating-host serial gate; changed-source authentication, natural routing and comparisons remain pending.",
+      "summary": "Frozen native trials support optional artifact capture, declared-catalog routing observation and serial reservations; current-source native qualification and actual comparisons remain pending.",
       "when": [
         "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission.",
         "A trial needs declared output hashes or explicit missing files captured before owned cleanup, without retaining arbitrary native content."
       ],
-      "usage": "Read docs/native-trials.md. Check the exact private plan without authentication or process launch; run requires a separate explicit auth-source. Recover only the original owned attempt. Use native_execution.py separately for the credential-free command-skills-loader fixture. Declare collection only for trial mode; follow the guide, source-bound collection record and screenshot walkthrough before interpreting the snapshot. Recorded snapshots can be submitted through the separate trusted offline admission contract; current qualification must match and remains pending for authentication. For ordered multi-trial execution, follow the linked serial reservation section in the evaluation-accounting guide; no automatic retry or hard provider cap is provided.",
+      "usage": "Read docs/native-trials.md. Check the exact private plan without authentication or process launch; run requires a separate explicit auth-source. Recover only the original owned attempt. Use native_execution.py separately for the credential-free command-skills-loader fixture. Declare collection only for trial mode; follow the guide, source-bound collection record and screenshot walkthrough before interpreting the snapshot. Recorded snapshots can be submitted through the separate trusted offline admission contract; current qualification must match and remains pending for authentication. For ordered multi-trial execution, follow the linked serial reservation section in the evaluation-accounting guide; no automatic retry or hard provider cap is provided. Optional natural catalogs omit the plan entrypoint. Read the linked evaluation-accounting contract for final receiver records and client-model admission; a healthy none is distinct from missing evidence.",
       "behavior": [
         "Bind selected case/bundle, source/runtime/profile, trial/attempt identities and declared limits before launch; changed or duplicate inputs refuse.",
         "Keep one temporary credential copy with the trusted host client outside the remote OS executor; readonly /runtime/arm and /runtime/qualification.js are distinct from editable case files.",
         "Observe one initial turn with post-use soft token guards and bounded cleanup. Unknown request counts, task correctness and backend identity remain unknown or ungraded.",
         "Preserve blocked attempts and cleanup uncertainty; recovery cannot waive unresolved native ownership. No VM lifecycle, account activation, grading or promotion.",
         "Historical source-bound credential-free native command/child probes cover task IO and protected synthetic access. Host controller/scorer retain account access. Those results do not qualify changed source bytes.",
-        "After owned host shutdown and known-home purge, capture only declared artifact metadata/hashes inside the original cleanup budget. Unsafe or unavailable capture blocks; an interrupted task remains blocked even if its partial file is captured. No quiescent or grading claim."
+        "After owned host shutdown and known-home purge, capture only declared artifact metadata/hashes inside the original cleanup budget. Unsafe or unavailable capture blocks; an interrupted task remains blocked even if its partial file is captured. No quiescent or grading claim.",
+        "Only the native main-file first-page read signal is projected. It does not establish all pages, semantic adherence, successful outcome or backend identity; current routed qualification remains pending."
       ],
       "outputs": [
         "A private typed attempt or recovery receipt; live_eligible=false and no comparative improvement claim.",

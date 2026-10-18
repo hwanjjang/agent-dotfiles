@@ -35,6 +35,8 @@ QUALIFICATIONS = {'execution': 'docs/verification/native-trials.json',
                   'grading': 'docs/verification/scoped-grading-integrity.json',
                   'collection': 'docs/verification/native-outcome-collection.json'}
 
+ROUTING_QUALIFICATION = 'docs/verification/native-routing-observer.json'
+
 
 def supported_native_runtime(runtime):
     return same({k: runtime.get(k) for k in
@@ -117,6 +119,83 @@ class Guard:
             return False
 
 
+def model_selection(value, model):
+    require(same(value, dict(requested=model, observed_thread_start=model,
+        source='thread/start.result.model', match=True, rerouted=False,
+        backend_identity_verified=False)), 'model_selection_unavailable')
+    return model
+
+
+def routing_projection(value, routing, profile):
+    fixed = dict(version=1, mode=routing['mode'], status='observed', reason=None,
+        catalog_digest=routing['catalog_digest'], observer_profile_digest=profile,
+        health={'user_prompt_seen': True, 'scope': 'single_initial_turn_thread'},
+        correlation={'thread_matched': True, 'turn_matched': True},
+        evidence_scope='receiver_complete_under_trusted_io', qualification='pending',
+        all_pages_verified=False, process_adherence='not_assessed', outcome='not_graded')
+    require(ev.keys(value, ' '.join(fixed) + ' activation implicit_reads explicit_count transport')
+            and same({k: value[k] for k in fixed}, fixed), 'routing_unavailable')
+    transport = value['transport']
+    complete = dict(stdout_eof=True, stderr_eof=True, process_reaped=True, trailing_bytes=0,
+        pending_records=0, projected_records_written=1, receiver_complete=True, native_written_count=None)
+    counters = ('stderr_bytes', 'stderr_frames', 'accepted_events', 'ignored_records')
+    require(ev.keys(transport, ' '.join(complete) + ' close_mode ' + ' '.join(counters))
+            and same({k: transport[k] for k in complete}, complete)
+            and transport['close_mode'] in ('graceful_stdin_eof', 'post_terminal_kill_drained')
+            and all(ev.integer(transport[k], 0, nt.protocol.STREAM_LIMIT) for k in counters), 'routing_transport')
+    rows = value['implicit_reads']
+    require(isinstance(rows, list) and len(rows) <= len(routing['catalog'])
+            and ev.integer(value['explicit_count'], 0, 127)
+            and (routing['mode'] != 'natural' or value['explicit_count'] == 0), 'routing_counts')
+    slots = []
+    for row in rows:
+        require(ev.keys(row, 'slot count') and ev.integer(row['slot'], 0, len(routing['catalog'])-1)
+                and ev.integer(row['count'], 1, 127), 'routing_counts')
+        slots.append(row['slot'])
+    require(slots == sorted(set(slots)) and transport['accepted_events'] ==
+            1 + value['explicit_count'] + sum(r['count'] for r in rows) <= 128
+            and transport['stderr_bytes'] >= transport['stderr_frames']
+            and transport['stderr_frames'] == transport['accepted_events'] + transport['ignored_records']
+            and value['activation'] == ('implicit_main_first_page_read' if rows else
+                                       'observed_none_in_declared_catalog'), 'routing_counts')
+    return {'native.routing.none': not rows, **{'native.routing.implicit_read.' + row['name']:
+            row['slot'] in slots for row in routing['catalog']}}
+
+
+def qualify_routing(record, context):
+    require(ev.keys(record, 'schema_version kind profile source_digests runtime_digests image_digest admission_grader_source_digests observer_profile_digest catalog_normalization fixture_routing assigned_slot cases falsification')
+            and type(record['schema_version']) is int and record['schema_version'] == 1
+            and record['kind'] == 'native_routing_observer_qualification_v1'
+            and same(record['admission_grader_source_digests'], native_grader_sources())
+            and record['catalog_normalization'] == 'inline-frontmatter-unique-slot-name-resource-v1'
+            and same(record['falsification'], {'false_marker_no_activation': True}), 'routing_unqualified')
+    route = record['fixture_routing']
+    p.fields(route, 'mode observer catalog_scope catalog_digest catalog', 'routing_fixture')
+    require(route['mode'] == 'natural' and route['observer'] == 'implicit-stderr-json-v1'
+            and route['catalog_scope'] == 'declared_experiment_subset'
+            and isinstance(route['catalog'], list) and 3 <= len(route['catalog']) <= 5
+            and route['catalog_digest'] == p.digest(route['catalog']), 'routing_fixture')
+    for slot, row in enumerate(route['catalog']):
+        require(ev.keys(row, 'slot name main_resource main_sha256 description_sha256')
+                and type(row['slot']) is int and row['slot'] == slot and p.token(row['name'])
+                and str(p.relative(row['main_resource'])).startswith('skills/')
+                and row['main_resource'].endswith('/SKILL.md')
+                and ev.sha(row['main_sha256']) and ev.sha(row['description_sha256']), 'routing_fixture')
+    require(all(len({r[k] for r in route['catalog']}) == len(route['catalog']) for k in ('name', 'main_resource'))
+            and ev.integer(record['assigned_slot'], 0, len(route['catalog'])-1), 'routing_fixture')
+    profile = nt.routing_profile_digest({'routing': route, 'sources': context.data['runtime']['source_digests']})
+    require(record['observer_profile_digest'] == profile and isinstance(record['cases'], list)
+            and len(record['cases']) == 4 and {r['kind'] for r in record['cases']} ==
+            {'assigned_main', 'list_only', 'reference_only', 'failed_main'}, 'routing_unqualified')
+    for row in record['cases']:
+        require(ev.keys(row, 'kind execution_kind routing_observation model_selection cleanup')
+                and row['execution_kind'] == 'actual_native_codex' and cleanup_complete(row['cleanup']), 'routing_unqualified')
+        model_selection(row['model_selection'], context.spec['runtime']['model'])
+        projection = routing_projection(row['routing_observation'], route, profile)
+        selected = [r['slot'] for r in route['catalog'] if projection['native.routing.implicit_read.' + r['name']]]
+        require(selected == ([record['assigned_slot']] if row['kind'] == 'assigned_main' else []), 'routing_unqualified')
+
+
 class NativeContext:
     def __init__(self, experiment, spec, data, guard):
         self.experiment, self.spec, self.data = copy.deepcopy((experiment, spec, data))
@@ -155,17 +234,29 @@ def load_context(experiment, current_spec, context_path):
     require(current_spec['identities']['runner'] == ev.digest(rt['source_digests'])
             and current_spec['identities']['environment'] == ev.digest({k: v for k, v in rt.items() if k != 'source_digests'}), 'source_mapping')
     require(isinstance(data['arms'], dict) and set(data['arms']) == set(ev.ARMS), 'arm_fields')
+    layouts = []
     for arm, value in data['arms'].items():
-        require(ev.keys(value, 'root entrypoint files') and isinstance(value['files'], list)
+        routed = 'routing' in value
+        keys = ('entrypoint', 'files', 'routing') if routed else ('entrypoint', 'files')
+        require(ev.keys(value, 'root ' + ' '.join(keys)) and isinstance(value['files'], list)
                 and 1 <= len(value['files']) <= p.MAX_FILES, 'arm_fields')
         root = p.absolute(value['root'], 'arm_root')
-        paths = []
+        paths, selected, total = [], {}, 0
         for row in value['files']:
             require(ev.keys(row, 'path sha256') and ev.sha(row['sha256']), 'arm_file')
             name = str(p.relative(row['path'])); paths.append(name)
-            require(guard.read(root / name, p.MAX_FILE_BYTES)[1] == row['sha256'], 'arm_changed')
-        require(paths == sorted(set(paths)) and value['entrypoint'] in paths
-                and current_spec['identities'][arm] == ev.digest({k: value[k] for k in ('entrypoint', 'files')}), 'arm_mapping')
+            raw, observed = guard.read(root / name, p.MAX_FILE_BYTES)
+            require(observed == row['sha256'], 'arm_changed')
+            total += len(raw); selected['bundle', name] = raw
+        if routed:
+            p.validate_routing(value['routing'], selected)
+        natural = routed and value['routing']['mode'] == 'natural'
+        require(paths == sorted(set(paths)) and total <= p.MAX_INPUT_BYTES
+                and (value['entrypoint'] is None if natural else value['entrypoint'] in paths)
+                and current_spec['identities'][arm] == ev.digest({k: value[k] for k in keys}), 'arm_mapping')
+        layouts.append({**{k: value['routing'][k] for k in ('mode', 'observer', 'catalog_scope')},
+            'catalog': [{k: r[k] for k in ('slot', 'name', 'main_resource')} for r in value['routing']['catalog']]} if routed else None)
+    require(same(*layouts), 'catalog_layout')
     require(isinstance(data['collection_by_trial'], dict) and set(data['collection_by_trial']) == {t['trial_id'] for t in experiment['trials']}, 'collection_inventory')
     for trial in experiment['trials']:
         declaration = data['collection_by_trial'][trial['trial_id']]
@@ -174,9 +265,10 @@ def load_context(experiment, current_spec, context_path):
         require(all(c['target'] in declaration['paths'] for c in criteria if c['kind'] == 'artifact_sha256'), 'collection_targets')
     context = NativeContext(experiment, current_spec, data, guard)
     try:
-        require(set(data['qualification_refs']) == set(QUALIFICATIONS), 'qualification_fields')
+        locations = {**QUALIFICATIONS, **({'routing': ROUTING_QUALIFICATION} if layouts[0] is not None else {})}
+        require(set(data['qualification_refs']) == set(locations), 'qualification_fields')
         records = {}
-        for name, location in QUALIFICATIONS.items():
+        for name, location in locations.items():
             ref = data['qualification_refs'][name]
             require(ev.keys(ref, 'path sha256') and ref['path'] == location and ev.sha(ref['sha256']), 'qualification_authority')
             record = guard.json(ROOT / location)
@@ -185,6 +277,8 @@ def load_context(experiment, current_spec, context_path):
                     same(record['runtime_digests'], rt['runtime_digests']) and
                     record['image_digest'] == rt['image_digest'] and record['profile'] == rt['profile'], 'qualification_changed')
             records[name] = record
+        if 'routing' in records:
+            qualify_routing(records['routing'], context)
         execution, grading, collection = (records[k] for k in QUALIFICATIONS)
         require(execution['authenticated']['status'] == 'qualified_current_profile'
                 and execution['authenticated']['qualification']['boundary_checks_verified'] is True
@@ -267,6 +361,13 @@ class NativeBatch:
                 and (self.execution_lease is None or (self.execution_lease.check()
                      and self.execution_guard.check())))
 
+    def observed_models_complete(self):
+        expected = {t['trial_id'] for t in self.context.experiment['trials']}
+        return (self.context.qualification_error is None and len(self.rows) == len(expected)
+                and {r['trial_id'] for r in self.rows} == expected and self.valid(self.context.experiment, self.context.spec)
+                and all(r['status'] == 'completed' and i.get('observed_client_model') == self.context.spec['runtime']['model']
+                        for r, i in zip(self.rows, self.attempts)))
+
     def usage(self, rows, missing):
         selected = {ev.digest(r) for r in rows}
         attempts = {}
@@ -286,9 +387,24 @@ class NativeBatch:
                 'currency_reason': 'not_observed', 'attempts': len(attempts),
                 'submissions': len(rows), 'wire_requests': None, 'billing_usage': None}
 
+    def latency(self, rows, missing):
+        """Count each bound attempt clock once, like cumulative usage."""
+        selected = {ev.digest(row) for row in rows}
+        attempts = {}
+        for row, info in zip(self.rows, self.attempts):
+            if ev.digest(row) in selected:
+                attempts.setdefault(info['key'], []).append(
+                    (row['latency_ms'], info['manifest_digest'], info['receipt_digest']))
+        known, unknown = [], missing
+        for group in attempts.values():
+            if ev.integer(group[0][0]) and all(same(group[0], value) for value in group):
+                known.append(group[0][0])
+            else:
+                unknown += 1
+        return {'known_records': len(known), 'known_total_ms': sum(known), 'unknown': unknown}
+
 
 def bind_manifest(ctx, manifest):
-    require(manifest.get('routing', {}).get('mode') != 'natural', 'natural_admission_unavailable')
     identity = manifest['identity']
     selected = trial_dispatch.prepare(ctx.experiment, ctx.spec, identity['trial_id'], identity['attempt_id'])
     trial = selected['binding']['trial']
@@ -298,8 +414,17 @@ def bind_manifest(ctx, manifest):
     inputs = selected['executor_input']
     files = [{'kind': 'case', 'path': name, 'sha256': hashlib.sha256(value.encode()).hexdigest()} for name, value in sorted(inputs['files'].items())]
     files += [dict(f, kind='bundle') for f in arm['files']]
-    require(manifest['prompt'] == inputs['request'] and manifest['inputs']['entrypoint'] == arm['entrypoint']
-            and sorted(manifest['inputs']['files'], key=lambda f: (f['kind'], f['path'])) == sorted(files, key=lambda f: (f['kind'], f['path'])), 'input_binding')
+    routed = 'routing' in arm
+    natural = routed and arm['routing']['mode'] == 'natural'
+    require(type(manifest['schema_version']) is int and manifest['schema_version'] == (2 if routed else 1)
+            and ('routing' in manifest) == routed
+            and same(manifest.get('routing'), arm.get('routing'))
+            and ev.keys(manifest['inputs'], 'root files' if natural else 'root entrypoint files')
+            and (natural or manifest['inputs']['entrypoint'] == arm['entrypoint'])
+            and manifest['prompt'] == inputs['request']
+            and sorted(manifest['inputs']['files'], key=lambda f: (f['kind'], f['path'])) == sorted(files, key=lambda f: (f['kind'], f['path']))
+            and len(files) <= p.MAX_FILES and sum(len(v.encode()) for v in inputs['files'].values())
+                + sum(ctx.guard.files[Path(arm['root']) / r['path']][1][5] for r in arm['files']) <= p.MAX_INPUT_BYTES, 'input_binding')
     require(same(manifest['collection'], ctx.data['collection_by_trial'][identity['trial_id']]), 'collection_binding')
     if 'execution_root' in ctx.data:
         require(manifest['state_root'] == ctx.data['execution_root'], 'execution_root')
@@ -312,6 +437,16 @@ def cleanup_complete(cleanup):
             and cleanup['native_home']['home_absent'] is True and cleanup['native_home']['auth_absent'] is True
             and cleanup['process_query_uncertain'] is False and cleanup['watch_uncertain'] is False
             and cleanup.get('protected_synthetic_files_unchanged_after_shutdown') in (None, True))
+
+
+def _final_observation(records, ordered):
+    observation = _one(records, 'observation_finalized')
+    require(same(observation['routing_observation'], _one(records, 'routing_observation')), 'routing_capture')
+    labels = [f.name.split('-', 1)[1][:-5] for f in ordered]
+    sequence = ['observation', 'cleanup', 'routing_observation', 'observation_finalized', 'receipt']
+    require(all(labels.count(k) == 1 for k in sequence) and
+            [labels.index(k) for k in sequence] == sorted(labels.index(k) for k in sequence), 'finalization_order')
+    return observation
 
 
 def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_digest=None, expected_limits=None):
@@ -356,6 +491,12 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
     require(receipt['manifest_digest'] == digest and same(receipt['identity'], identity)
             and same(_one(records, 'frozen_binding'), {'manifest_digest': digest, 'identity': identity, 'profile': rt['profile']}), 'receipt_binding')
     observation, cleanup = _one(records, 'observation'), _one(records, 'cleanup')
+    if cost_only and 'routing' in manifest:
+        # The bound receipt's latest persisted usage remains cost evidence even
+        # when final routing/model/clock admission is incomplete.
+        observation = receipt['observation']
+    elif 'routing' in manifest:
+        observation = _final_observation(records, ordered)
     require(same(observation, receipt['observation']) and same(cleanup, receipt['cleanup'])
             and same(receipt['source_digests'], rt['source_digests'])
             and same(receipt['runtime_digests'], rt['runtime_digests'])
@@ -383,6 +524,18 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
         require(all(labels.count(k) == 1 for k in sequence)
                 and [labels.index(k) for k in sequence] == sorted(labels.index(k) for k in sequence), 'cost_order')
         info['cost_bound'] = True
+        if 'routing' in manifest:
+            require(same(_final_observation(records, ordered), observation), 'receipt_changed')
+    timing = receipt.get('controller_timing')
+    if timing is not None:
+        require(ev.keys(timing, 'clock scope elapsed_ms') and timing['clock'] == 'monotonic_ns'
+                and timing['scope'] == 'controller_setup_task_cleanup'
+                and ev.integer(timing['elapsed_ms']), 'controller_timing')
+        row['latency_ms'] = timing['elapsed_ms']
+        info['latency_scope'] = timing['scope']
+    observed_model = model_selection(observation['model_selection'], ctx.spec['runtime']['model']) if 'model_selection' in observation else None
+    require('routing' not in manifest or observed_model is not None, 'model_selection_unavailable')
+    if cost_only:
         info['complete'] = (observation['status'] == 'completed_ungraded'
             and observation['terminal_completed'] is True and observation['reason'] is None
             and type(observation['initial_turns']) is int and observation['initial_turns'] == 1
@@ -415,8 +568,11 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
     require(info['counters'] is not None and collection['status'] == 'captured', 'collection_unavailable')
     snapshot = nt.validate_snapshot({'exit': 0, 'stop_reason': None, 'stderr': '', 'stdout': json.dumps(collection['snapshot'])}, declaration)
     require(snapshot['status'] == 'captured', 'collection_unavailable')
-    row.update(status='completed', artifacts={r['path']: r for r in snapshot['files']})
-    info['reason'] = None
+    projection = {}
+    if 'routing' in manifest:
+        projection = routing_projection(observation['routing_observation'], manifest['routing'], nt.routing_profile_digest(manifest))
+    row.update(status='completed', artifacts={r['path']: r for r in snapshot['files']}, observations=projection)
+    info.update(reason=None, observed_client_model=observed_model)
 
 
 def read_cost_facts(context, row, guard):

@@ -3,8 +3,8 @@
 Status: offline synthetic comparison and trusted offline native artifact admission
 are implemented. Current native admission remains blocked until maintained
 qualification records match the frozen sources and include current authenticated
-qualification. Cooperating-host serial launch reservations are implemented; actual
-comparisons and same-host held-out evaluation remain incomplete. This is the bounded accounting slice of the
+qualification. Cooperating-host serial launch reservations, recorded client-model selection and
+declared-catalog routing admission are implemented; actual comparisons and same-host held-out evaluation remain incomplete. This is the bounded accounting slice of the
 [account improvement design](account-improvement-loop.md#comparative-evaluation-contract).
 The evaluator and admission reader do not launch agents or execute trace commands.
 The separate serial gate below can invoke one explicitly authorized native trial;
@@ -21,7 +21,8 @@ python3 scripts/improvement/evaluation.py report < report-input.json > report.js
 ```
 
 `freeze(spec)` accepts exactly `cases`, `checks`, `identities`, `runtime`, `budget`,
-`repetitions`, `seed`, `primary_metric`, `regression_margin`, and `promotion_rule`.
+`repetitions`, `seed`, `primary_metric`, `regression_margin`, and `promotion_rule`,
+plus optional `evaluation_scope` described below.
 `report` input is exactly `experiment` (the frozen output), `current_spec`, and
 `completions` (a list). Reuse the saved inventory after interruption; this module
 never retries work. Write regrades to a separate artifact, retaining the original.
@@ -35,8 +36,9 @@ comparison uses canonical JSON bytes, distinguishing booleans, integers and floa
 
 - Cases consume the in-tree reviewed Store export v1 shape: `case_id`, `language`, `purpose`,
   `inputs`, `outcome_contract`, `counterpart`, `schema_version`, `classification`,
-  `artifact_hashes`, `case_digest`. Public inputs are always `development`; a renamed
-  public fixture cannot become a holdout. Fixture hashes and the whole export digest
+  `artifact_hashes`, `case_digest`. The ordinary route requires `development`; the optional scope below accepts a
+  declared same-host pack without certifying its custody or lack of exposure. A
+  renamed public fixture cannot become verified unseen evidence. Fixture hashes and the whole export digest
   are recomputed. Case IDs accept the export token alphabet `[A-Za-z0-9_.:@-]`
   at lengths 1–160; file paths use the export limit of 160 Unicode characters,
   not UTF-8 bytes, and reject backslashes and empty, `.` or `..` segments.
@@ -65,7 +67,8 @@ comparison uses canonical JSON bytes, distinguishing booleans, integers and floa
 - `budget` requires nonnegative integer `model_requests` and `tokens`, and positive
   integer `seconds`. Optional `amount` requires `currency`; a dollar cap is not
   mandatory. This module freezes these ceilings but makes no submissions or timing
-  enforcement claim. A future qualified runner must enforce the declared ceilings.
+  enforcement claim. The serial gate below implements initial-turn/phase-time
+  reservations and post-use soft-token checks, not provider hard ceilings.
 
 Every reproduction and its successful/contrary counterpart is scheduled for both
 baseline and candidate, repeated as declared. The seed randomizes arm order within
@@ -84,6 +87,27 @@ Claims are `passed`, `failed`, or `unavailable`. Unknown exit code is `null`.
 Usage is `null` or `{"input_tokens": 123, "output_tokens": 45}`. Latency is an
 integer number of milliseconds or `null`. Unknown usage never becomes zero.
 
+
+## Optional same-host scope declaration
+
+A frozen spec may add exactly `evaluation_scope: {"kind": "same_host_heldout",
+"pack_digest": "<sha256>"}`. Its digest must equal the evaluator's canonical
+`digest({"cases": spec["cases"], "checks": spec["checks"]})`; selected case
+classification must be `same_host_heldout`. Without this field, the existing
+`development` schema and three-argument comparison behavior remain unchanged.
+Extra claims such as `unseen: true`, a mismatched pack or held-out classification
+without the declaration reject. Scope drift invalidates the frozen experiment.
+
+Reports label this **declaration**, not verification:
+`classification=same_host_heldout_declared`,
+`development_exposure=not_assessed`, `holdout_custody=null`, and
+`same_host_heldout_unverified` remains a blocker. Evidence kinds are
+`deterministic_same_host_heldout_declared_comparison` or
+`native_artifact_same_host_heldout_declared_comparison` for their respective routes.
+No case generation, context separation or unseen-by-author certification happens
+here; `live_eligible=false` and promotion remains inconclusive. Actual case
+preparation, frozen EN/KO runs and the [same-host protocol](account-improvement-loop.md#same-host-held-out-evaluation)
+remain separate work.
 
 ## In-tree reviewed producer
 
@@ -137,9 +161,9 @@ The private context requires version 1 and kind
 | Field | Binding |
 | --- | --- |
 | `schema_version`, `kind`, `experiment_digest` | Version, typed context and the saved frozen inventory. |
-| `arms` | Each baseline/candidate root, bundle entrypoint and sorted relative file/SHA-256 inventory. |
+| `arms` | Each baseline/candidate root, entrypoint, sorted relative file/SHA-256 inventory and optional routing catalog described below. |
 | `runtime` | Supported profile, exact source digests, Codex/code-mode/Docker/executor-archive digests, image and metadata digests. |
-| `qualification_refs` | Exact maintained execution, scoped-grading and collection record paths and digests. |
+| `qualification_refs` | Exact maintained execution, scoped-grading and collection record paths/digests; routed contexts additionally require the fixed routing-observer record. |
 | `collection_by_trial` | Explicit validated collection declaration for every scheduled trial, covering each artifact criterion. |
 
 The [reader source](../../scripts/improvement/trial_admission.py) owns nested fields
@@ -177,10 +201,10 @@ holds each coordinator lock nonblockingly, validates manifest, dispatch, journal
 sequence, collection intent/result, source and cleanup bindings, and rechecks
 identities through grading. Active writers, evidence drift and missing qualification
 block admission. Maintained collection evidence covers its recorded prior source
-set; changed reservation sources have not renewed current native qualification. Preserve recoverable
+set; current reservation, model-selection and routing sources have not renewed native qualification. Preserve recoverable
 attempt costs when outcome admission is blocked.
 
-This route admits artifact snapshots only. Present SHA-256 values are compared
+Artifact criteria on this route admit recorded snapshots. Present SHA-256 values are compared
 directly to the expected digest; observed missing files fail that criterion.
 Absent, unsafe or blocked capture stays blocked. Hashes are never reconstructed
 as text or relabeled as synthetic content. Matching bytes do not prove routing,
@@ -191,11 +215,26 @@ reader adds native-only `attempt_id` to the completion projection; callers canno
 submit that projection as JSON to bypass admission. Duplicate submissions remain
 visible but charge one source attempt once. Distinct and failed attempts retain
 observed cumulative usage; conflicting receipts, missing usage and discontinuities
-leave the affected cost unknown. Known tokens are a subtotal, never a complete
+leave the affected cost unknown. Model-selection, timing or routed-finalization
+admission failures retain otherwise source-bound latest usage in the known
+subtotal, while the attempt remains incomplete and blocks another launch. Known
+tokens are a subtotal, never a complete
 budget when coverage is missing. Wire requests, billing usage and currency remain
-unobserved. Selected-model evidence is `source_guarded_protocol_not_exported_selection`;
-explicit observed-model export remains separate work. An optional `execution_root`
+unobserved. Selected-model evidence follows the bound client projection described below; it
+does not verify backend identity. An optional `execution_root`
 adds the separate reservation audit described below.
+
+Native `latency_ms`, when present and valid, comes from the source-bound
+`controller_timing` receipt: `clock=monotonic_ns`,
+`scope=controller_setup_task_cleanup`, and a nonnegative integer `elapsed_ms`.
+The report labels it `source_guarded_controller_setup_task_cleanup`. It spans
+controller setup, task observation and cleanup; it is not provider response
+latency or a wire-attempt measure. Missing timing remains unknown. Negative,
+malformed or wrong-scope timing blocks that attempt's admission; caller timings
+cannot replace the bound receipt. This observed duration does not refund the
+serial gate's permanent declared phase-time reservation. Native elapsed
+time counts each distinct bound attempt once; duplicate submissions do not add
+latency.
 
 The controller, scorer and same-account maintainer are trusted local owners.
 These guards do not contain a malicious same-UID host. Remote protected-file
@@ -203,6 +242,110 @@ checks retain their own source-bound scope. `live_eligible` stays false and
 promotion inconclusive, even when an artifact criterion passes. Current-source
 qualification, real comparisons and same-host held-out evaluation remain distinct
 requirements; this component does not complete issue #26.
+
+## Declared-catalog routing and client-model observations
+
+The [source-backed workflow](../architecture/native-routing-workflow.html) shows
+serial execution, receiver finalization and separate offline grading at its pinned
+revision. This section owns the current operator contract.
+
+A routed trial uses plan `schema_version: 2`; version 1 rejects `routing`.
+The required version-2 `routing` object contains exactly `mode`, `observer`,
+`catalog_scope`, `catalog_digest` and `catalog`. The fixed observer is
+`implicit-stderr-json-v1`; scope is `declared_experiment_subset`, not the entire
+account catalog. Three to five ordered catalog rows contain `slot`, `name`,
+`main_resource`, `main_sha256` and `description_sha256`. Slots start at zero;
+names and `skills/.../SKILL.md` paths are unique. The catalog covers every selected
+bundle `SKILL.md`, binds its exact bytes and inline name/description frontmatter,
+and hashes the normalized description. Missing, duplicate, unsupported metadata
+or unlisted skill files refuse. This is a deliberately narrow frontmatter parser:
+opening and closing delimiters must be exact LF-separated `---` lines. Only
+unquoted `name`, `description`, `disable-model-invocation` and `user-invocable`
+keys are supported, without duplicates. Name/description values are JSON-quoted
+strings or conservative alphabetic-leading plain text; ambiguous YAML scalars,
+flow values, comments, tabs within values and decoded controls refuse. Quote
+intended numeric or indicator-led strings. Boolean controls use literal lowercase
+values; `disable-model-invocation` must be `false`. Unsupported metadata refuses
+rather than silently changing the native catalog. Quoted Unicode escapes in the
+surrogate range U+D800–U+DFFF refuse, including pairs that JSON would combine but
+the pinned native YAML loader rejects. Actual UTF-8 characters, compatible BMP
+escapes and literal escaped backslashes remain supported.
+This restriction follows the pinned
+[Codex 0.163.0 frontmatter parser](https://github.com/openai/codex/blob/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/skills/src/parser.rs)
+and its
+[unsafe-libyaml 0.2.11 escape scanner](https://github.com/dtolnay/unsafe-libyaml/blob/0.2.11/src/scanner.rs).
+Source inspection supports compatibility; it does not qualify a native run.
+
+`mode=natural` omits `inputs.entrypoint` from the native plan. The controller sends
+the task prompt without a forced read instruction, and native discovery chooses
+from the selected catalog. `forced_entrypoint` retains the explicit entrypoint
+and forced-read wrapper; it is not natural selection. Qualification-mode plans
+cannot add routing. Files remain frozen under readonly `/runtime/arm`; this field
+adds no executor authority, tool route or extra turn.
+
+In the offline context, each routed arm adds this same `routing` object; its
+`entrypoint` is explicitly null for natural mode. Both arms must use the same
+mode, observer, scope and slot/name/resource layout. Each arm's complete catalog,
+file digests and entrypoint are included in its own frozen arm identity. A changed
+body or description therefore changes that arm's identity while slot semantics
+remain comparable. No expected winning skill or grader target is passed in this
+catalog. The operator is responsible for a reviewed task prompt; accepting a
+natural declaration does not prove the author avoided every hint.
+
+The receiver projects only native `codex.user_prompt` health and correlated
+`codex.skill_invocation` metadata. An implicit main-file **first-page read** is
+`implicit_main_first_page_read`. With healthy scope, complete receiver drain and
+no qualifying reads, the result is `observed_none_in_declared_catalog`. A list-only,
+reference-only or failed-main-read observation cannot establish this signal.
+Explicit invocation in natural mode, missing health, identity drift, malformed or
+incomplete transport stays blocked/unknown. It is not evidence of semantic
+adherence, complete skill pagination, outcome success or producer-side losslessness.
+
+After cleanup and owned transport shutdown, the journal must contain exactly one
+of each record in order: `observation`, `cleanup`, `routing_observation`,
+`observation_finalized`, `receipt`. The finalized observation must equal the
+receipt observation and its routing projection must equal the separate routing
+record. Require stdout/stderr EOF, reaped process, no trailing bytes/pending
+records, and one persisted projection. Owned process-group signaling precedes
+leader reaping on every shutdown path; signal uncertainty is retained. Late drain
+errors keep the original stop reason and are reported separately. `receiver_complete_under_trusted_io` is
+this receiver boundary; `native_written_count=null`, `all_pages_verified=false`,
+`process_adherence=not_assessed` and `outcome=not_graded` remain explicit.
+
+Group-signal behavior depends on the execution host. A retained macOS synthetic
+stdio check observed `signal_failed` after a fast, otherwise clean EOF exit with
+an unreaped leader. That result stays cleanup-uncertain and routing-unknown;
+neither successful task output nor a reaped leader overrides it. Qualification
+must record its host OS and include a fast-exit transport check on that host.
+A peer that deliberately remains alive after EOF does not qualify the fast-exit
+path. Keep uncertain resources under the existing custody/recovery rules; do not
+add a broad process scan or waive signaling to obtain a positive result.
+
+Routed contexts require the exact maintained path
+`docs/verification/native-routing-observer.json` in `qualification_refs.routing`.
+That record is not currently available as qualified public evidence. It must bind
+current source/runtime/image and the three-source admission grader, observer
+profile, normalized catalog, four actual native cases (assigned main, list only,
+reference only, failed main), cleanup and false-marker falsification. A caller
+flag or synthetic qualification fixture cannot substitute. Existing historical
+execution/collection proofs also require renewal for changed sources.
+
+Only qualified, bound projections expose typed criterion targets
+`native.routing.none` and `native.routing.implicit_read.<catalog-name>` to the
+existing `value_equals` grader. A healthy none may pass an absence criterion or
+fail an expected-read criterion independently of artifact outcome. It does not
+become an inconclusive observation merely because the expected skill was not read.
+
+Model selection is a separate exact journal projection: requested model,
+`thread/start.result.model`, match, reroute and backend-verification flags must
+agree with the frozen tuple. Missing, mismatched or rerouted selection cannot
+satisfy routed admission. When every scheduled row has qualified complete bound
+model facts, the report uses `selection_evidence=persisted_thread_start_client_model`
+and removes only `explicit_observed_model_projection_unavailable`. Otherwise it
+retains the older source-guarded/no-export label and blocker. Neither path attests
+server weights: `backend_identity_verified=false`, live eligibility and promotion
+stay unavailable. Current implementation has offline fake-journal verification;
+actual current-source native routing/admission and EN/KO comparisons remain pending.
 
 ## Serial native launch reservations
 
@@ -289,7 +432,7 @@ cannot remove its reserved allowance, known spend or uncertainty. The ordinary
 `usage` field still describes submitted evidence, so do not sum the two views.
 An unavailable or blocked audit cannot enable eligibility. Contexts without
 `execution_root` retain offline admission behavior and its unavailable-reservation
-blocker. All reports keep `live_eligible=false`; observed-model export, real
+blocker. All reports keep `live_eligible=false`; current-source qualification, real
 comparisons and same-host held-out evaluation remain separate requirements.
 
 ## Report and trust limits

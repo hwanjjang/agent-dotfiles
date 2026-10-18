@@ -89,3 +89,33 @@ Require `hard_provider_cap=false`, unknown wire/billing data and
 `live_eligible=false`. Preserve original failed attempts and owned cleanup evidence.
 These checks verify the cooperating-host gate, not provider hard caps, natural
 routing, comparative benefit or account activation.
+
+## Routing, selected-client-model and declared-scope checks
+
+Follow the [routing/model contract](../../../decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
+and [scope declaration](../../../decisions/evaluation-accounting.md#optional-same-host-scope-declaration).
+Run `test_trial_admission.py`, `test_native_cost_projection.py` and
+`test_improvement_evaluation.py` with the existing unit-test runner.
+For a separate actual offline CLI smoke, use explicitly synthetic qualification
+and native journals: require an implicit-read observation to satisfy its routing
+criterion, healthy none to fail an expected-read criterion while outcome still
+passes, and a tampered qualification record to block. Check finalized-record order,
+exact model facts, missing/duplicate/drift rejection and unchanged attempt accounting.
+Keep adherence, exposure and MCP dimensions inconclusive when unobserved.
+
+Use `evaluation.py freeze/report` on synthetic scope fixtures to verify the unchanged
+development route, accepted declaration, rejected caller self-certification and
+pack drift, and blocked stale current scope. Require unverified scope, not-assessed
+exposure, null custody, false live eligibility and inconclusive promotion. Do not
+generate held-out cases or claim actual model behavior as part of these checks.
+Actual routing/model qualification requires a separate source-bound native run;
+current public proof is insufficient. No public fixture-generator command exists.
+
+In cost-projection regressions, legacy/routed reroutes, malformed controller clocks
+and missing final routing records must retain the bound latest persisted token
+subtotal while completeness is false and the next serial launch is blocked.
+Source/runtime/manifest/receipt, usage and final guard checks still apply. A late
+guarded-evidence change after model completeness must restore the model-unavailable
+blocker, reset the selection label and clear copied attempt model claims. Repeated
+references to one known or unknown controller clock count as one attempt; distinct
+attempts remain separate, and duplicate trial coverage still blocks grading.
