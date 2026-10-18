@@ -124,6 +124,21 @@ class QualificationTests(unittest.TestCase):
             with self.subTest(changed=changes.index(changed)):
                 self.assertEqual(self.project(values).summary()['reason'],'boundary_output_invalid')
 
+    def test_scoped_child_write_or_missing_result_cannot_pass(self):
+        import copy
+        original = output()[0]['text']
+        for change in ('success', 'missing'):
+            lines = original.splitlines()
+            for index, line in enumerate(lines):
+                if line.startswith('BOUNDARY_CHECK:'):
+                    record = json.loads(line[len('BOUNDARY_CHECK:'):])
+                    if record['check'] == 'command':
+                        if change == 'success': record['result']['scoped_io']['child']['denied']['installer_receipt']['write_errno'] = 0
+                        else: del record['result']['scoped_io']['child']
+                        lines[index] = 'BOUNDARY_CHECK:' + json.dumps(record)
+            values = notifications(); values[1]['params']['item']['output'] = '\n'.join(lines)
+            self.assertEqual(self.project(values).summary()['status'], 'blocked')
+
     def test_each_boundary_record_missing_or_duplicate_blocks(self):
         original=output()[0]['text'].splitlines()
         for name in BOUNDARY_EXPECTED:

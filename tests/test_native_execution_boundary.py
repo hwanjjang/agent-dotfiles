@@ -86,6 +86,16 @@ def evidence():
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_scoped_io_has_native_and_child_positive_and_role_denial_predicates(self):
+        expected = runner.BOUNDARY_EXPECTED['command']
+        self.assertIn('scoped_io', expected)
+        for actor in ('direct', 'child'):
+            scope = expected['scoped_io'][actor]
+            self.assertIs(scope['fixture_read'], True)
+            self.assertIs(scope['task_write_readback'], True)
+            for role in ('grading', 'other_arm', 'installer_receipt', 'installer_journal'):
+                self.assertEqual(scope['denied'][role], {'read_errno': 2, 'write_errno': 2, 'create_errno': 2})
+
     def test_success_is_typed_and_bound_to_exact_issued_calls(self):
         self.assertEqual(runner.boundary_outputs({'input':evidence()}), runner.BOUNDARY_EXPECTED)
 
@@ -108,6 +118,27 @@ class EvidenceTests(unittest.TestCase):
                 inputs=evidence();row=json.loads(inputs[1]['output'][3]['text'].removeprefix('BOUNDARY_CHECK:'))
                 row['result'][field]=value;inputs[1]['output'][3]['text']='BOUNDARY_CHECK:'+json.dumps(row)
                 with self.assertRaises(runner.Refusal):runner.boundary_outputs({'input':inputs})
+
+    def test_every_scoped_io_predicate_is_required_and_typed(self):
+        import copy
+        expected = runner.BOUNDARY_EXPECTED['command']['scoped_io']
+        for actor in expected:
+            mutations = []
+            for positive in ('fixture_read', 'task_write_readback'):
+                for bad in (False, 1, None):
+                    value = copy.deepcopy(expected); value[actor][positive] = bad; mutations.append(value)
+            for role in expected[actor]['denied']:
+                for operation in ('read_errno', 'write_errno', 'create_errno'):
+                    for bad in (0, -1, True, None, '2'):
+                        value = copy.deepcopy(expected); value[actor]['denied'][role][operation] = bad; mutations.append(value)
+            value = copy.deepcopy(expected); del value[actor]; mutations.append(value)
+            for value in mutations:
+                inputs = evidence()
+                row = json.loads(inputs[1]['output'][3]['text'].removeprefix('BOUNDARY_CHECK:'))
+                row['result']['scoped_io'] = value
+                inputs[1]['output'][3]['text'] = 'BOUNDARY_CHECK:' + json.dumps(row)
+                with self.assertRaises(runner.Refusal):
+                    runner.boundary_outputs({'input': inputs})
 
     def test_skill_foreign_or_traversal_disclosure_fails(self):
         for field in ('body','reference','foreign_refused','traversal_refused'):
@@ -161,6 +192,66 @@ class EvidenceTests(unittest.TestCase):
 
 
 
+class ScopedProbeTests(unittest.TestCase):
+    def test_rendered_command_runs_the_bounded_child_and_rejects_child_failure(self):
+        import shutil, subprocess
+        node = shutil.which('node')
+        if not node: self.skipTest('Node unavailable: JavaScript template decoding not exercised')
+        decoder = "const fs=require('fs'),vm=require('vm');const source=fs.readFileSync(process.argv[1],'utf8');const literal=source.split('const probe = ')[1].split('\\n`;')[0]+'\\n`';process.stdout.write(vm.runInNewContext(literal));"
+        decoded = subprocess.run([node, '-e', decoder,
+            str(ROOT/'scripts/improvement/native_execution_command_skills.js')],
+            capture_output=True, text=True, timeout=3)
+        self.assertEqual(decoded.returncode, 0, decoded.stderr)
+        prefix = decoded.stdout.split("\nresult['fixture_read']=", 1)[0]
+        self.assertNotIn('socket.socket(', prefix)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder).resolve()
+            (root/'fixture.txt').write_text('ASSIGNED_REMOTE_FIXTURE')
+            prefix = prefix.replace('/work/project', str(root))
+            missing = [str(root/'not-mounted'/name) for name in
+                       ('host-only', 'history-only', 'credential-only', 'other-arm-only', 'evaluator-only')]
+            for fails in (False, True):
+                program = prefix + "\nprint(json.dumps(result['scoped_io']))"
+                if fails: program = program.replace('child_source=io_source+', "child_source='raise SystemExit(3)'+")
+                result = subprocess.run([sys.executable, '-c', program, json.dumps(missing)],
+                                        capture_output=True, text=True, timeout=5)
+                if fails:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn('child_probe_failed', result.stderr)
+                else:
+                    self.assertEqual((result.returncode, result.stderr), (0, ''))
+                    self.assertEqual(json.loads(result.stdout), runner.SCOPED_IO_EXPECTED)
+                self.assertFalse((root/'scoped-io-direct').exists())
+                self.assertFalse((root/'scoped-io-child').exists())
+
+    def test_actual_python_child_task_io_and_typed_absence_results(self):
+        import subprocess
+        source = (ROOT/'scripts/improvement/native_execution_command_skills.js').read_text()
+        helper = source.split('io_source = """', 1)[1].split('"""', 1)[0]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder).resolve()
+            fixture = root/'fixture.txt'; fixture.write_text('ASSIGNED_REMOTE_FIXTURE')
+            helper = helper.replace('/work/project/fixture.txt', str(fixture))
+            targets = {role: str(root/'not-mounted'/role) for role in
+                       ('grading', 'other_arm', 'installer_receipt', 'installer_journal')}
+            namespace = {}; exec(helper, namespace)
+            direct = namespace['check_io'](targets, str(root/'direct-output'))
+            command = helper + "\nprint(json.dumps(check_io(json.loads(sys.argv[1]),sys.argv[2])))"
+            child = subprocess.run([sys.executable, '-c', command, json.dumps(targets), str(root/'child-output')],
+                                   capture_output=True, text=True, timeout=3)
+            self.assertEqual((child.returncode, child.stderr), (0, ''))
+            self.assertEqual(direct, runner.SCOPED_IO_EXPECTED['direct'])
+            self.assertEqual(json.loads(child.stdout), runner.SCOPED_IO_EXPECTED['child'])
+            self.assertFalse((root/'direct-output').exists())
+            self.assertFalse((root/'child-output').exists())
+            # A visible controlled target must record successful forbidden access,
+            # not treat success or an unrelated process failure as denial.
+            visible = root/'visible'; visible.write_text('SYNTHETIC')
+            targets['grading'] = str(visible)
+            changed = namespace['check_io'](targets, str(root/'visible-output'))
+            self.assertEqual(changed['denied']['grading'], {'read_errno': 0, 'write_errno': 0, 'create_errno': 0})
+
+
 class FixedCellTests(unittest.TestCase):
     def test_cell_actual_control_flow_with_local_fake_handlers(self):
         import shutil,subprocess
@@ -173,7 +264,11 @@ const vm=require('vm'),fs=require('fs');
 const mode=process.argv[1];
 const names=['apply_patch','exec_command','view_image','write_stdin','list_mcp_resource_templates','list_mcp_resources','read_mcp_resource','clock__curr_time','skills__list','skills__read'];
 const rows=[];
-const command={fixture_read:true,protected_enoent:5,traversal_enoent:true,symlink_enoent:true,ipv4_tcp_errno:101,ipv4_udp_errno:101,ipv6_tcp_errno:101,ipv6_udp_errno:101,root_write_errno:30};
+const scoped={fixture_read:true,task_write_readback:true,denied:Object.fromEntries(['grading','other_arm','installer_receipt','installer_journal'].map(role=>[role,{read_errno:2,write_errno:2,create_errno:2}]))};
+const command={fixture_read:true,protected_enoent:5,traversal_enoent:true,symlink_enoent:true,ipv4_tcp_errno:101,ipv4_udp_errno:101,ipv6_tcp_errno:101,ipv6_udp_errno:101,root_write_errno:30,scoped_io:{direct:structuredClone(scoped),child:structuredClone(scoped)}};
+if(mode==='allowed-write')command.scoped_io.direct.task_write_readback=false;
+if(mode==='child-denial')command.scoped_io.child.denied.installer_receipt.write_errno=0;
+if(mode==='child-missing')delete command.scoped_io.child;
 if(mode==='protected')command.protected_enoent=4;
 if(mode==='network')command.ipv4_tcp_errno=-1;
 const handlers={
@@ -211,7 +306,7 @@ const source=fs.readFileSync(process.argv[2],'utf8').replaceAll('HOST_URI',JSON.
  console.log(JSON.stringify({completed:true,rows}));
 }catch(e){console.log(JSON.stringify({completed:false,rows,error:String(e)}));}})();
 """
-        for mode in ('success','protected','network','exit','mcp','skill-disclosure','ambiguous-error','environment-denial','extra','patch','image','image-with-error','stdin','global','nonfunction'):
+        for mode in ('success','protected','network','exit','mcp','skill-disclosure','ambiguous-error','environment-denial','extra','patch','image','image-with-error','stdin','global','nonfunction','allowed-write','child-denial','child-missing'):
             with self.subTest(mode=mode):
                 result=subprocess.run([node,'--experimental-vm-modules','-e',program,mode,str(ROOT/'scripts/improvement/native_execution_command_skills.js')],capture_output=True,text=True,timeout=5)
                 self.assertEqual(result.returncode,0,result.stderr)
