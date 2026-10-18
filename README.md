@@ -176,6 +176,12 @@ these commands do not enable comparative evaluation or account activation. A
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
 
+The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
+links the remaining result-collection, grading, pilot, custody and delivery work.
+It distinguishes a completed development experiment from an eligible candidate:
+no improvement is a valid result, and neither fixture tests nor a recommendation
+authorize account activation.
+
 ## Principles
 
 - **Keep shared instructions small.** Put durable defaults in policies and load

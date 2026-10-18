@@ -88,6 +88,19 @@ an operational eligibility path. Synthetic fixtures exercise its positive branch
 Unrecognized rules remain inconclusive; they cannot silently inherit cost or
 benefit requirements from another rule.
 
+## Planned integration and completion boundary
+
+The [implementation handoff](account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
+links the remaining owners. #28 will consume trusted actual reports from #26/#27,
+verify the committed source diff and require #56's independent custody for
+operational recommendation. That integration is not implemented by the current CLI.
+
+A correct rejection or inconclusive actual report does not require repeated
+experiments until a candidate wins. Positive conformance fixtures test the engine;
+they cannot establish an accepted improvement. Disposable installer/rollback
+mechanics belong to #57, while #29 retains actual accepted-candidate delivery.
+Unavailable custody or an ineligible candidate must keep operational delivery blocked.
+
 ## Recommendation and remaining boundary
 
 `recommend(...)` returns `reject` for stale/inconsistent evidence or failed rules,

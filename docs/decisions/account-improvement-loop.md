@@ -9,7 +9,10 @@ registration exist with separate consent, native-trust and platform boundaries.
 The [capacity guide](../../account/observation/capacity.md) records the qualified
 10,000-callback synthetic PostToolUse workload on one reference host; mixed-workload
 latency and other environments remain unqualified. Offline evaluation accounting
-and diagnostic source-review recommendations are implemented. Automated diagnosis,
+and diagnostic source-review recommendations are implemented. The
+[frozen native-trial runner](../native-trials.md) has selected source-bound
+credential-free and authenticated qualification; task-result admission and actual
+comparisons are not implemented. Automated diagnosis,
 authenticated comparative trials, operational promotion and automatic delivery
 remain unqualified or planned. No persistent real-account collection or scheduled
 work was activated by this implementation.
@@ -56,7 +59,7 @@ this design, not additional state-machine stages or installed capabilities.
 | 1. Observe | Synthetic store/CLI and opt-in Claude/Codex hook delivery exist; consent, native trust and source-bound platform limits remain explicit. |
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
-| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. Isolated model execution and independent holdout qualification remain unavailable. |
+| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner has selected-profile qualification; actual task-result admission, comparisons and independent holdout qualification remain pending. |
 | 5. Review | Existing independent review methods and diagnostic source-review recommendations apply; operational eligibility and automatic promotion remain unavailable. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
@@ -329,8 +332,8 @@ These fields describe the report, not an implemented promotion gate.
 
 Keep the [verification recipe](../verification/verify-repository/features/account-verification.md)
 as the owner of runnable checks. The comparison contract below remains the owner
-of improvement claims. The future runner may reuse qualified transport parsing,
-actual model identity and artifact checks from the doctor, but must supply its own
+of improvement claims. The comparison integration may reuse qualified transport parsing,
+observed client model selection and artifact checks from the doctor, but must supply its own
 frozen trials, enforced isolation, comparison accounting and qualified graders.
 The doctor runs against a mutable installed account; read-only tools and fresh
 temporary projects do not establish the isolation required below.
@@ -349,6 +352,45 @@ workflow above. Doctor logs are not ingested into the synthetic observation
 store, and doctor does not grant or activate collection. Installer lifecycle and
 doctor coexistence are checked against existing synthetic records and grants;
 this does not qualify native collection or concurrent native hooks.
+
+### Implementation handoff and evidence boundaries
+
+The tracker owns current acceptance criteria and execution status. The following
+links identify the next consumers; they do not describe implemented commands.
+
+| Outcome | Owner and prerequisite |
+| --- | --- |
+| Bounded task-result collection | [#54](https://github.com/hwanjjang/agent-dotfiles/issues/54), after the qualified runner and reconciled [dispatch PR #48](https://github.com/hwanjjang/agent-dotfiles/pull/48) |
+| Protected development grading inputs | [#55](https://github.com/hwanjjang/agent-dotfiles/issues/55), using the qualified execution boundary |
+| Actual evidence admission and all-trial accounting | [#26](https://github.com/hwanjjang/agent-dotfiles/issues/26), consuming #54 and #55 |
+| Frozen EN/KO development comparison | [#27](https://github.com/hwanjjang/agent-dotfiles/issues/27), consuming #26 |
+| Independently unseen custody and recommendation | [#56](https://github.com/hwanjjang/agent-dotfiles/issues/56) supplies custody to [#28](https://github.com/hwanjjang/agent-dotfiles/issues/28) |
+| Disposable delivery mechanics and accepted-source proof | [#57](https://github.com/hwanjjang/agent-dotfiles/issues/57) verifies mechanics; [#29](https://github.com/hwanjjang/agent-dotfiles/issues/29) requires an actually eligible, reviewed and accepted committed candidate |
+
+The runner currently retains typed execution/usage/cleanup facts, not general task
+answers or result artifacts. Its `completed_ungraded` status is not an evaluator
+completion. Collection and trusted admission must connect those components before
+an actual comparison can pass. Changed runtime sources require renewed affected
+qualification; historical qualification cannot be relabeled as current evidence.
+
+The development pilot uses the requested and observed native-client model selection,
+client/runtime/environment identities and observed reroute/mismatch checks. Missing
+required observations block the trial. Backend weights or silent provider substitution
+are not attested by that interface and remain unknown. The exact observable identity
+requirement belongs to #27; selecting a model does not prove server internals.
+
+Protected development grading inputs must be inaccessible to trial/updater processes
+under the tested boundary. Public cases still count as exposed development data.
+Independent unseen custody adds a separately controlled evaluator and exposure policy
+for operational recommendation; it does not gate the development pilot. Neither a
+new directory nor a self-described custody flag establishes that separation.
+
+A complete, valid comparison may find no benefit. Keep that result and stop at the
+predeclared bounds; never retry until a preferred candidate wins. Recommendation
+engine conformance and disposable installer mechanics can be verified independently
+of benefit. Synthetic conformance fixtures cannot authorize an actual candidate.
+Without an eligible accepted candidate, #29 and parent #17 retain their unmet delivery
+criteria; no account activation or automatic candidate search follows.
 
 ### Frozen comparison
 

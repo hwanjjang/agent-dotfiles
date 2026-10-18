@@ -3,8 +3,10 @@
 Status: macOS Python canaries and Linux native **synthetic** qualification. The
 [improvement-loop design](account-improvement-loop.md) owns evaluation requirements.
 Neither verifier qualifies live provider transport, comparative evaluation or
-promotion. Real model execution remains blocked.
-No credentials, account settings or real session history are used.
+promotion. These pilot commands do not enable real model execution. The separate
+[frozen native-trial runner](../native-trials.md) has its own selected source-bound
+authenticated qualification; its evidence does not broaden these pilots.
+No credentials, account settings or real session history are used by these pilots.
 
 ## macOS Python canaries
 
