@@ -1,0 +1,457 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Native source review and same-host evidence",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/architecture/native-recommendation-workflow.html",
+    "repository": {
+      "url": "https://github.com/hwanjjang/agent-dotfiles",
+      "revision": "dfa4cbc217ebf343b07e72717751d0772dc0b79e",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "lanes": [
+    {
+      "id": "prepare",
+      "label": "Optional authorized preflight and existing serial execution"
+    },
+    {
+      "id": "recorded",
+      "label": "Guarded recorded batches / separate frozen schedules"
+    },
+    {
+      "id": "review",
+      "label": "Read-only recommendation / trusted same-host receipts"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "source",
+      "lane": "prepare",
+      "col": 0,
+      "type": "database",
+      "label": "Committed arms",
+      "sublabel": "Full frozen component roots",
+      "tag": "No candidate generation",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 226,
+          "end_line": 277,
+          "label": "Actual source objects and arm binding"
+        }
+      ]
+    },
+    {
+      "id": "manifest",
+      "lane": "prepare",
+      "col": 1,
+      "type": "database",
+      "label": "Private manifest",
+      "sublabel": "Selected fork-none receipts",
+      "tag": "Candidate frozen first",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 70,
+          "end_line": 153,
+          "label": "Closed pack and context evidence"
+        }
+      ]
+    },
+    {
+      "id": "anchors",
+      "lane": "prepare",
+      "col": 2,
+      "type": "cloud",
+      "label": "Fetch anchors",
+      "sublabel": "Exact GitHub comments",
+      "tag": "Read-only fixed GET",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 40,
+          "end_line": 63,
+          "label": "Bounded lookup and exact metadata"
+        },
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 133,
+          "end_line": 139,
+          "label": "Candidate and pack chronology"
+        }
+      ]
+    },
+    {
+      "id": "preflight",
+      "lane": "prepare",
+      "col": 3,
+      "type": "security",
+      "label": "Preflight receipt",
+      "sublabel": "Before first reservation",
+      "tag": "Existing lease then release",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 213,
+          "end_line": 229,
+          "label": "Empty prefix then fixed delegation"
+        },
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 156,
+          "end_line": 158,
+          "label": "Manifest, helper, anchor and header"
+        }
+      ]
+    },
+    {
+      "id": "serial",
+      "lane": "prepare",
+      "col": 4,
+      "type": "security",
+      "label": "Serial gate",
+      "sublabel": "Reserve before launch",
+      "tag": "Current proof required",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 194,
+          "end_line": 219,
+          "label": "Fixed launch and cumulative budget"
+        }
+      ]
+    },
+    {
+      "id": "native",
+      "lane": "prepare",
+      "col": 5,
+      "type": "backend",
+      "label": "Owned native trial",
+      "sublabel": "Existing bounded lifecycle",
+      "tag": "No new executor",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1230,
+          "end_line": 1261,
+          "label": "Setup, observe and finally cleanup"
+        }
+      ]
+    },
+    {
+      "id": "development",
+      "lane": "recorded",
+      "col": 0,
+      "type": "database",
+      "label": "Development batch",
+      "sublabel": "Sealed NativeBatch records",
+      "tag": "Own frozen schedule",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 285,
+          "end_line": 295,
+          "label": "Load, seal and recompute report"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 602,
+          "end_line": 643,
+          "label": "Guarded attempts and serial audit"
+        }
+      ]
+    },
+    {
+      "id": "heldout",
+      "lane": "recorded",
+      "col": 5,
+      "type": "database",
+      "label": "Held-out batch",
+      "sublabel": "Separate execution root",
+      "tag": "Frozen report and attempts",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 171,
+          "end_line": 179,
+          "label": "Distinct binding and recomputation"
+        }
+      ]
+    },
+    {
+      "id": "recompute",
+      "lane": "review",
+      "col": 0,
+      "type": "backend",
+      "label": "Recompute report",
+      "sublabel": "Compare canonical bytes",
+      "tag": "No caller success flag",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 285,
+          "end_line": 298,
+          "label": "Actual development report binding"
+        }
+      ]
+    },
+    {
+      "id": "git",
+      "lane": "review",
+      "col": 1,
+      "type": "security",
+      "label": "Verify Git objects",
+      "sublabel": "Complete arm byte inventories",
+      "tag": "Bounded raw object reads",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 145,
+          "end_line": 192,
+          "label": "Fixed raw commands and read limits"
+        },
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 226,
+          "end_line": 277,
+          "label": "Scope, modes and raw blob binding"
+        }
+      ]
+    },
+    {
+      "id": "assess",
+      "lane": "review",
+      "col": 2,
+      "type": "security",
+      "label": "Optional same-host",
+      "sublabel": "Exposure and late guards",
+      "tag": "Unknown reads stay unknown",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 161,
+          "end_line": 210,
+          "label": "Actual held-out report and exposure"
+        },
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 317,
+          "end_line": 331,
+          "label": "Only assess supplied held-out records"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "lane": "review",
+      "col": 3,
+      "type": "backend",
+      "label": "Frozen rules",
+      "sublabel": "Both reports must qualify",
+      "tag": "No retry until benefit",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 28,
+          "end_line": 96,
+          "label": "Declared quality, regression and cost"
+        },
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 317,
+          "end_line": 331,
+          "label": "Held-out rule and bounded outcome"
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "lane": "review",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Review result",
+      "sublabel": "recommend/reject/inconclusive",
+      "tag": "Actual proof still pending",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 317,
+          "end_line": 344,
+          "label": "Reasons and canonical recommendation"
+        }
+      ]
+    },
+    {
+      "id": "authority",
+      "lane": "review",
+      "col": 5,
+      "type": "security",
+      "label": "Separate authority",
+      "sublabel": "Source, merge, install false",
+      "tag": "No backend attestation",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 337,
+          "end_line": 344,
+          "label": "False authority flags and digest"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "source-manifest",
+      "from": "source",
+      "to": "manifest"
+    },
+    {
+      "id": "manifest-anchors",
+      "from": "manifest",
+      "to": "anchors"
+    },
+    {
+      "id": "anchors-preflight",
+      "from": "anchors",
+      "to": "preflight"
+    },
+    {
+      "id": "preflight-serial",
+      "from": "preflight",
+      "to": "serial"
+    },
+    {
+      "id": "serial-native",
+      "from": "serial",
+      "to": "native"
+    },
+    {
+      "id": "native-heldout",
+      "from": "native",
+      "to": "heldout"
+    },
+    {
+      "id": "development-recompute",
+      "from": "development",
+      "to": "recompute"
+    },
+    {
+      "id": "recompute-git",
+      "from": "recompute",
+      "to": "git"
+    },
+    {
+      "id": "git-assess",
+      "from": "git",
+      "to": "assess"
+    },
+    {
+      "id": "heldout-assess",
+      "from": "heldout",
+      "to": "assess",
+      "role": "branch",
+      "label": "Held-out input"
+    },
+    {
+      "id": "assess-rules",
+      "from": "assess",
+      "to": "rules"
+    },
+    {
+      "id": "rules-result",
+      "from": "rules",
+      "to": "result"
+    },
+    {
+      "id": "result-authority",
+      "from": "result",
+      "to": "authority"
+    }
+  ],
+  "mainPath": [
+    "development",
+    "recompute",
+    "git",
+    "assess",
+    "rules",
+    "result",
+    "authority"
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "source",
+      "development"
+    ],
+    "allowedTerminals": [
+      "authority"
+    ],
+    "requiredEdges": [
+      {
+        "from": "preflight",
+        "to": "serial"
+      },
+      {
+        "from": "heldout",
+        "to": "assess"
+      },
+      {
+        "from": "result",
+        "to": "authority"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "development",
+        "to": "authority"
+      },
+      {
+        "from": "source",
+        "to": "authority"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Existing execution, separate review",
+      "items": [
+        "Preflight requires explicit authorization and current qualification; the recommendation command launches no trial.",
+        "Recorded development and held-out reports are recomputed; raw commit/tree/blob bytes bind full materialized arm inventories."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Limited same-host claim",
+      "items": [
+        "Selected trusted-maintainer receipts support not-supplied-to-author during the fixed comparison, not hostile same-UID secrecy.",
+        "Known exposure blocks or reclassifies; unavailable delivery stays unknown. Source/record drift invalidates the result."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Conformance is not actual benefit",
+      "items": [
+        "Positive CLI conformance uses FAKE lifecycle, qualification, clock, tool and remote-anchor evidence. No actual held-out comparison is claimed.",
+        "A real reject or inconclusive is a valid endpoint. Source acceptance, merge and account installation require separate authority."
+      ]
+    }
+  ]
+}

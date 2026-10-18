@@ -192,13 +192,20 @@ comparisons remain pending. An optional [same-host scope declaration](docs/decis
 is explicitly unverified, with no custody or unseen-case claim. The trusted host controller keeps
 normal account access; no external evaluator environment is required.
 
-Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
+The [source-review recommendation guide](docs/decisions/promotion-recommendations.md)
+documents the diagnostic gate, native report/committed-object verification and
+selected same-host evidence verifier. The [workflow diagram](docs/architecture/native-recommendation-workflow.html)
+shows optional preflight and read-only recommend/reject/inconclusive paths. Positive
+FAKE conformance is not actual improvement; current qualifying trials remain pending.
+Recommendations never authorize source acceptance, merge or installation.
 
 The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
 links the remaining result-collection, grading, pilot, same-host held-out evaluation and delivery work.
 The [held-out protocol](docs/decisions/account-improvement-loop.md#same-host-held-out-evaluation)
 uses fresh contexts on the current host/account; additional hosts, accounts and
-external custodians are not required. It is planned, not implemented; account
+external custodians are not required. Its selected receipt verifier is implemented;
+actual pack preparation and comparison remain pending. Candidate freezing is
+separate; these conformance fixtures do not create a real candidate. Account
 application remains deferred pending maintainer direction.
 It distinguishes a completed development experiment from an eligible candidate:
 no improvement is a valid result, and neither fixture tests nor a recommendation

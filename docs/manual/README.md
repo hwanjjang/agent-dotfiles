@@ -388,3 +388,37 @@ No auth, native client, model or VM was used. Current native qualification, actu
 EN/KO comparison and held-out case preparation remain pending. Rebuild with the
 screenshot-manual commands above and `native-routing-admission.json`; retain old
 evidence and renew captures on source/behavior drift.
+
+## Native recommendation conformance walkthrough
+
+The [two-page walkthrough](native-recommendation.pdf),
+[editable source](native-recommendation.json) and
+[capture manifest](native-recommendation-capture.json) cover the existing
+[native recommendation contract](../decisions/promotion-recommendations.md).
+The [recommendation summary](native-recommendation-check.png) and
+[custody/refusal summary](native-recommendation-result.png) are actual Chrome
+screenshots of sanitized offline CLI results, not terminal images.
+
+The existing `dfa4cbc` source checkpoint preceded these renewed runs. Python 3.11
+and 3.14 each passed 377 coordinator-run checks and 11 separately renewed CLI calls. Eighteen files bind the
+thirteen runtime sources, three native grader sources and two recommendation/
+held-out helpers. Real disposable local Git objects and CLI processes were used;
+qualification, lifecycle, usage, clock, remote anchors and tool receipts were
+explicitly **FAKE fixtures**. No actual GitHub lookup, auth, native session, model
+or VM operation occurred.
+
+Eight recommendation results comprise one recommend, three reject and four
+inconclusive results. All keep source acceptance, promotion, merge and install
+authority false. Three other calls cover a caller-supplied verified-flag refusal,
+a fixed-stub preflight and replay refusal. Current actual-source qualification
+remains unavailable; positive conformance is not a real candidate benefit.
+Unobserved filesystem reads remain unknown. After feedback or exposure, use the
+cases as development/regression material in future work; this smoke did not
+create an actual pilot candidate or held-out pack.
+
+Both screenshots and both PDF pages passed actual visual, text, page-count and
+overflow checks. The original PDF create marker is reused without another invocation. Earlier
+7d5a3d6 and 1c23c4f captures remain historical; current source identity includes
+the selected PR67 Unicode-escape compatibility correction. Rebuild
+with the screenshot-manual commands above and `native-recommendation.json`;
+retain historical evidence and renew captures when source or behavior changes.

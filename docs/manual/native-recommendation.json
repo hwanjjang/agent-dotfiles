@@ -1,0 +1,20 @@
+{
+  "title": "Native recommendation and held-out record conformance",
+  "scenario": "Actual Python 3.11 offline CLI summaries rendered in Chrome, not terminal images. Qualification, lifecycle, clock, remote and tool receipts are FAKE. This demonstrates control behavior, not real native/model performance.",
+  "steps": [
+    {
+      "title": "Read the recommendation without granting authority",
+      "instruction": "Use promotion.py recommend-native with the existing frozen context, owned attempts, recomputed report and committed source bindings. Review its recommendation and reasons separately from source acceptance. This walkthrough uses existing fixed synthetic fixtures and disposable local Git objects.",
+      "screenshot": "native-recommendation-check.png",
+      "caption": "Checkpoint dfa4cbc existed before these renewed CLI runs. Eleven calls per Python version include eight recommendation results: one recommend, three reject and four inconclusive; three further calls check request and preflight behavior. Eighteen source files match.",
+      "expected": "The fixed positive fixture recommends review only. Current public qualification remains unavailable and the actual-source check is inconclusive. Every recommendation keeps source_accepted, promotion_eligible, merge_authorized and install_authorized false."
+    },
+    {
+      "title": "Preserve custody limits and refusal evidence",
+      "instruction": "Bind a held-out record through the maintained receipt contract before heldout.py run-next. Reconcile exposure and replay refusal instead of treating a claimed unseen pack as proof. After aggregate feedback or exposure, use those cases as development/regression material in future work.",
+      "screenshot": "native-recommendation-result.png",
+      "caption": "Actual CLI calls rejected a caller-supplied verified flag (exit 1) and repeated reservation-prefix preflight (exit 2). The ready path used a fixed lifecycle stub; source-clock, remote anchors and qualification were synthetic. No actual GitHub lookup or native launch occurred.",
+      "expected": "Answer exposure is exposed; unknown delivery is inconclusive. Unobserved filesystem reads remain unknown. No fresh actual held-out pack, EN/KO comparison, candidate benefit, source acceptance or account installation is established."
+    }
+  ]
+}

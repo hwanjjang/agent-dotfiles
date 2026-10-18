@@ -9,7 +9,8 @@ registration exist with separate consent, native-trust and platform boundaries.
 The [capacity guide](../../account/observation/capacity.md) records the qualified
 10,000-callback synthetic PostToolUse workload on one reference host; mixed-workload
 latency and other environments remain unqualified. Offline evaluation accounting
-and diagnostic source-review recommendations are implemented. The
+and [source-review recommendation consumers](promotion-recommendations.md) are implemented,
+including committed-source verification and selected same-host receipts. The
 [frozen native-trial runner](../native-trials.md) has selected source-bound
 historical credential-free and authenticated qualification.
 [Trusted offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
@@ -62,7 +63,7 @@ this design, not additional state-machine stages or installed capabilities.
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
 | 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner retains historical selected-profile qualification; [offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented; current authenticated admission, comparisons and same-host held-out evaluation remain pending. |
-| 5. Review | Existing independent review methods and diagnostic source-review recommendations apply; operational eligibility and automatic promotion remain unavailable. |
+| 5. Review | [Native source review and the selected same-host verifier](promotion-recommendations.md) are implemented. Actual qualifying comparison evidence remains pending; independent source review and account authority remain separate. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
 The ordinary PR route remains authoritative for authorized source work. Evaluation
@@ -404,13 +405,20 @@ criteria; no account activation or automatic candidate search follows.
 
 ### Same-host held-out evaluation
 
-The implemented [optional scope declaration](evaluation-accounting.md#optional-same-host-scope-declaration)
-binds a declared case/check pack only. It does not implement the custody, exposure
-or actual evaluation steps below; reports retain unverified/not-assessed/null facts.
+The evaluator's [optional scope declaration](evaluation-accounting.md#optional-same-host-scope-declaration)
+binds a declared case/check pack only; its reports retain
+unverified/not-assessed/null facts. The separate
+[implemented receipt verifier](promotion-recommendations.md#same-host-evidence-manifest)
+checks selected context/input records, actual remote anchors, preflight and exposure
+against recomputed native reports. That guide owns the exact executable schemas.
+Current-source qualification, actual pack preparation and real comparisons remain
+pending. Candidate freezing is separate; conformance fixtures neither create nor
+evaluate a real candidate. Synthetic positive conformance is not protocol completion.
 
 Design decision, 2026-10-18: retain problems not supplied to the candidate author,
-but replace the earlier independently controlled custodian requirement. This is a
-planned protocol, not a claim that current offline accounting implements it.
+but replace the earlier independently controlled custodian requirement. The
+selected receipt path is implemented separately from offline accounting;
+actual execution of this protocol is not yet qualified.
 Use the current host and account; the same model may serve separate fresh sessions.
 
 1. Prepare a small held-out pack in a fresh session from requirements and behavior
