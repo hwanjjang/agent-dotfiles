@@ -54,7 +54,8 @@ class PlatformBoundaryTests(unittest.TestCase):
                          {'session-parent', 'session-child'})
         self.assertTrue(all(event['parent_actor_id'] is None for event in self.events()))
 
-    def test_interrupt_payload_does_not_complete_a_pending_tool(self):
+    def test_unsupported_event_is_rejected_without_completing_pending_tool(self):
+        """A synthetic unsupported event is not a native interruption callback."""
         self.assertEqual(self.capture()['status'], 'recorded')
         result = self.capture(hook_event_name='Interrupt', reason='interrupted')
         self.assertEqual(result, {'status': 'rejected', 'reason': 'unsupported_event'})
@@ -63,11 +64,20 @@ class PlatformBoundaryTests(unittest.TestCase):
         self.assertFalse(any(event['event_kind'] in ('tool_end', 'response_end')
                              for event in self.events()))
 
-    def test_child_directory_needs_its_own_exact_project_consent(self):
+    def test_child_process_cwd_is_rejected_by_exact_project_guard(self):
+        """Process scope rejects before the event payload is interpreted."""
         child = self.project / 'child'
         child.mkdir()
         with patch('account.observation.native.Path.cwd', return_value=child):
             result = self.capture(cwd=str(child), session_id='session-child')
+        self.assertEqual(result, {'status': 'rejected', 'reason': 'project_scope'})
+        self.assertEqual(self.events(), [])
+
+    def test_child_payload_cwd_is_rejected_with_authorized_process_cwd(self):
+        """The process stays authorized; the payload guard rejects its child cwd."""
+        child = self.project / 'child'
+        child.mkdir()
+        result = self.capture(cwd=str(child), session_id='session-child')
         self.assertEqual(result, {'status': 'rejected', 'reason': 'project_scope'})
         self.assertEqual(self.events(), [])
 
