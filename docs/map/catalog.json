@@ -2781,7 +2781,7 @@
       "when": [
         "You need evidence that the whole native client and its tools stay inside an outer OS boundary."
       ],
-      "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands. For the reusable app-server/remote-executor fixture, follow docs/decisions/native-execution-fixture.md and run native_execution.py with a reviewed private plan and a new private output directory. This separate fixture needs Python 3.11+ and an already isolated executor.",
+      "usage": "Use Python 3.12+, an existing Docker context, the verified Codex 0.163.0 arm64 archive, the pinned image and a Docker-visible staging parent. Run native_isolation.py with a fresh private output directory; follow the linked guide for prerequisites and commands. For the reusable app-server/remote-executor fixture, follow docs/decisions/native-execution-fixture.md and run native_execution.py with a reviewed private plan and a new private output directory. This separate fixture needs Python 3.11+ and an already isolated executor. See docs/native-trials.md for the separate fixed loader scenario and source-bound frozen-trial controller; do not reuse historical results as current-profile proof.",
       "behavior": [
         "Initializes the real client, discovers a synthetic skill and exercises a mock Responses turn and native command.",
         "Checks the exact image/runtime/namespace/resource boundary, observed seccomp mode and IPv4/IPv6 TCP denial; cleanup targets only this run’s ownership label.",
@@ -2789,7 +2789,7 @@
         "Native synthetic qualification does not qualify live authentication, model quality, holdout custody or promotion.",
         "Preserves the primary failure and reports timed-out container creation as uncertain cleanup with retained staging.",
         "The reusable remote-executor fixture retains success and blocked attempts, requires actual skill body/reference outputs and a matching native terminal, and checks selected disabled-tool routes.",
-        "One source-bound native mock qualified the selected workflow; live_eligible, authentication_qualified and isolation_qualified remain false in this reusable fixture receipt. Its supervisor owns separate OS and escaped-resource checks."
+        "A historical source-bound native mock qualified its selected workflow. New command-skills-boundary/loader scenarios require their own current-source qualification; live_eligible, authentication_qualified and isolation_qualified remain false in reusable fixture receipts. The external owner verifies OS boundaries and escaped-resource cleanup."
       ],
       "outputs": [
         "A private source-bound receipt and native trace; live transport and promotion remain false."
@@ -2800,6 +2800,36 @@
         "verification",
         "docker",
         "synthetic"
+      ]
+    },
+    {
+      "id": "native-trials",
+      "title": "Run a frozen native trial",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/native-trials.md",
+      "summary": "Check, run and recover one frozen trial; selected pinned-profile actual qualification passed, while comparison eligibility stays false.",
+      "when": [
+        "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission."
+      ],
+      "usage": "Read docs/native-trials.md. Check the exact private plan without authentication or process launch; run requires a separate explicit auth-source. Recover only the original owned attempt. Use native_execution.py separately for the credential-free command-skills-loader fixture.",
+      "behavior": [
+        "Bind selected case/bundle, source/runtime/profile, trial/attempt identities and declared limits before launch; changed or duplicate inputs refuse.",
+        "Keep one temporary credential copy with the trusted host client outside the remote OS executor; readonly /runtime/arm and /runtime/qualification.js are distinct from editable case files.",
+        "Observe one initial turn with post-use soft token guards and bounded cleanup. Unknown request counts, task correctness and backend identity remain unknown or ungraded.",
+        "Preserve blocked attempts and cleanup uncertainty; recovery cannot waive unresolved native ownership. No VM lifecycle, account activation, grading or promotion.",
+        "Selected current-source credential-free and authenticated qualification passed on the recorded macOS/Linux arm64 profile; see the evidence and screenshot manual. Other hosts and natural routing remain unqualified."
+      ],
+      "outputs": [
+        "A private typed attempt or recovery receipt; live_eligible=false and no comparative improvement claim."
+      ],
+      "tags": [
+        "eval",
+        "native",
+        "qualification",
+        "frozen",
+        "recovery"
       ]
     }
   ],
@@ -3333,6 +3363,16 @@
       "from": "improvement-eval",
       "to": "native-isolation",
       "label": "Qualify the native synthetic boundary before live transport"
+    },
+    {
+      "from": "native-trials",
+      "to": "native-isolation",
+      "label": "separate fixture boundary"
+    },
+    {
+      "from": "native-trials",
+      "to": "improvement-eval",
+      "label": "later admission remains separate"
     }
   ]
 }

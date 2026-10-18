@@ -1,18 +1,19 @@
 ---
 name: verify-repository
-description: Verify this repository's catalog search, usage and source links, and map freshness through the real browser UI and public build CLI.
+description: Verify this repository's catalog and workflow maps, plus explicitly selected account, observation, evaluation and native-trial features through their maintained browser or CLI recipes.
 ---
 
 # Verify this repository
 
 Repository maintenance only; this is not a distributed skill package or an account
 installation. Read [the feature index](features/README.md). Run from the checkout
-root. The catalog is a static local HTML application, so no server, database or
-credential is required. Source is loaded directly; no native discovery is claimed.
+root. The catalog is a static local HTML application, so its browser checks need
+no server, database or credential. Source is loaded directly; browser navigation
+does not qualify native discovery. Separate CLI recipes own their prerequisites.
 
 ## Launch and doctor
 
-Prerequisites: Python 3.9+, Node.js and an existing Playwright package with Chromium.
+Browser prerequisites: Python 3.9+, Node.js and an existing Playwright package with Chromium.
 Use the target host's authorized runtime. This helper does not install dependencies.
 A local dependency directory may be selected with `NODE_PATH`; an existing browser
 may be selected through `VERIFY_BROWSER_CHANNEL` (for example `chrome`) or
@@ -81,3 +82,11 @@ The observation guide owns privacy and command fields. No model call is needed.
 revision/feedback selection, explicit synthetic inputs, digest review and a
 whitelisted local export. Run the case CLI recipe separately; it does not qualify
 automatic triage, native routing, a model comparison or unseen holdout custody.
+
+## Frozen native trials
+
+[Native trial verification](features/native-trials.md) covers the nonexecuting
+frozen-plan check, explicitly authorized one-turn execution, guarded recovery and
+the separate credential-free loader. It is not driven by the browser helper. Read
+its source-bound evidence status before choosing a scenario; mock completion,
+authenticated qualification and evaluator eligibility remain distinct.

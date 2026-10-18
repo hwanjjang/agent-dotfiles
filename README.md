@@ -167,7 +167,12 @@ establish holdout or promotion eligibility.
 The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
 receipts and selected native-route checks; authenticated comparison remains
-unqualified.
+unqualified. The [frozen native-trial operator guide](docs/native-trials.md)
+documents implemented `check/run/recover` and the separate credential-free
+`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current-source
+credential-free and authenticated qualification for the exercised pinned profile;
+these commands do not enable comparative evaluation or account activation. A
+[screenshot manual](docs/manual/native-trials.pdf) explains the results.
 
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
 
