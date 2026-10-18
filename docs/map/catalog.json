@@ -2801,6 +2801,34 @@
         "docker",
         "synthetic"
       ]
+    },
+    {
+      "id": "frozen-trial-dispatch",
+      "title": "Prepare one frozen trial",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/frozen-trial-dispatch.md",
+      "summary": "Project one exact frozen trial into supervisor bindings and selected executor input; actual execution/admission remains separate.",
+      "when": [
+        "A reviewed frozen experiment needs one selected request/files payload without exposing its grading material."
+      ],
+      "usage": "Run trial_dispatch.py prepare on JSON containing experiment,current_spec,trial_id,attempt_id. Keep the whole envelope with the trusted supervisor; release only executor_input.",
+      "behavior": [
+        "Reuse the evaluator freeze and exact inventory; refuse stale/tampered spec, grader and trial identities.",
+        "Only selected request/files go to the executor; checks, expected answers, other-arm data and the experiment-wide budget stay outside.",
+        "Runtime fields are requested declarations; digests do not establish execution or provenance.",
+        "Cross-call attempt reservation and shared budget enforcement remain supervisor responsibilities; no new ledger, grader or live evidence admission."
+      ],
+      "outputs": [
+        "A deterministic development_trial_dispatch envelope, not a model completion or promotion decision."
+      ],
+      "tags": [
+        "eval",
+        "self-improvement",
+        "synthetic",
+        "dispatch"
+      ]
     }
   ],
   "relationships": [
@@ -3333,6 +3361,11 @@
       "from": "improvement-eval",
       "to": "native-isolation",
       "label": "Qualify the native synthetic boundary before live transport"
+    },
+    {
+      "from": "improvement-eval",
+      "to": "frozen-trial-dispatch",
+      "label": "Prepare one selected executor input"
     }
   ]
 }

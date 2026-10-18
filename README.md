@@ -162,7 +162,9 @@ A passing native fixture does not enable live provider access or promotion.
 Offline development comparison is available through
 [deterministic evaluation accounting](docs/decisions/evaluation-accounting.md).
 It freezes and grades supplied synthetic evidence; it does not execute models or
-establish holdout or promotion eligibility.
+establish holdout or promotion eligibility. The [selected-trial preparation adapter](docs/decisions/frozen-trial-dispatch.md)
+projects one executor input without exposing the grading envelope; it performs
+no execution or real-evidence admission.
 
 The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
