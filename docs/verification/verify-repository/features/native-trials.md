@@ -166,3 +166,9 @@ primary stop reason. Exercise descendant-held pipes, bounded drain/stream failur
 and unsupported frontmatter grammar with those focused tests. The
 [source-backed routing workflow](../../../architecture/native-routing-workflow.html)
 pins its inspected source revision; its browser checks do not qualify native execution.
+
+Before native qualification, record the execution host OS and retain a fast-exit
+stdio check on that host. Follow the accounting contract's host-dependent
+signal/cleanup limit: an exited leader with uncertain group signaling remains
+unknown even after successful output. A synthetic peer held alive after EOF is
+a different path and cannot substitute for that check.

@@ -266,7 +266,10 @@ strings or conservative alphabetic-leading plain text; ambiguous YAML scalars,
 flow values, comments, tabs within values and decoded controls refuse. Quote
 intended numeric or indicator-led strings. Boolean controls use literal lowercase
 values; `disable-model-invocation` must be `false`. Unsupported metadata refuses
-rather than silently changing the native catalog.
+rather than silently changing the native catalog. Quoted Unicode escapes in the
+surrogate range U+D800–U+DFFF refuse, including pairs that JSON would combine but
+the pinned native YAML loader rejects. Actual UTF-8 characters, compatible BMP
+escapes and literal escaped backslashes remain supported.
 
 `mode=natural` omits `inputs.entrypoint` from the native plan. The controller sends
 the task prompt without a forced read instruction, and native discovery chooses
@@ -303,6 +306,15 @@ leader reaping on every shutdown path; signal uncertainty is retained. Late drai
 errors keep the original stop reason and are reported separately. `receiver_complete_under_trusted_io` is
 this receiver boundary; `native_written_count=null`, `all_pages_verified=false`,
 `process_adherence=not_assessed` and `outcome=not_graded` remain explicit.
+
+Group-signal behavior depends on the execution host. A retained macOS synthetic
+stdio check observed `signal_failed` after a fast, otherwise clean EOF exit with
+an unreaped leader. That result stays cleanup-uncertain and routing-unknown;
+neither successful task output nor a reaped leader overrides it. Qualification
+must record its host OS and include a fast-exit transport check on that host.
+A peer that deliberately remains alive after EOF does not qualify the fast-exit
+path. Keep uncertain resources under the existing custody/recovery rules; do not
+add a broad process scan or waive signaling to obtain a positive result.
 
 Routed contexts require the exact maintained path
 `docs/verification/native-routing-observer.json` in `qualification_refs.routing`.
