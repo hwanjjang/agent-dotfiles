@@ -215,7 +215,10 @@ reader adds native-only `attempt_id` to the completion projection; callers canno
 submit that projection as JSON to bypass admission. Duplicate submissions remain
 visible but charge one source attempt once. Distinct and failed attempts retain
 observed cumulative usage; conflicting receipts, missing usage and discontinuities
-leave the affected cost unknown. Known tokens are a subtotal, never a complete
+leave the affected cost unknown. Model-selection, timing or routed-finalization
+admission failures retain otherwise source-bound latest usage in the known
+subtotal, while the attempt remains incomplete and blocks another launch. Known
+tokens are a subtotal, never a complete
 budget when coverage is missing. Wire requests, billing usage and currency remain
 unobserved. Selected-model evidence follows the bound client projection described below; it
 does not verify backend identity. An optional `execution_root`
@@ -229,7 +232,9 @@ controller setup, task observation and cleanup; it is not provider response
 latency or a wire-attempt measure. Missing timing remains unknown. Negative,
 malformed or wrong-scope timing blocks that attempt's admission; caller timings
 cannot replace the bound receipt. This observed duration does not refund the
-serial gate's permanent declared phase-time reservation.
+serial gate's permanent declared phase-time reservation. Native elapsed
+time counts each distinct bound attempt once; duplicate submissions do not add
+latency.
 
 The controller, scorer and same-account maintainer are trusted local owners.
 These guards do not contain a malicious same-UID host. Remote protected-file
@@ -253,7 +258,15 @@ account catalog. Three to five ordered catalog rows contain `slot`, `name`,
 names and `skills/.../SKILL.md` paths are unique. The catalog covers every selected
 bundle `SKILL.md`, binds its exact bytes and inline name/description frontmatter,
 and hashes the normalized description. Missing, duplicate, unsupported metadata
-or unlisted skill files refuse; this is a deliberately narrow frontmatter parser.
+or unlisted skill files refuse. This is a deliberately narrow frontmatter parser:
+opening and closing delimiters must be exact LF-separated `---` lines. Only
+unquoted `name`, `description`, `disable-model-invocation` and `user-invocable`
+keys are supported, without duplicates. Name/description values are JSON-quoted
+strings or conservative alphabetic-leading plain text; ambiguous YAML scalars,
+flow values, comments, tabs within values and decoded controls refuse. Quote
+intended numeric or indicator-led strings. Boolean controls use literal lowercase
+values; `disable-model-invocation` must be `false`. Unsupported metadata refuses
+rather than silently changing the native catalog.
 
 `mode=natural` omits `inputs.entrypoint` from the native plan. The controller sends
 the task prompt without a forced read instruction, and native discovery chooses
@@ -285,7 +298,9 @@ of each record in order: `observation`, `cleanup`, `routing_observation`,
 `observation_finalized`, `receipt`. The finalized observation must equal the
 receipt observation and its routing projection must equal the separate routing
 record. Require stdout/stderr EOF, reaped process, no trailing bytes/pending
-records, and one persisted projection. `receiver_complete_under_trusted_io` is
+records, and one persisted projection. Owned process-group signaling precedes
+leader reaping on every shutdown path; signal uncertainty is retained. Late drain
+errors keep the original stop reason and are reported separately. `receiver_complete_under_trusted_io` is
 this receiver boundary; `native_written_count=null`, `all_pages_verified=false`,
 `process_adherence=not_assessed` and `outcome=not_graded` remain explicit.
 
