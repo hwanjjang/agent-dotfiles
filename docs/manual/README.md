@@ -232,3 +232,18 @@ cases remain development data. Automated diagnosis remains planned. Both current
 PDF pages were rendered and individually viewed, with required text/page count
 checked. Rebuild using the existing screenshot-manual commands with
 reviewed-cases.json and recapture after workflow changes.
+
+## Native executor fixture walkthrough
+
+The [two-page walkthrough](native-execution.pdf), [editable source](native-execution.json)
+and [capture receipt](native-execution-capture.json) explain receipt interpretation
+and selected source-bound native mock evidence. The [CLI image](native-execution-cli.png)
+and [native summary image](native-execution-native.png) are browser renderings of
+actual results, not terminal or real-model screenshots. Both PDF pages were
+rendered and visually checked. The [fixture guide](../decisions/native-execution-fixture.md)
+owns prerequisites and limits. Rebuild with the screenshot-manual scripts above
+using `native-execution.json`; recapture after result or behavior changes.
+
+The earlier native-isolation map screenshot retains its dated capture; the current
+dialog additionally links this reusable fixture. The browser recipe verifies the
+current dialog separately; this supplement does not requalify older captures.

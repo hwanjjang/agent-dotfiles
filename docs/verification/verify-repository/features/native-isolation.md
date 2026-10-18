@@ -36,3 +36,22 @@ actual receipt, verify image ID and namespace/resource settings; in the prefligh
 record, require seccomp mode 2 and TCP errno 101 for both IP families. A constant
 zero is not a provider traffic measurement. Retain primary and cleanup reasons
 separately; uncertain cleanup must never qualify the run.
+
+## Reusable executor fixture
+
+Follow the [fixture guide](../../../decisions/native-execution-fixture.md) for
+`native_execution.py`; do not substitute its receipt for the container verifier's
+isolation receipt. Use a new evidence directory for every attempt. Inspect the
+actual terminal, skill outputs and retained submission count. `mock_complete`
+always leaves live/authentication/isolation qualification false. Exercise the
+public CLI's fake-process success and terminal-error paths, and run
+`test_native_execution.py` for malformed/oversized output, deadlines, excess
+submissions and cleanup failure. A CLI exit zero alone is insufficient.
+
+The [two-page fixture walkthrough](../../../manual/native-execution.pdf) and
+[editable source](../../../manual/native-execution.json) show actual browser-rendered
+CLI/result summaries, not terminal or real-model captures. The source-bound actual
+native mock covers selected routes only; its separate supervisor verified owned
+containers, volume and PIDs absent. Do not infer escaped-resource cleanup from
+the reusable runner's process-group cleanup or replay a historical native run
+without its explicit ownership and runtime prerequisites.

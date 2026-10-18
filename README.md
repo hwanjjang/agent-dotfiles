@@ -164,6 +164,11 @@ Offline development comparison is available through
 It freezes and grades supplied synthetic evidence; it does not execute models or
 establish holdout or promotion eligibility.
 
+The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
+and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
+receipts and selected native-route checks; authenticated comparison remains
+unqualified.
+
 Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
 
 ## Principles

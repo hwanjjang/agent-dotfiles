@@ -211,3 +211,12 @@ Boundary flag semantics were checked against Docker's [run reference](https://do
 [resource constraints](https://docs.docker.com/engine/containers/resource_constraints/)
 on 2026-10-18. These configuration checks and the local smoke establish this
 fixed workflow only, not general container escape resistance.
+
+## Reusable remote-executor fixture
+
+The separate [native executor fixture](native-execution-fixture.md) extracts the
+fixed app-server/mock protocol for an already isolated executor. It does not
+create or qualify its caller's OS boundary. Its guide owns the receipt, ownership
+and cleanup contract; its two-page walkthrough distinguishes local fake-process
+checks from one actual source-bound native mock. Neither verifier supplies live
+provider authentication or comparison evidence.

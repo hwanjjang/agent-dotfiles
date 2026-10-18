@@ -1,0 +1,20 @@
+{
+  "title": "Native executor fixture: read the result",
+  "scenario": "Maintainer workflow for a credential-free mock. Requires an authorized isolated executor, a pinned native client and a new private evidence directory. Screenshots are browser-rendered summaries of actual results, not terminal captures or real inference.",
+  "steps": [
+    {
+      "title": "Run once and inspect the receipt",
+      "instruction": "Prepare the exact private command/executor plan from the fixture guide. Run native_execution.py with a new --output directory. Read status, reason, terminal and cleanup in receipt.json; retain every blocked attempt. The examples below are capture-time public CLI checks on the corrected runtime using a local fake app-server.",
+      "screenshot": "native-execution-cli.png",
+      "caption": "Browser-rendered capture-time CLI stdout: local fake-process success exits 0; terminal failure exits 1 with the exact Refusal: prefix. Paths are generalized.",
+      "expected": "A blocked terminal stays blocked. mock_complete describes the mock protocol; live_eligible, authentication_qualified and isolation_qualified remain false."
+    },
+    {
+      "title": "Check actual native evidence and its limits",
+      "instruction": "Match runtime hashes before reuse. The corrected native mock completed its selected workflow. A separate deadline probe finished before the stop could be injected and did not qualify interruption cleanup. Review terminal identity and independently checked executor cleanup; authentication and other routes remain separate.",
+      "screenshot": "native-execution-native.png",
+      "caption": "Browser-rendered sanitized corrected native mock result from 2026-10-18, with the separate deadline probe limitation. Not a terminal screenshot or real model result.",
+      "expected": "Normal run: two synthetic submissions, one cell and matching completed terminal; exact owned resources absent. Deadline run: NOT_INJECTED, unqualified, retained without retry. No auth or full-route claim."
+    }
+  ]
+}

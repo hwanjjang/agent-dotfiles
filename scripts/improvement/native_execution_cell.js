@@ -1,0 +1,13 @@
+// @exec: {"yield_time_ms": 30000, "max_output_tokens": 4000}
+const out={};const g={};for(const k of ['process','require','fetch','Deno','Bun','XMLHttpRequest','WebSocket','console','Atomics','SharedArrayBuffer','WebAssembly'])g[k]=typeof globalThis[k];if(Object.values(g).some(v=>v!=='undefined'))throw Error('Unexpected V8 primitive');out.globals=g;
+out.imports={};for(const spec of ['node:fs',HOST_URI,'https://example.invalid/fixture']){let e;try{await import(spec);throw Error('IMPORT_SUCCEEDED');}catch(x){e=String(x);}if(!e.toLowerCase().includes('unsupported import'))throw Error('Unexpected import result');out.imports[spec]=e;}
+const allowed=['apply_patch','exec_command','view_image','write_stdin','list_mcp_resource_templates','list_mcp_resources','read_mcp_resource','clock__curr_time','skills__list','skills__read'];out.tools=ALL_TOOLS.map(x=>x.name);if(out.tools.some(x=>!allowed.includes(x)))throw Error('Unexpected V8 tool');text('V8_GATE:'+JSON.stringify(out));
+function decoded(x){if(typeof x==='string'){try{return JSON.parse(x);}catch{}}return x;}
+async function result(name,fn){try{const r=await fn();text(JSON.stringify({check:name,result:r}));return r;}catch(e){const r={caught_error:String(e)};text(JSON.stringify({check:name,result:r}));return r;}}
+let r=await result('mcp_resources',()=>tools.list_mcp_resources({}));r=decoded(r);if(!Array.isArray(r.resources)||r.resources.length)throw Error('Nonempty/unknown MCP inventory');
+r=await result('mcp_templates',()=>tools.list_mcp_resource_templates({}));r=decoded(r);if(!Array.isArray(r.resourceTemplates)||r.resourceTemplates.length)throw Error('Nonempty/unknown MCP templates');
+r=await result('mcp_missing_server',()=>tools.read_mcp_resource({server:'qualification-missing-server',uri:HOST_URI}));if(!JSON.stringify(r).includes('unknown MCP server'))throw Error('Missing MCP server not rejected');
+const list=decoded(await tools.skills__list({authority:{kind:'executor'}}));text(JSON.stringify({check:'assigned_list',result:list}));const sk=list.skills.find(x=>x.name==='assigned');if(!sk)throw Error('Assigned skill absent');
+r=await result('assigned_body',()=>tools.skills__read({package:sk.package,resource:sk.main_resource}));r=decoded(r);if(!r.contents?.includes('ASSIGNED_REMOTE_SKILL_BODY'))throw Error('Assigned body marker absent');
+r=await result('assigned_reference',()=>tools.skills__read({package:sk.package,resource:sk.main_resource.replace(/SKILL\.md$/,'references/details.md')}));r=decoded(r);if(!r.contents?.includes('ASSIGNED_REMOTE_SKILL_REFERENCE'))throw Error('Assigned reference marker absent');
+text('CELL1_COMPLETED');

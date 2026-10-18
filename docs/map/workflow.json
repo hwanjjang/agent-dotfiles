@@ -421,7 +421,7 @@
     "improvement-review": "Diagnostic recommendations are available for development reports; the live promotion gate and operational eligibility remain unavailable.",
     "improvement-deploy": "An accepted committed candidate is authorized for account deployment. Existing installer available; automatic eval-to-deployment integration remains planned.",
     "account-doctor": "After setup or upgrades: diagnose files, check native discovery/trust, then optionally run a real low-cost model. Add Paseo only when selected. Supports setup qualification before eval and after deployment; does not establish comparative improvement.",
-    "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted container."
+    "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted executor; use the reusable fixture to retain source-bound success or blocked attempts."
   },
   "category_titles": {
     "triage": [
