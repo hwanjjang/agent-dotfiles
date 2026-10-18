@@ -323,10 +323,13 @@ actual CLI/process results, not terminal screenshots. Positive lifecycle results
 use a fixed native-run **STUB** with fake qualification, journals and usage; the
 unmodified public initialize command actually refused without creating state.
 
-The renewed smoke ran at the already-existing `b57ea16629b1` checkpoint. Thirteen
-runner and three grader source hashes match the capture manifest. Two stubbed
-attempts reserve two initial turns and 630 declared seconds; a real process crash
-leaves a third reservation, 945 declared seconds and an unknown total token cost.
+The renewed smoke ran before checkpoint `a8b0f9785457` was created; exact source
+bytes were matched to that commit afterwards. No execution at an existing commit
+is claimed. Thirteen runner and three grader source hashes match the capture
+manifest. Two stubbed attempts reserve two initial turns and 630 declared seconds; a real process
+directly appended a third reserve record and exited 23, leaving 945 declared
+seconds and an unknown total token cost. This tests re-reading a durable crash
+gap, not a process death inside `run-next`; launch ordering is checked separately.
 The known synthetic subtotal remains 320 tokens. Six separate processes confirmed
 lock refusal before task work and after stubbed cleanup. Reservations are not
 refunded, and the post-use token guard is soft, not a provider hard cap.

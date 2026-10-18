@@ -339,4 +339,61 @@ class ControllerTimingTests(unittest.TestCase):
             'scope':'controller_setup_task_cleanup', 'elapsed_ms':2456})
 
 
+class RoutingRecoveryTests(unittest.TestCase):
+    setUp=plan_fixtures.PlanTests.setUp
+    load=plan_fixtures.PlanTests.load
+    natural=RoutingPlanTests.natural
+
+    def test_public_schema2_recovery_reads_owned_journal_and_only_cleans(self):
+        import os,shutil
+        selected=self.load(self.natural());c=trial.Controller(selected);self.addCleanup(c.release)
+        c.observation={'status':'blocked','reason':'synthetic_setup_stop'}
+        receipt=c.finish({'complete':False},None);self.assertEqual(receipt['status'],'blocked')
+        with patch.object(plan,'SOURCE',self.sources),patch.object(plan,'PINNED_RUNTIME',self.pins):
+            with self.assertRaisesRegex(plan.Refusal,'^coordinator_running$'):trial.read_recovery(c.attempt)
+        c.release();shutil.rmtree(self.inputs)  # Recovery must not reopen task inputs.
+        with patch.object(plan,'SOURCE',self.sources),patch.object(plan,'PINNED_RUNTIME',self.pins), \
+             patch.object(trial,'supported_host'),patch.object(trial,'copy_native_home') as auth, \
+             patch.object(protocol.NativeSession,'start') as start,patch.object(trial,'bounded') as external:
+            data,records,journal=trial.read_recovery(c.attempt)
+            try:
+                self.assertEqual(data['schema_version'],2)
+                self.assertEqual(records['observation_finalized'],[receipt['observation']])
+                self.assertEqual(records['routing_observation'],[receipt['observation']['routing_observation']])
+            finally:os.close(journal.coordinator_lock)
+            result=trial.recover(c.attempt)
+        self.assertEqual(result,{'status':'reconciled','cleanup_complete':True})
+        self.assertFalse(c.control.exists());self.assertTrue((c.attempt/'manifest.json').exists())
+        auth.assert_not_called();start.assert_not_called();external.assert_not_called()
+
+    def test_recovery_versions_modes_and_routing_fields_are_closed(self):
+        import os
+        value=self.natural();selected=self.load(value);c=trial.Controller(selected)
+        c.release();self.addCleanup(c.release);path=c.attempt/'manifest.json'
+        changes=[{'schema_version':v} for v in (True,False,0,3,2.0,'2',None)]
+        changes.extend([{'schema_version':1},{'mode':'qualification'},{'routing':None},{'unexpected':True},
+            {'routing':dict(value['routing'],unexpected=True)}])
+        with patch.object(plan,'SOURCE',self.sources),patch.object(plan,'PINNED_RUNTIME',self.pins):
+            for change in changes:
+                with self.subTest(change=change):
+                    broken=copy.deepcopy(value);broken.update(change);path.write_bytes(plan.encoded(broken))
+                    with self.assertRaises(plan.Refusal):trial.read_recovery(c.attempt)
+            path.write_bytes(plan.encoded(value));data,_,journal=trial.read_recovery(c.attempt)
+            os.close(journal.coordinator_lock);self.assertEqual(data['schema_version'],2)
+
+    def test_public_legacy_and_forced_routed_recovery_stay_cleanup_only(self):
+        for version in (1,2):
+            value=copy.deepcopy(self.value) if version==1 else self.natural()
+            if version==2:
+                value['routing']['mode']='forced_entrypoint'
+                value['inputs']['entrypoint']='skills/first/SKILL.md'
+            value['identity']['attempt_id']=f'recover-version-{version}'
+            selected=self.load(value);c=trial.Controller(selected);c.release();self.addCleanup(c.release)
+            with patch.object(plan,'SOURCE',self.sources),patch.object(plan,'PINNED_RUNTIME',self.pins), \
+                 patch.object(trial,'supported_host'),patch.object(trial,'copy_native_home') as auth, \
+                 patch.object(protocol.NativeSession,'start') as start,patch.object(trial,'bounded') as external:
+                self.assertEqual(trial.recover(c.attempt),{'status':'reconciled','cleanup_complete':True})
+            auth.assert_not_called();start.assert_not_called();external.assert_not_called()
+
+
 if __name__=='__main__':unittest.main()

@@ -207,8 +207,13 @@ requirements; this component does not complete issue #26.
 ## Serial native launch reservations
 
 The [serial gate](../../scripts/improvement/trial_reservation.py) coordinates one
-frozen experiment among cooperating trusted-host callers. It does not provide a
-hard provider request, token or spending cap. Current real execution remains
+frozen experiment within one `execution_root` and context among cooperating
+trusted-host callers. Its allowance and `execution_accounting` cover that root,
+not every root that might reuse the same experiment digest. Creating a different
+root or context creates another allowance that this gate cannot detect. Preserve
+and report those costs with the original scope; do not hide a failed run or select
+the best result by resetting the scope. It does not provide a hard provider
+request, token or spending cap. Current real execution remains
 blocked until source-bound qualification is renewed; fixed-stub verification is
 not native qualification or natural-routing evidence. The
 [workflow diagram](../architecture/native-experiment-workflow.html) shows the
@@ -240,7 +245,10 @@ an exclusive header and journal without launching a process or opening auth.
 `status` audits existing records. Only `run-next` calls the native runner, using
 the separate explicit authentication source and the guide's existing execution
 authority. These commands do not start a VM, change Docker context or install
-account settings. There is no automatic loop or automatic retry.
+account settings. There is no automatic loop or automatic retry. Plans for this
+frozen root must use `run-next`; direct `native_trial.py run` is outside the gate and does not
+acquire its experiment lock or enforce its aggregate allowance. Recovery remains
+cleanup-only and does not complete, retry or refund a reserved task.
 
 One stable nonblocking experiment lock is acquired before native attempt locks
 and held through the launch and its cleanup. The gate durably records the next

@@ -202,6 +202,13 @@ rewrite digests merely to suppress a drift refusal.
 
 ## Run one explicitly authorized attempt
 
+For a plan whose `state_root` is the frozen reservation root, use
+[`trial_reservation.py run-next`](decisions/evaluation-accounting.md#serial-native-launch-reservations).
+The direct command below is outside that gate: it does not enforce its aggregate
+allowance or take its experiment lock. Do not use it to bypass an outstanding
+reservation. Existing recovery is for owned cleanup only; it does not retry a
+reserved task, refund its allowance or make missing cost complete.
+
 ```sh
 python3 scripts/improvement/native_trial.py run \
   --plan /path/to/private-trial-plan.json \
