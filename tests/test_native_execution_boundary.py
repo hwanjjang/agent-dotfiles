@@ -222,6 +222,65 @@ const source=fs.readFileSync(process.argv[2],'utf8').replaceAll('HOST_URI',JSON.
                     inputs[1]['output'][0]['text']='Script completed\nWall time 0.1 seconds\nOutput:\n'+inputs[1]['output'][0]['text']
                     self.assertEqual(runner.boundary_outputs({'input':inputs}),runner.BOUNDARY_EXPECTED)
 
+
+class FixtureBoundaryLifecycleTests(unittest.TestCase):
+    """Exercise the implemented guard through real local fake-client transport."""
+    def run_boundary(self, mode):
+        from unittest.mock import patch
+        providers, temporary_roots = [], []
+        provider_class = runner.FixtureProvider
+
+        def capture_provider(*args, **kwargs):
+            provider = provider_class(*args, **kwargs)
+            providers.append(provider)
+            return provider
+
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(runner, 'FixtureProvider', side_effect=capture_provider):
+                receipt = runner.run_fixture(
+                    Path(folder)/'evidence',
+                    command=[sys.executable, __file__, '--fake', mode],
+                    executor=[sys.executable], timeout=10,
+                    scenario='command-skills-boundary',
+                    on_temporary_root=temporary_roots.append)
+            self.assertEqual(receipt['terminal']['status'], 'completed')
+            self.assertEqual(receipt['mock_submissions_observed'], 2)
+            self.assertFalse(receipt['live_eligible'])
+            self.assertFalse(receipt['authentication_qualified'])
+            self.assertTrue(receipt['cleanup']['harness']['process_reaped'])
+            self.assertIsNone(receipt['cleanup']['harness']['group_signal_error'])
+            self.assertTrue(receipt['cleanup']['listeners_closed'])
+            self.assertTrue(receipt['cleanup']['temporary_home_absent'])
+            self.assertEqual(len(temporary_roots), 1)
+            self.assertFalse(temporary_roots[0].exists())
+            self.assertEqual(len(providers), 1)
+            provider = providers[0]
+            self.assertTrue(all(server.socket.fileno() == -1 for server in provider.servers))
+            self.assertTrue(all(not thread.is_alive() for thread in provider.threads))
+            if provider.watchdog is not None:
+                self.assertFalse(provider.watchdog.is_alive())
+            return receipt
+
+    def test_fake_boundary_success_preserves_protected_files_and_cleans(self):
+        receipt = self.run_boundary('success')
+        self.assertEqual(receipt['status'], 'mock_complete')
+        self.assertTrue(receipt['protected_canaries_unchanged'])
+        self.assertEqual(receipt['boundary_checks'], runner.BOUNDARY_EXPECTED)
+
+    def test_missing_boundary_output_blocks_despite_completed_terminal(self):
+        receipt = self.run_boundary('missing')
+        self.assertEqual(receipt['status'], 'blocked')
+        self.assertTrue(receipt['protected_canaries_unchanged'])
+        self.assertIsNotNone(receipt['provider_error'])
+
+    def test_protected_mutation_blocks_despite_complete_boundary_and_terminal(self):
+        receipt = self.run_boundary('mutation')
+        self.assertEqual(receipt['status'], 'blocked')
+        self.assertFalse(receipt['protected_canaries_unchanged'])
+        self.assertEqual(receipt['reason'], 'protected_canary_changed')
+        self.assertEqual(receipt['boundary_checks'], runner.BOUNDARY_EXPECTED)
+
+
 def fake_client(mode):
     # Local process fixture; it deliberately synthesizes evidence, never claims
     # to execute the JavaScript or to provide native/OS boundary qualification.
