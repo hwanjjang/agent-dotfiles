@@ -143,3 +143,7 @@ known-home purge precede capture, and capture precedes executor removal within t
 original deadline. Recovery must never recapture. Reuse selected proof only for
 matching source/runtime/profile facts; no authenticated/natural-routing/comparison
 claim follows from fixed credential-free execution.
+
+The selected private native bridge supplies the observation projection and its own
+receipt. It exercises production setup/cleanup/capture; production `observe`/`finish`
+collection gating is unit-tested, not covered end to end by that native fixture.

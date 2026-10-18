@@ -13,7 +13,7 @@
       "title": "Separate capture, task state and cleanup",
       "instruction": "Read the task receipt and collection separately. A missing file is an observation; unsafe collection blocks with no partial rows. An interrupted task stays blocked even when a file was captured. Require owned cleanup; recover never collects again.",
       "screenshot": "native-outcome-collection-result.png",
-      "caption": "Actual three-case credential-free profile: present/missing captured; unsafe_path blocked; interrupted task blocked with files captured. Owned resources were independently absent and the VM returned Stopped in all three.",
+      "caption": "Actual three-case credential-free capture: present/missing, unsafe and interrupted. The private bridge supplies observation and coordinator receipt; production observe/finish collection gates have unit coverage only. Owned cleanup and VM restoration were independently verified.",
       "expected": "Snapshots are per-file and not quiescent. Trusted host access remains. These runs use no authentication or model inference and establish no answer grading, admission, natural-routing, comparison or promotion qualification."
     }
   ]

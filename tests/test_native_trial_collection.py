@@ -1,4 +1,4 @@
-"""Controller collection contract with fake Docker and actual fixed processes."""
+"""Controller collection contract with fake Docker and fabricated collector responses."""
 import copy
 import hashlib
 import json

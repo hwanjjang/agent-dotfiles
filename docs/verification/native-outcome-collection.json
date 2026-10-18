@@ -176,7 +176,9 @@
     "capture_seconds_maximum": 5,
     "remaining_cleanup_seconds_reserved": 20,
     "capture_requires_remaining_cleanup_seconds": 25,
-    "quiescent_state_verified": false
+    "quiescent_state_verified": false,
+    "private_bridge_projection": "The private bridge supplies c.observation from actual native turn acknowledgment/terminal observations and writes its own coordinator receipt. It calls production setup/cleanup/capture_collection, not production observe/finish.",
+    "production_observe_finish_collection_gates": "unit-test coverage only; no credential-free native end-to-end coverage claimed"
   },
   "failure_history": [
     "An older3-case preparation was superseded before execution after collector review; no native result claimed.",
@@ -188,7 +190,8 @@
     "All snapshots are bounded per-file observations, not atomic/quiescent final state.",
     "Public fixed boundary fixture remains mock_complete or blocked; outer ownership/cleanup is a separate private attestation, not a public qualification status.",
     "Exact12-source credential-free profile only. Earlier11-source authenticated qualification is historical and does not qualify these changes.",
-    "Task-outcome evaluator admission, aggregate execution reservation, natural routing, held-out comparison and promotion remain separate."
+    "Task-outcome evaluator admission, aggregate execution reservation, natural routing, held-out comparison and promotion remain separate.",
+    "Native capture and independent cleanup are exercised; production observe/finish collection status mapping and selected_task_file_hashes_retained are covered by unit tests only."
   ],
   "source_checkpoint": "1d831bf6e62e5656ca091cb5d8af1588e7480b3c",
   "source_checkpoint_note": "Source bytes were exercised before this checkpoint commit; all 12 runtime digests were independently matched afterwards. This is not a claim that the smoke ran at that Git HEAD."

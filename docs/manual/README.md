@@ -278,3 +278,7 @@ documentation workflow. The [native guide](../native-trials.md) owns commands
 and limits; the [verification recipe](../verification/verify-repository/features/native-trials.md)
 owns repeatable checks. Rebuild with the screenshot-manual scripts above using
 `native-outcome-collection.json`, and recapture when the documented behavior changes.
+
+For this collection walkthrough, the private native bridge supplies the observation
+projection and its own coordinator receipt. Production setup/cleanup/capture are
+exercised; production `observe`/`finish` collection gates have unit coverage only.

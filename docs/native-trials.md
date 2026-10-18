@@ -170,7 +170,10 @@ retains exact current 12-source, runtime and three credential-free cases:
 present/missing, unsafe symlink and interrupted native task. The fixed task wrote
 the artifact through a real native tool call, not coordinator materialization.
 An actual turn/start acknowledgment was counted and correlated to its terminal;
-no author-supplied success flag replaced it. The existing native fixture's
+no author-supplied success flag replaced it. The private bridge supplies the
+observation projection and its own coordinator receipt; it calls production
+setup/cleanup/capture, while production `observe`/`finish` collection gates have
+unit-test coverage only. The existing native fixture's
 `mock_complete`/`blocked` result and the outer private attestation stay distinct.
 There were no model calls or authentication reads/copies. Current-source
 authenticated renewal, natural routing and comparative admission remain pending.
