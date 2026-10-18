@@ -161,3 +161,32 @@ and version from this fixed 0.163 API fixture; the report has no visible
 independent corroboration and does not establish a defect here or community
 consensus. Its limitation supports retaining route-specific qualification rather
 than extrapolating the mock result to other clients.
+
+
+## Fixed boundary and short-loader scenarios
+
+The default `completion` scenario remains separate. An explicit
+`scenario: "command-skills-boundary"` emits a fixed synthetic boundary cell;
+`scenario: "command-skills-loader"` emits a short fixed loader and additionally
+requires `expected_script_bytes` (an integer from 1 to 32768). Both require the
+external owner to prepare the selected case, a readonly `/runtime/arm` skill with
+its reference, and known-existing protected synthetic sentinels. The loader also
+requires the source-bound ASCII cell at readonly `/runtime/qualification.js`.
+Its length guard does not replace the owner's content-identity check.
+
+These scenarios require six exact boundary records and a separate actual
+unsupported-collaboration result. They cover catalog/global/import, MCP, selected
+command and protected-path/network/root-write behavior, selected skill reads and
+foreign/traversal refusal, plus outside-boundary patch/image/invalid-session
+refusals. Unknown tools, ambiguous failures or missing records block success.
+Image generation is explicitly disabled in this restricted fixture profile.
+Successful general patch/image/PTY workflows are not promised.
+
+The existing CLI still accepts only explicit `command`/`executor` argv and fixed
+scenario options. Trusted Python integration may capture ownership before launch,
+provide an owned session factory and defer temporary cleanup to its outer owner;
+these callbacks and deferral are not JSON CLI options. A deferred inner result
+records external cleanup as pending. `mock_complete` alone does not prove outer
+protected-file custody, escaped-helper absence or executor cleanup. No scenario
+copies credentials or performs real model inference; authenticated traffic must
+never use this raw fixture archive.

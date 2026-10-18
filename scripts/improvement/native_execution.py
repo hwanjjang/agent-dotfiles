@@ -19,9 +19,9 @@ import time
 import uuid
 
 try:
-    from .native_execution_catalog import catalog, gate
+    from .native_execution_catalog import boundary_gate, catalog, gate
 except ImportError:
-    from native_execution_catalog import catalog, gate
+    from native_execution_catalog import boundary_gate, catalog, gate
 
 SOURCE = Path(__file__).resolve().parent
 PIN = '83086188ae0614bd882818ff1aa23f3194962012'
@@ -214,9 +214,104 @@ def actual_outputs(request):
                         yield part['text']
 
 
+BOUNDARY_EXPECTED = {
+    'catalog': {name: {'mask': 1023, 'count': 10, 'unknown': 0, 'duplicates': 0}
+                for name in ('advertised', 'callable')},
+    'globals_imports': {'globals_absent': True, 'imports_refused': 3},
+    'mcp': {'resources_empty': True, 'templates_empty': True, 'foreign_server_refused': True},
+    'command': {'fixture_read': True, 'protected_enoent': 5, 'traversal_enoent': True,
+                'symlink_enoent': True, 'ipv4_tcp_errno': 101, 'ipv4_udp_errno': 101,
+                'ipv6_tcp_errno': 101, 'ipv6_udp_errno': 101, 'root_write_errno': 30},
+    'skills': {'count': 1, 'body': True, 'reference': True,
+               'foreign_refused': True, 'traversal_refused': True},
+    'remaining': {'patch_refused': True, 'image_refused': True, 'stdin_refused': True},
+}
+
+
+def boundary_outputs(request):
+    """Accept only unique closed records from the two exact issued call IDs.
+
+    Script headers may surround native text blocks, but prompt/call source and
+    outputs from a different call cannot satisfy a boundary predicate.
+    """
+    calls = {}
+    for item in request.get('input', []):
+        if not isinstance(item, dict) or item.get('type') not in ('function_call_output', 'custom_tool_call_output'):
+            continue
+        identity = item.get('call_id')
+        if identity not in ('fixed_cell', 'disabled_agents') or identity in calls:
+            raise Refusal('boundary_output_identity')
+        expected_type = 'custom_tool_call_output' if identity == 'fixed_cell' else 'function_call_output'
+        if item['type'] != expected_type:
+            raise Refusal('boundary_output_type')
+        output = item.get('output')
+        if isinstance(output, str):
+            calls[identity] = output.splitlines()
+        elif isinstance(output, list) and output and all(isinstance(x, dict) and x.get('type') == 'input_text' and isinstance(x.get('text'), str) for x in output):
+            calls[identity] = [line for x in output for line in x['text'].splitlines()]
+        else:
+            raise Refusal('boundary_output_shape')
+    if set(calls) != {'fixed_cell', 'disabled_agents'} or calls['disabled_agents'] != ['unsupported call: collaborationlist_agents']:
+        raise Refusal('boundary_dispatch_refusal_missing')
+    if not calls['fixed_cell'] or calls['fixed_cell'][0] != 'Script completed':
+        raise Refusal('boundary_cell_not_completed')
+    checks = {}
+    terminal = 0
+    def unique(pairs):
+        value = {}
+        for key, entry in pairs:
+            if key in value:
+                raise Refusal('boundary_duplicate_json_key')
+            value[key] = entry
+        return value
+    for line in calls['fixed_cell']:
+        if line == 'BOUNDARY_COMPLETED':
+            terminal += 1
+        elif line.startswith('BOUNDARY_CHECK:'):
+            value = json.loads(line[len('BOUNDARY_CHECK:'):], object_pairs_hook=unique)
+            if not isinstance(value, dict) or set(value) != {'check', 'result'}:
+                raise Refusal('boundary_record_shape')
+            name = value['check']
+            if not isinstance(name, str) or name not in BOUNDARY_EXPECTED or name in checks:
+                raise Refusal('boundary_record_identity')
+            # Canonical serialization deliberately distinguishes true from 1.
+            if encoded(value['result']) != encoded(BOUNDARY_EXPECTED[name]):
+                raise Refusal('boundary_predicate_failed:'+name)
+            checks[name] = value['result']
+    if terminal != 1 or set(checks) != set(BOUNDARY_EXPECTED):
+        raise Refusal('boundary_evidence_missing')
+    return checks
+
+
+def loader_source(expected_script_bytes):
+    """Render only the fixed loader; the owner binds the readonly ASCII file.
+
+    A length check detects truncation, not content identity or OS immutability.
+    No caller-provided JavaScript or filename is accepted.
+    """
+    if type(expected_script_bytes) is not int or not 1 <= expected_script_bytes <= 32768:
+        raise ValueError('invalid_expected_script_bytes')
+    return (SOURCE/'native_execution_loader.js').read_text().replace(
+        'EXPECTED_SCRIPT_BYTES', str(expected_script_bytes))
+
+
+def _fixture_scenario(scenario, expected_script_bytes):
+    if scenario not in ('completion', 'command-skills-boundary', 'command-skills-loader'):
+        raise ValueError('unsupported_fixture_scenario')
+    if scenario == 'command-skills-loader':
+        if type(expected_script_bytes) is not int or not 1 <= expected_script_bytes <= 32768:
+            raise ValueError('invalid_expected_script_bytes')
+    elif expected_script_bytes is not None:
+        raise ValueError('unexpected_script_length')
+
+
 class FixtureProvider:
     """Exactly one fixed tool cell then final message; no upstream or credential input."""
-    def __init__(self, archive, deadline, host_uri):
+    def __init__(self, archive, deadline, host_uri, *, scenario='completion', expected_script_bytes=None):
+        _fixture_scenario(scenario, expected_script_bytes)
+        self.expected_script_bytes = expected_script_bytes
+        self.scenario = scenario
+        self.boundary_checks = None
         self.archive, self.deadline, self.host_uri = archive, deadline, host_uri
         self.requests = 0
         self.error = None
@@ -240,26 +335,33 @@ class FixtureProvider:
                 raise Refusal('unexpected_mock_model_or_stream')
             if any(marker in raw.decode() for marker in ('HOST_STARTUP_INSTRUCTION_CANARY', 'HOST_PROJECT_INSTRUCTION_CANARY')):
                 raise Refusal('host_instruction_marker_exposed')
-            gate(catalog(data))
+            (boundary_gate if self.scenario != 'completion' else gate)(catalog(data))
             if self.requests == 1:
-                code = (SOURCE/'native_execution_cell.js').read_text().replace('HOST_URI', json.dumps(self.host_uri))
+                if self.scenario == 'command-skills-loader':
+                    code = loader_source(self.expected_script_bytes)
+                else:
+                    cell = 'native_execution_command_skills.js' if self.scenario == 'command-skills-boundary' else 'native_execution_cell.js'
+                    code = (SOURCE/cell).read_text().replace('HOST_URI', json.dumps(self.host_uri))
                 items = [{'type': 'function_call', 'namespace': 'collaboration', 'name': 'list_agents',
                           'call_id': 'disabled_agents', 'arguments': '{}'},
                          {'type': 'custom_tool_call', 'name': 'exec', 'call_id': 'fixed_cell', 'input': code}]
             else:
-                outputs = list(actual_outputs(data))
-                # Only actual returned tool output, never prompt/source-text matches.
-                if 'unsupported call: collaborationlist_agents' not in outputs or 'CELL1_COMPLETED' not in outputs:
-                    raise Refusal('fixture_tool_output_missing')
-                checks = {}
-                for line in outputs:
-                    if line.startswith('{'):
-                        obj = json.loads(line)
-                        if 'check' in obj:
-                            checks[obj['check']] = obj['result']
-                for name, marker in [('assigned_body', 'ASSIGNED_REMOTE_SKILL_BODY'), ('assigned_reference', 'ASSIGNED_REMOTE_SKILL_REFERENCE')]:
-                    if marker not in checks.get(name, {}).get('contents', ''):
-                        raise Refusal('assigned_skill_evidence_missing')
+                if self.scenario != 'completion':
+                    self.boundary_checks = boundary_outputs(data)
+                else:
+                    outputs = list(actual_outputs(data))
+                    # Only actual returned tool output, never prompt/source-text matches.
+                    if 'unsupported call: collaborationlist_agents' not in outputs or 'CELL1_COMPLETED' not in outputs:
+                        raise Refusal('fixture_tool_output_missing')
+                    checks = {}
+                    for line in outputs:
+                        if line.startswith('{'):
+                            obj = json.loads(line)
+                            if 'check' in obj:
+                                checks[obj['check']] = obj['result']
+                    for name, marker in [('assigned_body', 'ASSIGNED_REMOTE_SKILL_BODY'), ('assigned_reference', 'ASSIGNED_REMOTE_SKILL_REFERENCE')]:
+                        if marker not in checks.get(name, {}).get('contents', ''):
+                            raise Refusal('assigned_skill_evidence_missing')
                 self.completed = True
                 items = [{'id': 'done', 'type': 'message', 'role': 'assistant', 'status': 'completed',
                           'content': [{'type': 'output_text', 'text': 'REMOTE_FIXTURE_COMPLETE', 'annotations': []}]}]
@@ -398,6 +500,7 @@ web_search="disabled"
 check_for_update_on_startup=false
 cli_auth_credentials_store="file"
 [features]
+image_generation=false
 apps=false
 plugins=false
 memories=false
@@ -420,14 +523,29 @@ stream_idle_timeout_ms=10000
 '''
 
 
-def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
+def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES, scenario='completion',
+                expected_script_bytes=None, session_factory=None, defer_temporary_cleanup=False,
+                on_temporary_root=None):
     """Trusted caller supplies exact executable argv; this does not create an OS boundary.
 
     No endpoint/auth overrides, retries, installation, containers or VM lifecycle.
     Caller owns executor isolation and independently verified escaped-child cleanup.
+    Trusted Python-only session_factory uses Session's positional constructor
+    contract and must retain ownership before a failing launch. Deferred cleanup
+    retains the fixture root for that owner; mock_complete alone never proves
+    external cleanup. on_temporary_root captures ownership immediately after
+    fresh-root creation, before provider setup or native launch. These trusted
+    extensions cannot be supplied through the JSON CLI.
     """
     if os.name != 'posix' or not 0 < timeout <= 180 or type(limit) is not int or not RESERVE+4096 <= limit <= MAX_BYTES:
         raise ValueError('unsupported_platform_or_bounds')
+    _fixture_scenario(scenario, expected_script_bytes)
+    if session_factory is not None and not callable(session_factory):
+        raise ValueError('invalid_session_factory')
+    if type(defer_temporary_cleanup) is not bool:
+        raise ValueError('invalid_deferred_cleanup')
+    if on_temporary_root is not None and not callable(on_temporary_root):
+        raise ValueError('invalid_temporary_root_callback')
     for argv in (command, executor):
         if not isinstance(argv, list) or not argv or not all(isinstance(x, str) and '\x00' not in x for x in argv):
             raise ValueError('invalid_argv')
@@ -435,12 +553,17 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             raise ValueError('absolute_executable_required')
     identities = {'host_executable_sha256': sha(command[0]), 'executor_program_sha256': sha(executor[0]),
                   'runner_sha256': sha(__file__), 'catalog_sha256': sha(SOURCE/'native_execution_catalog.py'),
-                  'cell_sha256': sha(SOURCE/'native_execution_cell.js')}
+                  'cell_sha256': sha(SOURCE/({'completion': 'native_execution_cell.js',
+                    'command-skills-boundary': 'native_execution_command_skills.js',
+                    'command-skills-loader': 'native_execution_loader.js'}[scenario]))}
+    if scenario == 'command-skills-loader':
+        identities['rendered_cell_sha256'] = hashlib.sha256(loader_source(expected_script_bytes).encode()).hexdigest()
     archive = Archive(destination, limit)
     start = time.monotonic()
     deadline = start+timeout
     session = provider = None
     temporary = None
+    protected = {}
     receipt = {'schema_version': 1, 'kind': 'native-remote-fixture', 'status': 'blocked',
         'attempt_id': str(uuid.uuid4()),
         'started_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -452,8 +575,17 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
                    'generated_token_ceiling': None, 'dollar_ceiling': None},
         'usage': {'tokens': None, 'reason': 'Synthetic provider; no actual inference or real usage.'},
         'cleanup': {'executor_resources': 'external_owner_unverified', 'escaped_descendants': 'unverified'}}
+    if scenario != 'completion':
+        receipt['scenario'] = scenario
+        receipt['boundary_checks'] = None
+    if scenario == 'command-skills-loader':
+        receipt['expected_script_bytes'] = expected_script_bytes
+        receipt['protected_canary_scope'] = 'inner_fixture_only_outer_owner_required'
+        receipt['outer_protected_canaries_verified'] = False
     try:
         temporary = Path(tempfile.mkdtemp(prefix='native-fixture-')).resolve()
+        if on_temporary_root is not None:
+            on_temporary_root(temporary)
         root = temporary
         home = root/'home'
         project = root/'project'
@@ -464,7 +596,17 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
         (project/'AGENTS.md').write_text('HOST_PROJECT_INSTRUCTION_CANARY\n')
         sentinel = root/'host-only'
         sentinel.write_text('synthetic host-only canary')
-        provider = FixtureProvider(archive, deadline, sentinel.as_uri())
+        protected = {}
+        if scenario != 'completion':
+            for name in ('history-only', 'credential-only', 'other-arm-only', 'evaluator-only'):
+                (root/name).write_text('synthetic protected canary')
+            # Valid one-pixel PNG, not a malformed-image denial probe.
+            (root/'host-only.png').write_bytes(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYPgPAAEDAQAIicLsAAAAAElFTkSuQmCC'))
+            for name in ('host-only', 'history-only', 'credential-only', 'other-arm-only', 'evaluator-only', 'host-only.png'):
+                path = root/name
+                protected[path] = (path.read_bytes(), path.stat().st_ino)
+        provider = FixtureProvider(archive, deadline, sentinel.as_uri(), scenario=scenario,
+                                   expected_script_bytes=expected_script_bytes)
         port = provider.start()
         profile = PROFILE.replace('PORT', str(port))
         environments = 'default="trial"\ninclude_local=false\n[[environments]]\nid="trial"\nprogram='+json.dumps(executor[0])+'\nargs='+json.dumps(executor[1:])+'\n'
@@ -476,7 +618,8 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
         receipt['identities']['environments_sha256'] = hashlib.sha256(environments.encode()).hexdigest()
         env = {'HOME': str(home), 'CODEX_HOME': str(codehome), 'LANG': 'C.UTF-8',
                'PATH': str(Path(command[0]).parent)+':/usr/bin:/bin'}
-        session = Session(command, project, env, archive, deadline)
+        factory = Session if session_factory is None else session_factory
+        session = factory(command, project, env, archive, deadline)
         session.rpc('initialize', {'clientInfo': {'name': 'remote_fixture', 'version': '1'}, 'capabilities': {'experimentalApi': True}})
         session.send({'method': 'initialized', 'params': {}})
         hooks = session.rpc('hooks/list', {'cwds': [str(project)]})
@@ -494,7 +637,7 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             raise Refusal('host_skill_enabled')
         thread = session.rpc('thread/start', {'model': 'gpt-6-luna', 'cwd': str(project), 'approvalPolicy': 'never',
             'ephemeral': True, 'environments': [{'environmentId': 'trial', 'cwd': '/work/project', 'runtimeWorkspaceRoots': ['/work/project']}],
-            'selectedCapabilityRoots': [{'id': 'assigned', 'location': {'type': 'environment', 'environmentId': 'trial', 'path': '/work/project/assigned-capability'}}]})['thread']['id']
+            'selectedCapabilityRoots': [{'id': 'assigned', 'location': {'type': 'environment', 'environmentId': 'trial', 'path': '/runtime/arm' if scenario != 'completion' else '/work/project/assigned-capability'}}]})['thread']['id']
         mcp = session.rpc('mcpServerStatus/list', {'threadId': thread, 'detail': 'full', 'limit': 10})
         if mcp['data'] or mcp.get('nextCursor'):
             raise Refusal('host_mcp_not_empty')
@@ -516,6 +659,8 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             raise Refusal('native_or_fixture_incomplete')
         if sentinel.read_text() != 'synthetic host-only canary':
             raise Refusal('host_canary_changed')
+        if scenario != 'completion':
+            receipt['boundary_checks'] = provider.boundary_checks
         receipt['status'] = 'mock_complete'
     except (Exception, KeyboardInterrupt) as exc:
         receipt['reason'] = type(exc).__name__+':'+str(exc)[:240]
@@ -543,8 +688,24 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             safe_to_remove = safe_to_remove and receipt['cleanup']['listeners_closed']
         else:
             receipt['mock_submissions_observed'] = 0
+        if scenario != 'completion':
+            # Check after owned process/listener shutdown, before deleting our
+            # fixtures. A terminal event cannot hide a subsequent mutation.
+            try:
+                unchanged = len(protected) == 6 and all(
+                    not path.is_symlink() and path.read_bytes() == value and path.stat().st_ino == inode
+                    for path, (value, inode) in protected.items())
+            except OSError:
+                unchanged = False
+            receipt['protected_canaries_unchanged'] = unchanged
+            if not unchanged:
+                receipt['status'] = 'blocked'
+                receipt['reason'] = receipt['reason'] or 'protected_canary_changed'
         if temporary:
-            if safe_to_remove:
+            if defer_temporary_cleanup:
+                receipt['cleanup']['temporary_cleanup_deferred'] = True
+                receipt['cleanup']['external_cleanup_pending'] = True
+            if safe_to_remove and not defer_temporary_cleanup:
                 try:
                     shutil.rmtree(temporary)
                 except Exception as exc:
@@ -552,7 +713,7 @@ def run_fixture(destination, command, executor, *, timeout=30, limit=MAX_BYTES):
             receipt['cleanup']['temporary_home_absent'] = not temporary.exists()
             if temporary.exists():
                 receipt['cleanup']['retained_temporary_root'] = str(temporary)
-        if not safe_to_remove or receipt['cleanup'].get('harness', {}).get('group_signal_error') or receipt['cleanup'].get('listeners_closed') is False or receipt['cleanup'].get('temporary_home_absent') is False:
+        if not safe_to_remove or receipt['cleanup'].get('harness', {}).get('group_signal_error') or receipt['cleanup'].get('listeners_closed') is False or (not defer_temporary_cleanup and receipt['cleanup'].get('temporary_home_absent') is False):
             receipt['status'] = 'blocked'
             receipt['reason'] = receipt['reason'] or 'owned_cleanup_incomplete'
         receipt['elapsed_seconds'] = round(time.monotonic()-start, 6)
@@ -565,7 +726,7 @@ def main():
     parser.add_argument('--output', required=True, type=Path, help='New exclusive private evidence directory')
     args = parser.parse_args()
     plan = json.loads(args.plan.read_text())
-    if set(plan)-{'command', 'executor', 'timeout', 'limit'}:
+    if set(plan)-{'command', 'executor', 'timeout', 'limit', 'scenario', 'expected_script_bytes'}:
         parser.error('Unknown plan fields; live/auth/provider overrides are unsupported')
     result = run_fixture(args.output, **plan)
     print(json.dumps({'status': result['status'], 'live_eligible': False, 'reason': result['reason']}))
