@@ -1,0 +1,20 @@
+{
+  "title": "Prepare one frozen trial safely",
+  "scenario": "Maintainer preparation workflow using reviewed synthetic Store cases and the existing evaluator. Screenshots are browser-rendered actual CLI summaries, not terminal screenshots or model execution. Requires Python 3.11+, a reviewed frozen experiment, exact trial and supervisor attempt IDs; keep full envelopes outside executor mounts.",
+  "steps": [
+    {
+      "title": "Select and bind one trial",
+      "instruction": "Invoke trial_dispatch.py prepare with experiment, current_spec, trial_id and attempt_id. Keep the full returned envelope with the trusted supervisor. Release only executor_input (the selected request and files) to the assigned executor after its own path/materialization checks. Runtime and budget digests are declarations, not execution proof.",
+      "screenshot": "frozen-trial-dispatch-input.png",
+      "caption": "Actual CLI structural output: selected payload fields and supervisor-owned binding, with no private identifiers or case text.",
+      "expected": "Stale or tampered inputs are refused. Grading criteria, expected answers, other-arm payload and aggregate budget are not included in executor_input."
+    },
+    {
+      "title": "Inspect the preparation journey and limits",
+      "instruction": "Retain the frozen inventory and every attempted outcome with the supervisor. This example used the existing Store export and freeze commands, then prepared all eight scheduled development inputs. Check the stale/unknown-trial refusals and cleanup separately. Preparation does not reserve attempts across calls, launch models, admit receipts or authorize promotion.",
+      "screenshot": "frozen-trial-dispatch-result.png",
+      "caption": "Actual synthetic CLI journey: 23 commands, eight preparations, two expected refusals, revoke and owned temporary cleanup.",
+      "expected": "Only preparation is established. The shared experiment budget, actual execution provenance, failed/missing attempt accounting and live admission remain supervisor/evaluator responsibilities."
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "capture_kind": "browser-rendered sanitized actual CLI result summaries",
+  "captured_at": "2026-10-18T03:38:01.019123+00:00",
+  "not_terminal_capture": true,
+  "actual_native_execution": false,
+  "model_inference": false,
+  "operational_admission": false,
+  "base_revision": "7ada8e20c4f0f7a0e04b585d6d1820dad8fa0a16",
+  "runtime_sha256": {
+    "scripts/improvement/trial_dispatch.py": "1fdfe02dc0734808181f0007a6abb17fa8320cb5ebc23f3a418632a4fb3976f7",
+    "scripts/improvement/evaluation.py": "cdc32c9bf15ab15de9a68ecd87d14a7c9c1f12e652e4b59e6b11c299aade4bbc"
+  },
+  "actual_journey": {
+    "commands": 23,
+    "scheduled": 8,
+    "prepared": 8,
+    "languages": [
+      "en",
+      "ko"
+    ],
+    "both_arms": true,
+    "both_variants": true,
+    "stale_refusals": 1,
+    "unknown_trial_refusals": 1,
+    "owned_workspace_unchanged": true,
+    "task_removed_after_revoke": true,
+    "temporary_root_removed": true
+  },
+  "verification": {
+    "browser": "installed Chrome155 via existing Playwright",
+    "browser_capture_passed": true,
+    "horizontal_overflow": false,
+    "PDF_pages": 2,
+    "PDF_text_checked": true,
+    "every_page_rendered_and_visually_reviewed": true,
+    "visual_result": "Both pages legible, no crop/overlap/missing glyphs; structural fields and limitations agree with actual CLI results."
+  },
+  "guide": "../decisions/frozen-trial-dispatch.md",
+  "guide_sha256": "f8ff30f069af20b2f3b2756f5fd92d1118ab695198db76dc1752d1a2cdbd8e21",
+  "artifacts_sha256": {
+    "frozen-trial-dispatch.json": "9151e65c5bcda909d42ea84ca5cbb77500a1711c0d885a10251dc56993028f84",
+    "frozen-trial-dispatch.pdf": "30b3195c826079a38932d1b4635efc74589f6822f7792d18de91609bd55e9eec",
+    "frozen-trial-dispatch-summary.html": "cbb80e4182513c923aa8a6274fd197ec3894ac74cb68e0b271105d689d02a11c",
+    "frozen-trial-dispatch-input.png": "c7fb8685884a5c968ae3cf405ccaaa9d5c864c45d412ad6d64f98af053fdcebb",
+    "frozen-trial-dispatch-result.png": "ff764a790e45e778bc3ada689ffa45efd9df2bcf23d1960ade1755b0be0b44d7"
+  },
+  "limits": [
+    "Pure preparation, no attempt reservation across calls or budget enforcement.",
+    "Full envelope supervisor-owned; executor_input only released after separate materialization/boundary checks.",
+    "No real receipt verifier, native model trial, OS isolation or promotion qualification."
+  ]
+}
