@@ -17,11 +17,6 @@ class ArtifactGradingTests(unittest.TestCase):
         self.assertEqual(ev.grade_check(criterion, {'evidence_kind':'native_artifact_snapshot_v1',
                          'artifacts':{'result.bin':row}}), 'pass')
 
-    def test_offline_attempt_reader_exists_without_native_launch(self):
-        import importlib.util
-        self.assertIsNotNone(importlib.util.find_spec('scripts.improvement.trial_admission'),
-                             'trusted offline reader is unavailable')
-
 import copy
 import fcntl
 import json
@@ -154,12 +149,41 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(r['coverage']['duplicate_trials'],1);self.assertEqual(r['usage']['known_tokens'],160)
         self.assertEqual(r['usage']['known_records'],1);self.assertEqual(r['usage']['submissions'],2)
 
+    def assert_blocked_attempt_accounting(self, report, ref, known_tokens):
+        trial=next(row for row in report['trials'] if row['trial_id']==ref['trial_id'])
+        self.assertEqual(trial['verdict'],'blocked')
+        self.assertEqual(report['counts'],{'pass':0,'fail':0,'blocked':1,'inconclusive':3})
+        known=known_tokens is not None
+        self.assertEqual(trial['usage']['known_tokens'],known_tokens if known else 0)
+        self.assertEqual(trial['usage']['known_records'],int(known))
+        self.assertEqual(trial['usage']['unknown'],0 if known else 1)
+        self.assertEqual(trial['usage']['total_tokens'],known_tokens)
+        self.assertEqual(report['usage']['known_tokens'],known_tokens if known else 0)
+        self.assertEqual(report['usage']['unknown'],3 if known else 4)
+        self.assertIsNone(report['usage']['total_tokens'])
+
     def test_missing_capture_or_cleanup_never_passes(self):
-        for label in ('collection_result','cleanup','receipt'):
-            with self.subTest(label=label):
-                ref=self.fixture.attempt(attempt=label)
-                self.fixture.mutate(ref,label,lambda x:x.update(status='blocked') if label!='cleanup' else x.update(complete=False))
-                self.assertEqual(self.report([ref])['counts']['pass'],0)
+        for label,absent,known_tokens in [('collection_result',False,160),
+                ('collection_result',True,160),('cleanup',False,160),
+                ('cleanup',True,None),('receipt',False,160),('receipt',True,None)]:
+            with self.subTest(label=label,absent=absent):
+                ref=self.fixture.attempt(attempt=label+('-absent' if absent else '-blocked'))
+                if absent:
+                    # Keep a valid contiguous synthetic journal while omitting the
+                    # required record; do not accidentally test only a sequence gap.
+                    folder=Path(ref['attempt_path'])/'records'
+                    records=[(path.name.split('-',1)[1],json.loads(path.read_text()))
+                             for path in sorted(folder.iterdir())
+                             if not path.name.endswith('-'+label+'.json')]
+                    for path in folder.iterdir():path.unlink()
+                    for index,(name,value) in enumerate(records,1):save(folder/f'{index:03d}-{name}',value)
+                else:
+                    change=lambda row:row.update(complete=False) if label=='cleanup' else row.update(status='blocked')
+                    self.fixture.mutate(ref,label,change)
+                    if label!='receipt':
+                        key='collection' if label=='collection_result' else 'cleanup'
+                        self.fixture.mutate(ref,'receipt',lambda row:change(row[key]))
+                self.assert_blocked_attempt_accounting(self.report([ref]),ref,known_tokens)
 
     def test_late_journal_change_blocks_and_source_flags_are_not_authority(self):
         ref=self.fixture.attempt()
@@ -167,14 +191,15 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(r['counts']['pass'],0)
         with self.assertRaises(ev.Invalid):ev.compare(self.fixture.experiment,[],self.fixture.spec,native={'verified':True})
 
-    def test_symlink_active_lock_and_unknown_attempt_remain_rows(self):
+    def test_active_lock_and_unknown_attempt_remain_blocked_with_unknown_cost(self):
         ref=self.fixture.attempt(); lock=os.open(Path(ref['attempt_path'])/'coordinator.lock',os.O_RDWR)
         try:
             fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-            self.assertEqual(self.report([ref])['counts']['pass'],0)
+            self.assert_blocked_attempt_accounting(self.report([ref]),ref,None)
         finally:os.close(lock)
         missing=dict(ref,attempt_path=str(self.root/'absent'))
-        r=self.report([missing]);self.assertEqual(r['submitted'],1);self.assertEqual(r['counts']['blocked'],1)
+        r=self.report([missing]);self.assertEqual(r['submitted'],1)
+        self.assert_blocked_attempt_accounting(r,missing,None)
 
     def test_failed_terminal_retains_known_usage(self):
         ref=self.fixture.attempt()
@@ -298,7 +323,7 @@ class AdmissionTests(unittest.TestCase):
         shutil.copytree(p.SOURCE,copied,ignore=shutil.ignore_patterns('__pycache__'))
         request={'experiment':self.fixture.experiment,'current_spec':self.fixture.spec,
                  'context_path':str(self.fixture.context_path),'attempts':[ref]}
-        for name in ('trial_admission.py','trial_dispatch.py'):
+        for name in ('evaluation.py','trial_admission.py','trial_dispatch.py'):
             with self.subTest(helper=name):
                 target=copied/name;original=target.read_bytes()
                 try:
@@ -311,7 +336,7 @@ class AdmissionTests(unittest.TestCase):
 
     def test_late_helper_drift_blocks_and_preserves_critical_diagnostic(self):
         copied=self.root/'source-copy';shutil.copytree(p.SOURCE,copied,ignore=shutil.ignore_patterns('__pycache__'))
-        for name in ('trial_admission.py','trial_dispatch.py'):
+        for name in ('evaluation.py','trial_admission.py','trial_dispatch.py'):
             with self.subTest(helper=name),patch.object(p,'SOURCE',copied):
                 target=copied/name;original_bytes=target.read_bytes()
                 ref=self.fixture.attempt(content=b'wrong',attempt=name.replace('.','-'))

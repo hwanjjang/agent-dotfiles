@@ -154,6 +154,11 @@ checked before admission and after grading; changes between invocations require
 an explicitly linked re-freeze/regrade. The original synthetic identity stays the
 single evaluator-file hash.
 
+In the report, `qualification.grader_digest` also remains the hash of
+`evaluation.py` alone: it identifies the calibrated evaluator operators, not the
+native admission composite. Compare that field with the operator source hash;
+use native `identities.grader` for the three-helper frozen identity.
+
 The maintained scoped grading record must additionally bind
 `admission_grader_source_digests` to that exact three-file map. Its existing
 `grader_source_sha256` still names the evaluator operator source; historical
