@@ -162,7 +162,7 @@ with pypdf. Rebuild using the screenshot-manual commands above with
 
 ## Offline development evaluation
 
-[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The current actual 30-call CLI journey prepares and reviews four English/Korean development cases with the in-tree producer, then retains all 16 scheduled trials. Eight matched pairs comprise one improved, one regressed, one both-pass, one both-fail and four unresolved. Missing and duplicate evidence stays visible. This qualifies deterministic integration/accounting; native model execution and independent holdout qualification remain unavailable. Earlier eight-trial captures remain historical in Git history.
+[PDF](evaluation.pdf) · [editable source](evaluation.json) · [capture manifest](evaluation-capture.json). The captured pre-main 30-call CLI journey prepares and reviews four English/Korean development cases with the in-tree producer, then retains all 16 scheduled trials. Eight matched pairs comprise one improved, one regressed, one both-pass, one both-fail and four unresolved. Missing and duplicate evidence stays visible. This qualifies deterministic integration/accounting; native model execution and independent holdout qualification remain unavailable. Earlier eight-trial captures remain historical in Git history. This receipt is a historical pre-main capture, identified by its baseline and source/map hashes. [PR #40](https://github.com/hwanjjang/agent-dotfiles/pull/40) records the separate current-head CLI and map verification; the images and PDF have not been recaptured.
 
 Both evaluation pages were rendered with PDFium and visually checked for readable
 headings, complete intended capture regions, captions and pagination. PDF text and
@@ -173,7 +173,7 @@ scripts above using `evaluation.json`; refresh its capture manifest after change
 
 ## Development recommendation
 
-[promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive.
+[promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive. These are historical pre-main captures: their unmerged-producer wording describes the recorded baseline. The [current recommendation contract](../decisions/promotion-recommendations.md) and [in-tree producer contract](../decisions/evaluation-accounting.md#in-tree-reviewed-producer) own current availability; the receipt hashes and rendered assets are preserved.
 
 ## Explicit task feedback walkthrough
 
