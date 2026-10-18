@@ -24,7 +24,17 @@ def prepare(experiment, current_spec, trial_id, attempt_id):
     ev.require(ev.encoded(experiment) == ev.encoded(frozen), 'experiment_tampered')
     ev.require(ev.digest(current_spec) == frozen['spec_digest'], 'stale_experiment')
     spec = frozen['spec']
-    ev.require(spec['identities']['grader'] == ev.source_hash(), 'stale_grader')
+    grader_matches = spec['identities']['grader'] == ev.source_hash()
+    if not grader_matches:
+        # Native admission dependencies are a fixed source-computed alternative;
+        # dispatch still only prepares a payload, never qualifies its execution.
+        if __package__:
+            from . import trial_admission as admission
+        else:
+            import trial_admission as admission
+        grader_matches = (admission.supported_native_runtime(spec['runtime']) and
+                          spec['identities']['grader'] == admission.native_grader_identity())
+    ev.require(grader_matches, 'stale_grader')
     ev.require(ev.sha(trial_id), 'trial_id')
     ev.require(ev.token(attempt_id), 'attempt_id')
     selected = [trial for trial in frozen['trials'] if trial['trial_id'] == trial_id]
