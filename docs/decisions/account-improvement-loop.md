@@ -407,7 +407,9 @@ Use the current host and account; the same model may serve separate fresh sessio
    expected outcomes, grading rules and the scheduled comparison before running it.
    Include intended improvements, normal behavior and adjacent negative cases.
    Before scoring, publish only an opaque pack identifier and the pack/grader/
-   schedule digests in the existing #56 issue or PR freeze record. Preserve that
+   schedule digests plus frozen baseline/candidate commit or tree identities in the
+   existing #56 issue or PR freeze record. #28 must match scored arms to that record.
+   Preserve that
    dated record and compare against it; a mutable digest beside the pack alone is
    insufficient. Publish no cases, answers, private paths or raw evidence. This is
    a durable comparison anchor, not protection against a hostile account owner.
@@ -513,7 +515,8 @@ data; allow no grading-time tool execution originating from them. Unqualified or
 disagreeing graders produce an inconclusive result requiring adjudication.
 Model judges receive approved outputs and criteria only, with no filesystem or
 tool access to hidden answer files. Only sealed deterministic grading code may
-read those files in the evaluator-owned environment.
+read those files during the fixed deterministic grading step under the
+[same-host protocol](#same-host-held-out-evaluation).
 
 Development cases and graders may be reviewed in public source. Held-out evaluation
 follows the [same-host protocol](#same-host-held-out-evaluation); public or previously
