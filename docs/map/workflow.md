@@ -55,17 +55,20 @@ header for the cycle and each node for its status, handoff and source. Search
 `eval` or bookmark `workflow.html#skill-improvement-eval`.
 
 This is a separate improvement cycle, not six new mandatory stages in the PR
-state machine. Synthetic storage, opt-in Claude/Codex collection and the installer
-exist; case preparation and candidate editing can use existing manual methods.
-Codex adds four separately trusted observer definitions; the native guide owns
-platform proof and blockers. Comparative model trials and automatic promotion
-remain planned.
+state machine. Synthetic storage, explicit task binding/feedback, opt-in Claude/Codex
+collection, offline evaluation accounting, diagnostic recommendations and the installer
+exist. Reviewed case export remains planned; reproduction and candidate editing
+can use existing manual methods. Codex adds four separately trusted observer
+definitions; the native guide owns platform proof and blockers. Live comparative
+model trials and automatic promotion remain planned.
 The catalog's **available** status means the linked guide exists, not that every
 described runtime is implemented. Node subtitles and details state these limits.
 
 Use the [improvement design](../decisions/account-improvement-loop.md) as the
 behavior authority and the [observation guide](../../account/observation/README.md)
-for today's runnable synthetic example. An improvement candidate can enter the
+for today's runnable synthetic example and task-bind/feedback-add/task-show commands.
+The [task-feedback recipe](../verification/verify-repository/features/task-feedback.md)
+and [walkthrough](../manual/task-feedback.pdf) cover the explicit selection journey. An improvement candidate can enter the
 ordinary investigation/specification/build/review route when appropriate; eval
 adds a behavioral comparison and does not replace project tests or independent
 review. Collection consent does not authorize inference, publication or deployment.

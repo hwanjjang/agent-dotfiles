@@ -1,0 +1,20 @@
+{
+  "title": "Bind observations and record feedback",
+  "scenario": "Scenario: task-feedback / workflow-map. Screenshots captured 2026-10-18 on a candidate based on main 48b854b. Text corrected after PR33 review. Use Python 3.11+ and a disposable home. Captures remain historical; current guidance below supersedes earlier cleanup wording.",
+  "steps": [
+    {
+      "title": "Find the task commands",
+      "instruction": "Open docs/map/workflow.html. Under Self-improvement and eval, open Private observations and expand its details. Follow Sources to account/observation/README.md for the command contract.",
+      "screenshot": "task-feedback-map.png",
+      "caption": "Historical actual map dialog. Command navigation remains applicable. Its older expiry/purge wording is superseded: expiry disables access immediately; prune performs physical deletion.",
+      "expected": "Bind exact events or an inclusive receipt range. Stored rows must fit 128 KiB after encoding; larger resolved rows are refused. feedback-add accepts an omitted/null revision or a valid existing revision token."
+    },
+    {
+      "title": "Select, review and revoke",
+      "instruction": "Grant a disposable synthetic project and import events from two sessions. Bind only the intended events, repeat the request to check idempotency, then add feedback and inspect task-show. Reject unselected evidence. Revoke the grant when finished.",
+      "screenshot": "task-feedback-result.png",
+      "caption": "Historical browser summary of an actual synthetic CLI run, not a terminal capture. Separate post-review CLI checks verified corrupt/symlink cleanup and malformed revision refusal.",
+      "expected": "Retry is stable; unselected evidence is rejected. Revoke purges private tasks and feedback. Expiry requires prune for physical deletion. Corrupt unknown-lineage tasks are removed without following symlinks; valid unrelated tasks remain."
+    }
+  ]
+}

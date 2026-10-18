@@ -163,7 +163,7 @@
       "handoff": "Focused test plan or justified alternative checks.",
       "steps": [
         {
-          "label": "Use the collection’s single test-first method",
+          "label": "Use the collection\u2019s single test-first method",
           "skills": [
             "tdd"
           ]
@@ -197,7 +197,7 @@
       "title": "Self-verification",
       "phase": "prove",
       "summary": "Exercise the actual integrated candidate and affected scenarios.",
-      "gate": "Use the target project’s verifier",
+      "gate": "Use the target project\u2019s verifier",
       "handoff": "Candidate-bound checks, coverage and explicit gaps.",
       "steps": [
         {
@@ -242,7 +242,7 @@
       "phase": "deliver",
       "summary": "Fix confirmed findings and renew affected verification and review.",
       "gate": "Only when findings require changes",
-      "handoff": "Updated candidate → self-verification → PR review.",
+      "handoff": "Updated candidate \u2192 self-verification \u2192 PR review.",
       "steps": [
         {
           "label": "If the cause is uncertain, diagnose first",
@@ -369,7 +369,7 @@
     {
       "id": "improvement",
       "title": "Self-improvement and eval",
-      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, opt-in Claude/Codex collection, offline evaluation accounting, diagnostic recommendations and the installer exist; live model comparison and automatic promotion remain planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
+      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, opt-in Claude/Codex collection, offline evaluation accounting, diagnostic recommendations and the installer exist; live model comparison and automatic promotion remain planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
       "items": [
         "observation-store",
         "improvement-case",
@@ -395,7 +395,7 @@
     "screenshot-manual": "Users need instructions demonstrated with real product screenshots and a rendered, visually checked PDF.",
     "create-verification-skill": "A real project lacks repeatable user-facing verification; establish its verifier and feature recipes.",
     "maintain-verification-skill": "Existing verification recipes may have drifted and a scoped audit or repair has been requested.",
-    "repository-verifier": "You changed this repository’s catalog UI or map generation and need its actual browser and freshness checks.",
+    "repository-verifier": "You changed this repository\u2019s catalog UI or map generation and need its actual browser and freshness checks.",
     "repository-feature-map": "You need to identify the affected repository user journey and find its verification recipe.",
     "policy-architecture": "Code is hard for agents to find, understand or verify, or you are designing a new project boundary.",
     "policy-behavioral-tests": "You are designing tests and need to choose observable behavior instead of implementation details.",
@@ -414,8 +414,8 @@
     "account-source": "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts.",
     "planning-hooks": "Preparing or verifying lifecycle integration for planning-with-files.",
     "reviewer-runtime": "A review resumes after correction or a launcher cannot represent a setting.",
-    "observation-store": "Step 1: opt in one approved client/project, inspect callback/platform limits, or verify bounded delivery snapshots and measured collector capacity.",
-    "improvement-case": "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration. Planned: turn bounded observations and feedback into a synthetic reproducible case.",
+    "observation-store": "Step 1: opt in one approved client/project, inspect callback/platform limits, verify bounded delivery snapshots and measured collector capacity, then bind selected events to a task and record explicit feedback.",
+    "improvement-case": "Task binding and explicit feedback exist; reviewed case export and triage automation remain planned.",
     "improvement-candidate": "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change. Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
     "improvement-eval": "Offline accounting is available for supplied synthetic completions; a live runner and independent holdout qualification remain planned.",
     "improvement-review": "Diagnostic recommendations are available for development reports; the live promotion gate and operational eligibility remain unavailable.",
@@ -439,10 +439,10 @@
       "Synthesize the agreed scope"
     ],
     "design": [
-      "Design → compare → explain"
+      "Design \u2192 compare \u2192 explain"
     ],
     "plan": [
-      "Decompose → record → ticket"
+      "Decompose \u2192 record \u2192 ticket"
     ],
     "test-design": [
       "Plan observable checks"
@@ -452,13 +452,13 @@
       "2. Optional parallel slices"
     ],
     "self-verification": [
-      "Verify → document when needed"
+      "Verify \u2192 document when needed"
     ],
     "pr-review": [
-      "Prepare → independent review"
+      "Prepare \u2192 independent review"
     ],
     "correction": [
-      "Diagnose → fix → re-verify"
+      "Diagnose \u2192 fix \u2192 re-verify"
     ],
     "merge": [
       "Only with merge authority"
@@ -518,8 +518,8 @@
     "account-source": "install, update, remove, recover",
     "planning-hooks": "selected-plan lifecycle hooks",
     "reviewer-runtime": "reuse routes and diagnose failures",
-    "observation-store": "1. Observe / native opt-in",
-    "improvement-case": "2. Case / planned",
+    "observation-store": "1. Observe / native and task feedback",
+    "improvement-case": "2. Case / planned export",
     "improvement-candidate": "3. Candidate / manual",
     "improvement-eval": "4. Eval / offline",
     "improvement-review": "5. Review / diagnostic",

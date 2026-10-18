@@ -69,3 +69,10 @@ and an explicitly selected real model scenario, with optional local Paseo. It is
 not part of the browser helper: run its CLI recipe separately and preserve the
 reported scope and blocked states. The [account guide](../../../account/README.md)
 owns invocation, privacy, quota and native trust requirements.
+
+## Explicit task feedback
+
+[Task feedback](features/task-feedback.md) verifies selected event binding, explicit
+corrections, immutable revisions and revoke/purge through a disposable synthetic
+CLI journey. Run its separate recipe; the browser helper checks navigation only.
+The observation guide owns privacy and command fields. No model call is needed.

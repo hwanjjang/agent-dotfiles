@@ -2456,21 +2456,25 @@
       "group": "start",
       "status": "available",
       "source": "account/observation/README.md",
-      "summary": "Collect synthetic or scoped native metadata with bounded boundary delivery snapshots; inspect capacity, latency and attribution limits.",
+      "summary": "Collect scoped metadata with bounded delivery snapshots; bind selected observations to immutable tasks and record explicit private feedback.",
       "when": [
         "Collecting metadata for one explicitly approved project/client, or checking platform evidence and gaps."
       ],
-      "usage": "Follow account/observation/native.md: create an exact-project Claude or Codex grant, preview --observation-registration ID, apply, then verify actual callbacks. Codex requires native trust of four new definitions. Default installations collect nothing. For performance or source attribution, follow account/observation/capacity.md and the native-observation recipe.",
+      "usage": "Follow account/observation/native.md: create an exact-project Claude or Codex grant, preview --observation-registration ID, apply, then verify actual callbacks. Codex requires native trust of four new definitions. Default installations collect nothing. For performance or source attribution, follow account/observation/capacity.md and the native-observation recipe. Use task-bind to freeze selected events, feedback-add --task to record a symptom/correction, and task-show --task to inspect the private record.",
       "behavior": [
         "One selected client registration per account; grants, epochs and records remain owned by the private store.",
         "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
         "Read the native.md platform matrix before relying on another environment: each result is bound to its executed source and scope. A Linux Codex baseline and interruption at source 329dd76 ran after an approved temporary prerequisite; Claude authentication remained unavailable. Cancellation did not prove process termination. Earlier Linux failures and offline/container mock checks retain their historical limits. Native child and WSL coverage remain unverified.",
-        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Comparative evaluation and automatic promotion remain planned.",
+        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Live comparative evaluation and automatic promotion remain planned.",
         "SessionStart/Stop snapshots record bounded delivery hashes and gaps; tool events inherit no cached identity and effective exposure stays unknown.",
-        "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior."
+        "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior.",
+        "Bind exact events or inclusive receipt-sequence ranges across explicitly selected sessions; later events do not expand the revision.",
+        "Keep symptoms, corrections, suspected causes and contrary evidence separate. Feedback is not a verified diagnosis.",
+        "Revocation purges the composite task; expiry disables access immediately and prune removes retained private bytes. Corrupt unknown-lineage tasks are conservatively purged."
       ],
       "outputs": [
-        "Private metadata, boundary-scoped delivery snapshots, reservation gaps and measured capacity/latency limits."
+        "Private metadata, boundary-scoped delivery snapshots, reservation gaps and measured capacity/latency limits.",
+        "Immutable private task revisions and explicit feedback with evidence status; no inferred task success or improvement claim."
       ],
       "tags": [
         "account",
@@ -2479,7 +2483,9 @@
         "privacy",
         "evaluation",
         "claude",
-        "codex"
+        "codex",
+        "task",
+        "feedback"
       ]
     },
     {
@@ -2586,11 +2592,11 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Planned: turn bounded observations and feedback into a synthetic reproducible case.",
+      "summary": "Task selection and feedback are available. Planned: reviewed synthetic case export and triage automation.",
       "when": [
         "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration."
       ],
-      "usage": "Read the design section From a recorded failure to a candidate; task binding and triage automation are not implemented.",
+      "usage": "Use the observation guide task-bind, feedback-add and task-show commands before manual reproduction. Read From a recorded failure to a candidate for the proposed case boundary; no automatic diagnosis or case export is implemented in this slice.",
       "behavior": [
         "Separate symptoms, missing evidence and suspected causes; user feedback is not a verified diagnosis.",
         "Include positive, adjacent-negative and bilingual cases; keep evaluator-owned holdouts separate."

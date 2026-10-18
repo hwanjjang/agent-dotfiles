@@ -174,3 +174,35 @@ scripts above using `evaluation.json`; refresh its capture manifest after change
 ## Development recommendation
 
 [promotion.json](promotion.json), [PDF](promotion.pdf), and [capture provenance](promotion-capture.json) explain the actual synthetic CLI handoff and source-review map. The browser-rendered result is labelled explicitly; it does not show native model execution. A positive arithmetic fixture remains operationally inconclusive.
+
+## Explicit task feedback walkthrough
+
+The [two-page walkthrough](task-feedback.pdf) covers selecting observations, recording
+feedback, inspecting immutable task revisions and revoking private state. Its
+[editable source](task-feedback.json), [map image](task-feedback-map.png),
+[CLI result image](task-feedback-result.png) and [capture manifest](task-feedback-capture.json)
+are maintained together. The 2026-10-18 capture uses a candidate based on `48b854b`.
+The CLI image is a labeled browser-rendered summary of an actual disposable
+synthetic run, not a terminal screenshot. Both PDF pages were rendered and visually
+checked, including readable labels, complete images and page text.
+
+These screenshots and PDF retain their original capture identity. Integration onto
+Claude parent `5b99061` adds the inherited native process-project check before input
+reads. A fresh synthetic feedback CLI journey and 175 focused tests passed on that
+integrated candidate; the manifest distinguishes these checks from the historical
+capture. This does not extend the screenshots to new native delivery evidence.
+
+The PR33 correction adds conservative cleanup for corrupt task records, a 128 KiB
+encoded stored-row limit and strict optional revision validation. Expiry blocks
+access immediately; `prune` performs physical deletion. The dated screenshots
+precede those safeguards and the corrected map wording; use the current Store
+guide and repeatable recipe for these boundaries. Separate correction tests and
+actual CLI checks verify them. The revised PDF text and captions include this
+errata; both revised pages were rendered and individually viewed. Its screenshots
+remain historical and do not depict a new run.
+
+The [observation guide](../../account/observation/README.md) remains authoritative;
+the [task-feedback recipe](../verification/verify-repository/features/task-feedback.md)
+owns repeatable checks. Rebuild with the screenshot-manual scripts above, replacing
+the source name with task-feedback.json. This slice does not implement reviewed
+case export, native Codex collection or comparative evaluation.

@@ -1,0 +1,55 @@
+{
+  "captured": "2026-10-18",
+  "baseline": "48b854b",
+  "status": "historical_premerge_capture",
+  "scenario": "task-feedback",
+  "source_sha256": {
+    "account/observation/store.py": "5979fbf860d82a92a3d6836cb46f7be3552ce3cf878f4d4b57c5bf3c8418c3b5",
+    "scripts/improvement/observations.py": "2fb05a4ac409b01728336e9325243527a02cdf5f65fde018ff55f67f490833ed",
+    "docs/map/catalog.json": "eadbd6925ce82b473a41467daabae5af0523837c0a9085d870d7e88c7e8e7b9b",
+    "docs/map/workflow.json": "f6e0c186df950cccc52bd5c67d05ee06602a1cb41400bf3b1b7a9429e217aff4"
+  },
+  "images": {
+    "task-feedback-map.png": "20859c96135ac946b16626f98a66195d780874193de30310f24c18dc32afd5b5",
+    "task-feedback-result.png": "2843a0edf7ccce0b04a1799b6591af5af8350155164fa001f1ed8ad333579f73"
+  },
+  "notes": [
+    "Actual workflow map screenshot; CLI result image is explicitly a browser-rendered summary of a real disposable synthetic CLI journey, not a terminal capture.",
+    "Selected feedback and task state were removed after revoke; no native/model calls or real-account changes.",
+    "Both final PDF pages rendered and visually inspected; required text/page count checked."
+  ],
+  "integration_verification": {
+    "parent_commit": "5b9906110c9b130b39b5113fa4dc9c830a5a413a",
+    "verified": "2026-10-18",
+    "scope": "Fresh disposable synthetic CLI task selection, retry, feedback, unselected-evidence refusal and revoke on the integrated candidate. The retained screenshots/PDF depict the earlier captured candidate; they were not recaptured or relabeled as current native evidence.",
+    "source_sha256": {
+      "account/observation/store.py": "bd641475e0b34d04a062ed84b9627a6c40d4bc528c7dd507660f327f92f3f164",
+      "scripts/improvement/observations.py": "2fb05a4ac409b01728336e9325243527a02cdf5f65fde018ff55f67f490833ed",
+      "docs/map/catalog.json": "eadbd6925ce82b473a41467daabae5af0523837c0a9085d870d7e88c7e8e7b9b",
+      "docs/map/workflow.json": "f6e0c186df950cccc52bd5c67d05ee06602a1cb41400bf3b1b7a9429e217aff4"
+    },
+    "changed_capture_source": [
+      "account/observation/store.py"
+    ],
+    "change_scope": "Inherited native process-project consent check now runs before hook input reads and ledger scans. Task and feedback methods are unchanged.",
+    "result": "75 observation tests, 27 installer tests, 54 account tests and 19 map tests passed; separate actual task feedback CLI journey passed. No native/model run in this feedback verification."
+  },
+  "correction_verification": {
+    "base_commit": "16fa81fd920a7269b321c8840a90d4803c249efc",
+    "scope": "PR33 correction: conservative corrupt/unknown-lineage purge without following links, encoded stored-row bound, strict optional revision input, and precise expiry/provenance documentation. Original screenshots and PDF remain historical; prior map source equality is superseded by changed retention wording.",
+    "source_sha256": {
+      "account/observation/store.py": "3978d131100f07a03a8d0f817fd7963e6f0c6b1cbb3b16179c3cc79c6f816681",
+      "account/observation/files.py": "725904f19e892eaf984f8ecd4be17c9fbb601c3312a2a133f24f0b183f190b7d",
+      "scripts/improvement/observations.py": "2fb05a4ac409b01728336e9325243527a02cdf5f65fde018ff55f67f490833ed",
+      "docs/map/catalog.json": "7c0350fc4c3d4973c2e3431db848a39b06d62d5acd25f3131111c20dff0d393b",
+      "docs/map/workflow.json": "f6e0c186df950cccc52bd5c67d05ee06602a1cb41400bf3b1b7a9429e217aff4"
+    },
+    "verification": "81 observation, 27 installer, 54 account and 19 map tests passed; additional actual normal and correction CLI journeys passed. Focused Red reproduced corrupt purge and accepted134425-byte row beyond131072-byte read limit before fixes.",
+    "capture_status": "Original screenshots retained as historical. PDF text and captions revised with explicit scope/expiry errata and current bounds. Both revised pages rendered and personally viewed; current browser checks passed separately.",
+    "manual_sha256": {
+      "task-feedback.json": "8aa5550c18383a0cce6abbe3c8c507becf495d2afcaef1eca9683a0d0dcfb86a",
+      "task-feedback.pdf": "87a81b7bdfe9833e1e23c36bc66173433bfeb5fb410965306072ae03f67af83c"
+    },
+    "browser_verification": "Fresh catalog and workflow functional verifiers passed against corrected map sources; no new screenshot capture claimed."
+  }
+}
