@@ -48,6 +48,53 @@ class ResultsTests(unittest.TestCase):
         if reason is not None:
             self.assertEqual(result['reason'], reason)
 
+    @unittest.skipUnless(os.name == 'posix', 'POSIX descriptor limit required')
+    def test_all_64_deep_paths_are_captured_with_256_descriptor_limit(self):
+        code = r"""
+import hashlib, importlib.util, json
+from pathlib import Path
+import errno, resource, sys, tempfile
+spec=importlib.util.spec_from_file_location('results',sys.argv[1])
+module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+with tempfile.TemporaryDirectory() as temporary:
+ root=Path(temporary).resolve(); parent=root
+ parts=['d'+str(i) for i in range(15)]
+ for part in parts:parent=parent/part;parent.mkdir()
+ names=[]
+ for index in range(64):
+  name='/'.join(parts+['file'+str(index)])
+  (root/name).write_bytes(b'x');names.append(name)
+ soft,hard=resource.getrlimit(resource.RLIMIT_NOFILE)
+ resource.setrlimit(resource.RLIMIT_NOFILE,(256,hard))
+ actual_open=module.os.open; exhausted=[]
+ def traced_open(*args,**kwargs):
+  try:return actual_open(*args,**kwargs)
+  except OSError as error:
+   if error.errno==errno.EMFILE:exhausted.append(True)
+   raise
+ module.os.open=traced_open
+ module.os.supports_dir_fd=module.os.supports_dir_fd|{traced_open}
+ result=module.collect(root,names)
+ assert result['status']=='captured',json.dumps({'status':result['status'],'reason':result['reason'],'actual_emfile':bool(exhausted)})
+ assert not exhausted
+ assert len(result['files'])==64 and all(row['bytes']==1 and row['sha256']==hashlib.sha256(b'x').hexdigest() for row in result['files'])
+ print(json.dumps({'files':len(result['files']),'limit':resource.getrlimit(resource.RLIMIT_NOFILE)[0]}))
+"""
+        result=subprocess.run([sys.executable,'-I','-S','-c',code,str(SOURCE)],
+                              capture_output=True,text=True,timeout=20)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(json.loads(result.stdout),{'files':64,'limit':256})
+
+    def test_forbidden_names_are_casefolded_before_any_filesystem_read(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve()
+            (root/'auth.json').write_bytes(b'UNREAD_SYNTHETIC')
+            for name in ['AUTH.JSON','Auth.Json','.ENV','.EnV.private',
+                         'Credentials.JSON','nested/.CREDENTIALS.JSON',
+                         'TRANSPORT-CANARY.TXT']:
+                with self.subTest(name=name):
+                    self.assertBlocked(collector().collect(root,[name]),'invalid_declaration')
+
     def test_nested_missing_empty_and_exact_byte_bounds(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
@@ -121,6 +168,34 @@ class ResultsTests(unittest.TestCase):
             for name in ['original', 'hardlink', 'directory', 'pipe']:
                 with self.subTest(name=name):
                     self.assertBlocked(collector().collect(root, [name]), 'unsafe_file')
+
+    def test_exact_path_length_and_dangling_symlink_boundaries(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve(); name='a'*160
+            (root/name).write_bytes(b'x')
+            result=collector().collect(root,[name])
+            self.assertEqual(result['status'],'captured')
+            self.assertEqual(result['files'][0]['path'],name)
+            (root/'dangling').symlink_to(root/'absent')
+            self.assertBlocked(collector().collect(root,['dangling']),'unsafe_path')
+
+    def test_reopened_ancestors_keep_original_identity_and_mode_guards(self):
+        for operation in ['replace','mode']:
+            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary).resolve(); parent=root/'parent';parent.mkdir(mode=0o700)
+                (parent/'result').write_bytes(b'initial')
+                module=collector(); actual_read=os.read; changed=[]
+                def mutate_after_read(descriptor,size):
+                    data=actual_read(descriptor,size)
+                    if data and not changed:
+                        changed.append(True)
+                        if operation=='replace':
+                            parent.rename(root/'previous');parent.mkdir(mode=0o700)
+                            (parent/'result').write_bytes(b'initial')
+                        else:parent.chmod(0o755)
+                    return data
+                with patch.object(module.os,'read',side_effect=mutate_after_read):
+                    self.assertBlocked(module.collect(root,['parent/result']),'changed')
 
     def test_non_directory_ancestor_is_not_observed_missing(self):
         with tempfile.TemporaryDirectory() as temporary:
