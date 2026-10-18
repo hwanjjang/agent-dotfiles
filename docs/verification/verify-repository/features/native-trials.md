@@ -9,8 +9,8 @@ manifest fields, commands and result meanings, and the
 [design contract](../../../decisions/native-trial-execution.md) for ownership and
 acceptance rules. The [historical selected evidence](../../../verification/native-trials.json) and
 [current scoped grading evidence](../../../verification/scoped-grading-integrity.json)
-own their separate source/profile qualification status. Reconcile the current scoped
-record's source digests with the candidate; historical results and a working CLI do
+retain their separate source/profile qualification status. The [collection record](../../../verification/native-outcome-collection.json)
+owns current 12-source collection checks. Reconcile each consumed record's exact source digests with the candidate; historical results and a working CLI do
 not qualify new bytes.
 Missing evidence is pending, not pass. Do not reproduce schema or last-run status
 in this recipe.
@@ -126,3 +126,24 @@ identities and outer cleanup from the linked current scoped record. Host control
 and scorer retain their access; no new account, external operator or environment
 is needed. The grader's late source/spec drift tests must block the result while
 retaining critical observations; synthetic tests are not actual model outcomes.
+
+## Optional artifact collection
+
+Scenario ID: `native-trials.collection`. Follow the operator guide's trial-only
+`collection` declaration and current source inventory. Check a valid private plan
+without authentication, then preserve a separate malformed/stale refusal. The
+credential-free qualification uses the fixed native task and actual collector;
+unit fake-Docker wiring alone cannot establish this path.
+
+Require present and missing observations, unsafe-symlink blocking, and a separate
+interrupted native task whose partial file never becomes task success. Inspect
+manifest/declaration/source/container bindings, exact path order and byte limits,
+false quiescent flag, primary failure and full owned cleanup. Verify shutdown and
+known-home purge precede capture, and capture precedes executor removal within the
+original deadline. Recovery must never recapture. Reuse selected proof only for
+matching source/runtime/profile facts; no authenticated/natural-routing/comparison
+claim follows from fixed credential-free execution.
+
+The selected private native bridge supplies the observation projection and its own
+receipt. It exercises production setup/cleanup/capture; production `observe`/`finish`
+collection gating is unit-tested, not covered end to end by that native fixture.

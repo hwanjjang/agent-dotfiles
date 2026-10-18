@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-18",
+  "capture_kind": "Browser-rendered sanitized actual CLI and native-result summaries; not terminal or model-performance screenshots",
+  "evidence": "../verification/native-outcome-collection.json",
+  "evidence_sha256": "d71363cd2a23a66a3d0d01ebc73c9cac431e3fb818bad867a8e17bcb164414e2",
+  "source_checkpoint": "1d831bf6e62e5656ca091cb5d8af1588e7480b3c",
+  "source_checkpoint_note": "Source bytes were exercised before this checkpoint commit; all 12 runtime digests were independently matched afterwards. This is not a claim that the smoke ran at that Git HEAD.",
+  "runtime_source_digests": {
+    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "d592eaacc73ab515ba4918543994e363063ccb3b5011b1ab811864896f3d5287",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "9c57754e45fe72229811734bb2bef07ac7c6289e42ab70a1064315fbed0a2ccd",
+    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+  },
+  "actual_cli_checks": {
+    "actual_executable": "native_trial.py check",
+    "collector_source_digest": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "checks": [
+      {
+        "case": "valid",
+        "exit_code": 0,
+        "result": {
+          "authentication_opened": false,
+          "manifest_digest": "b11811db4833666493f31976f4b08b7b02cb84dcd0430c98165e021f7c16b58f",
+          "processes_launched": false,
+          "status": "checked"
+        },
+        "attempt_created": false
+      },
+      {
+        "case": "qualification-refused",
+        "exit_code": 2,
+        "result": {
+          "reason": "collection_mode",
+          "status": "refused"
+        },
+        "attempt_created": false
+      },
+      {
+        "case": "stale-collector-refused",
+        "exit_code": 2,
+        "result": {
+          "reason": "source_changed",
+          "status": "refused"
+        },
+        "attempt_created": false
+      }
+    ],
+    "authentication_opened": false,
+    "processes_launched": false
+  },
+  "actual_cli_checks_receipt_sha256": "43102d96d906b0b95801896924349be599eb354ee76e5d8adad239390885bc47",
+  "actual_native_cases": [
+    {
+      "case": "present-missing",
+      "native_fixture_status": "mock_complete",
+      "collection_status": "captured",
+      "collection_reason": null,
+      "cleanup_and_fixture_root_absent": true,
+      "independent_process_groups_containers_volumes_control_absent": true,
+      "vm_restored_stopped": true
+    },
+    {
+      "case": "unsafe",
+      "native_fixture_status": "mock_complete",
+      "collection_status": "blocked",
+      "collection_reason": "unsafe_path",
+      "cleanup_and_fixture_root_absent": true,
+      "independent_process_groups_containers_volumes_control_absent": true,
+      "vm_restored_stopped": true
+    },
+    {
+      "case": "interrupted",
+      "native_fixture_status": "blocked",
+      "collection_status": "captured",
+      "collection_reason": null,
+      "cleanup_and_fixture_root_absent": true,
+      "independent_process_groups_containers_volumes_control_absent": true,
+      "vm_restored_stopped": true
+    }
+  ],
+  "browser": "Installed Google Chrome, Archify native Chrome DevTools pipe; no Playwright or new dependencies",
+  "viewport": {
+    "width": 1100,
+    "height": 660,
+    "deviceScaleFactor": 1
+  },
+  "browser_capture_count": 2,
+  "browser_capture_overflow_check": "passed for both final pages",
+  "pages": 2,
+  "text_check_passed": true,
+  "every_page_rendered_and_visually_reviewed": true,
+  "visual_result": "Both final browser captures and both PDF page renders inspected. All labels, instructions, captures, captions and footers readable; no clipping, overlaps, missing glyphs or private paths.",
+  "correction_history": [
+    "Initial check-summary capture overflowed at the bottom note; retained privately. Reduced spacing, captured both final pages under a new local version, then rendered and inspected the complete PDF.",
+    "ReviewR1 clarified that private bridge projects observation/coordinator receipt; production observe/finish collection gates have unit coverage only. Two summaries recaptured and two PDF pages rerendered/textchecked/visuallyinspected. Actual native cases were not rerun or relabeled."
+  ],
+  "artifacts_sha256": {
+    "native-outcome-collection.json": "f11f865b94c47906e9f58593cf0b90a95a7f1d6cd0822b0eee5d099a02a159db",
+    "native-outcome-collection.pdf": "86250f7dfcfcc18956cf279cd4ae4a16516226c6825c5c6b688ab47740b0a4b5",
+    "native-outcome-collection-check.html": "d7c4209ae48c8a12703927e23f86405abaee827b74f91d2f1e84c57041594512",
+    "native-outcome-collection-result.html": "028de5d15db9928a481cc0642e96809a7525924d9626cde9895af6740e27f14b",
+    "native-outcome-collection-check.png": "a0606634536bd25b51c8c1cbbf581f6e49b45ba6069bca350775f4bd24a8eaf3",
+    "native-outcome-collection-result.png": "abf7a95445ed3bdb6640c27e802860952d0b696cbb27fa3e87f965a0aeb43eb8"
+  },
+  "limits": [
+    "Images summarize recorded actual results. This documentation operation does not rerun native tasks or authenticate.",
+    "All three native cases use fixed synthetic tasks with zero model calls and no authentication copied; no model performance or answer correctness is established.",
+    "Public native statuses remain mock_complete or blocked. Independent ownership/cleanup and VM restoration are private coordinator attestations represented in sanitized evidence.",
+    "Captured interrupted-task artifacts do not change its blocked task state. Missing is an observation; unsafe collection has no partial rows.",
+    "Per-file snapshots are not atomic or quiescent final state; trusted host/controller/scorer access remains. Recovery never recaptures.",
+    "Exact source-byte/profile evidence only; authenticated qualification, evaluator admission, natural routing, comparison and promotion remain separate.",
+    "Private bridge supplies observation/coordinator receipt; production observe/finish collection gates have unit coverage only."
+  ]
+}

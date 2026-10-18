@@ -1,0 +1,20 @@
+{
+  "title": "Optional native outcome collection",
+  "scenario": "Maintainer walkthrough for source bytes matching checkpoint 1d831bf6e62e. Images browser-render actual sanitized CLI and credential-free native results, not terminal or model-performance captures. Use docs/native-trials.md for prerequisites and commands.",
+  "steps": [
+    {
+      "title": "Freeze and check the trial-only declaration",
+      "instruction": "Add the optional collection object to a trial plan; pin all 12 sources, including the collector. Declare at most 8 relative paths (4,096 encoded bytes). Run native_trial.py check with the exact private plan before an authorized attempt. Keep qualification-mode and source-drift refusals.",
+      "screenshot": "native-outcome-collection-check.png",
+      "caption": "Actual CLI: valid input checked; qualification collection refused; changed collector refused. All three checks opened no authentication, launched no processes and created no attempt.",
+      "expected": "Only presence, byte count and SHA-256 are collected. No contents, final answers or supplied success flag are accepted. A passing check does not qualify execution."
+    },
+    {
+      "title": "Separate capture, task state and cleanup",
+      "instruction": "Read the task receipt and collection separately. A missing file is an observation; unsafe collection blocks with no partial rows. An interrupted task stays blocked even when a file was captured. Require owned cleanup; recover never collects again.",
+      "screenshot": "native-outcome-collection-result.png",
+      "caption": "Actual three-case credential-free capture: present/missing, unsafe and interrupted. The private bridge supplies observation and coordinator receipt; production observe/finish collection gates have unit coverage only. Owned cleanup and VM restoration were independently verified.",
+      "expected": "Snapshots are per-file and not quiescent. Trusted host access remains. These runs use no authentication or model inference and establish no answer grading, admission, natural-routing, comparison or promotion qualification."
+    }
+  ]
+}

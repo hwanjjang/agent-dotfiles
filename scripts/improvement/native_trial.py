@@ -489,6 +489,46 @@ print(json.dumps({'uid':os.getuid(),'cap_eff':status['CapEff'].strip(),
 '''
 
 
+def validate_snapshot(result, declaration):
+    """Accept only the fixed collector process projection, never task claims."""
+    plan.require(isinstance(result, dict) and result.get('stop_reason') is None
+                 and result.get('stderr') == '' and type(result.get('exit')) is int
+                 and result.get('exit') in (0, 1)
+                 and isinstance(result.get('stdout'), str), 'collection_transport')
+    try:
+        plan.require(len(result['stdout'].encode('utf-8')) <= 12000, 'collection_snapshot')
+        value = json.loads(result['stdout'], object_pairs_hook=protocol.unique,
+            parse_constant=lambda _: (_ for _ in ()).throw(plan.Refusal('collection_snapshot')))
+    except (ValueError, UnicodeError, protocol.Refusal, RecursionError):
+        raise plan.Refusal('collection_snapshot') from None
+    plan.fields(value, 'schema_version kind status files reason quiescent_state_verified',
+                'collection_snapshot')
+    plan.require(type(value['schema_version']) is int and value['schema_version'] == 1
+                 and value['kind'] == 'bounded_artifact_snapshot'
+                 and value['quiescent_state_verified'] is False
+                 and type(value['files']) is list, 'collection_snapshot')
+    if value['status'] == 'blocked':
+        plan.require(result['exit'] == 1 and value['files'] == [] and value['reason'] in (
+            'invalid_declaration', 'unsupported_platform', 'unsafe_root', 'unsafe_path',
+            'unsafe_file', 'changed', 'size_limit', 'read_error'), 'collection_snapshot')
+        return value
+    plan.require(value['status'] == 'captured' and result['exit'] == 0 and value['reason'] is None
+                 and len(value['files']) == len(declaration['paths']), 'collection_snapshot')
+    total = 0
+    for row, name in zip(value['files'], declaration['paths']):
+        plan.fields(row, 'path status bytes sha256', 'collection_snapshot')
+        plan.require(row['path'] == name, 'collection_snapshot')
+        if row['status'] == 'missing':
+            plan.require(row['bytes'] is None and row['sha256'] is None, 'collection_snapshot')
+        else:
+            plan.require(row['status'] == 'present' and type(row['bytes']) is int
+                         and 0 <= row['bytes'] <= declaration['max_file_bytes']
+                         and plan.is_digest(row['sha256']), 'collection_snapshot')
+            total += row['bytes']
+    plan.require(total <= declaration['max_total_bytes'], 'collection_snapshot')
+    return value
+
+
 class Controller:
     """One selected attempt; all external actions are explicit method calls."""
     def __init__(self, selected):
@@ -503,6 +543,17 @@ class Controller:
         self.selected = selected
         self.data = selected.data
         self.runtime = self.data['runtime']
+        self.collection = self.data.get('collection')
+        self.collection_pending = self.collection is not None
+        self.collection_result = None
+        self.collection_source = None
+        if self.collection is not None:
+            plan.validate_collection(self.collection, self.data['mode'])
+            raw, observed = plan.read_file(plan.SOURCE / 'native_trial_results.py',
+                                           65536, 'collection_source')
+            plan.require(observed == self.data['sources'].get('native_trial_results.py'),
+                         'collection_source')
+            self.collection_source = raw.decode('ascii')
         self.names = resource_names(self.data['identity'])
         self.attempt = claim_attempt(selected)
         self.lock_fd = os.open(self.attempt / 'coordinator.lock', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -568,11 +619,11 @@ class Controller:
             raise plan.Refusal('control_command_failed')
         return result['stdout']
 
-    def inspect(self, name, *, cleanup=False):
+    def inspect(self, name, *, cleanup=False, timeout=15):
         shape = '{"Id":{{json .Id}},"Name":{{json .Name}},"Image":{{json .Image}},' \
                 '"Config":{"User":{{json .Config.User}},"Labels":{{json .Config.Labels}}},' \
                 '"HostConfig":{{json .HostConfig}},"Mounts":{{json .Mounts}}}'
-        result = self.command(['inspect', '--format', shape, name], cleanup=cleanup)
+        result = self.command(['inspect', '--format', shape, name], cleanup=cleanup, timeout=timeout)
         if result['exit'] == 1 and not result['stop_reason'] \
                 and result['stdout'].strip() in ('', '[]') and 'no such object' in result['stderr'].lower():
             return None
@@ -891,6 +942,60 @@ class Controller:
         self.journal.save('observation', self.observation)
         return self.observation
 
+    def capture_collection(self, cleanup):
+        """One bounded per-file snapshot; no new native turn or cleanup budget."""
+        self.collection_pending = False
+        value = {'manifest_digest': self.selected.digest,
+                 'collection_digest': plan.digest(self.collection),
+                 'collector_source_digest': self.data['sources']['native_trial_results.py'],
+                 'container_id': None, 'status': 'blocked',
+                 'reason': 'collection_unavailable', 'snapshot': None}
+        self.collection_result = value
+        phase = 'collection_preconditions'
+        try:
+            self.journal.save('collection_intent', {'collection_digest': value['collection_digest']},
+                              cleanup=True)
+            home_clear = self.home is None and not self.auth_copy_attempted or (
+                isinstance(cleanup.get('native_home'), dict)
+                and cleanup['native_home'].get('home_absent') is True)
+            turns = (self.observation or {}).get('initial_turns')
+            plan.require(cleanup['processes_stopped'] and home_clear and self.launch_complete
+                         and type(turns) is int and turns == 1
+                         and 'executor' in self.ids, phase)
+            phase = 'collection_budget'
+            now = time.monotonic()
+            plan.require(self.cleanup_deadline - now >= 25, phase)
+            deadline = min(now + 5, self.cleanup_deadline - 20)
+            phase = 'collection_boundary'
+            info = self.inspect(self.names['executor'], cleanup=True,
+                                timeout=max(.001, deadline-time.monotonic()))
+            plan.require(owned_container(info, self.names['executor'], self.selected.digest,
+                                         self.ids['executor'])
+                         and container_boundary(info, names=self.names,
+                            image=self.runtime['image'], binding=self.selected.digest), phase)
+            value['container_id'] = info['Id']
+            phase = 'collection_transport'
+            plan.require(time.monotonic() < deadline and isinstance(self.collection_source, str), phase)
+            payload = {key: self.collection[key]
+                       for key in ('paths', 'max_file_bytes', 'max_total_bytes')}
+            result = self.command(['exec', '-i', '--env', 'PYTHONPATH=', '--env', 'PYTHONHOME=',
+                info['Id'], '/usr/local/bin/python3', '-I', '-S', '-c', self.collection_source,
+                '--root', '/work/project'], cleanup=True, payload=plan.encoded(payload),
+                timeout=max(.001, deadline-time.monotonic()))
+            plan.require(time.monotonic() <= deadline, phase)
+            phase = 'collection_snapshot'
+            captured = validate_snapshot(result, self.collection)
+            value.update(status=captured['status'], reason=captured['reason'], snapshot=captured)
+        except BaseException:
+            # A capture interruption must not abandon mandatory owned cleanup.
+            value['reason'] = phase
+        try:
+            self.journal.save('collection_result', value, cleanup=True)
+        except BaseException:
+            self.capture_failed = True
+            value.update(status='blocked', reason='collection_capture')
+        return value
+
     def cleanup(self):
         """Reconcile owned processes before auth; resource failures stay separate."""
         self.cleanup_deadline = time.monotonic() + self.data['limits']['cleanup_seconds']
@@ -962,6 +1067,8 @@ class Controller:
                     codex_executable=self.runtime['codex'], deadline=self.cleanup_deadline)
             except Exception:
                 result['errors'].append('native_home_cleanup')
+        if getattr(self, 'collection_pending', False):
+            self.capture_collection(result)
         for key in ('executor', 'stage'):
             if key not in self.begun:
                 continue
@@ -1018,6 +1125,9 @@ class Controller:
         qualification = self.qualification.summary() if self.qualification is not None else None
         good = self.primary is None and cleanup.get('complete') is True and not self.capture_failed \
             and observed.get('status') == 'completed_ungraded'
+        collection = getattr(self, 'collection_result', None)
+        if self.data.get('collection') is not None:
+            good = good and isinstance(collection, dict) and collection.get('status') == 'captured'
         if self.data['mode'] == 'qualification':
             good = good and protected is True and qualification is not None \
                 and qualification.get('status') == 'observed'
@@ -1027,6 +1137,8 @@ class Controller:
                        else 'completed_ungraded') if good else 'blocked',
             'reason': self.primary or observed.get('reason') or (None if good else
                 'cleanup_incomplete' if not cleanup.get('complete') else
+                'collection_incomplete' if self.data.get('collection') is not None
+                    and (not isinstance(collection, dict) or collection.get('status') != 'captured') else
                 'qualification_incomplete' if self.data['mode'] == 'qualification' else 'observation_incomplete'),
             'manifest_digest': self.selected.digest, 'identity': self.data['identity'],
             'profile': self.data['profile'], 'source_digests': self.data['sources'],
@@ -1047,6 +1159,11 @@ class Controller:
             'all_future_routes_qualified': False, 'natural_routing_qualified': False,
             'external_vm_stop_performed': False, 'escaped_descendants_verified_absent': False,
         }
+        if self.data.get('collection') is not None:
+            receipt['collection'] = collection
+            receipt['selected_task_file_hashes_retained'] = bool(collection and
+                collection.get('snapshot') and any(row['status'] == 'present'
+                    for row in collection['snapshot']['files']))
         self.journal.save('receipt', receipt, final=True)
         return receipt
 
@@ -1179,6 +1296,8 @@ def recover(attempt):
         controller.names = resource_names(data['identity'])
         controller.docker = [data['runtime']['docker'], '--host', data['runtime']['docker_host']]
         controller.live, controller.watcher = None, None
+        controller.collection_pending = False  # Recovery never recaptures task data.
+        controller.collection_result = controller.collection_source = None
         controller.launch_called = bool(launches)
         controller.launch_complete = bool(completions)
         controller.recovery_prior_shutdown = bool(launches)

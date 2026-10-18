@@ -2,9 +2,11 @@
 
 The source implements `check`, `run` and guarded `recover` for one pinned native
 trial. Historical V9/V10 credential-free and authenticated results apply only to
-their recorded sources. The current [scoped grading checks](verification/scoped-grading-integrity.json)
-have renewed credential-free native evidence; changed sources have not yet renewed
-authenticated qualification. Other hosts, natural routing and comparative evaluation
+their recorded sources. The [12-source collection evidence](verification/native-outcome-collection.json)
+records current credential-free native collection and the fixed scoped grading
+probes. The earlier [grading record](verification/scoped-grading-integrity.json)
+retains its own 11-source provenance; changed sources have not renewed authenticated
+qualification. Other hosts, natural routing and comparative evaluation
 remain unqualified.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
@@ -70,8 +72,10 @@ establish current authenticated qualification or these additional predicates.
 
 The [implementation handoff](decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
 tracks bounded task-result collection and trusted evaluator admission separately.
-The current receipt does not contain general task answers/artifacts and must not
-be treated as a graded completion or relabeled as synthetic comparison evidence.
+With an explicit optional collection declaration, receipts now retain selected
+artifact metadata and byte hashes. They contain no artifact bodies or general final
+answer text. Collection is not a graded completion and cannot be relabeled as
+synthetic comparison evidence; trusted actual-evidence admission remains pending.
 The development pilot's identity requirement covers observed native-client model
 selection and reroute checks; it does not change this runner's explicit unknown
 backend identity or qualify natural routing.
@@ -90,7 +94,7 @@ and an already available image digest. Review the outer VM and host-share state
 separately. An executor container without bind mounts is not proof that its VM
 has no host shares.
 
-A version-1 plan accepts exactly these fields:
+A version-1 plan requires these fields; only `collection` is optional:
 
 | Field | Required content |
 | --- | --- |
@@ -102,6 +106,7 @@ A version-1 plan accepts exactly these fields:
 | `limits` | Every limit named below, explicitly supplied. |
 | `sources` | Exact source filename-to-SHA256 mapping required by `SOURCE_NAMES` in the validator. Missing, extra or changed sources refuse. |
 | `state_root` | Existing private, current-owner 0700 directory for new trial/attempt state. |
+| `collection` (optional) | Trial-only fixed artifact declaration described below. Qualification mode rejects it. |
 
 Inputs are limited to 64 files, 512 KiB per file and 4 MiB total. Unsafe paths,
 symlink traversal, duplicates, changed bytes and an existing attempt are refused.
@@ -116,6 +121,65 @@ The required limits may be reduced but not exceed `setup_seconds=180`,
 65536). Setup, observation and cleanup have distinct bounds. Token guards act on
 observed usage after use and can overshoot; they are not hard provider request,
 output-token or spending limits. One initial turn does not mean one wire request.
+
+## Declare bounded output collection
+
+For `mode: "trial"`, add an explicit declaration before freezing the plan:
+
+```json
+"collection": {
+  "schema_version": 1,
+  "paths": ["result.txt", "missing.txt"],
+  "max_file_bytes": 65536,
+  "max_total_bytes": 262144
+}
+```
+
+The native path accepts 1-8 unique relative paths, at most 160 characters and 16 parts
+each. Credential names, `.env` names, traversal and unsafe file types/links refuse
+or block capture. Bounds can be reduced. Include `native_trial_results.py` in the
+exact `sources` inventory; old 11-source manifests do not validate this 12-source
+runner. The standalone collector supports a wider 64-path domain, while native
+receipt size/cleanup policy deliberately limits collection to 8.
+
+After owned host shutdown and known native-home purge, the controller re-inspects
+the owned executor and runs the frozen collector with isolated Python. It captures
+only declared paths under `/work/project`, before removing the executor. Capture
+requires at least 25 seconds left in the original cleanup budget, gets at most 5,
+and reserves 20 for mandatory cleanup. Short/expired budgets, uncertain shutdown,
+unpurged home or changed ownership block collection; they do not reset the clock
+or skip cleanup. No new native turn or case-provided code is run by the collector.
+
+`collection` in the receipt binds the manifest, declaration, collector source and
+actual owned container to a closed snapshot. Each file is either `present` with
+`bytes` and `sha256`, or observed `missing` with null size/hash. Read/race/unsafe/
+oversize/transport failures block the entire capture; no partial rows are salvaged.
+`selected_task_file_hashes_retained` explicitly distinguishes these declared file
+hashes from the supervisor's unretained raw native contents.
+
+Every snapshot keeps `quiescent_state_verified:false`. A captured missing file is
+not evidence that capture failed, and a captured present file is not task success.
+The interrupted native check actually retained the file written before the stop;
+its native task remained blocked. Evaluator admission must require the matching
+completed turn, acceptable stop/usage state and owned cleanup as well as a valid
+snapshot. `completed_ungraded` still means ungraded. Recovery only reconciles
+owned residue and never recaptures outputs.
+
+The [selected collection record](verification/native-outcome-collection.json)
+retains exact current 12-source, runtime and three credential-free cases:
+present/missing, unsafe symlink and interrupted native task. The fixed task wrote
+the artifact through a real native tool call, not coordinator materialization.
+An actual turn/start acknowledgment was counted and correlated to its terminal;
+no author-supplied success flag replaced it. The private bridge supplies the
+observation projection and its own coordinator receipt; it calls production
+setup/cleanup/capture, while production `observe`/`finish` collection gates have
+unit-test coverage only. The existing native fixture's
+`mock_complete`/`blocked` result and the outer private attestation stay distinct.
+There were no model calls or authentication reads/copies. Current-source
+authenticated renewal, natural routing and comparative admission remain pending.
+
+See the [collection flow](architecture/native-outcome-workflow.html) and
+[screenshot walkthrough](manual/native-outcome-collection.pdf) for this sequence.
 
 ## Check without launching
 
@@ -164,8 +228,8 @@ Read the private receipt and cleanup facts, not just the process exit code:
 
 The controller returns exit 0 for accepted operation statuses, 1 for a blocked
 result and 2 for a caught refusal. Receipts retain fixed typed identities, numeric
-usage and cleanup facts, not raw native prompts, tool contents, answers or their
-hashes. The recorded retention denominator excludes frozen inputs and temporary
+usage and cleanup facts. Optional collection adds only explicitly declared file
+metadata/hashes; raw native prompts/tool contents and general answers are not retained. The recorded retention denominator excludes frozen inputs and temporary
 native state. `live_eligible` remains false; provider request/retry counts and
 billing usage remain unknown, and backend model identity is not verified.
 

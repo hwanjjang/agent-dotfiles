@@ -177,8 +177,11 @@ these commands do not enable comparative evaluation or account activation. A
 [screenshot manual](docs/manual/native-trials.pdf) explains the results.
 
 The [scoped grading-integrity evidence](docs/verification/scoped-grading-integrity.json)
-adds current credential-free native/child access checks and grading-drift tests.
-Changed sources still require affected authenticated renewal; task-result admission,
+records scoped credential-free native/child access checks and grading-drift tests.
+The [collection record](docs/verification/native-outcome-collection.json) adds
+current 12-source bounded artifact collection with present/missing, unsafe and
+interrupted cases. Changed sources still require affected authenticated renewal;
+task-result admission,
 natural routing and comparisons remain pending. The trusted host controller keeps
 normal account access; no external evaluator environment is required.
 

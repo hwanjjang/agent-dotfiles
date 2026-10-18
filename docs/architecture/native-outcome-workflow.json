@@ -1,0 +1,438 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Optional native outcome collection",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/architecture/native-outcome-workflow.html",
+    "repository": {
+      "url": "https://github.com/hwanjjang/agent-dotfiles",
+      "revision": "1d831bf6e62e5656ca091cb5d8af1588e7480b3c",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "lanes": [
+    {
+      "id": "intake",
+      "label": "Trusted host / frozen input"
+    },
+    {
+      "id": "task",
+      "label": "Owned isolated executor"
+    },
+    {
+      "id": "completion",
+      "label": "Trusted host / shutdown and evidence"
+    },
+    {
+      "id": "recovery",
+      "label": "Trusted host / recovery only",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "plan",
+      "lane": "intake",
+      "col": 0,
+      "type": "database",
+      "label": "Frozen trial",
+      "sublabel": "Arm / case / attempt",
+      "tag": "Optional file list",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial_plan.py",
+          "line": 235,
+          "end_line": 275,
+          "label": "Validate selected manifest"
+        }
+      ]
+    },
+    {
+      "id": "validate",
+      "lane": "intake",
+      "col": 1,
+      "type": "security",
+      "label": "Validate inputs",
+      "sublabel": "Before auth or launch",
+      "tag": "Sources + bounds fixed",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial_plan.py",
+          "line": 219,
+          "end_line": 254,
+          "label": "Strict collection contract"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1176,
+          "end_line": 1186,
+          "label": "Validate before Controller"
+        }
+      ]
+    },
+    {
+      "id": "native",
+      "lane": "intake",
+      "col": 2,
+      "type": "backend",
+      "label": "Native client",
+      "sublabel": "Host retains access",
+      "tag": "Selected remote tools",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 898,
+          "end_line": 943,
+          "label": "Native launch and remote transport"
+        }
+      ]
+    },
+    {
+      "id": "refuse",
+      "lane": "completion",
+      "col": 1,
+      "type": "security",
+      "label": "Preflight refused",
+      "sublabel": "No auth or launch",
+      "tag": "Unknown or changed input",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial_plan.py",
+          "line": 241,
+          "end_line": 275,
+          "label": "Input and source refusal"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1176,
+          "end_line": 1186,
+          "label": "Check before authentication"
+        }
+      ]
+    },
+    {
+      "id": "task",
+      "lane": "task",
+      "col": 2,
+      "type": "backend",
+      "label": "Assigned task",
+      "sublabel": "Selected case + arm",
+      "tag": "No host data mounted",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 634,
+          "end_line": 721,
+          "label": "Materialize assigned data"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 724,
+          "end_line": 746,
+          "label": "Inspect isolated executor"
+        }
+      ]
+    },
+    {
+      "id": "shutdown",
+      "lane": "completion",
+      "col": 2,
+      "type": "security",
+      "label": "Stop + purge",
+      "sublabel": "Owned host shutdown",
+      "tag": "Purge only when safe",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 999,
+          "end_line": 1048,
+          "label": "Stop and verify owned processes"
+        },
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1063,
+          "end_line": 1069,
+          "label": "Purge known native home"
+        }
+      ]
+    },
+    {
+      "id": "gate",
+      "lane": "completion",
+      "col": 3,
+      "type": "security",
+      "label": "Capture eligible?",
+      "sublabel": "Declared + safe + time",
+      "tag": "Reserve cleanup budget",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 945,
+          "end_line": 975,
+          "label": "Capture prerequisites and budget"
+        }
+      ]
+    },
+    {
+      "id": "collector",
+      "lane": "task",
+      "col": 3,
+      "type": "backend",
+      "label": "Bounded collector",
+      "sublabel": "No quiescent proof",
+      "tag": "Presence / bytes / hash",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 970,
+          "end_line": 997,
+          "label": "Owned isolated collector call"
+        },
+        {
+          "path": "scripts/improvement/native_trial_results.py",
+          "line": 136,
+          "end_line": 209,
+          "label": "Bounded descriptor collection"
+        }
+      ]
+    },
+    {
+      "id": "cleanup",
+      "lane": "completion",
+      "col": 4,
+      "type": "security",
+      "label": "Owned cleanup",
+      "sublabel": "Executor / volume / control",
+      "tag": "Preserve every failure",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1070,
+          "end_line": 1121,
+          "label": "Mandatory resource cleanup"
+        }
+      ]
+    },
+    {
+      "id": "receipt",
+      "lane": "completion",
+      "col": 5,
+      "type": "database",
+      "label": "Trial receipt",
+      "sublabel": "Ungraded or blocked",
+      "tag": "No evaluator admission",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1123,
+          "end_line": 1168,
+          "label": "Outcome gating and receipt"
+        }
+      ]
+    },
+    {
+      "id": "recover",
+      "lane": "recovery",
+      "col": 3,
+      "type": "security",
+      "label": "Recovery request",
+      "sublabel": "Cleanup; no recapture",
+      "tag": "Saved exact ownership",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1263,
+          "end_line": 1301,
+          "label": "Recovery forbids collection"
+        }
+      ]
+    },
+    {
+      "id": "recovered",
+      "lane": "recovery",
+      "col": 5,
+      "type": "database",
+      "label": "Recovery receipt",
+      "sublabel": "Reconciled or blocked",
+      "tag": "Cleanup result only",
+      "width": 136,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1365,
+          "end_line": 1373,
+          "label": "Recovery cleanup and receipt"
+        }
+      ]
+    }
+  ],
+  "mainPath": [
+    "plan",
+    "validate",
+    "native",
+    "task",
+    "shutdown",
+    "gate",
+    "collector",
+    "cleanup",
+    "receipt"
+  ],
+  "edges": [
+    {
+      "id": "plan-check",
+      "from": "plan",
+      "to": "validate"
+    },
+    {
+      "id": "valid-launch",
+      "from": "validate",
+      "to": "native",
+      "label": "Valid",
+      "variant": "emphasis"
+    },
+    {
+      "id": "preflight-refusal",
+      "from": "validate",
+      "to": "refuse",
+      "label": "Refuse",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "remote-task",
+      "from": "native",
+      "to": "task",
+      "label": "Remote tools"
+    },
+    {
+      "id": "always-shutdown",
+      "from": "task",
+      "to": "shutdown",
+      "label": "Always finally"
+    },
+    {
+      "id": "check-capture",
+      "from": "shutdown",
+      "to": "gate"
+    },
+    {
+      "id": "eligible-capture",
+      "from": "gate",
+      "to": "collector",
+      "label": "Eligible",
+      "variant": "emphasis"
+    },
+    {
+      "id": "skip-capture",
+      "from": "gate",
+      "to": "cleanup",
+      "label": "Absent / blocked",
+      "role": "branch",
+      "variant": "dashed"
+    },
+    {
+      "id": "cleanup-after-capture",
+      "from": "collector",
+      "to": "cleanup",
+      "label": "Captured / blocked"
+    },
+    {
+      "id": "normal-receipt",
+      "from": "cleanup",
+      "to": "receipt",
+      "label": "Normal attempt",
+      "variant": "emphasis"
+    },
+    {
+      "id": "recover-cleanup",
+      "from": "recover",
+      "to": "cleanup",
+      "label": "Cleanup only",
+      "role": "branch",
+      "variant": "security"
+    },
+    {
+      "id": "recover-receipt",
+      "from": "cleanup",
+      "to": "recovered",
+      "label": "Recovery only",
+      "role": "branch",
+      "variant": "dashed"
+    }
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "plan",
+      "recover"
+    ],
+    "allowedTerminals": [
+      "refuse",
+      "receipt",
+      "recovered"
+    ],
+    "requiredEdges": [
+      {
+        "from": "gate",
+        "to": "cleanup"
+      },
+      {
+        "from": "collector",
+        "to": "cleanup"
+      },
+      {
+        "from": "recover",
+        "to": "cleanup"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "plan",
+        "to": "receipt"
+      },
+      {
+        "from": "recover",
+        "to": "recovered"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Selected snapshots",
+      "items": [
+        "Only declared files: presence, byte count and SHA256; no answer text or transcript content.",
+        "Files are captured separately. Remote quiescence and atomic final state remain unverified."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Failure keeps its meaning",
+      "items": [
+        "No declaration keeps metadata-only behavior; a requested capture failure blocks completion.",
+        "Capture never renews the cleanup deadline. Primary failure and cleanup errors remain explicit."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Evidence and trust",
+      "items": [
+        "Three current credential-free native scenarios passed; no model call or authentication copy.",
+        "Trusted host access remains. Authenticated collection, natural routing and comparison remain unqualified."
+      ]
+    }
+  ]
+}
