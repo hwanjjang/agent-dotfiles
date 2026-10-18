@@ -358,8 +358,8 @@ def compare(experiment, completions, current_spec):
               'qualification': qualification, 'blockers': blockers, 'live_eligible': False, 'promotion': 'inconclusive'}
     # Detect drift after scoring as well as at entry. The trusted local scorer
     # retains filesystem access; this is evidence invalidation, not containment.
-    if (source_hash() != frozen_grader or digest(current_spec) != frozen_spec_digest
-            or digest(experiment) != frozen_experiment_digest):
+    if not stale and (source_hash() != frozen_grader or digest(current_spec) != frozen_spec_digest
+                      or digest(experiment) != frozen_experiment_digest):
         report['blockers'].append('grading_identity_changed')
         for trial in report['trials']:
             trial.update(verdict='blocked', reason='grading_identity_changed', checks=[], completion_checks=[],

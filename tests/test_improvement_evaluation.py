@@ -102,6 +102,15 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(self.report([completion(self.plan,t,model='other')])['counts']['pass'],0)
         self.assertEqual(self.report([completion(self.plan,t,observations={})])['counts']['inconclusive'],8)
 
+    def test_already_stale_spec_keeps_stale_reason_without_late_drift_claim(self):
+        current = copy.deepcopy(self.spec)
+        current['runtime']['adapter'] = 'different-before-scoring'
+        report = ev.compare(self.plan, [completion(self.plan, t) for t in self.plan['trials']], current)
+        self.assertEqual(report['counts']['blocked'], len(self.plan['trials']))
+        self.assertTrue(all(t['reason'] == 'stale_experiment' for t in report['trials']))
+        self.assertIn('stale_experiment', report['blockers'])
+        self.assertNotIn('grading_identity_changed', report['blockers'])
+
     def test_scoring_rejects_source_or_current_spec_drift_after_calibration(self):
         for kind in ('source', 'spec', 'frozen_experiment'):
             with self.subTest(kind=kind):
