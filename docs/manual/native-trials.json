@@ -1,0 +1,20 @@
+{
+  "title": "Frozen native trials: operate and verify",
+  "scenario": "Maintainer workflow for one pinned Codex 0.163 macOS arm64 / Linux arm64 profile. Prepare the private frozen plan, approved auth source and separately verified isolated executor from docs/native-trials.md. Screenshots are browser-rendered sanitized actual CLI and native-result summaries; they are not terminal captures. They do not qualify other hosts or comparison behavior.",
+  "steps": [
+    {
+      "title": "Check inputs before authentication",
+      "instruction": "Run native_trial.py check with the exact private plan. Inspect its manifest digest and no-auth/no-process flags. Preserve source drift and duplicate-attempt refusals. A later missing-transport run must block before copying authentication; checking a plan alone does not contact Docker.",
+      "screenshot": "native-trials-check.png",
+      "caption": "Actual current-source refusal results; private paths are placeholders. The missing-transport attempt copied no authentication and cleaned its owned state.",
+      "expected": "Fresh valid inputs can be checked; source_changed and attempt_exists remain refusals. Never rewrite a digest or remove an attempt merely to bypass them."
+    },
+    {
+      "title": "Require both qualification and owned cleanup",
+      "instruction": "Run one explicitly authorized attempt with --auth-source. Read the receipt, exact qualification predicates, matching terminal, numeric usage and cleanup. Independently reconcile saved processes and executor resources before the external owner stops its dedicated VM. For residue, use guarded recover only with the original journal and source identities; uncertain ownership remains blocked.",
+      "screenshot": "native-trials-result.png",
+      "caption": "Actual selected profile passed the short-loader, six boundary checks and remote-only challenge; automatic cleanup and independent absence checks passed. Earlier failures remain preserved.",
+      "expected": "qualified_current_profile applies only to the recorded sources and environment. General trials remain completed_ungraded; live_eligible=false. Token limits are post-use soft guards and can overshoot."
+    }
+  ]
+}
