@@ -1,5 +1,9 @@
 """Recommendation policy tests; synthetic eligible rules never authorize delivery."""
 import copy
+import os
+import shutil
+import tempfile
+from unittest.mock import patch
 import hashlib
 import unittest
 import json
@@ -190,6 +194,208 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(result['reasons'],['invalid_gate_input'])
         self.assertFalse(result['promotion_eligible']);self.assertFalse(result['merge_authorized'])
         self.assertFalse(result['install_authorized']);self.assertIn('recommendation_digest',result)
+
+
+class NativePromotionTests(unittest.TestCase):
+    """Real disposable Git objects; native journals/qualification remain FAKE."""
+    def setUp(self):
+        from test_trial_admission import RoutedAttempts, save
+        from scripts.improvement import trial_admission as ad
+        self.ad, self.save = ad, save
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve(); evidence = self.root/'evidence'; evidence.mkdir()
+        self.f = RoutedAttempts(evidence); self.repo = self.root/'repo'; self.repo.mkdir()
+        self.git('init','-q'); self.commits = []
+        for arm in ev.ARMS:
+            for row in self.f.context['arms'][arm]['files']:
+                path = self.repo/row['path']; path.parent.mkdir(parents=True,exist_ok=True)
+                path.write_bytes((Path(self.f.context['arms'][arm]['root'])/row['path']).read_bytes())
+            self.commits.append(self.commit())
+        self.roots = ['skills/first','skills/second','skills/third']
+        self.f.spec.update(promotion_rule='quality_gain_v1',budget=dict(model_requests=4,tokens=600000,seconds=1260))
+        self.f.experiment = ev.freeze(self.f.spec)
+        declaration = next(iter(self.f.context['collection_by_trial'].values()))
+        self.f.context.update(experiment_digest=self.f.experiment['experiment_digest'],
+            collection_by_trial={t['trial_id']:declaration for t in self.f.experiment['trials']})
+        save(self.f.context_path,self.f.context)
+        self.refs = [self.f.attempt(i) for i in range(len(self.f.experiment['trials']))]
+        self.report_path = self.root/'report.json'
+        patcher = patch.object(ad,'ROOT',evidence); patcher.start(); self.addCleanup(patcher.stop)
+        self.refresh()
+
+    def git(self,*args):
+        env = dict(PATH=os.defpath,HOME=str(self.root),GIT_CONFIG_NOSYSTEM='1',GIT_CONFIG_GLOBAL=os.devnull)
+        result = subprocess.run([shutil.which('git',path=os.defpath),'-C',str(self.repo),
+            '-c','user.name=Synthetic','-c','user.email=synthetic@example.invalid',
+            '-c','commit.gpgsign=false',*args],env=env,capture_output=True,timeout=10,check=True)
+        return result.stdout.decode().strip()
+
+    def commit(self):
+        self.git('add','--all'); self.git('commit','-qm','Synthetic component fixture')
+        return self.git('rev-parse','HEAD')
+
+    def refresh(self):
+        ctx = self.ad.load_context(self.f.experiment,self.f.spec,self.f.context_path)
+        batch = self.ad.read_attempts(ctx,self.refs)
+        try: self.report = ev.compare(self.f.experiment,[],self.f.spec,native=batch)
+        finally: batch.close()
+        self.save(self.report_path,self.report)
+
+    def args(self):
+        return dict(experiment=self.f.experiment,current_spec=self.f.spec,context_path=str(self.f.context_path),
+            attempts=self.refs,report_path=str(self.report_path),repository=str(self.repo),
+            baseline_commit=self.commits[0],candidate_commit=self.commits[1],component_roots=self.roots)
+
+    def recommend(self,**changes):
+        args = self.args(); args.update(changes); return gate.recommend_native(**args)
+
+    def source(self,**changes):
+        args = self.args(); args.update(changes)
+        ctx = self.ad.load_context(self.f.experiment,self.f.spec,self.f.context_path)
+        return gate.verify_source(ctx,**{k:args[k] for k in
+            ('repository','baseline_commit','candidate_commit','component_roots')})
+
+    def test_actual_committed_delta_and_unknown_latency_are_inconclusive(self):
+        result = self.recommend()
+        self.assertEqual(result['recommendation'],'inconclusive')
+        self.assertIn('latency_unknown',result['reasons'])
+        self.assertIn('same_host_heldout_unverified',result['reasons'])
+        self.assertEqual(result['review']['source']['baseline_commit'],self.commits[0])
+        self.assertEqual([r['path'] for r in result['review']['source']['changes']],
+                         [r+'/SKILL.md' for r in self.roots])
+        for key in ('source_accepted','promotion_eligible','merge_authorized','install_authorized'):
+            self.assertIs(result[key],False)
+
+    def test_missing_results_are_inconclusive_and_batch_is_closed(self):
+        self.refs = []; self.refresh()
+        reader = self.ad.read_attempts; batches = []
+        def observe(*args):
+            value = reader(*args); batches.append(value); return value
+        with patch.object(self.ad,'read_attempts',side_effect=observe): result = self.recommend()
+        self.assertEqual(result['recommendation'],'inconclusive')
+        self.assertIn('trial_coverage_incomplete',result['reasons']); self.assertTrue(batches[0].closed)
+
+    def test_arithmetic_gain_cannot_bypass_missing_heldout_or_reservation(self):
+        for trial,ref in zip(self.f.experiment['trials'],self.refs):
+            if trial['arm']=='baseline':
+                self.f.mutate(ref,'collection_result',lambda r:r['snapshot']['files'][0].update(sha256='f'*64))
+                def fix(r): r['collection']['snapshot']['files'][0]['sha256']='f'*64
+                self.f.mutate(ref,'receipt',fix)
+        self.refresh(); result = self.recommend()
+        self.assertEqual(result['rule_result']['observed_pass_gain'],2)
+        self.assertEqual(result['rule_result']['verdict'],'inconclusive')
+        self.assertIn('latency_unknown',result['reasons'])
+        self.assertEqual(result['recommendation'],'inconclusive')
+        self.assertIn('same_host_heldout_unverified',result['reasons'])
+        self.assertIn('aggregate_launch_reservation_unavailable',result['reasons'])
+
+    def test_native_candidate_critical_failure_rejects_with_unknown_latency(self):
+        for trial,ref in zip(self.f.experiment['trials'],self.refs):
+            if trial['arm']=='candidate':
+                self.f.mutate(ref,'collection_result',lambda r:r['snapshot']['files'][0].update(sha256='f'*64))
+                def fix(r): r['collection']['snapshot']['files'][0]['sha256']='f'*64
+                self.f.mutate(ref,'receipt',fix)
+        self.refresh(); result = self.recommend()
+        self.assertEqual(result['recommendation'],'reject')
+        self.assertIn('critical_violation',result['reasons'])
+
+    def test_forged_report_or_source_arm_never_passes(self):
+        bad = copy.deepcopy(self.report); bad['counts']['pass']=999; self.save(self.report_path,bad)
+        self.assertIn('report_evidence_mismatch',self.recommend()['reasons'])
+        self.save(self.report_path,self.report)
+        path = Path(self.f.context['arms']['candidate']['root'])/'skills/first/SKILL.md'
+        path.write_bytes(path.read_bytes()+b'changed')
+        self.assertEqual(self.recommend()['recommendation'],'reject')
+
+    def test_full_commit_ids_type_and_scope_are_required(self):
+        tree = self.git('rev-parse','HEAD^{tree}')
+        for values in [dict(candidate_commit='HEAD'),dict(candidate_commit=self.commits[1][:12]),
+                       dict(candidate_commit=tree),dict(candidate_commit='f'*40),
+                       dict(component_roots=['skills']),dict(component_roots=['skills/first']),
+                       dict(component_roots=self.roots[::-1]),dict(component_roots=['../skills']),
+                       dict(component_roots=['skills/first','skills/first/SKILL.md'])]:
+            with self.subTest(values=values),self.assertRaises(ValueError): self.source(**values)
+
+    def test_complete_component_inventory_and_outside_delta_required(self):
+        extra = self.repo/'skills/first/references/extra.md'; extra.parent.mkdir(); extra.write_text('synthetic')
+        extra_commit = self.commit()
+        with self.assertRaises(ValueError): self.source(candidate_commit=extra_commit)
+        extra.unlink(); (self.repo/'outside.txt').write_text('synthetic untested delta')
+        with self.assertRaises(ValueError): self.source(candidate_commit=self.commit())
+
+    def test_metadata_only_or_symlink_changes_are_not_tested_source(self):
+        file = self.repo/'skills/first/SKILL.md'; file.chmod(0o755)
+        with self.assertRaises(ValueError): self.source(candidate_commit=self.commit())
+        file.unlink(); file.symlink_to('../../second/SKILL.md')
+        with self.assertRaises(ValueError): self.source(candidate_commit=self.commit())
+
+    def test_dirty_checkout_and_git_override_environment_do_not_change_objects(self):
+        expected = self.source(); (self.repo/'skills/first/SKILL.md').write_text('DIRTY')
+        with patch.dict(os.environ,{'GIT_DIR':'/missing','GIT_WORK_TREE':'/missing',
+                'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'core.pager','GIT_CONFIG_VALUE_0':'false'}):
+            self.assertEqual(self.source(),expected)
+        with self.assertRaises(ValueError): self.source(baseline_commit=self.commits[1])
+
+    def test_source_and_report_late_drift_invalidate_even_after_arithmetic(self):
+        source = self.source()
+        with patch.object(gate,'verify_source',side_effect=[source,subprocess.TimeoutExpired('fixed',1)]):
+            self.assertEqual(self.recommend()['recommendation'],'reject')
+        original = gate.evaluate_rule
+        for name in ('report','arm'):
+            with self.subTest(name=name):
+                def mutate(*args):
+                    value = original(*args)
+                    path = self.report_path if name=='report' else Path(self.f.context['arms']['candidate']['root'])/'skills/first/SKILL.md'
+                    path.write_bytes(path.read_bytes()+b' '); return value
+                with patch.object(gate,'evaluate_rule',side_effect=mutate):
+                    self.assertEqual(self.recommend()['recommendation'],'reject')
+                self.save(self.report_path,self.report)
+
+    def test_raw_binary_blob_hashes_are_never_decoded(self):
+        for arm,raw in zip(ev.ARMS,(b'\xff\x00baseline',b'\xfe\x00candidate')):
+            value = self.f.context['arms'][arm]
+            name = 'skills/first/references/' + ('old.bin' if arm=='baseline' else 'new.bin')
+            if arm=='candidate': (self.repo/'skills/first/references/old.bin').unlink()
+            path = Path(value['root'])/name; path.parent.mkdir(); path.write_bytes(raw)
+            value['files'].append(dict(path=name,sha256=hashlib.sha256(raw).hexdigest()))
+            value['files'].sort(key=lambda r:r['path'])
+            self.f.spec['identities'][arm] = ev.digest({k:value[k] for k in ('entrypoint','files','routing')})
+            for row in value['files']:
+                target = self.repo/row['path']; target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes((Path(value['root'])/row['path']).read_bytes())
+            self.commits[ev.ARMS.index(arm)] = self.commit()
+        self.f.experiment = ev.freeze(self.f.spec)
+        declaration = next(iter(self.f.context['collection_by_trial'].values()))
+        self.f.context.update(experiment_digest=self.f.experiment['experiment_digest'],
+            collection_by_trial={t['trial_id']:declaration for t in self.f.experiment['trials']})
+        self.save(self.f.context_path,self.f.context)
+        rows = {r['path']:r for r in self.source()['changes']}
+        old,new = (rows['skills/first/references/'+n+'.bin'] for n in ('old','new'))
+        self.assertEqual(old['old_blob_sha256'],hashlib.sha256(b'\xff\x00baseline').hexdigest())
+        self.assertEqual(new['new_blob_sha256'],hashlib.sha256(b'\xfe\x00candidate').hexdigest())
+        self.assertIsNone(old['new_mode']); self.assertIsNone(new['old_blob_sha256'])
+
+    def test_actual_raw_reader_cap_reaps_owned_process_and_deadline_refuses(self):
+        oid = self.git('rev-parse','HEAD:skills/first/SKILL.md'); processes = []
+        original = gate.subprocess.Popen
+        def observe(*args,**kwargs):
+            process = original(*args,**kwargs); processes.append(process); return process
+        with patch.object(gate.subprocess,'Popen',side_effect=observe),self.assertRaises(ValueError):
+            gate._git(self.repo,'blob',oid,gate.time.monotonic()+3,5)
+        self.assertIsNotNone(processes[0].poll()); self.assertTrue(processes[0].stdout.closed)
+        with self.assertRaises(ValueError): gate._git(self.repo,'blob',oid,gate.time.monotonic()-1,1000)
+
+    def test_current_public_proof_is_not_replaced_by_fixture_claim(self):
+        with patch.object(self.ad,'ROOT',Path(self.ad.__file__).resolve().parents[2]):
+            self.refresh(); result = self.recommend()
+        self.assertEqual(result['recommendation'],'inconclusive')
+        self.assertIn('qualification_unavailable',result['reasons'])
+
+    def test_native_cli_closed_inputs_and_real_git_path(self):
+        run = subprocess.run([sys.executable,str(Path(gate.__file__)),'recommend-native'],
+            input=ev.encoded(dict(self.args(),verified=True)),capture_output=True,timeout=10)
+        self.assertEqual(run.returncode,1)
+        self.assertEqual(json.loads(run.stdout),{'status':'rejected','reason':'invalid_gate_input'})
 
 
 if __name__=='__main__':unittest.main()
