@@ -8,7 +8,7 @@
     "output": "docs/architecture/native-routing-workflow.html",
     "repository": {
       "url": "https://github.com/hwanjjang/agent-dotfiles",
-      "revision": "048ee7b88c6ff3e4d90c8251b96f166b8449a54f",
+      "revision": "a9d02903679102d6453e981dfda33cfc2f4f44e5",
       "provider": "github",
       "link_mode": "web"
     }
@@ -41,7 +41,7 @@
         {
           "path": "scripts/improvement/native_trial_plan.py",
           "line": 235,
-          "end_line": 304,
+          "end_line": 311,
           "label": "Closed catalog and frontmatter binding"
         },
         {
@@ -141,10 +141,10 @@
           "label": "Signal owned group before leader reap"
         },
         {
-          "path": "scripts/improvement/native_trial_protocol.py",
-          "line": 137,
-          "end_line": 161,
-          "label": "Receiver completeness facts"
+          "path": "docs/decisions/evaluation-accounting.md",
+          "line": 315,
+          "end_line": 323,
+          "label": "Host-dependent fast-exit uncertainty"
         }
       ]
     },
@@ -340,7 +340,7 @@
       "dot": "amber",
       "title": "Finalization and timing",
       "items": [
-        "Cleanup attempts the owned group signal before leader reap; pipe EOF does not establish descendant absence.",
+        "Cleanup attempts group signaling before reap; EOF proves no descendant absence. A host fast-exit signal failure stays cleanup-uncertain and routing-unknown.",
         "Drain precedes finalized routing and matching receipt. Controller timing deduplicates attempts, not provider latency.",
         "Late grading/source drift blocks trials and revokes affirmative client-model claims."
       ]

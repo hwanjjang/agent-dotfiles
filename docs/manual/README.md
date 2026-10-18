@@ -370,7 +370,7 @@ The [routing summary](native-routing-admission-check.png) and
 offline CLI results. Qualification records, native journals, lifecycle and usage
 are explicitly **FAKE fixtures**, not real native/model evidence or terminal images.
 
-At the already-existing `048ee7b88c6f` checkpoint, three routing CLI scenarios
+At the already-existing `a2d607bb936c` checkpoint, three routing CLI scenarios
 showed four expected-read passes, four healthy-none routing fails despite four
 artifact passes, and four blocked rows after qualification tampering. Each
 scenario has 640 synthetic tokens. Eight separate pure CLI calls exercised scope
@@ -379,8 +379,8 @@ and custody null; self-certification does not qualify unseen data.
 
 Thirteen runtime and three grader source hashes match the capture manifest. The
 renewed routing result records its actual interpreter argv, matching the separate
-Python3.11 scope run. Earlier v1/v2/v3 captures remain historical. This renewal follows
-the PR67 lifecycle, metadata, cost and late-guard fixes; 349 combined checks passed
+Python3.11 scope run. Earlier v1/v2/v3/v4 captures remain historical. This renewal follows
+the PR67 native-YAML surrogate-escape compatibility fix; 351 combined checks passed
 under each supported Python version. The manual independently renewed three
 routing and eight scope CLI calls per version after that checkpoint. Both screenshots
 and both PDF pages passed actual visual, text/page-count and overflow checks.
