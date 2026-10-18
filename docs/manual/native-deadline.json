@@ -7,14 +7,14 @@
       "instruction": "Use the fixture guide to prepare command/executor argv in a private plan. Set scenario to response-deadline-after-tools and keep a finite timeout. Run native_execution.py --plan /path/to/plan.json --output /path/to/new-evidence. Read receipt.json even when the CLI exits 1. The capture below used a local fake app-server.",
       "screenshot": "native-deadline-cli.png",
       "caption": "Actual public CLI with a fake process: the expected negative result is blocked with Refusal:deadline. The display is a browser-rendered summary, not terminal output.",
-      "expected": "Checkpoint, response_withheld and deadline_reached must all be true. A setup timeout or early close is insufficient. Never treat blocked as normal completion or ignore cleanup uncertainty."
+      "expected": "Checkpoint, response_withheld and deadline_reached must all be true. A setup timeout or early harness close is insufficient. Peer connection state and client abandonment are NOT MEASURED. Keep the blocked result and cleanup uncertainty."
     },
     {
       "title": "Match the native source and independently check cleanup",
-      "instruction": "Match the runtime hash before reusing evidence. The native run below reached verified assigned skill body/reference and disabled-collaboration results, withheld the final synthetic response, then reached the original 15-second deadline. Check the three facts and exact owned-resource absence together.",
+      "instruction": "Match the runtime hash before reusing evidence. The native run reached valid assigned skill body/reference and disabled-collaboration tool outputs. The harness then withheld the final synthetic response until its original 15-second deadline. Check these harness facts and exact owned-resource absence together.",
       "screenshot": "native-deadline-native.png",
       "caption": "Actual native negative-path summary on runtime dc87b7207b9e871c. The 195,537-byte supervisor total includes inner events/receipt and outer command/cleanup JSON; it is not a wire or token limit.",
-      "expected": "Targeted response-deadline check passed; the inner receipt remains blocked. No auth, live inference, executor-disconnect or full-route claim. Historical external deadline NOT_INJECTED evidence is unchanged."
+      "expected": "Targeted harness response-deadline check passed; the inner receipt remains blocked. Peer connection state and client abandonment are NOT MEASURED; this does not show the client was still waiting. No auth, live inference, executor-disconnect or full-route claim. Historical NOT_INJECTED evidence is unchanged."
     }
   ]
 }

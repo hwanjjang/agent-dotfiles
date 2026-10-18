@@ -2790,7 +2790,7 @@
         "Preserves the primary failure and reports timed-out container creation as uncertain cleanup with retained staging.",
         "The reusable remote-executor fixture retains success and blocked attempts, requires actual skill body/reference outputs and a matching native terminal, and checks selected disabled-tool routes.",
         "The historical normal native mock qualified its recorded runtime only; the fixed deadline extension has separate evidence. All reusable fixture receipts keep live/auth/isolation eligibility false; the supervisor separately owns OS and escaped-resource checks.",
-        "The fixed post-tool deadline scenario distinguishes a reached checkpoint and original deadline from early cancellation or setup timeout; it stays blocked and does not prove external interruption or executor disconnect."
+        "The fixed post-tool scenario distinguishes a reached checkpoint and original harness deadline from early harness cancellation or setup timeout. Peer closure/client abandonment is not measured; the result stays blocked and proves neither external interruption nor executor disconnect."
       ],
       "outputs": [
         "A private source-bound receipt and native trace; live transport and promotion remain false."

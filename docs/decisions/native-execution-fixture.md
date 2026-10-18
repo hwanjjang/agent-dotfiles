@@ -78,12 +78,16 @@ retry budget. Prompt echoes, missing evidence and setup timeouts cannot arm it.
 
 The receipt includes `scenario`; this negative case also includes
 `fault_observation` with `checkpoint_reached`, `response_withheld`, and
-`deadline_reached`. Early cancellation leaves the last field false. Read all three
+`deadline_reached`. Early **harness** cancellation leaves the last field false. This observes the
+provider/harness hold, not the client's HTTP connection: a client that abandons
+the request without a terminal message is not distinguished from one still
+waiting. Read all three
 and the primary reason and cleanup, rather than treating any timeout as successful
 injection. The expected CLI result is exit 1 with `status: blocked`; the scenario
-never becomes `mock_complete` or live eligible. If native setup or another client
-timeout wins before the checkpoint, keep the attempt as an unqualified negative
-result instead of retrying or reporting deadline coverage.
+never becomes `mock_complete` or live eligible. If native setup or an observed terminal ends the workflow before the checkpoint,
+keep the attempt as an unqualified negative result instead of retrying. The fixed
+scenario does not monitor peer closure during its hold; `deadline_reached` means
+the original harness deadline was reached, not that the client was still waiting.
 
 This exercises a held provider response, not an external interrupt, deliberate
 executor disconnection, detached-child cleanup or upstream cancellation. The
@@ -130,7 +134,9 @@ own later qualification.
 
 On 2026-10-18, one source-bound actual Codex 0.163.0 run of this extension
 reached the validated post-tool checkpoint, withheld its final response and
-observed the original 15-second deadline. The inner receipt remained
+observed the original 15-second **harness** deadline. Peer connection state was
+not measured, so client-side abandonment during the hold remains unknown.
+The inner receipt remained
 `blocked`, reason `Refusal:deadline`, with exactly two synthetic submissions and
 all three `fault_observation` fields true. Inner elapsed time was 15.044446
 seconds; the separate supervisor took 19.063896 seconds. Owned listener, native
@@ -152,11 +158,12 @@ configuration alone is insufficient. In the inspected Colima 0.10.3 source,
 Check generated configuration and actual guest mounts separately before releasing
 a fixture, following [the pinned mount implementation](https://github.com/abiosoft/colima/blob/00f6c297e92a82c04a4ab507db0a61435650d7e8/environment/vm/lima/yaml.go).
 
-This is targeted provider-response deadline evidence, not an external interrupt,
+This is targeted harness/provider-response deadline evidence. It does not establish
+client connection liveness or upstream cancellation, and is not an external interrupt,
 executor-disconnect, active-shell cancellation, normal final completion,
 authentication, model inference or full-route qualification. The older failed
 controller injection below remains `NOT_INJECTED`; this new fixed scenario does
-not rewrite it. Twenty-six focused local checks and a separate three-case public
+not rewrite it. Twenty-seven focused local checks and a separate three-case public
 CLI fake-process smoke cover current default/deadline/refusal behavior. The
 [deadline walkthrough](../manual/native-deadline.json) and its capture receipt
 bind actual current source hashes and sanitized results.

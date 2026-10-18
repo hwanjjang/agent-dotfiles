@@ -21,14 +21,14 @@ class DeadlineScenarioTests(unittest.TestCase):
             output = Path(folder)/'attempt'
             started = time.monotonic()
             receipt = runner.run_fixture(output, [sys.executable, str(FAKE), 'success'],
-                [sys.executable, '-c', 'pass'], timeout=.6, scenario=SCENARIO)
+                [sys.executable, '-c', 'pass'], timeout=2, scenario=SCENARIO)
             self.assertEqual(receipt['status'], 'blocked')
             self.assertEqual(receipt['mock_submissions_observed'], 2)
             self.assertEqual(receipt['fault_observation'], {
                 'scenario': SCENARIO, 'checkpoint_reached': True,
                 'response_withheld': True, 'deadline_reached': True})
-            self.assertGreaterEqual(receipt['elapsed_seconds'], .6)
-            self.assertLess(time.monotonic()-started, 3)
+            self.assertGreaterEqual(receipt['elapsed_seconds'], 2)
+            self.assertLess(time.monotonic()-started, 5)
             self.assertFalse(receipt['live_eligible'])
             self.assertFalse(receipt['authentication_qualified'])
             self.assertFalse(receipt['isolation_qualified'])
@@ -41,6 +41,33 @@ class DeadlineScenarioTests(unittest.TestCase):
             events = [json.loads(line) for line in (output/'events.jsonl').read_text().splitlines()]
             self.assertEqual(sum(e['kind']=='mock_response' for e in events), 1)
             self.assertEqual(sum(e['kind']=='fault_checkpoint' for e in events), 1)
+
+    def test_omitted_and_explicit_completion_have_the_same_receipt_contract(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipts = []
+            for name, options in [('omitted', {}), ('explicit', {'scenario': 'completion'})]:
+                with self.subTest(plan=name):
+                    receipt = runner.run_fixture(Path(folder)/name,
+                        [sys.executable, str(FAKE), 'success'], [sys.executable, '-c', 'pass'],
+                        timeout=3, **options)
+                    self.assertEqual(receipt['scenario'], 'completion')
+                    self.assertNotIn('fault_observation', receipt)
+                    self.assertEqual(receipt['status'], 'mock_complete')
+                    self.assertEqual(receipt['mock_submissions_observed'], 2)
+                    self.assertEqual(receipt['terminal']['status'], 'completed')
+                    self.assertIsNone(receipt['reason'])
+                    self.assertIsNone(receipt['provider_error'])
+                    self.assertTrue(receipt['cleanup']['harness']['process_reaped'])
+                    self.assertTrue(receipt['cleanup']['listeners_closed'])
+                    self.assertTrue(receipt['cleanup']['temporary_home_absent'])
+                    receipts.append(receipt)
+            # Attempt IDs, timestamps, temp-path hashes and elapsed time differ.
+            # Compare the public semantic contract, not incidental identity.
+            fields = ['schema_version', 'kind', 'scenario', 'status', 'reason',
+                      'mock_submissions_observed', 'provider_error', 'live_eligible',
+                      'authentication_qualified', 'isolation_qualified', 'model', 'usage']
+            self.assertEqual({k: receipts[0][k] for k in fields},
+                             {k: receipts[1][k] for k in fields})
 
     def test_unknown_scenario_refuses_before_side_effects(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(runner, 'Archive') as archive, patch.object(runner, 'Session') as session:
@@ -109,7 +136,7 @@ class DeadlineScenarioTests(unittest.TestCase):
             return result
         with tempfile.TemporaryDirectory() as folder, patch.object(runner.Session, 'close', uncertain):
             receipt = runner.run_fixture(Path(folder)/'attempt', [sys.executable, str(FAKE), 'success'],
-                [sys.executable, '-c', 'pass'], timeout=.6, scenario=SCENARIO)
+                [sys.executable, '-c', 'pass'], timeout=2, scenario=SCENARIO)
             self.assertEqual(receipt['status'], 'blocked')
             self.assertTrue(receipt['fault_observation']['deadline_reached'])
             self.assertIn('group_signal_error', receipt['cleanup']['harness'])

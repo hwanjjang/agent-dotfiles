@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "capture_kind": "browser-rendered sanitized actual CLI and native result summaries",
-  "capture_time_utc": "2026-10-18T03:36:39.784Z",
+  "capture_time_utc": "2026-10-18T03:51:59.546Z",
   "not_terminal_capture": true,
   "actual_inference": false,
   "authentication_qualified": false,
@@ -43,16 +43,17 @@
   "retention_denominator": "195537 bytes: retained outer command/identity/cleanup JSON plus inner event archive and receipt. Excludes frozen inputs, HTTP headers, bounded transient process queries, OS buffers, removed temporary files and later analysis. Not a wire/token limit.",
   "scope_limits": [
     "Expected negative result remains blocked with Refusal:deadline.",
+    "The hold observes harness cancellation/deadline, not peer connection state or client HTTP abandonment. It does not establish that the client was still waiting.",
     "Independent checks cover exact observed processes and owned container/volume/control paths; arbitrary escaped descendants remain unqualified.",
     "Separate VM preflight checked generated configuration and actual guest mounts; prior wire probe with wrong mount precondition stays partial.",
     "No credentials, real inference, disconnect, full-route, billing or comparative evidence."
   ],
   "artifacts_sha256": {
-    "native-deadline.json": "7c9f9659c717ef4c261e4c2f8c3bb0dcc8e83fa66520b32b0753a478aa339456",
-    "native-deadline.pdf": "b66e158f4a463c1959f0f7d80c385ccf09e6f5e0886c53efd59071914a3ebee9",
-    "native-deadline-cli.png": "2fa1c2ff29bd45fea7f9d1ee58baca9f867fc9af224f083ff6f65efc42f46a27",
-    "native-deadline-native.png": "3bcbde5f5a16cfc9ebdb7d696b482fc92390152b3359ce5229880e08f6792b1a",
-    "native-deadline-summary.html": "e70fe347f0718b6e504de63d738eb29e6f143f72f4cd3158b7ee7265d0364529"
+    "native-deadline.json": "7a7c42e629ea6bc23a5d20d019531b856fbad79b5c09350a27afde69f2747cb7",
+    "native-deadline.pdf": "3aa8a6cc5ee89eff395628a4f76ac53d2bea84f47dc6a3479bc71cb81f9469cc",
+    "native-deadline-cli.png": "308fe56a93e7970c21065bd7cc44bbdf63293750cf7b83175a1bbc8f7546f116",
+    "native-deadline-native.png": "42b47096bddef9eff60be4c5c8c1e77900cab045ab4e94db344551aa44b7e601",
+    "native-deadline-summary.html": "5bccce6321ecffaefd1818f9aed541cfc8a7a45747712231e66b48a307ae9022"
   },
   "verification": {
     "browser": "155.0.8059.82",
@@ -66,7 +67,16 @@
     "pdf_pages": 2,
     "text_check_passed": true,
     "every_page_rendered_and_visually_inspected": true,
-    "visual_result": "Both pages readable; no clipping, overlap, missing glyphs or private host data.",
-    "render_method": "Existing screenshot-manual PDFium renderer; pypdf text/page checks."
+    "visual_result": "Both correction pages individually inspected: legible text and screenshots, no clipping/overlap/private host data; peer/client limitations visible on both.",
+    "render_method": "Existing screenshot-manual PDFium renderer; pypdf text/page checks with normalized whitespace."
+  },
+  "interpretation_correction": {
+    "review_finding": "P115A-1",
+    "scope": "Harness response-deadline after valid tool outputs; peer/client connection liveness is not observed.",
+    "peer_connection_state": "NOT_MEASURED",
+    "client_abandonment": "NOT_MEASURED",
+    "client_still_waiting": "NOT_ESTABLISHED",
+    "new_native_execution": false,
+    "existing_source_evidence_reused": true
   }
 }

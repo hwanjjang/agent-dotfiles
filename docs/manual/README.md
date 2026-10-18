@@ -252,7 +252,8 @@ current dialog separately; this supplement does not requalify older captures.
 
 The [deadline PDF](native-deadline.pdf), [editable source](native-deadline.json)
 and [capture receipt](native-deadline-capture.json) explain the expected blocked
-result and the separate actual Codex 15-second observation. Images are sanitized
+result and the separate actual Codex 15-second harness-deadline observation;
+client connection liveness is not measured. Images are sanitized
 browser renderings of actual CLI/native summaries, not terminal screenshots or
 real model results. The [fixture guide](../decisions/native-execution-fixture.md)
 owns commands, interpretation and qualification limits. The older normal/manual
