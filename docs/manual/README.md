@@ -399,10 +399,10 @@ The [recommendation summary](native-recommendation-check.png) and
 [custody/refusal summary](native-recommendation-result.png) are actual Chrome
 screenshots of sanitized offline CLI results, not terminal images.
 
-Working-tree snapshot `7b900abaf8b8` identifies the corrected bytes used by these
-runs. Base `541b34d` does not contain the corrections; commit `858c067` was matched
+Working-tree snapshot `7856d53d1471` identifies the corrected bytes used by these
+runs. Base `17dae5a` does not contain the corrections; commit `2ed5bf2` was matched
 after execution, without claiming it preceded the CLI runs. Python 3.11 and 3.14
-each passed 53 focused regression checks and 11 actual offline CLI calls. Eighteen
+each passed 56 focused regression checks and 11 actual offline CLI calls. Eighteen
 files bind the
 thirteen runtime sources, three native grader sources and two recommendation/
 held-out helpers. Real disposable local Git objects and CLI processes were used;
@@ -420,8 +420,8 @@ cases as development/regression material in future work; this smoke did not
 create an actual pilot candidate or held-out pack.
 
 Both screenshots and both PDF pages passed actual visual, text, page-count and
-overflow checks. The original PDF create marker is reused without another invocation. Earlier
-7d5a3d6 and 1c23c4f captures remain historical; dfa4cbc captures also remain historical. The current source snapshot includes
-the selected PR69 evidence-separation and uncertainty corrections. Rebuild
+overflow checks. The original PDF create marker is reused without another invocation. Earlier 7d5a3d6, 1c23c4f, dfa4cbc and 858c067 captures remain historical.
+The current source snapshot includes the selected PR69 review-2 validation-order
+and rejection-preservation corrections. Rebuild
 with the screenshot-manual commands above and `native-recommendation.json`;
 retain historical evidence and renew captures when source or behavior changes.

@@ -6,7 +6,7 @@
       "title": "Read the recommendation without granting authority",
       "instruction": "Use promotion.py recommend-native with the existing frozen context, owned attempts, recomputed report and committed source bindings. Review its recommendation and reasons separately from source acceptance. This walkthrough uses existing fixed synthetic fixtures and disposable local Git objects.",
       "screenshot": "native-recommendation-check.png",
-      "caption": "Working-tree snapshot 7b900abaf8b8 binds the exact bytes used in eleven CLI calls per version: one recommend, two reject and five inconclusive, plus three request/preflight checks. Base 541b34d does not contain these corrections. Eighteen source files match.",
+      "caption": "Working-tree snapshot 7856d53d1471 binds the exact bytes used in eleven CLI calls per version: one recommend, two reject and five inconclusive, plus three request/preflight checks. Matching commit 2ed5bf2 was recorded after the runs. Eighteen source files match.",
       "expected": "The fixed positive fixture recommends review only. Current public qualification remains unavailable and the actual-source check is inconclusive. Every recommendation keeps source_accepted, promotion_eligible, merge_authorized and install_authorized false."
     },
     {

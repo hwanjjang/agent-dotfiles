@@ -8,7 +8,7 @@
     "output": "docs/architecture/native-recommendation-workflow.html",
     "repository": {
       "url": "https://github.com/hwanjjang/agent-dotfiles",
-      "revision": "858c067e39406e8bc6609fba08896c2dd0c18fde",
+      "revision": "2ed5bf2a76e8e470006ffbedddf72cf2bc7dab48",
       "provider": "github",
       "link_mode": "web"
     }
@@ -58,9 +58,9 @@
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 76,
-          "end_line": 164,
-          "label": "Closed pack and context evidence"
+          "line": 72,
+          "end_line": 161,
+          "label": "Closed evidence and retained exposure flag"
         }
       ]
     },
@@ -76,14 +76,14 @@
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 44,
-          "end_line": 69,
+          "line": 40,
+          "end_line": 65,
           "label": "Bounded lookup and exact metadata"
         },
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 145,
-          "end_line": 152,
+          "line": 142,
+          "end_line": 149,
           "label": "Candidate and pack chronology"
         }
       ]
@@ -100,14 +100,14 @@
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 240,
-          "end_line": 257,
-          "label": "Empty prefix then fixed delegation"
+          "line": 236,
+          "end_line": 254,
+          "label": "Refuse exposure before launch delegation"
         },
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 167,
-          "end_line": 169,
+          "line": 164,
+          "end_line": 166,
           "label": "Deterministic trusted-host receipt"
         }
       ]
@@ -184,8 +184,8 @@
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 180,
-          "end_line": 195,
+          "line": 177,
+          "end_line": 192,
           "label": "Distinct input content and recomputation"
         }
       ]
@@ -244,9 +244,9 @@
       "sources": [
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 172,
-          "end_line": 237,
-          "label": "Recompute, refresh and recheck evidence"
+          "line": 169,
+          "end_line": 233,
+          "label": "Validate fully before exposure outcome"
         },
         {
           "path": "scripts/improvement/promotion.py",
@@ -275,13 +275,13 @@
         {
           "path": "scripts/improvement/promotion.py",
           "line": 324,
-          "end_line": 349,
-          "label": "Outcome and final source/evidence checks"
+          "end_line": 350,
+          "label": "Retain reject through late uncertainty"
         },
         {
           "path": "scripts/improvement/heldout.py",
-          "line": 209,
-          "end_line": 225,
+          "line": 206,
+          "end_line": 222,
           "label": "Frozen held-out rule and final guards"
         }
       ]
@@ -299,7 +299,7 @@
         {
           "path": "scripts/improvement/promotion.py",
           "line": 319,
-          "end_line": 361,
+          "end_line": 362,
           "label": "Reasons and canonical recommendation"
         }
       ]
@@ -316,8 +316,8 @@
       "sources": [
         {
           "path": "scripts/improvement/promotion.py",
-          "line": 355,
-          "end_line": 361,
+          "line": 356,
+          "end_line": 362,
           "label": "False authority flags and digest"
         }
       ]
@@ -439,7 +439,7 @@
       "dot": "cyan",
       "title": "Existing execution, separate review",
       "items": [
-        "Authorized preflight uses the existing lease/serial gate. Deterministic receipt bytes rely on cooperating wrapper use, not hostile-caller chronology.",
+        "Authorized preflight refuses known pack exposure before launch. Deterministic receipt bytes rely on cooperating wrapper use, not hostile-caller chronology.",
         "Recommendation launches no trial. Development must be unscoped; held-out primary/counterpart input content cannot reuse development inputs."
       ]
     },
@@ -448,8 +448,8 @@
       "title": "Limited same-host claim",
       "items": [
         "Selected trusted-maintainer receipts support not-supplied-to-author during the fixed comparison, not hostile same-UID secrecy. Unknown reads stay unknown.",
-        "Remote anchor uncertainty is inconclusive, preserving independent development rejection. Local tampering rejects; known prior or during-comparison exposure blocks.",
-        "Recheck held-out records after remote refresh and source after assessment. Two source checks share 12 seconds of Git/read time, excluding remote waits."
+        "Remote anchor uncertainty preserves independent development rejection. Known exposure never skips later validation; tampering or overlapping inputs still reject.",
+        "Recheck records after remote refresh and source after assessment. Two Git reads share 12 seconds excluding remote waits; late unavailability preserves established reject."
       ]
     },
     {

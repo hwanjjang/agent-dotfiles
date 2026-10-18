@@ -102,7 +102,9 @@ command has a three-second read deadline and a combined stdout/stderr cap. The
 native consumer shares a cumulative 12-second Git-read window across two source
 verifications: before assessment and again after it. Time spent fetching remote
 anchors is excluded from this Git window. `source_read_limit`, `git_unavailable`
-and subprocess `TimeoutExpired` become `source_unavailable` and remain inconclusive.
+and subprocess `TimeoutExpired` record `source_unavailable`. A first-read failure
+is inconclusive. At the second read, an established development or local-evidence
+rejection stays reject; only other outcomes become inconclusive.
 Wrong source objects, unsupported inventory limits/modes, tampering and out-of-scope
 changes reject. Owned process-group termination/reap and stream close are
 attempted on failure; uncertain group cleanup refuses source verification. These
@@ -152,6 +154,10 @@ Their actual bytes are checked. The pack must be outside each normalized recorde
 author workspace. A listed author material cannot resolve to the pack path or have
 the pack's SHA-256, even under another filename. This is a selected trusted-host
 input inventory, not a parser that establishes all historical model input.
+Known pack material sets an exposure flag while validation continues: later local
+tampering or development/held-out input overlap still invalidates the record and
+rejects. Exposure cannot mask those errors. The preflight adapter refuses a
+flagged record before delegating to the launch gate.
 
 ### Selected fresh-preparer evidence
 
@@ -310,7 +316,8 @@ duplicate keys, non-finite numbers or missing/extra top-level fields return
 outer fields with invalid local nested evidence return a full reject recommendation
 and exit 0. The selected source process-limit/unavailability failures above and
 unavailable remote anchors do not themselves establish a negative candidate
-result. Source process failures yield inconclusive; a missing anchor yields
+result. A late source process failure preserves an established rejection and
+adds `source_unavailable`; otherwise it yields inconclusive. A missing anchor is
 inconclusive unless an independent development rejection already applies. Usage
 errors exit 2. Exit 0 does not mean evidence or promotion passed.
 `heldout.py run-next` uses a fixed small refusal envelope and exit 2 for unavailable

@@ -3,7 +3,7 @@
   "feature_id": "promotion-recommendation",
   "scope": "Current offline conformance with existing fixed synthetic fixtures. Real local Git objects and public CLI processes; FAKE qualification, lifecycle, usage, clock, remote anchors and tool receipts. No actual candidate benefit or native/model performance.",
   "capture_surface": "Actual Chrome screenshots of sanitized CLI summaries, not terminal images.",
-  "source_checkpoint": "858c067e39406e8bc6609fba08896c2dd0c18fde",
+  "source_checkpoint": "2ed5bf2a76e8e470006ffbedddf72cf2bc7dab48",
   "checkpoint_existed_before_runs": false,
   "source_digests": {
     "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
@@ -26,25 +26,25 @@
     "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
   },
   "helper_source_digests": {
-    "heldout.py": "d05ae35dae47b1449d38b2181aa8e75212edc9e747c25762b5cd0378f8b02c89",
-    "promotion.py": "5e1e9c50f37a80152b93339bd490acd04dcba0866a019ad122723370950cdd80"
+    "heldout.py": "170be91aa3e900feb6456b05ddda4669808f12d00867ef8eb799053c10912f95",
+    "promotion.py": "c31cbadb33e4ef241b0a96f66ef0379ef27daeda8e59daf5456b78e2129f237a"
   },
   "source_identity": "e85fcffa213dd3b7a74299fb1fc397e3ad21d1f408ba8b464cf09a4de350a45b",
   "grader_identity": "74b65d1d2955e6a35f6c7b7bd3a84ad1eaf06a173d65047dc98551539b308ea2",
-  "source18_identity": "7b900abaf8b8271291dba306fc4cf1397d1840ca6c777cfd3279451cb3bf4b7a",
+  "source18_identity": "7856d53d147182574e4c96934b4d020f8b8935b5db5e34c89be13eb5e8a9c1e8",
   "retained_evidence_sha256": {
-    "cli-311/result.json": "fb53605b0eede48c35325145c83a4806f07e8f88378b1dc2af28b65751fb1ebb",
-    "cli-314/result.json": "1ac092815acb71441d24a1b625deb77a94a1433d8c9bf68a5f41adf4b78f9701",
-    "focused311.log": "e3b94cf0896521831aa77185d16a8cdb77f7f5e94be70dc557bcc98e59ea120e",
-    "focused314.log": "b89484e0e4226eed92a07a3c069ed915c00e655f554ebca78b8511d9b272dc94",
-    "cli-smoke.py": "058d73660df610db19ddcc85098d0bca8a3be6cb79bf36c55cc36656e563ee8b",
+    "cli-311/result.json": "39a94cb8013274107cc11881a47fcf12386be8536b6e99d9cb39c3bf45f859b4",
+    "cli-314/result.json": "158ee80ffab905122130d68f7b462e44053d5706be2d439a08c0677207037e82",
+    "focused311.log": "147b182bf93c2a6b4242d0f4b31ca19fac753c1dbd27dfd9116246f15e0753f5",
+    "focused314.log": "e955718c1de4fb5a8a616481894849351ea793d4a0c95e0906485af6488f38ab",
+    "cli-smoke.py": "98210f8bb085a071000133974f8360413959c0178b7c6a4501cf6b58c376a036",
     "fixed-cli-driver.py": "098add9ccc4f504a483a1a876db7e99d4bc749f8508a50afa027d2b3d537bf95",
-    "correction-source-manifest.json": "6264f4ee142f2db4c133a317a20883116c8814529c1bf8ca70af4a56593f44fc",
-    "correction-handoff.json": "8f21785d14e99b5acf5137693b09a5e75fb5db66c1e1f7f2cbedeb520987d8af"
+    "correction-source-manifest.json": "87fd8227b209a5a39443dc9465058c28860a909d7c292e011cd2cefb9cd460fa",
+    "correction-handoff.json": "ba5b0ae37a651d290d5501d8c0bcef498201094d8da899d76091bac1ff637de2"
   },
   "checks": {
     "python_311": {
-      "tests": 53,
+      "tests": 56,
       "failures": 0,
       "errors": 0,
       "skips": 0,
@@ -52,7 +52,7 @@
       "test_scope": "focused promotion and heldout regression suites"
     },
     "python_314": {
-      "tests": 53,
+      "tests": 56,
       "failures": 0,
       "errors": 0,
       "skips": 0,
@@ -199,30 +199,30 @@
     "feedback_policy": "After feedback or exposure, future use is development/regression. This is a maintained rule, not a claim that this CLI smoke exercised aggregate feedback."
   },
   "artifact_sha256": {
-    "native-recommendation.json": "882a7cd049c1f49a5aa291ae8d26524e3901d9795003fa29a8ab064da568df73",
-    "native-recommendation.pdf": "39c207480cbfedf1bf5dcf96f8c3959568fda9e4e8275ff5e2e7dc3da9c3fded",
+    "native-recommendation.json": "50ae6f0a20720d8d9018204fef0ee72cb96a671abd2628216d45d88dd4089eeb",
+    "native-recommendation.pdf": "ca895a0e5aa4baa74c2a1c1ade5ac4e05be2b5f4a6ffb46a962f6e22bffb22ff",
     "native-recommendation-check.html": "c34874bd27306914a708b424796d472699957fb447e87f88201a711bc495b0b4",
     "native-recommendation-check.png": "a205a60c41134481072076ee2fbd336cf5e48bd41d99008be85e23f4e9ece6f9",
     "native-recommendation-result.html": "5031f1d9e434941044567967cd0e3704c3d4f881ceea16c541a840199248ce0e",
     "native-recommendation-result.png": "c104df8f17ed563b1e232776d1cec362b2868f1ede010092581fb82b389e78ae"
   },
   "renewal": {
-    "previous_checkpoint": "dfa4cbc217ebf343b07e72717751d0772dc0b79e",
-    "prior_capture_sha256": "b18f67fb387bbb3ac5d0828074ef017d0a4ea8bc54033bbc9515bb3aff9720b0",
-    "reason": "Selected PR69 review corrections distinguish development from heldout tasks, uncertainty from candidate failure, late drift, and known exposure.",
+    "previous_checkpoint": "858c067e39406e8bc6609fba08896c2dd0c18fde",
+    "prior_capture_sha256": "051bd713f2579561d0f2d79e7d5e8c7e6ea304f607ed8918049c92cdd6569dee",
+    "reason": "Selected PR69 review-2 corrections preserve local invalid/overlap rejection alongside known exposure and preserve established rejection when the final source read is unavailable.",
     "previous_evidence_retained": true,
-    "test_evidence": "53 focused checks per Python version on corrected bytes; earlier377 combined checks remain historical.",
+    "test_evidence": "56 focused checks per Python version on corrected bytes; earlier focused/combined checks remain historical.",
     "cli_evidence": "11 actual offline CLI calls per Python version reused with exact18 production and2 fixture-file hashes; no new CLI run for rendering.",
-    "command_provenance": "Actual execution used the retained correction smoke/driver; copies here are evidence only, not invoked.",
+    "command_provenance": "Actual execution used the retained correction2 smoke/driver; copies here are evidence only, not invoked.",
     "marker": "Existing one PDF-create marker reused; no new marker invocation.",
-    "delivery_status": "Prepared for parent integration and review; no release claim."
+    "delivery_status": "Prepared for coordinator review; no release claim."
   },
   "source_snapshot": {
     "kind": "working_tree_content_addressed",
-    "identity": "7b900abaf8b8271291dba306fc4cf1397d1840ca6c777cfd3279451cb3bf4b7a",
-    "base_commit": "541b34d9e84ee214a203aa48b96bb75b2c223749",
+    "identity": "7856d53d147182574e4c96934b4d020f8b8935b5db5e34c89be13eb5e8a9c1e8",
+    "base_commit": "17dae5a3e18900e8bb01fecec92372adffc4488b",
     "base_contains_corrections": false,
-    "matched_later_commit": "858c067e39406e8bc6609fba08896c2dd0c18fde",
-    "chronology": "The frozen corrected file bytes were used by the CLI runs. The source manifest/handoff and matching commit were recorded afterwards. No claim that the matching commit existed before execution or capture."
+    "matched_later_commit": "2ed5bf2a76e8e470006ffbedddf72cf2bc7dab48",
+    "chronology": "The frozen corrected file bytes and source manifest existed for the CLI runs. The matching commit was recorded after those runs and before this manual capture. No claim that the commit preceded execution."
   }
 }

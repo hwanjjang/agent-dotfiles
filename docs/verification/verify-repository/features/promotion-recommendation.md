@@ -29,8 +29,11 @@ must not become committed source evidence. Test bounded raw process/cap cleanup.
 A held-out-scoped or wrongly classified development input must not recommend;
 renaming IDs or using another execution root does not separate an identical case
 or counterpart `inputs` digest. Stable IDs with distinct inputs remain supported.
-`source_read_limit`, `git_unavailable` and `TimeoutExpired` return inconclusive;
-wrong objects, tampering and out-of-scope source changes reject.
+`source_read_limit`, `git_unavailable` and `TimeoutExpired` at the first check
+return inconclusive. At the second check, assert `source_unavailable` and preserve
+an established development critical/regression or local-evidence rejection;
+otherwise expect inconclusive. Wrong objects, tampering and out-of-scope source
+changes reject.
 
 A complete development report without held-out evidence stays inconclusive unless
 its frozen rule rejects. Current actual public qualification must stay unavailable;
@@ -61,7 +64,10 @@ lifecycle/clock, context/tool receipts and remote metadata **FAKE**. Check:
   Receipt bytes alone do not establish invocation chronology against a bypassing
   same-UID caller; this remains a cooperating trusted-host protocol.
 - Known pack material under a normalized alternate path or identical digest is
-  refused as an author input. Known author exposure before or during comparison
+  flagged without skipping validation. Combine it with a tampered preparation
+  receipt or overlapping inputs: the held-out result must be invalid and the
+  recommendation reject. Preflight must refuse the flag before any launch.
+  Known author exposure before or during comparison
   is exposed; unknown delivery is inconclusive; any candidate edit invalidates.
   Feedback after completion
   reclassifies future reuse without changing the recorded earlier comparison.
@@ -91,7 +97,8 @@ manual page and inspect actual captures separately from automated browser checks
 
 Both recommendation CLIs reject malformed/extra top-level input with exit 1 and
 a small envelope. Invalid nested evidence can return exit 0 with a full reject
-recommendation. The selected source process-limit/unavailability failures yield
+recommendation. A late selected source process-limit/unavailability failure adds
+`source_unavailable` without erasing an established reject; otherwise it yields
 inconclusive. Remote anchor uncertainty does not erase an independent development
 rejection. Preflight refusal, including bounded subprocess failure, uses exit 2.
 Inspect the payload, not exit 0 alone.
