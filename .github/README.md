@@ -34,6 +34,8 @@ environment. Resolve an up-to-date local ref for the PR's actual target first;
 The commands do not fetch, rebase or merge for you.
 
 ```sh
+(
+set -e
 python3.11 -m venv .local/ci-venv
 .local/ci-venv/bin/python -m pip install -r skills/screenshot-manual/requirements.txt
 .local/ci-venv/bin/python -c "import reportlab, pypdf, PIL"
@@ -62,6 +64,7 @@ if [ -n "$checkout_status" ]; then
   printf '%s\n' "$checkout_status"
   exit 1
 fi
+)
 ```
 
 The local three-dot diff checks committed branch changes since the merge base;
