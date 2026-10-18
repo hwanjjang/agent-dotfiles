@@ -1,15 +1,18 @@
 # Account observation and improvement loop
 
-Status: design for [issue #9](https://github.com/hwanjjang/agent-dotfiles/issues/9),
-2026-10-17. Source baseline: `ed1da03`. Slice 1 now has a
-[synthetic observation store and manual CLI](../../account/observation/README.md).
-The first native slice now provides an opt-in [Claude metadata adapter](../../account/observation/native.md)
-and installer registration, qualified on a disposable configuration on 2026-10-18.
-Explicit task binding and feedback are available through the manual CLI.
-Explicit reviewed synthetic case preparation/export is also available; automated
-diagnosis, live comparative experiments and operational promotion remain planned;
-large-ledger performance targets are unmeasured. No persistent real-account collection
-or scheduled work was activated.
+Status: original design for [issue #9](https://github.com/hwanjjang/agent-dotfiles/issues/9),
+2026-10-17, source baseline `ed1da03`; implementation status updated 2026-10-18.
+The [store and manual CLI](../../account/observation/README.md) support synthetic
+observations, explicit task feedback and reviewed synthetic development-case export.
+Opt-in [Claude and Codex adapters](../../account/observation/native.md) and installer
+registration exist with separate consent, native-trust and platform boundaries.
+The [capacity guide](../../account/observation/capacity.md) records the qualified
+10,000-callback synthetic PostToolUse workload on one reference host; mixed-workload
+latency and other environments remain unqualified. Offline evaluation accounting
+and diagnostic source-review recommendations are implemented. Automated diagnosis,
+authenticated comparative trials, operational promotion and automatic delivery
+remain unqualified or planned. No persistent real-account collection or scheduled
+work was activated by this implementation.
 
 ## Problem and intended experience
 
@@ -50,11 +53,11 @@ this design, not additional state-machine stages or installed capabilities.
 
 | Step | Present capability and boundary |
 | --- | --- |
-| 1. Observe | Synthetic store/CLI and opt-in Claude hook delivery exist; Codex collection remains planned. |
+| 1. Observe | Synthetic store/CLI and opt-in Claude/Codex hook delivery exist; consent, native trust and source-bound platform limits remain explicit. |
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
 | 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. Isolated model execution and independent holdout qualification remain unavailable. |
-| 5. Review | Existing independent review methods apply; the automated promotion gate is planned. |
+| 5. Review | Existing independent review methods and diagnostic source-review recommendations apply; operational eligibility and automatic promotion remain unavailable. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
 The ordinary PR route remains authoritative for authorized source work. Evaluation
@@ -76,8 +79,9 @@ acceptance or account activation boundaries.
 Claude observation was qualified with synthetic work on client 2.1.302 and actual
 Haiku 5.5, using disposable installer-generated settings and existing authentication.
 See the [native guide](../../account/observation/native.md) for tested callbacks and
-limits. Codex and Hermes observation remain unsupported. Missing features stay
-unknown rather than silently substituting another event or client.
+limits. Codex collection has separately qualified source-bound results in that guide;
+Hermes observation remains unsupported. Missing fields and unqualified platforms
+stay unknown rather than silently substituting another event or client.
 
 ## Selected architecture and alternatives
 
@@ -428,10 +432,13 @@ comparison plan before attributing it to the shared configuration.
 
 These are implementation boundaries, not newly published child issues. Slice 1
 is implemented and qualified with synthetic data as described in its
-[guide](../../account/observation/README.md). Slice 2 has the Claude-first implementation
-and qualification described in the native guide; Codex and large-ledger performance
-qualification remain open. Slice 3 has explicit task selections, feedback and reviewed synthetic case export;
-caller triage is implemented; automated diagnosis remains planned. Slices 4–5 remain planned. Each slice depends
+[guide](../../account/observation/README.md). Slice 2 supports Claude and Codex with separately qualified native results and
+trust/platform limits in the native guide. Capacity qualification covers the measured
+synthetic PostToolUse workload only. Slice 3 has explicit task selections, feedback
+and reviewed synthetic case export; caller triage is implemented and automated
+diagnosis remains planned. Slices 4–5 provide offline accounting and diagnostic
+recommendations; authenticated comparative trials and eligible delivery remain
+unqualified. Each slice depends
 on the previous contract; expensive model trials begin after deterministic
 collection and isolation qualification.
 
@@ -453,9 +460,11 @@ declared reference machine, tested with concurrent writers and 10,000 synthetic
 events. Record the actual distribution and durability cost; this is a target,
 not an availability promise. Bound every payload/batch and report dropped fields.
 
-Next steps are independent Codex qualification and slice 3 task feedback/case
-preparation using the existing Claude metadata. The doctor supplies readiness
-checks; the separate native adapter owns collection. Real-account activation, comparison
+Next steps are authenticated Linux and native-child qualification, a qualified
+isolated execution/evidence adapter, same-model development comparison, then
+operational recommendation and disposable-account delivery/rollback. Existing
+Codex collection and task feedback/case export do not need reimplementation. The
+doctor supplies readiness checks; the separate native adapters own collection. Real-account activation, comparison
 model-budget selection and any recurring analysis are later explicit operations.
 Open qualification questions are exact installed-client event coverage,
 safe model authentication inside the trial sandbox and supported project-filtered

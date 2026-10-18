@@ -164,6 +164,8 @@ Offline development comparison is available through
 It freezes and grades supplied synthetic evidence; it does not execute models or
 establish holdout or promotion eligibility.
 
+Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
+
 ## Principles
 
 - **Keep shared instructions small.** Put durable defaults in policies and load
@@ -302,5 +304,3 @@ Technical references:
 ## License
 
 [MIT](LICENSE).
-
-Development comparisons can also produce a [source-review recommendation](docs/decisions/promotion-recommendations.md). The pure gate recomputes supplied evidence and retains operational eligibility as unavailable; it never merges or installs.
