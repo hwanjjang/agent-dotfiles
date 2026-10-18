@@ -1,0 +1,464 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Native source review and same-host evidence",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/architecture/native-recommendation-workflow.html",
+    "repository": {
+      "url": "https://github.com/hwanjjang/agent-dotfiles",
+      "revision": "2ed5bf2a76e8e470006ffbedddf72cf2bc7dab48",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "lanes": [
+    {
+      "id": "prepare",
+      "label": "Optional authorized preflight and existing serial execution"
+    },
+    {
+      "id": "recorded",
+      "label": "Guarded recorded batches / separate frozen schedules"
+    },
+    {
+      "id": "review",
+      "label": "Read-only recommendation / trusted same-host receipts"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "source",
+      "lane": "prepare",
+      "col": 0,
+      "type": "database",
+      "label": "Committed arms",
+      "sublabel": "Full frozen component roots",
+      "tag": "No candidate generation",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 226,
+          "end_line": 277,
+          "label": "Actual source objects and arm binding"
+        }
+      ]
+    },
+    {
+      "id": "manifest",
+      "lane": "prepare",
+      "col": 1,
+      "type": "database",
+      "label": "Private manifest",
+      "sublabel": "Selected fork-none receipts",
+      "tag": "Candidate frozen first",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 72,
+          "end_line": 161,
+          "label": "Closed evidence and retained exposure flag"
+        }
+      ]
+    },
+    {
+      "id": "anchors",
+      "lane": "prepare",
+      "col": 2,
+      "type": "cloud",
+      "label": "Fetch anchors",
+      "sublabel": "Exact GitHub comments",
+      "tag": "Uncertain anchors cannot qualify",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 40,
+          "end_line": 65,
+          "label": "Bounded lookup and exact metadata"
+        },
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 142,
+          "end_line": 149,
+          "label": "Candidate and pack chronology"
+        }
+      ]
+    },
+    {
+      "id": "preflight",
+      "lane": "prepare",
+      "col": 3,
+      "type": "security",
+      "label": "Preflight receipt",
+      "sublabel": "Before first reservation",
+      "tag": "Cooperating wrapper chronology",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 236,
+          "end_line": 254,
+          "label": "Refuse exposure before launch delegation"
+        },
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 164,
+          "end_line": 166,
+          "label": "Deterministic trusted-host receipt"
+        }
+      ]
+    },
+    {
+      "id": "serial",
+      "lane": "prepare",
+      "col": 4,
+      "type": "security",
+      "label": "Serial gate",
+      "sublabel": "Reserve before launch",
+      "tag": "Current proof required",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/trial_reservation.py",
+          "line": 194,
+          "end_line": 219,
+          "label": "Fixed launch and cumulative budget"
+        }
+      ]
+    },
+    {
+      "id": "native",
+      "lane": "prepare",
+      "col": 5,
+      "type": "backend",
+      "label": "Owned native trial",
+      "sublabel": "Existing bounded lifecycle",
+      "tag": "No new executor",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/native_trial.py",
+          "line": 1230,
+          "end_line": 1261,
+          "label": "Setup, observe and finally cleanup"
+        }
+      ]
+    },
+    {
+      "id": "development",
+      "lane": "recorded",
+      "col": 0,
+      "type": "database",
+      "label": "Development batch",
+      "sublabel": "Unscoped native report",
+      "tag": "Distinct actual task inputs",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 293,
+          "end_line": 302,
+          "label": "Require unscoped development report"
+        },
+        {
+          "path": "scripts/improvement/trial_admission.py",
+          "line": 602,
+          "end_line": 643,
+          "label": "Guarded attempts and serial audit"
+        }
+      ]
+    },
+    {
+      "id": "heldout",
+      "lane": "recorded",
+      "col": 5,
+      "type": "database",
+      "label": "Held-out batch",
+      "sublabel": "Distinct inputs / separate root",
+      "tag": "Frozen report and attempts",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 177,
+          "end_line": 192,
+          "label": "Distinct input content and recomputation"
+        }
+      ]
+    },
+    {
+      "id": "recompute",
+      "lane": "review",
+      "col": 0,
+      "type": "backend",
+      "label": "Recompute report",
+      "sublabel": "Compare canonical bytes",
+      "tag": "No caller success flag",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 293,
+          "end_line": 309,
+          "label": "Development scope and report binding"
+        }
+      ]
+    },
+    {
+      "id": "git",
+      "lane": "review",
+      "col": 1,
+      "type": "security",
+      "label": "Verify Git objects",
+      "sublabel": "Complete arm byte inventories",
+      "tag": "Bounded cumulative Git window",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 145,
+          "end_line": 192,
+          "label": "Fixed raw commands and read limits"
+        },
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 226,
+          "end_line": 277,
+          "label": "Scope, modes and raw blob binding"
+        }
+      ]
+    },
+    {
+      "id": "assess",
+      "lane": "review",
+      "col": 2,
+      "type": "security",
+      "label": "Optional same-host",
+      "sublabel": "Anchor / exposure / late guards",
+      "tag": "Unknown reads stay unknown",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 169,
+          "end_line": 233,
+          "label": "Validate fully before exposure outcome"
+        },
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 319,
+          "end_line": 331,
+          "label": "Only assess supplied held-out records"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "lane": "review",
+      "col": 3,
+      "type": "backend",
+      "label": "Rules + final checks",
+      "sublabel": "Recheck source after assess",
+      "tag": "Both rules must qualify",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 28,
+          "end_line": 96,
+          "label": "Declared quality, regression and cost"
+        },
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 324,
+          "end_line": 350,
+          "label": "Retain reject through late uncertainty"
+        },
+        {
+          "path": "scripts/improvement/heldout.py",
+          "line": 206,
+          "end_line": 222,
+          "label": "Frozen held-out rule and final guards"
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "lane": "review",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Review result",
+      "sublabel": "recommend/reject/inconclusive",
+      "tag": "Actual proof still pending",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 319,
+          "end_line": 362,
+          "label": "Reasons and canonical recommendation"
+        }
+      ]
+    },
+    {
+      "id": "authority",
+      "lane": "review",
+      "col": 5,
+      "type": "security",
+      "label": "Separate authority",
+      "sublabel": "Source, merge, install false",
+      "tag": "No backend attestation",
+      "width": 153,
+      "sources": [
+        {
+          "path": "scripts/improvement/promotion.py",
+          "line": 356,
+          "end_line": 362,
+          "label": "False authority flags and digest"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "source-manifest",
+      "from": "source",
+      "to": "manifest"
+    },
+    {
+      "id": "manifest-anchors",
+      "from": "manifest",
+      "to": "anchors"
+    },
+    {
+      "id": "anchors-preflight",
+      "from": "anchors",
+      "to": "preflight"
+    },
+    {
+      "id": "preflight-serial",
+      "from": "preflight",
+      "to": "serial"
+    },
+    {
+      "id": "serial-native",
+      "from": "serial",
+      "to": "native"
+    },
+    {
+      "id": "native-heldout",
+      "from": "native",
+      "to": "heldout"
+    },
+    {
+      "id": "development-recompute",
+      "from": "development",
+      "to": "recompute"
+    },
+    {
+      "id": "recompute-git",
+      "from": "recompute",
+      "to": "git"
+    },
+    {
+      "id": "git-assess",
+      "from": "git",
+      "to": "assess"
+    },
+    {
+      "id": "heldout-assess",
+      "from": "heldout",
+      "to": "assess",
+      "role": "branch",
+      "label": "Held-out input"
+    },
+    {
+      "id": "assess-rules",
+      "from": "assess",
+      "to": "rules"
+    },
+    {
+      "id": "rules-result",
+      "from": "rules",
+      "to": "result"
+    },
+    {
+      "id": "result-authority",
+      "from": "result",
+      "to": "authority"
+    }
+  ],
+  "mainPath": [
+    "development",
+    "recompute",
+    "git",
+    "assess",
+    "rules",
+    "result",
+    "authority"
+  ],
+  "semanticChecks": {
+    "allowedRoots": [
+      "source",
+      "development"
+    ],
+    "allowedTerminals": [
+      "authority"
+    ],
+    "requiredEdges": [
+      {
+        "from": "preflight",
+        "to": "serial"
+      },
+      {
+        "from": "heldout",
+        "to": "assess"
+      },
+      {
+        "from": "result",
+        "to": "authority"
+      }
+    ],
+    "requiredPaths": [
+      {
+        "from": "development",
+        "to": "authority"
+      },
+      {
+        "from": "source",
+        "to": "authority"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Existing execution, separate review",
+      "items": [
+        "Authorized preflight refuses known pack exposure before launch. Deterministic receipt bytes rely on cooperating wrapper use, not hostile-caller chronology.",
+        "Recommendation launches no trial. Development must be unscoped; held-out primary/counterpart input content cannot reuse development inputs."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Limited same-host claim",
+      "items": [
+        "Selected trusted-maintainer receipts support not-supplied-to-author during the fixed comparison, not hostile same-UID secrecy. Unknown reads stay unknown.",
+        "Remote anchor uncertainty preserves independent development rejection. Known exposure never skips later validation; tampering or overlapping inputs still reject.",
+        "Recheck records after remote refresh and source after assessment. Two Git reads share 12 seconds excluding remote waits; late unavailability preserves established reject."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Conformance is not actual benefit",
+      "items": [
+        "Positive CLI conformance uses FAKE lifecycle, qualification, clock, tool and remote-anchor evidence. No actual held-out comparison is claimed.",
+        "A real reject or inconclusive is a valid endpoint. Source acceptance, merge and account installation require separate authority."
+      ]
+    }
+  ]
+}

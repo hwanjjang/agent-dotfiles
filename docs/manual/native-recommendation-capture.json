@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "feature_id": "promotion-recommendation",
+  "scope": "Current offline conformance with existing fixed synthetic fixtures. Real local Git objects and public CLI processes; FAKE qualification, lifecycle, usage, clock, remote anchors and tool receipts. No actual candidate benefit or native/model performance.",
+  "capture_surface": "Actual Chrome screenshots of sanitized CLI summaries, not terminal images.",
+  "source_checkpoint": "2ed5bf2a76e8e470006ffbedddf72cf2bc7dab48",
+  "checkpoint_existed_before_runs": false,
+  "source_digests": {
+    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "c7d2a0cf3480025edec132ccf2ff4fec67931056f2cc451b65af56d67c781ebc",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
+    "native_trial_protocol.py": "3fedcf9482807b88acae0818d28f95cef698db7c8f51d6456661ef42c1ebcef9",
+    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
+    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
+  },
+  "grader_source_digests": {
+    "evaluation.py": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
+    "trial_admission.py": "bb07e3c5cd3d8d8a5612f649d10cff25d4236a0d5c972e6cba43326f0c589f3e",
+    "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
+  },
+  "helper_source_digests": {
+    "heldout.py": "170be91aa3e900feb6456b05ddda4669808f12d00867ef8eb799053c10912f95",
+    "promotion.py": "c31cbadb33e4ef241b0a96f66ef0379ef27daeda8e59daf5456b78e2129f237a"
+  },
+  "source_identity": "e85fcffa213dd3b7a74299fb1fc397e3ad21d1f408ba8b464cf09a4de350a45b",
+  "grader_identity": "74b65d1d2955e6a35f6c7b7bd3a84ad1eaf06a173d65047dc98551539b308ea2",
+  "source18_identity": "7856d53d147182574e4c96934b4d020f8b8935b5db5e34c89be13eb5e8a9c1e8",
+  "retained_evidence_sha256": {
+    "cli-311/result.json": "39a94cb8013274107cc11881a47fcf12386be8536b6e99d9cb39c3bf45f859b4",
+    "cli-314/result.json": "158ee80ffab905122130d68f7b462e44053d5706be2d439a08c0677207037e82",
+    "focused311.log": "147b182bf93c2a6b4242d0f4b31ca19fac753c1dbd27dfd9116246f15e0753f5",
+    "focused314.log": "e955718c1de4fb5a8a616481894849351ea793d4a0c95e0906485af6488f38ab",
+    "cli-smoke.py": "98210f8bb085a071000133974f8360413959c0178b7c6a4501cf6b58c376a036",
+    "fixed-cli-driver.py": "098add9ccc4f504a483a1a876db7e99d4bc749f8508a50afa027d2b3d537bf95",
+    "correction-source-manifest.json": "87fd8227b209a5a39443dc9465058c28860a909d7c292e011cd2cefb9cd460fa",
+    "correction-handoff.json": "ba5b0ae37a651d290d5501d8c0bcef498201094d8da899d76091bac1ff637de2"
+  },
+  "checks": {
+    "python_311": {
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "actual_cli_calls": 11,
+      "test_scope": "focused promotion and heldout regression suites"
+    },
+    "python_314": {
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "actual_cli_calls": 11,
+      "test_scope": "focused promotion and heldout regression suites"
+    }
+  },
+  "result_summary": [
+    {
+      "name": "synthetic-positive",
+      "exit": 0,
+      "recommendation": "recommend",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": "verified"
+    },
+    {
+      "name": "no-heldout",
+      "exit": 0,
+      "recommendation": "inconclusive",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": null
+    },
+    {
+      "name": "exposure-answer",
+      "exit": 0,
+      "recommendation": "inconclusive",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": "exposed"
+    },
+    {
+      "name": "exposure-unknown_delivery",
+      "exit": 0,
+      "recommendation": "inconclusive",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": "inconclusive"
+    },
+    {
+      "name": "exposure-candidate_edit",
+      "exit": 0,
+      "recommendation": "reject",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": "invalid"
+    },
+    {
+      "name": "native-heldout-no-benefit-reject",
+      "exit": 0,
+      "recommendation": "reject",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": "verified"
+    },
+    {
+      "name": "remote-edit-inconclusive",
+      "exit": 0,
+      "recommendation": "inconclusive",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": "inconclusive"
+    },
+    {
+      "name": "caller-verified-flag-refused",
+      "exit": 1,
+      "status": "rejected",
+      "heldout_status": null
+    },
+    {
+      "name": "current-public-proof-unavailable",
+      "exit": 0,
+      "recommendation": "inconclusive",
+      "source_accepted": false,
+      "promotion_eligible": false,
+      "merge_authorized": false,
+      "install_authorized": false,
+      "heldout_status": null
+    },
+    {
+      "name": "preflight-before-first-reservation",
+      "exit": 0,
+      "status": "ready",
+      "heldout_status": null
+    },
+    {
+      "name": "preflight-prefix-replay-refused",
+      "exit": 2,
+      "status": "refused",
+      "heldout_status": null
+    }
+  ],
+  "capture_method": {
+    "browser": "Existing Google Chrome",
+    "transport": "Archify ChromeVisualBrowser direct DevTools pipe",
+    "viewport": {
+      "width": 1100,
+      "height": 690
+    },
+    "overflow_check": "PASS",
+    "captures_visually_inspected": 2,
+    "browser_closed": true
+  },
+  "pdf_validation": {
+    "builder": "screenshot-manual build_manual.py",
+    "renderer": "PDFium render_pages.py",
+    "page_count": 2,
+    "text_check": "PASS",
+    "pages_visually_inspected": 2,
+    "visual_check": "PASS",
+    "create_marker_count": 1
+  },
+  "limits": {
+    "actual_authentication_access": false,
+    "actual_native_sessions": 0,
+    "actual_model_calls": 0,
+    "actual_vm_actions": 0,
+    "actual_github_lookups": 0,
+    "current_native_qualification": "unavailable",
+    "actual_pilot_candidate_created": false,
+    "actual_heldout_pack_created": false,
+    "candidate_benefit_established": false,
+    "source_accepted": false,
+    "promotion_eligible": false,
+    "merge_authorized": false,
+    "install_authorized": false,
+    "unobserved_filesystem_reads": "unknown",
+    "author_context_os_isolation": "not_proven",
+    "feedback_policy": "After feedback or exposure, future use is development/regression. This is a maintained rule, not a claim that this CLI smoke exercised aggregate feedback."
+  },
+  "artifact_sha256": {
+    "native-recommendation.json": "50ae6f0a20720d8d9018204fef0ee72cb96a671abd2628216d45d88dd4089eeb",
+    "native-recommendation.pdf": "ca895a0e5aa4baa74c2a1c1ade5ac4e05be2b5f4a6ffb46a962f6e22bffb22ff",
+    "native-recommendation-check.html": "c34874bd27306914a708b424796d472699957fb447e87f88201a711bc495b0b4",
+    "native-recommendation-check.png": "a205a60c41134481072076ee2fbd336cf5e48bd41d99008be85e23f4e9ece6f9",
+    "native-recommendation-result.html": "5031f1d9e434941044567967cd0e3704c3d4f881ceea16c541a840199248ce0e",
+    "native-recommendation-result.png": "c104df8f17ed563b1e232776d1cec362b2868f1ede010092581fb82b389e78ae"
+  },
+  "renewal": {
+    "previous_checkpoint": "858c067e39406e8bc6609fba08896c2dd0c18fde",
+    "prior_capture_sha256": "051bd713f2579561d0f2d79e7d5e8c7e6ea304f607ed8918049c92cdd6569dee",
+    "reason": "Selected PR69 review-2 corrections preserve local invalid/overlap rejection alongside known exposure and preserve established rejection when the final source read is unavailable.",
+    "previous_evidence_retained": true,
+    "test_evidence": "56 focused checks per Python version on corrected bytes; earlier focused/combined checks remain historical.",
+    "cli_evidence": "11 actual offline CLI calls per Python version reused with exact18 production and2 fixture-file hashes; no new CLI run for rendering.",
+    "command_provenance": "Actual execution used the retained correction2 smoke/driver; copies here are evidence only, not invoked.",
+    "marker": "Existing one PDF-create marker reused; no new marker invocation.",
+    "delivery_status": "Prepared for coordinator review; no release claim."
+  },
+  "source_snapshot": {
+    "kind": "working_tree_content_addressed",
+    "identity": "7856d53d147182574e4c96934b4d020f8b8935b5db5e34c89be13eb5e8a9c1e8",
+    "base_commit": "17dae5a3e18900e8bb01fecec92372adffc4488b",
+    "base_contains_corrections": false,
+    "matched_later_commit": "2ed5bf2a76e8e470006ffbedddf72cf2bc7dab48",
+    "chronology": "The frozen corrected file bytes and source manifest existed for the CLI runs. The matching commit was recorded after those runs and before this manual capture. No claim that the commit preceded execution."
+  }
+}

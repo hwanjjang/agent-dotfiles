@@ -106,8 +106,11 @@ Reports label this **declaration**, not verification:
 `native_artifact_same_host_heldout_declared_comparison` for their respective routes.
 No case generation, context separation or unseen-by-author certification happens
 here; `live_eligible=false` and promotion remains inconclusive. Actual case
-preparation, frozen EN/KO runs and the [same-host protocol](account-improvement-loop.md#same-host-held-out-evaluation)
-remain separate work.
+preparation and frozen EN/KO runs remain separate work. The
+[leaf recommendation verifier](promotion-recommendations.md#same-host-evidence-manifest)
+consumes actual native reports plus selected context/anchor/preflight/exposure
+evidence under the [same-host protocol](account-improvement-loop.md#same-host-held-out-evaluation).
+It does not change these evaluator declaration facts or enable source/account authority.
 
 ## In-tree reviewed producer
 
@@ -476,7 +479,10 @@ synthetic report uses `deterministic_development_comparison`; native admission u
 the separate evidence kind above. No caller flag, account-doctor result or mock
 isolation receipt establishes qualification. The [revised design](account-improvement-loop.md#same-host-held-out-evaluation)
 requires context separation and exposure records, not an external custodian.
-No full issue-26 acceptance or actual comparative result is claimed by this slice.
+The [native source-review consumer](promotion-recommendations.md#native-report-and-committed-source-review)
+recomputes the sealed batch and verifies the full committed arm inventories; its
+optional same-host verifier remains a separate leaf. No full issue-26 acceptance
+or actual comparative result is claimed by this slice.
 The [implementation handoff](account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
 links collection (#54), protected grading (#55) and their admission consumer (#26).
 

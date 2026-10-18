@@ -2692,27 +2692,28 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/promotion-recommendations.md",
-      "summary": "Recompute development evidence and return a bounded source-review recommendation; operational eligibility remains unavailable.",
+      "summary": "Recompute recorded reports, verify complete committed arm sources and optionally assess selected same-host held-out receipts; actual qualifying comparisons remain pending.",
       "when": [
-        "A frozen development comparison needs a reproducible reject/inconclusive recommendation before source review."
+        "Frozen development/native reports need a reproducible source-review recommendation, or an authorized same-host schedule needs preflight."
       ],
-      "usage": "Run promotion.py recommend with experiment, report, completions, current_spec and source_diff_digest. It never merges or installs.",
+      "usage": "Use promotion.py recommend-native for sealed NativeBatch and committed-source review, optionally with heldout_record_path. Legacy recommend stays diagnostic. heldout.py run-next is a separate authorized launch adapter; read the guide first.",
       "behavior": [
-        "Recompute the complete evaluation report and bind baseline/candidate/experiment/report/source-diff references.",
-        "Apply the frozen primary metric, per-case regression margin and explicit token/time rule; candidate critical failures reject despite aggregate gain.",
-        "Expose critical counts by arm: baseline defects remain diagnostic when the candidate fixes them; only candidate critical violations reject.",
-        "Unknown usage and incomplete trials remain inconclusive. Currency is required only when the frozen rule explicitly declares it.",
-        "A positive synthetic arithmetic result does not establish actual task or same-host held-out evidence; current promotion_eligible, merge_authorized and install_authorized stay false.",
-        "A bounded comparison may correctly find no improvement. Planned same-host held-out checks use fresh contexts and exposure tracking without external custodians or new accounts. Do not repeat experiments until a candidate wins; account application remains deferred."
+        "Verify actual commit/tree/blob objects and complete component inventories against guarded arm bytes; refuse untested paths or file modes.",
+        "Require unscoped development evidence and separate held-out task content; recompute native reports with current qualification, accounting and model requirements.",
+        "Verify selected fork-none receipts, normalized pack separation, remote anchors and known exposure. Exposure cannot mask local tampering or overlapping inputs; anchor uncertainty alone cannot reject a candidate.",
+        "Recheck held-out records after anchor refresh and source after assessment; late source uncertainty preserves established reject. Preflight refuses known pack exposure and relies on cooperating wrapper chronology.",
+        "Apply both frozen rules without retrying until improvement; candidate critical violations reject and baseline defects remain diagnostic.",
+        "Return recommend/reject/inconclusive with bounded reasons. FAKE positive conformance is not an actual beneficial candidate; source acceptance, merge and install authority remain false."
       ],
       "outputs": [
-        "Reject or inconclusive recommendation with fixed reasons and canonical source/evidence references."
+        "Canonical source/evidence references and bounded recommendation; optional same-host provenance and rule assessment."
       ],
       "tags": [
         "self-improvement",
         "eval",
         "account",
-        "design"
+        "source-review",
+        "same-host"
       ]
     },
     {
