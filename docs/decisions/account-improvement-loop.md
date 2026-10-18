@@ -6,7 +6,7 @@ Status: design for [issue #9](https://github.com/hwanjjang/agent-dotfiles/issues
 The first native slice now provides an opt-in [Claude metadata adapter](../../account/observation/native.md)
 and installer registration, qualified on a disposable configuration on 2026-10-18.
 Explicit task binding and feedback are available through the manual CLI.
-Codex collection, reviewed case export, experiments and promotion interfaces remain planned;
+Reviewed case export, live comparative experiments and operational promotion remain planned;
 large-ledger performance targets are unmeasured. No persistent real-account collection
 or scheduled work was activated.
 
