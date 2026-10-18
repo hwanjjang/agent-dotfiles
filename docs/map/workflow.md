@@ -41,7 +41,8 @@ See the [screenshot walkthrough](../manual/workflow.pdf) for two user paths.
 
 The Anytime band also includes communication/execution policies and an **Account
 setup & runtime** group. Use it for portable install/update/removal, ownership, planning hooks
-and reviewer launch diagnostics. These are supporting sources, not extra SDLC
+and reviewer launch diagnostics. Account doctor adds offline/native/model checks;
+Paseo is an explicit option, with its own real-model evidence and cleanup. These are supporting sources, not extra SDLC
 stages or installed account features. Their dialogs link to the authoritative
 guides; the account selection comparison is linked from the account guide.
 
@@ -66,6 +67,11 @@ for today's runnable synthetic example. An improvement candidate can enter the
 ordinary investigation/specification/build/review route when appropriate; eval
 adds a behavioral comparison and does not replace project tests or independent
 review. Collection consent does not authorize inference, publication or deployment.
+
+Account doctor connects to this cycle as setup qualification before eval and an
+affected-client check after deployment. Failures can feed reviewed case preparation.
+Its successful model scenario is not comparative evidence; the loop design owns
+the [reuse boundary](../decisions/account-improvement-loop.md#account-qualification-and-reuse).
 
 ## Source and maintenance
 

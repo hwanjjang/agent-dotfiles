@@ -58,15 +58,22 @@ an account installation manual.
 The [account source walkthrough](account-source.pdf) shows the installation and hook-guide Anytime
 entries. The screenshots demonstrate map navigation, not a completed installation. Its [editable source](account-source.json),
 [ownership capture](account-source.png) and [hook capture](account-hooks.png)
-show the actual expanded dialogs from workflow digest `b4f054f4165a`, captured
-on 2026-10-17 in isolated Chrome at 2x device scale. The maintained browser
+show actual expanded dialogs captured on 2026-10-17 in isolated Chrome at 2x
+device scale. These captures predate the later improvement-loop qualification
+details; the illustrated controls, commands and source links remain applicable. The maintained browser
 recipe verifies their source links and the distinction between delivery and native
 activation. Installation commands remain authoritative in the account guide.
 
-Both PDF pages were rendered with PDFium and visually checked for readable text,
-complete screenshots, margins and captions. Text and page count were checked with
+All three account PDF pages were rendered with PDFium and visually checked for
+readable text, complete screenshots, margins and captions. Text and page count were checked with
 pypdf. Regenerate with the screenshot-manual scripts above, substituting
 `account-source.json`; recapture when either documented dialog changes.
+
+The account walkthrough also covers the account-doctor node and its optional
+real-model/Paseo path. Its [doctor capture](account-doctor.png) and third page were
+recaptured from the generated map; screenshots prove navigation, not a passing
+account check. The [account verification recipe](../verification/verify-repository/features/account-verification.md)
+owns the behavioral checks.
 
 ## Complete English and Korean user guides
 

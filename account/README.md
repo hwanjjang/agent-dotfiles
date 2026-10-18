@@ -39,6 +39,32 @@ settings. Empty parent directories, receipts from other managers and transaction
 backups remain. Modified managed content blocks update/removal until reconciled;
 there is no blanket force-delete option.
 
+### Review installation and hook activation together
+
+The preview's `hook_activation` section lists the exact Codex event, matcher,
+command and definition hash for the selected source revision. Its seven planning
+events are SessionStart, UserPromptSubmit, PreToolUse, PostToolUse,
+PermissionRequest, PreCompact and Stop. Both clients' hook commands run outside the model sandbox. The `claude` list also
+provides exact definitions: `runs_when_event_fires: true` means they execute after
+installation when the event fires; `native_trust_step: false` means there is no
+Codex-style trust step. The shared `trust_persists` flag describes Codex native
+trust only. Keep previews local: their resolved commands contain host paths.
+
+When requesting an account transition, include both installation and activation
+in one concrete approval: identify the target, source revision, reviewed preview
+and these execution effects. For example: “Apply this reviewed preview and trust
+only its listed Codex planning hooks through native /hooks; their execution is
+outside the sandbox and trust persists.” Reuse that authority while the definitions
+and scope match. Reconcile any changed definition before trusting it. An external
+approval reviewer may still require clarification; this repository cannot override
+its decision.
+
+The installer registers hooks but does not grant native trust. After applying,
+check ownership with `doctor`, compare native `/hooks` definitions with the reviewed
+preview, activate only authorized definitions, then verify native/model behavior.
+`doctor` remains diagnostic and never approves hooks. This workflow avoids an
+ambiguous “check the hooks” request without introducing a trust-bypass option.
+
 ### Optional integrations
 
 ```sh
@@ -69,6 +95,131 @@ GitHub remains read-only. Missing environment variables must be supplied locally
 overwrite permission. Disabled state and unrelated connections are preserved.
 See [MCP templates](../mcp/README.md) for transports and service limits. Configuration
 delivery does not prove authentication or a working connection.
+
+## Diagnose and exercise the installation
+
+`status` checks receipt ownership. `doctor` adds actionable setup diagnostics; use
+it after installation, updates, client upgrades or a missing skill/hook report.
+Run from this checkout with the same Python 3.11+ entry point:
+
+```sh
+# Local files/settings only: no client process, model request or account writes.
+sh scripts/setup-account.sh doctor
+sh scripts/setup-account.sh doctor --json
+
+# Query installed clients without a model turn. Start with Codex.
+sh scripts/setup-account.sh doctor --native --client codex
+sh scripts/setup-account.sh doctor --native --client claude
+```
+
+Offline checks reuse the ownership receipt and detect changed assets/fragments,
+missing or conflicting skill paths, masking instructions, competing planning
+routes and missing client executables. Same-source legacy aliases are allowed.
+Native Codex checks actual skill source paths and effective hook trust. A
+`modified` or untrusted hook is **blocked**, with `/hooks` as the next action; the
+command never trusts hooks or bypasses review. Claude initialization checks skill
+commands and actual SessionStart recovery of a synthetic selected plan.
+
+Native checks run on the current account only; `--home` remains useful for offline
+inspection of another/disposable target. Native clients may update their local
+state/caches and run existing startup hooks. The probe sends no user/model turn,
+uses temporary synthetic project data and tears down its own processes.
+
+A real model scenario is a separate, explicit opt-in:
+
+```sh
+# Replace MODEL_ID with a low-cost model actually offered by this client.
+sh scripts/setup-account.sh doctor --model-smoke --client codex --model MODEL_ID \
+  --evidence-dir .local/account-checks/codex-001
+sh scripts/setup-account.sh doctor --model-smoke --client claude --model MODEL_ID \
+  --evidence-dir .local/account-checks/claude-001
+
+# Natural selection: no skill names in the task; specification → task planning.
+sh scripts/setup-account.sh doctor --model-smoke --scenario routing \
+  --client claude --model MODEL_ID --evidence-dir .local/account-checks/routing-001
+
+# Paseo is optional. This includes a second actual model task via the local daemon.
+sh scripts/setup-account.sh doctor --model-smoke --client codex --model MODEL_ID \
+  --with-paseo --evidence-dir .local/account-checks/paseo-001
+# Connection-only Paseo diagnostic, without model requests:
+sh scripts/setup-account.sh doctor --with-paseo
+```
+
+The model must read the installed `to-spec`, account entry point and four selected
+policies, then draft a specification for synthetic CLI requirements. The grader
+checks a fresh scenario marker, four exact stdout/stderr/exit-code examples,
+acceptance criteria, no fabricated test execution, source-reading evidence and
+unchanged inputs. Native tool traces establish source reads. Paseo's summarized
+logs are supplemented by exact source-content readback and its inspected actual
+model ID. Paseo/Codex labels this evidence `readback-only` and leaves
+`source_read_verified` false; it is not native tool-level proof. A valid reply or successful launch
+alone cannot pass. This bounded scenario does not certify every skill or a full SDLC.
+
+`--scenario routing` checks native Codex/Claude selection of the installed spec and
+planning methods without naming them in the task. It uses the client's structured
+output facility and checks source reads or successful native skill injection,
+acceptance coverage, prior-task dependencies and concrete verification. It does
+not publish tickets, implement code or run the full SDLC; it cannot be combined
+with `--with-paseo`. Default `spec` remains the explicitly selected skill scenario.
+
+Model identity is checked automatically. Claude must report the requested ID in
+initialization and actual usage. Codex uses the native app-server's thread model,
+completed turn and reroute events, with provider model fallback disabled. Missing
+or conflicting identity cannot pass; this is client-observed identity, not an
+independent audit of the provider's internal routing.
+
+Choose an exact model ID from the installed client's catalog; there is no silent
+fallback or retry. A low-cost model is sufficient for this small task. Availability
+and pricing change, so the tool requires `--model` rather than pinning a default.
+Models receive account instructions and selected installed source content through
+the authenticated client; inspect that material and obtain any required transfer
+approval before running. Authentication, personal memory, session history and
+unrelated account files are excluded by the test prompt. Codex uses read-only /
+approval-never; Claude exposes Read, plus Skill for routing. Existing client startup hooks still apply.
+The scenario does not modify trust or persistent permission settings.
+
+Model checks may consume subscription/API quota. `--timeout` bounds each subprocess
+(default 90 seconds, maximum 300), with a short bounded shutdown/reap allowance.
+Codex protocol steps share one process deadline. No automatic retries or expensive
+fallbacks run. Failed attempts retain an attempted state; unknown delivery is not
+reported as proof that no model request was sent.
+Claude also requests a USD 0.50 CLI budget. Codex/Paseo have no verified hard-dollar
+cap here: bounded runtime and a small prompt are not a guaranteed spending limit.
+Paseo reuses the selected model at low effort, an isolated local workspace, and the
+provider's normal `auto` (Codex) or `plan` (Claude) mode. It archives only resources
+created by this check, then removes its temporary project registration. Remote
+Paseo hosts, UI interaction and other providers are
+outside this adapter; Paseo is never required unless selected. If native model
+execution fails, an additional Paseo request is not sent.
+
+Evidence directories must be new, private and ignored/outside the checkout. They
+retain source identity, prompt, synthetic input, native logs, answer and grades;
+Paseo adds owned resource IDs and cleanup records. Raw output may contain account
+paths or context. Never publish it as part of this public repository. Reusing an
+existing directory is refused. Failures and quota limits are retained, not erased.
+
+Reports use **pass / fail / blocked / skipped** per check. Exit 0 means the selected
+scope passed, 1 means a finding or blocked check, and 2 means invalid usage or an
+execution error. A skipped native/model/MCP check is not a pass. Combine `--native`
+with `--model-smoke` to see both readiness and model results; a passing model
+scenario does not override a blocked hook. MCP authentication and native Hermes
+execution remain outside this check. See the [verification recipe](../docs/verification/verify-repository/features/account-verification.md).
+
+Doctor reports identify `evidence_kind: account_qualification`, with
+`comparison.status: not_run` and `comparison.promotion_eligible: false`, including
+successful model scenarios. Use them for setup readiness and deployment checks.
+The [improvement-loop contract](../docs/decisions/account-improvement-loop.md#account-qualification-and-reuse)
+owns comparison, failure-to-case triage and promotion requirements. Doctor neither
+activates collection nor writes events to the observation store. Existing observation
+records and grants remain outside installer ownership through update, rollback and
+uninstall; use the observation CLI to revoke or prune them explicitly.
+
+`native_activation_by_client` and `native_activation_verified` summarize observed
+SessionStart recovery for the selected clients, not every lifecycle event. Codex
+defers SessionStart until its first turn, so `--native` alone checks registration
+and trust; add `--model-smoke` to establish recovery. Claude initialization can
+establish recovery without a model request. Missing or blocked evidence remains
+false, and a mixed-client summary is true only when every selected client passes.
 
 ## Ownership and conflicts
 

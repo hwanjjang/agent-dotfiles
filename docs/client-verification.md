@@ -4,6 +4,122 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Doctor review corrections — 2026-10-18
+
+The corrected doctor harness was exercised with actual Codex GPT-6-Luna and
+Claude Haiku 5.5. Both bounded spec scenarios passed actual model identity,
+installed-source use, exact CLI outcomes, input integrity and native planning
+recovery checks. These fresh runs used the existing delivered bundle `ed1da039`;
+they qualify the corrected harness against that installation, not a newly
+installed candidate or every skill. No trust or permission settings changed.
+
+The corrected harness also passed a disposable install → offline doctor →
+uninstall journey delivering doctor PR commit `1df5ade`, with the target home
+unchanged by diagnosis. PR #30 records the final candidate hashes, test results,
+current-head delivery smoke and independent review. Historical evidence below
+retains its original source and coverage limits.
+
+## Account doctor and model scenarios — 2026-10-17
+
+The historical runs in this section used delivered bundle `ed1da039` and a
+pre-split doctor orchestrator. At the first doctor PR commit `1df5ade`, only
+`account_native.py` and `account_model_check.py` were byte-identical to the final
+historical runtime; this did not qualify that entire commit. Subsequent review
+corrections change those modules too. Historical model results below therefore
+remain evidence for their recorded source. Fresh corrected-harness results are
+listed separately above. Current candidate checks and exact revisions are recorded in
+[PR #30](https://github.com/hwanjjang/agent-dotfiles/pull/30).
+
+The account verification recipe separates offline ownership,
+native readiness and actual model behavior. Codex CLI 0.159.2 and Claude Code
+2.1.285 each discovered all 23 installed skill names. Codex source paths matched
+the owned bundle. Claude's native SessionStart event recovered a synthetic
+selected plan with exit 0. Direct installed-command checks exercised all eight
+registered routes, opt-out and refusal to recover a different plan.
+
+A real Codex GPT-6-Luna task read the installed account entry point, four policies
+and `to-spec`; successful native tool output established those reads. It returned
+the fresh scenario marker and all four exact CLI examples, retained acceptance,
+reported proposed tests as unexecuted and left the synthetic input/selected sources
+unchanged. This bounded spec task passed; it is not all-skill or complete SDLC proof.
+
+An optional local Paseo/Codex GPT-6-Luna task returned the same behavioral contract.
+The first launch established a response but its CLI summary omitted full read
+output. A revised task added exact installed-source readback; all six 180-character
+prefixes matched, and inspected provider/model, input integrity and owned-resource
+archival passed. The grader initially rejected an equivalent `bundle/` key prefix;
+that harness gap was repaired without dropping content assertions, and the retained
+live result was regraded without another model call. Paseo-created temporary
+project registrations were also removed. This is summarized trace plus readback,
+not a complete provider tool audit or remote/UI verification.
+
+Claude's initial attempts hit the weekly quota; Haiku 5.5 also produced a CLI
+recognition warning. A later authorized retry with the offered Haiku 4.5 model
+completed after the quota reset. All six installed sources were read, the four
+CLI examples and acceptance criteria passed, and the inputs remained unchanged.
+The grader initially mistook Read's line-number prefixes for source content.
+A failing regression reproduced that defect; presentation-prefix normalization
+fixed it, and the then-current 22 doctor tests passed. The retained live evidence then passed
+without another model request; the original failed grade remains private evidence.
+Native discovery and SessionStart recovery also passed again. This verifies the
+bounded `to-spec` scenario, not every skill or Claude through Paseo.
+
+A subsequent user-requested Haiku 5.5 run also passed this native scenario.
+Both initialization and actual usage identified `claude-haiku-5-5`; no recognition
+warning, model substitution or permission denial occurred. Source reads, all four
+CLI examples, input integrity, 23-skill discovery and SessionStart recovery passed.
+The earlier recognition warning does not describe this later successful run.
+
+Initially, seven owned Codex hooks were `modified` pending native `/hooks` review;
+those earlier model checks did not override the readiness block. Subsequent
+authorized activation and additional checks are recorded below.
+
+Raw native/model outputs, prompts, local paths, quota messages and resource IDs
+remain private. Public documentation retains sanitized observations and commands,
+not account receipts. Native initializers can update caches/state; offline doctor
+alone performs no account writes. Hermes, all lifecycle events, model adherence
+on other tasks and remote MCP authentication remained unverified in these runs.
+Regression and manual evidence for the PR candidate is separate; historical
+sections below retain their original boundaries.
+
+### Historical follow-up coverage — 2026-10-17
+
+- **Codex hooks:** after explicit approval of the exact seven planning hooks and
+  their persistent execution outside the sandbox, native `/hooks` trusted them.
+  Codex 0.163.0 reported seven enabled/trusted definitions, no duplicates or pending
+  reviews. A real GPT-6-Luna turn recovered the synthetic selected plan through
+  the owned SessionStart hook. Other observed events included UserPromptSubmit,
+  PreToolUse and Stop. Registration of all seven is verified; automatic execution
+  of every lifecycle event is not claimed. No trust store editing or bypass occurred.
+- **Paseo/Claude:** Haiku 5.5 passed the bounded spec scenario, inspected model ID,
+  exact source readback, input integrity and owned-resource cleanup. The original
+  180-character readback was inaccurate; a new run used exact first-eight-line
+  readback suited to Claude's Read tool, preserving blank lines. Both attempts
+  remain recorded. The native grader separately checks initialization and usage IDs.
+- **Natural routing:** Codex GPT-6-Luna and Claude Haiku 5.5 each selected the
+  installed spec/planning methods without skill names in the task. Both produced
+  correct examples and a dependency-ordered plan covering acceptance criteria.
+  Initial runs exposed response-shape failures. The maintained scenario now uses
+  native structured output and recognizes successful Claude Skill injection with
+  its exact owned body. Correct shape alone is insufficient; source use and behavior
+  are independently graded. This is spec-to-plan coverage, not full SDLC execution.
+- **Linux:** an isolated Linux aarch64 VM/container ran installer/doctor tests and
+  the actual shell CLI lifecycle with all 23 skills: install, update to a changed
+  committed revision, unchanged update and uninstall. Synthetic personal settings
+  and the host-owned Paseo skill survived. This verifies Linux file/config delivery,
+  not Linux Codex/Claude authentication or model execution. WSL was excluded because
+  no target host was available; no Windows equivalence is inferred.
+- **Playwright MCP:** the pinned template connected through Claude/Haiku 5.5,
+  navigated a synthetic loopback page, returned its fresh marker from a browser
+  snapshot and closed the browser. An optional unallowed find tool was denied,
+  followed by successful allowed snapshot recovery. No persistent MCP settings
+  changed. GitHub/Context7 live checks were excluded because credentials were absent.
+
+The installer preview now lists exact hook definitions and hashes with execution
+effects, so installation and native trust can be approved together. The installer
+and doctor still do not grant trust. Automatic approval review initially rejected
+bulk trust; explicit scoped user approval resolved that block before activation.
+
 ## Portable account installer — 2026-10-17
 
 The installer is designed for macOS/Linux and WSL using Python 3.11+ and Git.

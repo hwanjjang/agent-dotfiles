@@ -22,8 +22,9 @@ the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
-temporary project; isolated account installation/update/removal are implemented; end-to-end model
-behavior and authenticated MCP connections are not claimed. See [client verification](docs/client-verification.md) for exact limits,
+temporary project; account installation/update/removal and diagnostic/model-check
+commands are implemented. Bounded installed-skill scenarios have separate results;
+complete SDLC behavior and authenticated MCP connections are not claimed. See [client verification](docs/client-verification.md) for exact limits,
 and browse [skills](skills/README.md), [policies](policies/README.md),
 [MCP templates](mcp/README.md), and [adoption records](docs/upstream/README.md).
 
@@ -34,6 +35,13 @@ their existing managers. Use the [account guide](account/README.md) for preview,
 install, update, uninstall and guarded rollback on macOS/Linux/WSL. Codex and Claude
 Code are default; an installed Hermes is opt-in. See the [installation decision](docs/decisions/account-installation.md)
 and the earlier [source selection](docs/decisions/account-source-import.md).
+Use `sh scripts/setup-account.sh doctor` for setup diagnostics, `--native` for
+client discovery and hook trust, and explicit `--model-smoke --client ... --model ...`
+for an actual installed-skill scenario. `--with-paseo` adds optional local Paseo
+coverage; `--scenario routing` tests natural spec-to-plan skill selection in native
+clients. Model identity and per-client SessionStart recovery have separate evidence.
+The [account guide](account/README.md#diagnose-and-exercise-the-installation)
+owns commands, evidence privacy, cost boundaries and coverage limits.
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
@@ -128,8 +136,10 @@ step, with compatibility checked in that client.
 The [account improvement loop](docs/decisions/account-improvement-loop.md) connects
 private observations to reviewed cases, comparative evaluation and account updates.
 Its first slice provides a [private synthetic observation store](account/observation/README.md)
-with scoped grants, durable records, batch replay and revocation. Native collection
-and model evaluation remain future work; ordinary account sessions are not collected.
+with scoped grants, durable records, batch replay and revocation. Native
+collection and comparative model evaluation remain future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
+qualifies setup and bounded model behavior before experiments or after deployment;
+its PASS does not establish improvement over a baseline.
 
 ## Principles
 

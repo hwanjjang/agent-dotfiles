@@ -66,6 +66,25 @@ class AccountSetupTests(unittest.TestCase):
         self.assertEqual(storage.observed(self.repo), source)
         self.assertNotIn('.hermes/SOUL.md', plan['changes'])
 
+    def test_preview_describes_exact_hook_activation_without_granting_trust(self):
+        plan, _ = self.prepare()
+        review = plan['hook_activation']
+        self.assertFalse(review['trust_changed_by_installer'])
+        self.assertEqual(len(review['codex']), 7)
+        self.assertEqual({row['event'] for row in review['codex']},
+                         {'SessionStart','UserPromptSubmit','PreToolUse','PostToolUse','PermissionRequest','PreCompact','Stop'})
+        self.assertTrue(all(len(row['definition_sha256']) == 64 and 'planning-hook.py' in row['command']
+                            for row in review['codex']))
+        without, _ = self.prepare(hooks=False)
+        self.assertEqual(without['hook_activation']['codex'], [])
+        self.assertEqual(without['hook_activation']['claude'], [])
+        claude = review['claude']
+        self.assertEqual(len(claude), 1)
+        self.assertEqual(claude[0]['event'], 'SessionStart')
+        self.assertTrue(claude[0]['runs_when_event_fires'])
+        self.assertFalse(claude[0]['native_trust_step'])
+        self.assertEqual(len(claude[0]['definition_sha256']), 64)
+
     def test_install_update_uninstall_preserves_unrelated_settings(self):
         self.config('.claude/settings.json', {'permissions': {'deny': ['Bash(rm *)']}, 'hooks': {'Stop': [{'hooks': [{'command': 'personal-check'}]}]}})
         self.config('.codex/auth.json', {'token': 'SYNTHETIC'})
@@ -93,6 +112,36 @@ class AccountSetupTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Managed asset changed'):
                 self.prepare(action=action)
         self.assertEqual(target.read_text(), 'local edit')
+
+    def test_lifecycle_and_doctor_preserve_observation_records_and_grants(self):
+        from account.observation.store import Store
+        from account_doctor import diagnose
+        store = Store(self.home)
+        grant = store.grant(self.repo, start_after=0)
+        payload = json.dumps(dict(schema_version=1, project_root=str(self.repo),
+            client='synthetic', profile='default', source='fixture-v1',
+            session_id='session-1', sequence=1, source_event_id='event-1',
+            event_kind='response_end')).encode()
+        self.assertEqual(store.capture(grant['registration_id'], grant['epoch'], payload)['status'], 'recorded')
+        observations = self.home / '.agents/agent-dotfiles/observations'
+        before = storage.observed(observations)
+        self.apply()
+        self.assertEqual(storage.observed(observations), before)
+        source = self.repo / 'policies/communication.md'
+        source.write_text(source.read_text() + '\nSynthetic update.\n')
+        self.commit('change source')
+        update = self.apply(action='update')
+        self.assertEqual(storage.observed(observations), before)
+        with patch('account_doctor.shutil.which', return_value='/synthetic/client'):
+            self.assertEqual(diagnose(self.home)['status'], 'pass')
+        self.assertEqual(storage.observed(observations), before)
+        with storage.lock(self.home):
+            storage.rollback(self.home, update)
+        self.assertEqual(storage.observed(observations), before)
+        self.apply(action='uninstall')
+        self.assertEqual(storage.observed(observations), before)
+        self.assertEqual(len(store.events(grant['registration_id'])), 1)
+        self.assertEqual(store.capture(grant['registration_id'], grant['epoch'], payload)['status'], 'duplicate')
 
     def test_modified_managed_hook_is_not_silently_removed(self):
         self.apply();p=self.home / '.codex/hooks.json';config=json.loads(p.read_text())
