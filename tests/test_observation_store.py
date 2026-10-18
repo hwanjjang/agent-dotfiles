@@ -57,6 +57,21 @@ class ObservationStoreTests(unittest.TestCase):
             return original(fd)
         return mock.patch("account.observation.files.os.fsync", side_effect=fail_target)
 
+    def test_synthetic_capacity_retains_its_prior_bound(self):
+        grant = self.grant()
+        with mock.patch('account.observation.store.MAX_SYNTHETIC_RECORDS', 2, create=True):
+            self.assertEqual(self.capture(grant)['status'], 'recorded')
+            self.assertEqual(self.capture(grant, source_event_id='second', sequence=2),
+                             {'status': 'rejected', 'reason': 'store_capacity'})
+            self.assertEqual(self.capture(grant)['status'], 'duplicate')
+
+    def test_synthetic_reads_apply_separate_directory_bound(self):
+        grant = self.grant()
+        with self.store._locked() as files:
+            for n in range(3): files.write(('records', grant['registration_id'], f'.pending-{n}'), {})
+        with mock.patch('account.observation.store.MAX_SYNTHETIC_RECORDS', 2, create=True):
+            self.assertEqual(self.capture(grant), {'status': 'rejected', 'reason': 'store_capacity'})
+
     def test_opted_out_capture_neither_parses_nor_creates_account_state(self):
         self.assertEqual(list(self.home.iterdir()), [])
         result = self.store.capture("f" * 64, "f" * 32, b"not JSON")
@@ -109,6 +124,17 @@ class ObservationStoreTests(unittest.TestCase):
         self.capture(grant, prompt="synthetic first prompt")
         self.assertEqual(self.capture(grant, prompt="synthetic changed prompt")["status"], "duplicate")
         self.assertEqual(len(self.events(grant)), 1)
+
+    def test_synthetic_replay_remains_compatible_with_slice_one_records(self):
+        grant = self.grant(); self.capture(grant)
+        record_path, = (self.root / 'records' / grant['registration_id']).glob('*.json')
+        record = json.loads(record_path.read_text())
+        # Original schema-v1 records put the adapter gap first. Keep their bytes'
+        # logical content replayable when introducing another adapter.
+        gaps = record['events'][0]['gaps']
+        gaps.remove('synthetic_adapter'); gaps.insert(0, 'synthetic_adapter')
+        record_path.write_text(json.dumps(record))
+        self.assertEqual(self.capture(grant)['status'], 'duplicate')
 
     def test_missing_stable_id_is_retained_with_duplicate_uncertainty(self):
         grant = self.grant()

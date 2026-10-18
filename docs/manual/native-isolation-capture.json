@@ -1,0 +1,23 @@
+{
+  "captured_on": "2026-10-18",
+  "scenario": "native-isolation-guide",
+  "workflow_digest": "c8bcdb25297a",
+  "browser": "isolated Chrome via Playwright, 1440x1400 CSS pixels, device scale 2",
+  "capture_scope": "Actual expanded guide dialog. CLI execution verified separately with synthetic transport; screenshot is not live provider evidence.",
+  "source_sha256": {
+    "docs/map/workflow.html": "b8d82fd421fb26a1c9398d5b5f44dcb1d07192edd218f568b00bb25f7504b45a",
+    "docs/map/catalog.json": "9b2e17d60a5b7b2cfd2b99a7d56a7560d05cd66924a2d86293d322844dfa60bc",
+    "docs/map/workflow.json": "91686b74e7652f552004d8e112ce6c45b1b774ee99cd42027c5e1be0d202768f",
+    "scripts/improvement/native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "scripts/improvement/native_probe.py": "8e5c15500638ec903c5cef2c8aa0290e6bc39d4be1bef8c7435c337c3e302e4c",
+    "scripts/improvement/native_tool_canary.py": "e2e69beb0d62063c3e3b3fd3b7ee8f365020a0d442cad867c709c266a3f21d49",
+    "docs/decisions/evaluation-isolation-pilot.md": "316127897390da0cb5450980f1d426093c62e6ea0fbaeca80543c3c5d18a0350",
+    "docs/manual/native-isolation.json": "cab80322493c2f1b626667244ad805a792a8a3f18f4351a0a3508bc39f6cae68"
+  },
+  "screenshot_sha256": "cb47c798b2b3ec4c49dd098a5f8626ef7e6f65ac1413d31f054e3526c684122f",
+  "pdf_pages": 1,
+  "pdf_text_checked": true,
+  "all_rendered_pages_visually_checked": true,
+  "pdf_sha256": "f43372ffe6ab688ec527b0fc133a36878304c07c07a582d398594c9fbf4f8013",
+  "correction_scope": "Fresh capture and rendered-page visual review after boundary, cleanup and archive verification corrections; original qualification remains historical."
+}

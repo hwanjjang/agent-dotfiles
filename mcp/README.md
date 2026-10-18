@@ -38,8 +38,13 @@ Validation has separate layers:
 2. In an authorized target client, verify configuration discovery and authentication.
 3. List actual tools and perform one relevant bounded read or isolated browser check.
 
-This repository has checked layer 1 only. Client discovery, remote authentication,
-and browser operation through these templates are not claimed to work yet.
+Playwright layers 1–3 were exercised on macOS through Claude Code/Haiku 5.5 using
+this pinned template as temporary client configuration: connected discovery,
+navigation to a synthetic loopback page, snapshot read and browser close succeeded.
+An unallowed optional find call was denied; the model recovered with the allowed
+snapshot tool. This was not a persistent account installation or Codex MCP test.
+GitHub and Context7 retain layer-1-only coverage; credentials were unavailable and
+the user excluded those live checks. See [client verification](../docs/client-verification.md).
 
 Sources:
 

@@ -41,7 +41,8 @@ See the [screenshot walkthrough](../manual/workflow.pdf) for two user paths.
 
 The Anytime band also includes communication/execution policies and an **Account
 setup & runtime** group. Use it for portable install/update/removal, ownership, planning hooks
-and reviewer launch diagnostics. These are supporting sources, not extra SDLC
+and reviewer launch diagnostics. Account doctor adds offline/native/model checks;
+Paseo is an explicit option, with its own real-model evidence and cleanup. These are supporting sources, not extra SDLC
 stages or installed account features. Their dialogs link to the authoritative
 guides; the account selection comparison is linked from the account guide.
 
@@ -54,9 +55,11 @@ header for the cycle and each node for its status, handoff and source. Search
 `eval` or bookmark `workflow.html#skill-improvement-eval`.
 
 This is a separate improvement cycle, not six new mandatory stages in the PR
-state machine. Synthetic observation storage and the account installer exist;
-case preparation and candidate editing can use existing manual methods. Native
-collection, comparative model trials and automatic promotion remain planned.
+state machine. Synthetic storage, opt-in Claude/Codex collection and the installer
+exist; case preparation and candidate editing can use existing manual methods.
+Codex adds four separately trusted observer definitions; the native guide owns
+platform proof and blockers. Comparative model trials and automatic promotion
+remain planned.
 The catalog's **available** status means the linked guide exists, not that every
 described runtime is implemented. Node subtitles and details state these limits.
 
@@ -66,6 +69,11 @@ for today's runnable synthetic example. An improvement candidate can enter the
 ordinary investigation/specification/build/review route when appropriate; eval
 adds a behavioral comparison and does not replace project tests or independent
 review. Collection consent does not authorize inference, publication or deployment.
+
+Account doctor connects to this cycle as setup qualification before eval and an
+affected-client check after deployment. Failures can feed reviewed case preparation.
+Its successful model scenario is not comparative evidence; the loop design owns
+the [reuse boundary](../decisions/account-improvement-loop.md#account-qualification-and-reuse).
 
 ## Source and maintenance
 
@@ -130,3 +138,10 @@ hashes, dependencies and adaptations. The [MIT license](vendor/super-board/LICEN
 is retained alongside the source and embedded in generated HTML. Selected reference
 explanations inform locally verified summaries; the full upstream skill catalog,
 comparative rankings, author logos and plugin installation are not included.
+
+The Observe guide also links the implemented bounded delivery snapshots and the
+10,000-callback qualification. Capacity/recovery passed the measured synthetic
+PostToolUse-only workload; the capacity guide owns the final p95 and its
+reference-host limit. SessionStart/Stop boundary probes are outside that timing. Boundary receipt hashes do not
+establish exact model exposure. The native-observation recipe owns repeatable
+checks, and the capacity guide owns its limits and measurements.

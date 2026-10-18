@@ -29,7 +29,8 @@ The account installer and hook guides are mapped as available **source**. The
 communication/execution policies and review-runtime guide explain their triggers;
 the [selection decision](../decisions/account-source-import.md) records what was
 excluded. The [distribution decision](../decisions/account-installation.md) explains
-portable installation and recovery. Availability does not claim installation on the
+portable installation and recovery. The mapped account doctor separates offline
+checks, native readiness and actual model scenarios, with optional Paseo. Availability does not claim installation on the
 reader's host.
 
 ## One map source, generated presentation
