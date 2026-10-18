@@ -31,6 +31,11 @@ Every deliverable begins with:
 - Authority source, access/side-effect constraints and stricter local rules.
 - Applicable stages and reasons for excluded stages; artifact path mapping.
 - Selected execution plan ID/owner and dependency capability records.
+- Reusable artifacts with revision/applicability evidence; unresolved decisions,
+  size/dependency gaps and work invalidated by changed inputs.
+- Selected next action/method, reason and stopping condition under
+  [intake and readiness](../references/intake.md). Reuse the common reason/evidence/
+  next-action fields and existing receipt; no separate decision schema is required.
 
 ## Intent: intent/TASK.md
 

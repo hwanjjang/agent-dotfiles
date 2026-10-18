@@ -85,6 +85,11 @@ The six-step improvement cycle is documented with explicit implemented/planned s
 at that capture baseline. See the current native walkthrough below for the later
 Claude adapter; comparative model evaluation remains future work.
 
+The 2026-10-19 SDLC amendment updates integrated-guide pages 5-7 with the single
+`sdlc` entry, evidence-based next action and resumption. Screenshot capture dates
+remain unchanged. Use the [intake walkthrough](sdlc-intake.pdf) and
+[verification record](../verification/sdlc-intake.md) for separate native evidence.
+
 ## Native Claude collection walkthrough
 
 The [two-page walkthrough](native-observation.pdf) covers finding the collection
@@ -282,6 +287,17 @@ owns repeatable checks. Rebuild with the screenshot-manual scripts above using
 For this collection walkthrough, the private native bridge supplies the observation
 projection and its own coordinator receipt. Production setup/cleanup/capture are
 exercised; production `observe`/`finish` collection gates have unit coverage only.
+
+## SDLC intake walkthrough
+
+The [two-page guide](sdlc-intake.pdf), [editable source](sdlc-intake.json) and
+[capture manifest](sdlc-intake-capture.json) show actual vague/ready responses
+from fresh Sonnet 5.5 contexts on 2026-10-18. The images are browser-rendered
+transcript excerpts, not terminal captures. Both PDF pages were rendered and
+visually checked for clipping, readable text and pagination. The
+[verification record](../verification/sdlc-intake.md) retains failed runs and limits;
+the clean repeat does not replace the original scratch-path violation.
+Rebuild with the screenshot-manual scripts above and `sdlc-intake.json`.
 
 ## Offline native artifact admission walkthrough
 

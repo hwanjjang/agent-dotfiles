@@ -90,3 +90,12 @@ frozen-plan check, explicitly authorized one-turn execution, guarded recovery an
 the separate credential-free loader. It is not driven by the browser helper. Read
 its source-bound evidence status before choosing a scenario; mock completion,
 authenticated qualification and evaluator eligibility remain distinct.
+
+## SDLC intake
+
+[SDLC intake verification](features/sdlc-intake.md) checks evidence-based next-action
+selection and selected-method execution in bounded native fixtures. Run its recipe
+separately from the browser helper; it requires explicitly authorized model access
+and quota. Its allowlist is not a filesystem sandbox. Preserve failed runs and
+inspect actual traces and artifacts before grading; fixture completion does not
+qualify every client, live issue synchronization or a complete SDLC lifecycle.

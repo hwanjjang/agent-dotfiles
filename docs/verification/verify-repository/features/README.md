@@ -17,6 +17,7 @@ Use [the verifier](../SKILL.md) for shared prerequisites, invocation and cleanup
 | evaluation-accounting | Freeze development evidence, admit recorded artifact snapshots and account for every scheduled trial | Offline Python CLI | [Evaluation accounting](evaluation-accounting.md) |
 | task-feedback | Bind selected observations, record feedback and revoke private task state | Synthetic CLI / disposable home | [Task feedback](task-feedback.md) |
 | reviewed-cases | Prepare, inspect, review and export a synthetic development case | Case CLI / disposable home | [Reviewed cases](reviewed-cases.md) |
+| sdlc-intake | Select the next SDLC action and reuse current work | Native client / synthetic local projects | [Intake behavior](sdlc-intake.md) |
 | map-freshness | Determine whether the generated map matches maintained metadata | Python CLI | [Freshness](map-freshness.md) |
 
 Evidence is per run, outside this source. No last-run status is stored in the map;

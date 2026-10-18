@@ -1146,9 +1146,9 @@
         "An existing SDLC task needs to resume with its evidence and unresolved findings intact.",
         "The user explicitly requests lifecycle management for a local investigation or implementation; ordinary non-PR work can use focused skills directly."
       ],
-      "usage": "Load skills/sdlc/SKILL.md and its stage-to-skill routing. Establish review-only, plan-only or implementation scope and a local, PR, pre-merge or main endpoint. Use its state CLI only when the lifecycle is applicable and persistence is authorized.",
+      "usage": "Use sdlc with a general request, issue URL or PR URL and an endpoint. Apply its internal intake/readiness method, then load the selected stage method. Reassess on consequential decisions, scope changes and resumption; reuse valid artifacts. Initialize state only when lifecycle management is applicable and persistence is authorized.",
       "behavior": [
-        "Read repository instructions, existing changes and task records; select scope, acceptance outcomes and the authorized endpoint without replacing settled decisions.",
+        "Read the request and live evidence; distinguish clarity, size and startability. Record the endpoint, reusable work, gaps, next action and stopping condition without repeating settled decisions.",
         "Reuse one execution notebook and the canonical stage-to-skill routing. Load only methods whose triggers apply, passing source revisions and required handoff evidence.",
         "For applicable stages, record bounded attempts and evidence-backed decisions to proceed, request a consequential human decision or report a blocker. Main alone writes shared state.",
         "Choose comparable design alternatives when warranted; execute independent authorized implementation slices with isolated resources, explicit owners and serial integration.",
@@ -1218,6 +1218,10 @@
           {
             "label": "Origin, adaptations and verification limits",
             "source": "skills/sdlc/provenance.json"
+          },
+          {
+            "label": "Intake and readiness assessment",
+            "source": "skills/sdlc/references/intake.md"
           },
           {
             "label": "Canonical stage-to-skill routing",
