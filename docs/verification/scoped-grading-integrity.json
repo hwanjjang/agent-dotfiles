@@ -18,7 +18,7 @@
     "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
     "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
   },
-  "grader_source_sha256": "48297ba0dda26585f5249892b069f07c41b26ac437b34e957dd7ff7a12f6cbd1",
+  "grader_source_sha256": "30d03dc92ea55ce763d2f830e376664fb2a3b152bc86e9c8c37a0cebc5f567af",
   "runtime_digests": {
     "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
     "codex": "8813367285524ac798dd96d1b071aea30d58708c7226fd236cd275cf1cfdee31",
@@ -114,8 +114,8 @@
     "host_original_work_unchanged_during_run": true
   },
   "verification": {
-    "focused_tests": 92,
-    "grading_drift": "Actual unit-test calibration and late source/spec/experiment drift; critical diagnostics retained under blocked verdict",
+    "focused_tests": 93,
+    "grading_drift": "Unit tests preserve entry-stale diagnostics and block late source/spec/experiment drift; already observed critical diagnostics remain under blocked verdict",
     "native_result": "Actual credential-free fixed tool execution, not a paid model or comparison",
     "archive": "Same262144-byte combined retained cap; raw native events retained, duplicated synthetic HTTP request bodies omitted by private bridge",
     "first_attempt": "Blocked on archive_limit; all cleanup complete, VM stopped. Kept historical, not relabeled pass."

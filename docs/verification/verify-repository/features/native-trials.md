@@ -9,8 +9,9 @@ manifest fields, commands and result meanings, and the
 [design contract](../../../decisions/native-trial-execution.md) for ownership and
 acceptance rules. The [historical selected evidence](../../../verification/native-trials.json) and
 [current scoped grading evidence](../../../verification/scoped-grading-integrity.json)
-own their separate source/profile qualification status. Reconcile its source digests
-with the candidate; historical results and a working CLI do not qualify new bytes.
+own their separate source/profile qualification status. Reconcile the current scoped
+record's source digests with the candidate; historical results and a working CLI do
+not qualify new bytes.
 Missing evidence is pending, not pass. Do not reproduce schema or last-run status
 in this recipe.
 
