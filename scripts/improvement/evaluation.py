@@ -396,6 +396,12 @@ def compare(experiment, completions, current_spec, *, native=None):
             ('live_evidence_verifier_unavailable', 'independent_holdout_custody_unavailable')]
         report['blockers'] += ['aggregate_launch_reservation_unavailable', 'same_host_heldout_unimplemented',
                                'explicit_observed_model_projection_unavailable']
+        if native.execution is not None:
+            report['execution_accounting'] = json.loads(encoded(native.execution))
+            if not native.execution_error:
+                report['blockers'].remove('aggregate_launch_reservation_unavailable')
+            if native.execution['status'] not in ('ready', 'complete'):
+                report['blockers'].append('aggregate_execution_incomplete')
         if native.context.qualification_error:
             report['blockers'].append(native.context.qualification_error)
     # Detect drift after scoring as well as at entry. The trusted local scorer
@@ -404,6 +410,8 @@ def compare(experiment, completions, current_spec, *, native=None):
                       or digest(experiment) != frozen_experiment_digest
                       or (native is not None and not native.valid(experiment, current_spec))):
         report['blockers'].append('grading_identity_changed')
+        if native is not None and native.execution is not None:
+            report['execution_accounting'].update(status='blocked', reason='execution_identity_changed')
         for trial in report['trials']:
             trial.update(verdict='blocked', reason='grading_identity_changed', checks=[], completion_checks=[],
                          dimensions={d: 'blocked' for d in DIMENSIONS})

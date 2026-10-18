@@ -39,7 +39,7 @@
       "id": "map",
       "screenshot": "screenshots/map-overview.png",
       "title": "AK SDLC map을 필요한 만큼 사용하기",
-      "instruction": "docs/map/workflow.html을 엽니다. SDLC 작업은 하나의 진입점으로 요청합니다. \"이 요청, 이슈 URL 또는 PR URL을 sdlc로 진행하고 pre-merge까지 완료해줘.\" 원하는 결과와 종료 지점을 명시하세요. 호출 문법은 클라이언트마다 다릅니다.\nSDLC는 현재 요구사항, 코드, 산출물과 의존성을 확인하고 가장 먼저 충족해야 할 조건부터 처리합니다. 지도 순서는 이미 완료한 작업을 반복하라는 뜻이 아닙니다. 작은 로컬 작업에는 개별 스킬을 직접 사용할 수 있습니다.\n+ / -, Fit과 배경 드래그로 이동합니다. 검색은 다른 노드를 흐리게 합니다. 노드를 열어 상세 내용과 Sources를 확인하고 Escape로 닫습니다.",
+      "instruction": "docs/map/workflow.html을 엽니다. SDLC 작업은 하나의 진입점으로 요청합니다. \"이 요청, 이슈 URL 또는 PR URL을 sdlc로 진행하고 pre-merge까지 완료해줘.\" 원하는 결과와 종료 지점을 명시하세요. Pre-merge는 준비 완료를 검증한 뒤 멈추며 병합하지 않습니다. 호출 문법은 클라이언트마다 다릅니다.\nSDLC는 현재 요구사항, 코드, 산출물과 의존성을 확인하고 아직 충족되지 않은 가장 앞선 조건부터 처리합니다. 지도 순서는 이미 완료한 작업을 반복하라는 뜻이 아닙니다. 작은 로컬 작업에는 개별 스킬을 직접 사용할 수 있습니다.\n+ / -, Fit과 배경 드래그로 이동합니다. 검색은 다른 노드를 흐리게 합니다. 노드를 열어 상세 내용과 Sources를 확인하고 Escape로 닫습니다.",
       "caption": "현재 지도의 실제 전체 화면입니다. 전체 흐름을 확인한 다음 확대해서 개별 노드를 읽으세요.",
       "expected": "작업에 맞는 방법과 그 원본 지침을 찾을 수 있습니다. 지도는 조건과 관계를 설명할 뿐, merge 권한을 부여하거나 작업을 실행하지 않습니다."
     },
@@ -55,7 +55,7 @@
       "id": "continuity",
       "screenshot": "screenshots/map-planning.png",
       "title": "긴 작업을 중단 후에도 이어가기",
-      "instruction": "여러 세션에 걸친 작업은 planning-with-files로 무시되는 .planning/ 아래에 하나의 이름 있는 계획을 유지합니다: task_plan.md, findings.md, progress.md. 동시 호스트는 별도 PLAN_ID/PWF_PLAN_ROOT 또는 worktree를 사용합니다. 하위 프로세스 변수는 실행 중인 호스트를 연결하지 않습니다.\n재개하거나 중요한 범위 변경이 생기면 sdlc가 접근 가능한 실제 이슈·PR, 체크아웃, 리뷰 지적과 산출물 버전을 대조하도록 합니다. 유효한 작업은 재사용하고 영향받은 근거를 갱신하며 작업 식별자, 이력과 반복 횟수는 보존합니다.\n결과·종료 지점, 근거, 재사용할 작업, 미결정 사항·의존성, 다음 방법과 이유, 중단 조건을 기존 triage·receipt에 기록합니다. 수명주기 상태가 없으면 응답에 기록합니다. 기준: skills/sdlc/references/intake.md.",
+      "instruction": "여러 세션에 걸친 작업은 planning-with-files로 Git에서 제외된(ignored) .planning/ 아래에 하나의 이름 있는 계획을 유지합니다: task_plan.md, findings.md, progress.md. 동시 호스트는 별도 PLAN_ID/PWF_PLAN_ROOT 또는 worktree를 사용합니다. 하위 프로세스 변수는 실행 중인 호스트를 연결하지 않습니다.\n재개하거나 중요한 범위 변경이 생기면 sdlc가 접근 가능한 실제 이슈·PR, 체크아웃, 리뷰 지적과 산출물 버전을 대조하도록 합니다. 유효한 작업은 재사용하고 영향받은 근거를 갱신하며 작업 식별자, 이력과 반복 횟수는 보존합니다.\n결과·종료 지점, 근거, 재사용할 작업, 미결정 사항·의존성, 다음 방법과 이유, 중단 조건을 기존 triage·receipt에 기록합니다. 수명주기 상태가 없으면 응답에 기록합니다. 기준: skills/sdlc/references/intake.md.",
       "caption": "실제 planning-with-files 상세 화면입니다. native 자동 복구는 클라이언트별 hook 검증이 별도로 필요합니다.",
       "expected": "작업별 현재 계획 하나에 실제 진행 상황과 다음 행동이 남습니다. 계획 기록은 로컬 자료이며 자동으로 공개 문서가 되지 않습니다."
     },

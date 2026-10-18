@@ -39,7 +39,7 @@ class PlanTests(unittest.TestCase):
                              'native_trial_owner.py', 'native_usage.py', 'native_execution.py',
                              'native_execution_catalog.py', 'native_execution_command_skills.js',
                              'native_isolation.py', 'native_trial_qualification.py', 'native_execution_loader.js',
-                             'native_trial_results.py')
+                             'native_trial_results.py', 'trial_reservation.py')
         for name in self.source_names:
             (self.sources / name).write_text('SYNTHETIC_SOURCE_' + name)
         digest = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
@@ -92,6 +92,13 @@ class PlanTests(unittest.TestCase):
                                 capture_output=True, text=True, timeout=5)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, '')
+
+    def test_reservation_gate_is_a_required_immutable_source(self):
+        value = copy.deepcopy(self.value)
+        del value['sources']['trial_reservation.py']
+        self.refused(value, 'source_fields')
+        (self.sources / 'trial_reservation.py').write_text('CHANGED_GATE')
+        self.refused(self.value, 'source_changed')
 
     def test_valid_selected_plan_is_checked_without_mutating_state(self):
         before = list(self.state.iterdir())

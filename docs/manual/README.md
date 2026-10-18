@@ -326,3 +326,34 @@ comparison, candidate benefit or full issue-26 completion is established. Follow
 the [feature recipe](../verification/verify-repository/features/evaluation-accounting.md)
 for separate CLI verification. Rebuild using the screenshot-manual commands above
 with `native-artifact-admission.json`; recapture on relevant source or behavior drift.
+
+## Serial native trial reservation walkthrough
+
+The [two-page walkthrough](native-trial-reservations.pdf),
+[editable source](native-trial-reservations.json) and
+[capture manifest](native-trial-reservations-capture.json) cover the
+[serial reservation contract](../decisions/evaluation-accounting.md#serial-native-launch-reservations).
+The [order/status summary](native-trial-reservations-check.png) and
+[interruption summary](native-trial-reservations-result.png) are browser-rendered
+actual CLI/process results, not terminal screenshots. Positive lifecycle results
+use a fixed native-run **STUB** with fake qualification, journals and usage; the
+unmodified public initialize command actually refused without creating state.
+
+The renewed smoke ran before checkpoint `a8b0f9785457` was created; exact source
+bytes were matched to that commit afterwards. No execution at an existing commit
+is claimed. Thirteen runner and three grader source hashes match the capture
+manifest. Two stubbed attempts reserve two initial turns and 630 declared seconds; a real process
+directly appended a third reserve record and exited 23, leaving 945 declared
+seconds and an unknown total token cost. This tests re-reading a durable crash
+gap, not a process death inside `run-next`; launch ordering is checked separately.
+The known synthetic subtotal remains 320 tokens. Six separate processes confirmed
+lock refusal before task work and after stubbed cleanup. Reservations are not
+refunded, and the post-use token guard is soft, not a provider hard cap.
+
+Both browser captures and both rendered PDF pages passed visual inspection,
+overflow, page-count and text checks. No authentication, native client, model or VM
+was used. Current changed-source qualification remains blocked; neither natural
+skill routing, a candidate benefit nor full issue-26 completion is claimed. See
+the [feature recipe](../verification/verify-repository/features/evaluation-accounting.md)
+for separate checks. Rebuild with the screenshot-manual commands above and
+`native-trial-reservations.json`; renew evidence on source or behavior drift.

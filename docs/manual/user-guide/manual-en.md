@@ -55,7 +55,7 @@ Actual status and unchanged-update output. Clean delivery still reports native_a
 
 ## 5. Read the AK SDLC map without overusing it
 
-Open docs/map/workflow.html. For SDLC work, use one entry: "Use sdlc for this request, issue URL or PR URL; finish at pre-merge." State the desired outcome and stopping point. Invocation syntax depends on the client.
+Open docs/map/workflow.html. For SDLC work, use one entry: "Use sdlc for this request, issue URL or PR URL; finish at pre-merge." State the desired outcome and stopping point. Pre-merge stops at verified readiness; it does not merge. Invocation syntax depends on the client.
 SDLC checks current requirements, code, artifacts and dependencies, then starts the earliest unmet prerequisite. The map's stage order is a guide, not a requirement to repeat completed work. Focused skills remain directly usable for small local tasks.
 Use + / -, Fit and background drag. Search dims other nodes. Open a node, expand its details and follow Sources; Escape closes the dialog.
 

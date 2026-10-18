@@ -59,7 +59,8 @@ The [native verification record](../../verification/sdlc-intake.md) and
 these map screenshots do not demonstrate model-driven intake.
 
 Only these three steps changed. Screenshots and their 2026-10-17 capture hashes
-remain historical. Other sections retain their original status statements and
+remain historical. The capture manifest preserves the earlier delivered-PDF hashes
+and records the current PDFs under `post_capture_updates.sdlc_intake`. Other sections retain their original status statements and
 later amendments above. The two PDFs were rebuilt with Nanum Gothic (SIL OFL 1.1,
 editable embedding permitted); no font file is redistributed. All 36 pages were
 rendered and visually inspected; both editions retain 18 pages, with matching
