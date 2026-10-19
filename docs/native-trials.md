@@ -1,14 +1,15 @@
 # Frozen native trials: operator guide
 
 The source implements `check`, `run` and guarded `recover` for one pinned native
-trial. Historical V9/V10 credential-free and authenticated results apply only to
-their recorded sources. The [12-source collection evidence](verification/native-outcome-collection.json)
-records historical credential-free native collection and the fixed scoped grading
-probes. The earlier [grading record](verification/scoped-grading-integrity.json)
-retains its own 11-source provenance. The working-source checkpoint below renews
-bounded boundary, receiver and collection checks for one profile; maintained
-evaluator bindings, other hosts, general routing outcomes and comparative
-evaluation remain unqualified.
+trial. Current [execution](verification/native-trials.json),
+[scoped grading](verification/scoped-grading-integrity.json),
+[collection](verification/native-outcome-collection.json) and
+[fixed routing](verification/native-routing-observer.json) records bind the eight
+bounded checks to runtime source13 and the admission grader. Their shared
+[provenance](verification/native-qualification-provenance.json) preserves original
+proof identities and scope; earlier selected records remain in immutable Git.
+These are qualification prerequisites. Production task-to-report evidence,
+other hosts, natural EN/KO selection effectiveness and comparisons remain pending.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -32,38 +33,41 @@ original failed receipt was not changed. Six observations retain their original
 reviewed private-helper revisions under unchanged relevant conditions; only the
 two corrected prompt cases have fresh observations. Credential-free checks keep
 the private-bridge limits below; they do not exercise full public `observe`/`finish`.
-Maintained evaluator qualification references have not yet been renewed. Candidate
-benefit, backend model identity and account activation are not established.
+PR #71 merged the identical runtime at `5be8753`. The maintained records now
+project those original observations without another native/model call. This
+renewal does not establish a production task outcome, candidate benefit, backend
+model identity or account activation.
 
 ## Selected evidence and current limits
 
-The [selected evidence record](verification/native-trials.json) owns the sanitized
-historical V9/V10 source/profile bindings and results, with previous V7/V8 evidence preserved.
-V9's private Python bridge called the
-public `native_execution.run_fixture` API and received `mock_complete`. The bridge
-combined that result with outer protected-sentinel and cleanup checks; its private
-coordinator independently checked owned resources and VM stop. The selected
-`coordinator_attested_credential_free_profile` status is this private attestation, **not a
-status emitted by the public `native_execution` CLI**. The evidence record names
-and hashes the private bridge, coordinator, release and receipt artifacts without
-publishing their paths or contents. Those hashes identify retained evidence;
-they do not make the private orchestration a reproducible public command.
+The [execution record](verification/native-trials.json) selects the authenticated
+boundary receipt and verified cleanup for the current source/profile. The
+[provenance companion](verification/native-qualification-provenance.json) binds
+all eight original manifests, canonical receipts, reviewed private helpers,
+source/runtime identities and custody observations associated by the trusted
+coordinator with each original evidence location. The custody audit's fixed
+all-true content hash can repeat; distinct manifest, receipt, journal and metadata
+digests identify cases. It is not a case-unique or independently signed audit.
+Six observations retain
+their original helper revisions under unchanged relevant plans; two have fresh
+corrected-prompt observations. No failed receipt is relabeled.
 
-That selected targeted mock observed all six closed boundary projections,
-actual disabled-collaboration refusal and unchanged external synthetic protected
-files. Matching-source V10 authenticated Luna/low evidence observed the exact short
-loader, six boundary projections, remote-only challenge and owned cleanup. Both
-attempts verified protected synthetic files unchanged after process shutdown.
-Neither result qualifies later changed source bytes, natural routing, every future
-tool route or comparative evaluation. Preserve historical failures and renew
-affected checks on drift. The
+Execution, grading and collection records point to their exact preceding Git
+revision and file digest. That revision preserves historical V7/V8/V9/V10 and
+12-source evidence under its original source bindings. The
 [screenshot manual](manual/native-trials.pdf), [editable source](manual/native-trials.json)
 and [workflow diagram](architecture/native-trial-workflow.html) retain their own
-source/capture provenance.
+historical source/capture provenance; they do not attest the current records.
+
+Credential-free evidence is a private-coordinator attestation around the public
+fixed fixture, whose own result remains `mock_complete` or `blocked`. It does not
+exercise production `observe`/`finish`, authorize inference, or establish a task
+outcome. Metadata hashes identify retained proof, not a reproducible public
+orchestration command or protection against a hostile same-account owner.
 
 ## Scoped grading integrity
 
-The [historical scoped evidence](verification/scoped-grading-integrity.json) verifies
+The [current scoped evidence](verification/scoped-grading-integrity.json) verifies
 actual task read/write/readback and known protected grading, other-arm and synthetic
 installer receipt/journal read/write/create probes through a native command and an
 explicit Python child. The owner creates those eight synthetic protected files
@@ -76,9 +80,9 @@ These probes cover remote task/result-producer paths, not hostile whole-account
 containment. No real account state, credentials or model inference is used.
 The existing fixed native fixture returned `mock_complete`; a private coordinator
 separately checked the outer boundary, owned cleanup and restored VM state.
-The first attempt hit the unchanged archive cap and remains blocked. The corrected
-bridge removed duplicate synthetic HTTP-body retention while retaining raw native
-events within the same combined cap. It is not a new public CLI status.
+Current selected bridge receipts retain no raw native contents. Earlier archive
+and process-query failures remain in their original evidence/history; later PASS
+results do not change them. This is not a new public CLI status.
 
 The evaluator also rechecks frozen source/spec identities after grading. Drift
 blocks verdicts while preserving already observed critical counts as diagnostics.
@@ -93,19 +97,24 @@ The [admission contract](decisions/evaluation-accounting.md#admit-recorded-nativ
 connects exact recorded artifact collections to the existing evaluator through
 `trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
 the reader checks frozen attempt, dispatch, source, collection and maintained
-qualification bindings. Maintained qualification references have not been renewed
-for the current sources, so real admission remains blocked despite the bounded
-working-source checks above. The reader does not execute or recover trials;
-preserve failed attempts and unknown costs.
+qualification bindings. The maintained records now satisfy the unchanged
+qualification checks for their exact profile. No actual production task has yet
+been admitted: the credential-free bridge cannot supply that missing result.
+The reader does not execute or recover trials; preserve failed attempts and
+unknown costs.
 
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
 client-model admission. The four fixed receiver cases have current-source
-observations in the checkpoint above; maintained admission bindings and general
-routing effectiveness remain pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
-coordinates scheduled launches and audits every reserved attempt. Admission
-renewal and comparisons remain separate work. Backend identity remains unknown.
+observations bound by the maintained routing record; general routing
+effectiveness remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+coordinates scheduled launches and audits every reserved attempt. Freeze the
+whole development schedule before execution and use its first standard production
+row to verify `observe` → cleanup/collection → `finish` → admission. This avoids a
+duplicate live smoke; that row counts only in its original frozen schedule.
+Missing rows remain in the denominator. Comparisons remain separate work and
+backend identity remains unknown.
 
 ## Prepare a frozen plan
 
@@ -273,7 +282,7 @@ metadata/hashes; raw native prompts/tool contents and general answers are not re
 native state. `live_eligible` remains false; provider request/retry counts and
 billing usage remain unknown, and backend model identity is not verified.
 
-Cleanup records include the finite `group_signal_error_code` category rather than
+Routed cleanup records include the finite `group_signal_error_code` category rather than
 OS error messages. On macOS an already-exited, unreaped group can return
 `permission_denied`. The routed session reconciles that case only after reaping
 its owned leader, draining both streams with no buffered records, and observing

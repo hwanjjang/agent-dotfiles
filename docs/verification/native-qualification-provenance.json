@@ -1,0 +1,262 @@
+{
+  "provenance": {
+    "final_selected_audit_sha256": "ac4aa7926738a2d4b1b5457cc3ad29ab19d4a53642db1dfea2cee4a33e9331c0",
+    "relevant_plan_reuse_audit_sha256": "29a3cd37996260eec2b1d2092d3185ba351ea95637f995fa79ea259008b9065c",
+    "runtime13_compact_identity": "96432af6d5eb5c60a42b7a04fb9fb7ae13e5be832128e9cc00cd7a8a0ddf677a",
+    "admission_grader_identity": "74b65d1d2955e6a35f6c7b7bd3a84ad1eaf06a173d65047dc98551539b308ea2",
+    "admission_grader_serialization": "evaluation.digest(mapping): canonical JSON plus newline",
+    "proof_rows": [
+      {
+        "case": "boundary",
+        "round": "r5",
+        "manifest_digest": "431b2480a385bd24b10a9bef634e617dc9de299a37551132a7e07fdde20789e3",
+        "manifest_file_sha256": "b1deef9733a4a97abbdc78e93d4135b0a0ee10ad7d428140bc62d0d90ac2aa8c",
+        "receipt_record_sha256": "f3f9117ff94867df8477a9404e79f3aa59969b5f4321c8b28030449ae9c0a567",
+        "receipt_compact_digest": "ac77253df0543acc4e32b0b72f364a2fd8e5b148481ebbb5eecc2077d7054308",
+        "result_sha256": "85e8b8595f4b18c3c945f28b4039b61dc06f1fb17f1cce5632eb93015bdd9260",
+        "journal_inventory_digest": "2e1ea678c77b5f157baed8d3dac4a9d5f639bb0b9154443593cf4584f7420c6a",
+        "metadata_sha256": "0df3e00fea2fc1d64b3a26017e0b500b27685111dbbf582a947be0ea1f117ace",
+        "original_reviewed_freeze_sha256": "7b65ed972b44bdc5723e85d1eaf3b5f0cce30c2d94c800a7b13bc3f71c3db59a",
+        "original_review_sha256": "37553e13ea5ff23eeb7eec2c3ef8fcbf62bf384eb509d1f7206a5780f73193ac",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "8cc6e08f9e85cc240deb94488e6ea8fe2f8322213e6bb8e64bb39f8dc1dde491",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": true
+      },
+      {
+        "case": "assigned_main",
+        "round": "r5",
+        "manifest_digest": "90d93d4477efeb9cecb18d716b895e5b8287742d9c102435526703b9dc81ca1a",
+        "manifest_file_sha256": "b22dbe4f803cefaa83f2c7d9bd98f6d315bac9c34770e4330594e8556c7456c1",
+        "receipt_record_sha256": "b73b011ac56c68fbe95f8786aaa9266056416e7f3e90776bf2c01bdb921bad9a",
+        "receipt_compact_digest": "4b642a59998ddd8d0b8de2f85223ca1e2221d3aff5b48dd4543bc40568134487",
+        "result_sha256": "c555bc9e9fc7831198f471f9547419f73fb675948f2123b62020011819479375",
+        "journal_inventory_digest": "491a6e2114cba9af84b6f23fe993956115d46b7edd64584b2d8e45a395e46a7f",
+        "metadata_sha256": "c644ef38a64db4f94f5eb222f9f600033a01a4a6ecef260c7fa1a092b54ea180",
+        "original_reviewed_freeze_sha256": "7b65ed972b44bdc5723e85d1eaf3b5f0cce30c2d94c800a7b13bc3f71c3db59a",
+        "original_review_sha256": "37553e13ea5ff23eeb7eec2c3ef8fcbf62bf384eb509d1f7206a5780f73193ac",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "8cc6e08f9e85cc240deb94488e6ea8fe2f8322213e6bb8e64bb39f8dc1dde491",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": true
+      },
+      {
+        "case": "list_only",
+        "round": "r6b",
+        "manifest_digest": "d71a1cdc189f9b595a7320900a6b1f35d14e86f7dedbf89b8ef9737b7c7f3525",
+        "manifest_file_sha256": "e4d54bb77c2a681dc1b12acead64abb6c12a436828ccc125a686762e5e7a2757",
+        "receipt_record_sha256": "17352d32b310ffa9bd957388864d5412bd3adfe035069f7946a192e42b49d84e",
+        "receipt_compact_digest": "8033762c5b0bd31180cd7cdd6cbd7a4a7abb1eeb366c02d70bc917795d04fee8",
+        "result_sha256": "205908787b22bec93a93512bbc8a776edf0143bc797319ef1b3459f5164106ec",
+        "journal_inventory_digest": "313dd6e88810dae97636d4e8946dac26b3266a086df1b37cb1ea970e55a64363",
+        "metadata_sha256": "c1368b09b4838d77f4c6c2ee28d20661b15beafaab0cdb51b0c84e135483fa60",
+        "original_reviewed_freeze_sha256": "0a3cc97c925bf6eda055dceebad0c4e6e63b1bf6ac80ab4a313acff2a03c68c2",
+        "original_review_sha256": "916ab6a3238a4750dfbba913287ea991e71887581e1ddf21191a8b2233a507a5",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "54159c5fce5820fead166ee5bc1a859bc134dba06a7b2bdeaf0e4aea15bc33f3",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": false
+      },
+      {
+        "case": "reference_only",
+        "round": "r6",
+        "manifest_digest": "bfadd506b188e16598a1f6159915cecd7a719cf52644f1402e2cc946234eaa30",
+        "manifest_file_sha256": "3215c9a557bd06b73f3550bfb5fce4ac16ed2ceaf370db8a031ba329f6907031",
+        "receipt_record_sha256": "f3348c671557a74df05604ca5159dea57cf44b308e0028d1d497de47640bb33f",
+        "receipt_compact_digest": "adb2eebed2141bd6a852cc58f93f5c6f991a80054c1a8820dcdbd366daafd169",
+        "result_sha256": "af04ff366854ee94ed871c154ab09721a949cea6ac58b1d42ddf31af11e2ea96",
+        "journal_inventory_digest": "14cbf27d1f9f18939ee0bd2507755fe8fbe39dd598be62d75bd34505f83a7700",
+        "metadata_sha256": "38901797f60d06256a57dfcd7112afb5b127f8340573e4354d94e1e3baee772a",
+        "original_reviewed_freeze_sha256": "0a3cc97c925bf6eda055dceebad0c4e6e63b1bf6ac80ab4a313acff2a03c68c2",
+        "original_review_sha256": "916ab6a3238a4750dfbba913287ea991e71887581e1ddf21191a8b2233a507a5",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "54159c5fce5820fead166ee5bc1a859bc134dba06a7b2bdeaf0e4aea15bc33f3",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": false
+      },
+      {
+        "case": "failed_main",
+        "round": "r5",
+        "manifest_digest": "859b5d07a1512736ca5d3fc3e486d501e979732063027afb3b1f960e8eff99c6",
+        "manifest_file_sha256": "f2a847bd6fe081d59a8002a87f0d95b6c857ba33a2ba4786c9fc4109b15d810e",
+        "receipt_record_sha256": "8b9c84754bed6fbefeb452607ec9374c7f3281c7f6d0874270e61c134035cd26",
+        "receipt_compact_digest": "1d763738670996acbd8deb7937c93db1991685ca925b242655048c29349b9d0c",
+        "result_sha256": "6024da7cc9006fd201ae8979bd244eef36102420bfbeb45eaa42291f76473148",
+        "journal_inventory_digest": "89349854db7c90f49fcf9bb8d8cd72ccd98dc66b25e3d3c8acf29274d6af393b",
+        "metadata_sha256": "b7d646693bebe144a9d43cef706f2bb097ff00b41b3124932aa7f3e96d40f700",
+        "original_reviewed_freeze_sha256": "7b65ed972b44bdc5723e85d1eaf3b5f0cce30c2d94c800a7b13bc3f71c3db59a",
+        "original_review_sha256": "37553e13ea5ff23eeb7eec2c3ef8fcbf62bf384eb509d1f7206a5780f73193ac",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "8cc6e08f9e85cc240deb94488e6ea8fe2f8322213e6bb8e64bb39f8dc1dde491",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": true
+      },
+      {
+        "case": "present-missing",
+        "round": "r5",
+        "manifest_digest": "e35de425ff3c2a807da954b6818aa4ee31623876963d743b25bebfedb7b978e7",
+        "manifest_file_sha256": "fbee89a557cbd8804b18f3f6a220a2b8666cfe13a8e019594d0b207602d871e0",
+        "receipt_record_sha256": "9fa78563232e27c640687edb3aba27243d557f771caf965ca1893e26619fb76c",
+        "receipt_compact_digest": "c02ccc970b9c6a4f30a44fa9b4d1b03c6d2d02248f6bc6d8d35315881069ddbb",
+        "result_sha256": "b36132be40f3dc6f64dcc4527f39c9a5117abe5e3257778a0bf7c31d00fbb30f",
+        "journal_inventory_digest": "16a80a8ebea067c0e5cbd8f8cb591de7a1ae2fb8c19972db4bb6870ccda2ca16",
+        "metadata_sha256": "aefc748ab7e66b5e336fbcf3c16de9e112bae36b667b94f02eb94a0b9e72de1d",
+        "original_reviewed_freeze_sha256": "7b65ed972b44bdc5723e85d1eaf3b5f0cce30c2d94c800a7b13bc3f71c3db59a",
+        "original_review_sha256": "37553e13ea5ff23eeb7eec2c3ef8fcbf62bf384eb509d1f7206a5780f73193ac",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "8cc6e08f9e85cc240deb94488e6ea8fe2f8322213e6bb8e64bb39f8dc1dde491",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": true
+      },
+      {
+        "case": "unsafe",
+        "round": "r5",
+        "manifest_digest": "5bc318990eca0f8a494498632dd4a69e9734b4534695126ca2df03804c531827",
+        "manifest_file_sha256": "bc39d18333d37277dac53db781ffa6be9080a769b0e30ddff7a9e286d4930f74",
+        "receipt_record_sha256": "6390f809253acf78efba22574e9ca65a228d185de0702e7c569f431210ff31f0",
+        "receipt_compact_digest": "6dff802304d1d9fd3e9e3496736a565843fb82221dbc400463abec2ead0f235d",
+        "result_sha256": "3df14920cb1f8a94527f6c5b201fd5c1abe6c530db79df10e06dc1b27a5c0b1f",
+        "journal_inventory_digest": "d695427df1d67bdec9fa59f9a323dd6e8a1980102c0277fb784ed88db78e2d6d",
+        "metadata_sha256": "81b9bfb375cd55371f739f980581553d12354de41f9ac251a43f6ced868ece15",
+        "original_reviewed_freeze_sha256": "7b65ed972b44bdc5723e85d1eaf3b5f0cce30c2d94c800a7b13bc3f71c3db59a",
+        "original_review_sha256": "37553e13ea5ff23eeb7eec2c3ef8fcbf62bf384eb509d1f7206a5780f73193ac",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "8cc6e08f9e85cc240deb94488e6ea8fe2f8322213e6bb8e64bb39f8dc1dde491",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": true
+      },
+      {
+        "case": "interrupted",
+        "round": "r5",
+        "manifest_digest": "eab8465efc8d95998f04587a2646bb95c9c78ee8ec00815a621cca3ddea5f5aa",
+        "manifest_file_sha256": "aea2adf8f8235e90aff16d5e12493fbe26adec3109183482978ffd68112cabf8",
+        "receipt_record_sha256": "e8984603d92342b930a950e290cf24be23f4e3d844ba05506f534022ce72948e",
+        "receipt_compact_digest": "65d748cd1eab8036f88e87699f9a50621e2ad029c235a91106d7056de2632208",
+        "result_sha256": "91c73e2d7ee31601a0df24e6490930a35a87048637f68b7f9ab806163cf46b42",
+        "journal_inventory_digest": "5c9799f9aa7553a33bb91c28f2a46a02c7d6340a3a492ebe06e990b741fb2269",
+        "metadata_sha256": "a3387ce1cda3686bac77a61bc0ccc553b28ce5e3b1c146844fae370ed6e84a9e",
+        "original_reviewed_freeze_sha256": "7b65ed972b44bdc5723e85d1eaf3b5f0cce30c2d94c800a7b13bc3f71c3db59a",
+        "original_review_sha256": "37553e13ea5ff23eeb7eec2c3ef8fcbf62bf384eb509d1f7206a5780f73193ac",
+        "original_runner_digests": {
+          "accounting.py": "e14772d2f7a9141d6853b7e11cfa9d5758c62ca3e6e9f4797c3382096542641d",
+          "campaign.py": "7c4f06c1ff388d2e8d66b87a00070647472ef2219c7e74408232eae4fe3bf1b6",
+          "factory.py": "8cc6e08f9e85cc240deb94488e6ea8fe2f8322213e6bb8e64bb39f8dc1dde491",
+          "mock_driver.py": "67a0d7e3bd7460f7582695b7394876f7d15a7fc234eb6d063222e8b576d28440",
+          "support.py": "fbd05419f94d054a0ab8ab56cd9db9891945d898dc60074e7986473493c0625e"
+        },
+        "original_adapter_digests": {
+          "adapter.py": "f4555f4bc35a0646144d75b1d355da59b1aa46a5190bbd8aaae36bebc2880b10",
+          "assigned_main.js": "ee36b9034f6ad263aadb4fd616551bf9a53f15041d5c40f254ddff45101f1558",
+          "failed_main.js": "13793ec0a435bd2938fbee5603d92d357ff1eca8488f359531f7b959af348da6",
+          "list_only.js": "4f5eb7767301df5d65c4c4ba9f58bd0f012e4c75aab4e0039b9993d615fefb48",
+          "reference_only.js": "079525023ed86e4f8f78225bfec3a5dbc00a3dbd7df35771ac2c6144512b0537"
+        },
+        "independent_custody_audit_sha256": "f2ab0ee68d76b2e5f75f2db72ad70f52a67647d1267d2bf513991468fc1958e1",
+        "relevant_plan_reuse": true
+      }
+    ],
+    "scope": "Credential-free cases use a private bridge with production setup/cleanup/capture_collection, not production observe/finish or DIRECT/OpenAI inference; public fixture remains mock_complete/blocked."
+  },
+  "routing_scope": "Four fixed-script activation controls, not natural EN/KO intent effectiveness.",
+  "routing_falsification": {
+    "test_source_sha256": "919c70d51125fd83d9233b7a2f72b629581034a2b50e7ec9eb84e8e0bcfb3b9b",
+    "actual_run_sha256": "aa422b948e714a6a23f62840257ad7a09559ed36a4ce9decb18597c1970a81cf",
+    "test_method": "test_other_records_and_body_success_markers_are_not_activation",
+    "native_protocol_sha256": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc"
+  },
+  "failures_preserved": 7,
+  "qualification_only": "No genuine production observe/finish artifact admission or pilot outcome claimed.",
+  "missing_mandatory_facts": [],
+  "grader_compact_identity_not_admission_identity": "0d682568224f751893c78f988402d18c93afe2441bb1868f26df766176a9007f",
+  "schema_version": 1,
+  "kind": "selected-native-qualification-provenance",
+  "observed_date": "2026-10-19",
+  "source_checkpoint": "https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901",
+  "projection_authority": "Trusted local coordinator selected exact original canonical observations; not a cryptographic signature or protection against a hostile same-account owner.",
+  "scope": "Current-source bounded execution, scoped-IO, collection and fixed routing qualification only. No production observe/finish task-to-admission, candidate comparison, backend identity or account activation established.",
+  "custody_audit_scope": "Custody-audit digests identify fixed all-true audit content and can repeat across cases. Association with each original owned evidence location is a trusted coordinator observation; distinct manifest, receipt, journal and metadata digests identify cases. These are not case-unique or independently signed custody attestations."
+}

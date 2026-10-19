@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "kind": "native_routing_observer_qualification_v1",
+  "profile": "codex-0.163-macos-arm64-linux-arm64-v1",
+  "source_digests": {
+    "native_execution.py": "fee4ee83f41b4e72e226696194a2fd3563840ffa2bb8201597dede3438bbfd59",
+    "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
+    "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
+    "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
+    "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
+    "native_trial.py": "1e312fa8a06eb84fce146418b0e904cc3a776881f8bffd4899541b3ce6e5c5ff",
+    "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
+    "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
+    "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
+    "native_trial_qualification.py": "b104023dc69a0bfae7214bb0b92c8c8ed0c0ef080ab5d5ed612cdc54e4d38c4b",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
+    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
+  },
+  "runtime_digests": {
+    "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
+    "codex": "8813367285524ac798dd96d1b071aea30d58708c7226fd236cd275cf1cfdee31",
+    "docker": "5a7f2e9607d759d0ec5c35810c9548b67e1d78daa44861516e47037d7ac3bfcd",
+    "executor_archive": "9d8ecf2d19d3e184877983902d6c85de48b3888dcb72c382a8a0c975845927fb"
+  },
+  "image_digest": "sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
+  "admission_grader_source_digests": {
+    "evaluation.py": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
+    "trial_admission.py": "bb07e3c5cd3d8d8a5612f649d10cff25d4236a0d5c972e6cba43326f0c589f3e",
+    "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
+  },
+  "observer_profile_digest": "24f6a5426446d8df5e230f1aca67cf7544846684564cca7a65ae019a8480b7b4",
+  "catalog_normalization": "inline-frontmatter-unique-slot-name-resource-v1",
+  "fixture_routing": {
+    "catalog": [
+      {
+        "description_sha256": "d7e16f52b29e3aac68a8947a508fda040bcdebcd9be8460a5fff214faf182d53",
+        "main_resource": "skills/assigned/SKILL.md",
+        "main_sha256": "a0a41c5c11bf8b0533605007e6e6c5453b86536d6899470148aceb6e018ac485",
+        "name": "assigned",
+        "slot": 0
+      },
+      {
+        "description_sha256": "365f274e3e02373324e7b754cfbe849699d861cfe525c62603132ab5d3a7b7b6",
+        "main_resource": "skills/qualifier-alt-a/SKILL.md",
+        "main_sha256": "f06be1fcb6e0308a452ac1bd9a68c8454a4051cd568e0f7e74d07dc20bddd4d1",
+        "name": "qualifier-alt-a",
+        "slot": 1
+      },
+      {
+        "description_sha256": "dfc41157a9e8b5368971a018210a630d7ba904c8ac7e582e17d41232b49c91de",
+        "main_resource": "skills/qualifier-alt-b/SKILL.md",
+        "main_sha256": "40096f7413d4898669986e15d67dc32ed733691247b09db571cbb68fe6f03f58",
+        "name": "qualifier-alt-b",
+        "slot": 2
+      }
+    ],
+    "catalog_digest": "2f81beb82288c9b1fb5d8ecb7167b19d5f1dbd4eae787c85bfd509a080ae1499",
+    "catalog_scope": "declared_experiment_subset",
+    "mode": "natural",
+    "observer": "implicit-stderr-json-v1"
+  },
+  "assigned_slot": 0,
+  "cases": [
+    {
+      "kind": "assigned_main",
+      "execution_kind": "actual_native_codex",
+      "routing_observation": {
+        "activation": "implicit_main_first_page_read",
+        "all_pages_verified": false,
+        "catalog_digest": "2f81beb82288c9b1fb5d8ecb7167b19d5f1dbd4eae787c85bfd509a080ae1499",
+        "correlation": {
+          "thread_matched": true,
+          "turn_matched": true
+        },
+        "evidence_scope": "receiver_complete_under_trusted_io",
+        "explicit_count": 0,
+        "health": {
+          "scope": "single_initial_turn_thread",
+          "user_prompt_seen": true
+        },
+        "implicit_reads": [
+          {
+            "count": 1,
+            "slot": 0
+          }
+        ],
+        "mode": "natural",
+        "observer_profile_digest": "24f6a5426446d8df5e230f1aca67cf7544846684564cca7a65ae019a8480b7b4",
+        "outcome": "not_graded",
+        "process_adherence": "not_assessed",
+        "qualification": "pending",
+        "reason": null,
+        "status": "observed",
+        "transport": {
+          "accepted_events": 2,
+          "close_mode": "graceful_stdin_eof",
+          "ignored_records": 21,
+          "native_written_count": null,
+          "pending_records": 0,
+          "process_reaped": true,
+          "projected_records_written": 1,
+          "receiver_complete": true,
+          "stderr_bytes": 15776,
+          "stderr_eof": true,
+          "stderr_frames": 23,
+          "stdout_eof": true,
+          "trailing_bytes": 0
+        },
+        "version": 1
+      },
+      "model_selection": {
+        "backend_identity_verified": false,
+        "match": true,
+        "observed_thread_start": "gpt-6-luna",
+        "requested": "gpt-6-luna",
+        "rerouted": false,
+        "source": "thread/start.result.model"
+      },
+      "cleanup": {
+        "complete": true,
+        "processes_stopped": true,
+        "control_absent": true,
+        "volume_absent": true,
+        "native_home": {
+          "home_absent": true,
+          "auth_absent": true
+        },
+        "process_query_uncertain": false,
+        "watch_uncertain": false,
+        "protected_synthetic_files_unchanged_after_shutdown": null,
+        "group_signal_uncertain": false,
+        "group_signal_error_code": "permission_denied",
+        "group_absent_after_reap": true
+      }
+    },
+    {
+      "kind": "list_only",
+      "execution_kind": "actual_native_codex",
+      "routing_observation": {
+        "activation": "observed_none_in_declared_catalog",
+        "all_pages_verified": false,
+        "catalog_digest": "2f81beb82288c9b1fb5d8ecb7167b19d5f1dbd4eae787c85bfd509a080ae1499",
+        "correlation": {
+          "thread_matched": true,
+          "turn_matched": true
+        },
+        "evidence_scope": "receiver_complete_under_trusted_io",
+        "explicit_count": 0,
+        "health": {
+          "scope": "single_initial_turn_thread",
+          "user_prompt_seen": true
+        },
+        "implicit_reads": [],
+        "mode": "natural",
+        "observer_profile_digest": "24f6a5426446d8df5e230f1aca67cf7544846684564cca7a65ae019a8480b7b4",
+        "outcome": "not_graded",
+        "process_adherence": "not_assessed",
+        "qualification": "pending",
+        "reason": null,
+        "status": "observed",
+        "transport": {
+          "accepted_events": 1,
+          "close_mode": "graceful_stdin_eof",
+          "ignored_records": 20,
+          "native_written_count": null,
+          "pending_records": 0,
+          "process_reaped": true,
+          "projected_records_written": 1,
+          "receiver_complete": true,
+          "stderr_bytes": 14116,
+          "stderr_eof": true,
+          "stderr_frames": 21,
+          "stdout_eof": true,
+          "trailing_bytes": 0
+        },
+        "version": 1
+      },
+      "model_selection": {
+        "backend_identity_verified": false,
+        "match": true,
+        "observed_thread_start": "gpt-6-luna",
+        "requested": "gpt-6-luna",
+        "rerouted": false,
+        "source": "thread/start.result.model"
+      },
+      "cleanup": {
+        "complete": true,
+        "processes_stopped": true,
+        "control_absent": true,
+        "volume_absent": true,
+        "native_home": {
+          "home_absent": true,
+          "auth_absent": true
+        },
+        "process_query_uncertain": false,
+        "watch_uncertain": false,
+        "protected_synthetic_files_unchanged_after_shutdown": null,
+        "group_signal_uncertain": false,
+        "group_signal_error_code": "permission_denied",
+        "group_absent_after_reap": true
+      }
+    },
+    {
+      "kind": "reference_only",
+      "execution_kind": "actual_native_codex",
+      "routing_observation": {
+        "activation": "observed_none_in_declared_catalog",
+        "all_pages_verified": false,
+        "catalog_digest": "2f81beb82288c9b1fb5d8ecb7167b19d5f1dbd4eae787c85bfd509a080ae1499",
+        "correlation": {
+          "thread_matched": true,
+          "turn_matched": true
+        },
+        "evidence_scope": "receiver_complete_under_trusted_io",
+        "explicit_count": 0,
+        "health": {
+          "scope": "single_initial_turn_thread",
+          "user_prompt_seen": true
+        },
+        "implicit_reads": [],
+        "mode": "natural",
+        "observer_profile_digest": "24f6a5426446d8df5e230f1aca67cf7544846684564cca7a65ae019a8480b7b4",
+        "outcome": "not_graded",
+        "process_adherence": "not_assessed",
+        "qualification": "pending",
+        "reason": null,
+        "status": "observed",
+        "transport": {
+          "accepted_events": 1,
+          "close_mode": "graceful_stdin_eof",
+          "ignored_records": 22,
+          "native_written_count": null,
+          "pending_records": 0,
+          "process_reaped": true,
+          "projected_records_written": 1,
+          "receiver_complete": true,
+          "stderr_bytes": 15778,
+          "stderr_eof": true,
+          "stderr_frames": 23,
+          "stdout_eof": true,
+          "trailing_bytes": 0
+        },
+        "version": 1
+      },
+      "model_selection": {
+        "backend_identity_verified": false,
+        "match": true,
+        "observed_thread_start": "gpt-6-luna",
+        "requested": "gpt-6-luna",
+        "rerouted": false,
+        "source": "thread/start.result.model"
+      },
+      "cleanup": {
+        "complete": true,
+        "processes_stopped": true,
+        "control_absent": true,
+        "volume_absent": true,
+        "native_home": {
+          "home_absent": true,
+          "auth_absent": true
+        },
+        "process_query_uncertain": false,
+        "watch_uncertain": false,
+        "protected_synthetic_files_unchanged_after_shutdown": null,
+        "group_signal_uncertain": false,
+        "group_signal_error_code": "permission_denied",
+        "group_absent_after_reap": true
+      }
+    },
+    {
+      "kind": "failed_main",
+      "execution_kind": "actual_native_codex",
+      "routing_observation": {
+        "activation": "observed_none_in_declared_catalog",
+        "all_pages_verified": false,
+        "catalog_digest": "2f81beb82288c9b1fb5d8ecb7167b19d5f1dbd4eae787c85bfd509a080ae1499",
+        "correlation": {
+          "thread_matched": true,
+          "turn_matched": true
+        },
+        "evidence_scope": "receiver_complete_under_trusted_io",
+        "explicit_count": 0,
+        "health": {
+          "scope": "single_initial_turn_thread",
+          "user_prompt_seen": true
+        },
+        "implicit_reads": [],
+        "mode": "natural",
+        "observer_profile_digest": "24f6a5426446d8df5e230f1aca67cf7544846684564cca7a65ae019a8480b7b4",
+        "outcome": "not_graded",
+        "process_adherence": "not_assessed",
+        "qualification": "pending",
+        "reason": null,
+        "status": "observed",
+        "transport": {
+          "accepted_events": 1,
+          "close_mode": "graceful_stdin_eof",
+          "ignored_records": 21,
+          "native_written_count": null,
+          "pending_records": 0,
+          "process_reaped": true,
+          "projected_records_written": 1,
+          "receiver_complete": true,
+          "stderr_bytes": 15414,
+          "stderr_eof": true,
+          "stderr_frames": 22,
+          "stdout_eof": true,
+          "trailing_bytes": 0
+        },
+        "version": 1
+      },
+      "model_selection": {
+        "backend_identity_verified": false,
+        "match": true,
+        "observed_thread_start": "gpt-6-luna",
+        "requested": "gpt-6-luna",
+        "rerouted": false,
+        "source": "thread/start.result.model"
+      },
+      "cleanup": {
+        "complete": true,
+        "processes_stopped": true,
+        "control_absent": true,
+        "volume_absent": true,
+        "native_home": {
+          "home_absent": true,
+          "auth_absent": true
+        },
+        "process_query_uncertain": false,
+        "watch_uncertain": false,
+        "protected_synthetic_files_unchanged_after_shutdown": null,
+        "group_signal_uncertain": false,
+        "group_signal_error_code": "permission_denied",
+        "group_absent_after_reap": true
+      }
+    }
+  ],
+  "falsification": {
+    "false_marker_no_activation": true
+  }
+}
