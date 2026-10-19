@@ -11,7 +11,7 @@ acceptance rules. The [execution](../../../verification/native-trials.json),
 [scoped grading](../../../verification/scoped-grading-integrity.json),
 [collection](../../../verification/native-outcome-collection.json) and
 [fixed routing](../../../verification/native-routing-observer.json) records share
-current source13/profile bindings and a
+their recorded source13/profile bindings and a
 [provenance companion](../../../verification/native-qualification-provenance.json).
 Check every consumed digest; historical results and a working CLI do not qualify
 new bytes. Record-binding tests and the offline admission smoke cannot substitute

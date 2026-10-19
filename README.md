@@ -180,15 +180,17 @@ these commands do not enable comparative evaluation or account activation. A
 The [scoped grading-integrity evidence](docs/verification/scoped-grading-integrity.json)
 records scoped credential-free native/child access checks and grading-drift tests.
 The [collection record](docs/verification/native-outcome-collection.json) adds
-current source13 bounded artifact collection with present/missing, unsafe and
+recorded source13 bounded artifact collection with present/missing, unsafe and
 interrupted cases. Execution, scoped grading, collection and fixed routing
 qualification records now share [original-proof provenance](docs/verification/native-qualification-provenance.json).
 The credential-free bridge does not exercise production `observe`/`finish`;
-an actual standard task-to-report result remains pending. The
+a later [partial pilot](docs/native-trials.md#offline-artifact-admission) exercised
+the normal production path for three rows. Its full comparison remains incomplete.
+The process-query diagnostic change requires fresh source-bound qualification. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
-now admits bound receiver records offline with current fixed-case qualification;
+admits bound receiver records offline only with matching source-bound qualification;
 natural EN/KO comparisons remain pending. An optional [same-host scope declaration](docs/decisions/evaluation-accounting.md#optional-same-host-scope-declaration)
 is explicitly unverified, with no custody or unseen-case claim. The trusted host controller keeps
 normal account access; no external evaluator environment is required.

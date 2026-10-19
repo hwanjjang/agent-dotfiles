@@ -1,15 +1,17 @@
 # Frozen native trials: operator guide
 
 The source implements `check`, `run` and guarded `recover` for one pinned native
-trial. Current [execution](verification/native-trials.json),
+trial. Retained [execution](verification/native-trials.json),
 [scoped grading](verification/scoped-grading-integrity.json),
 [collection](verification/native-outcome-collection.json) and
 [fixed routing](verification/native-routing-observer.json) records bind the eight
 bounded checks to runtime source13 and the admission grader. Their shared
 [provenance](verification/native-qualification-provenance.json) preserves original
 proof identities and scope; earlier selected records remain in immutable Git.
-These are qualification prerequisites. Production task-to-report evidence,
-other hosts, natural EN/KO selection effectiveness and comparisons remain pending.
+These records qualify their exact historical source, not subsequent changes.
+The process-query diagnostic change below requires renewed source-bound checks
+before current-source native admission. Other hosts and completed natural EN/KO
+comparisons remain pending.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -18,7 +20,7 @@ The [controller](../scripts/improvement/native_trial.py) and
 These commands do not install account settings, activate hooks, create a VM,
 change Docker context, log in, compare arms, grade general tasks or promote changes.
 
-## Working-source checkpoint — 2026-10-19
+## Historical qualification checkpoint — 2026-10-19
 
 The [source-bound checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) records all eight planned
 bounded checks passing: one authenticated boundary, four authenticated fixed
@@ -41,7 +43,7 @@ model identity or account activation.
 ## Selected evidence and current limits
 
 The [execution record](verification/native-trials.json) selects the authenticated
-boundary receipt and verified cleanup for the current source/profile. The
+boundary receipt and verified cleanup for its recorded source/profile. The
 [provenance companion](verification/native-qualification-provenance.json) binds
 all eight original manifests, canonical receipts, reviewed private helpers,
 source/runtime identities and custody observations associated by the trusted
@@ -67,7 +69,7 @@ orchestration command or protection against a hostile same-account owner.
 
 ## Scoped grading integrity
 
-The [current scoped evidence](verification/scoped-grading-integrity.json) verifies
+The [retained scoped evidence](verification/scoped-grading-integrity.json) verifies
 actual task read/write/readback and known protected grading, other-arm and synthetic
 installer receipt/journal read/write/create probes through a native command and an
 explicit Python child. The owner creates those eight synthetic protected files
@@ -98,15 +100,20 @@ connects exact recorded artifact collections to the existing evaluator through
 `trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
 the reader checks frozen attempt, dispatch, source, collection and maintained
 qualification bindings. The maintained records now satisfy the unchanged
-qualification checks for their exact profile. No actual production task has yet
-been admitted: the credential-free bridge cannot supply that missing result.
+qualification checks for their recorded source/profile. A later
+[partial development pilot](https://github.com/hwanjjang/agent-dotfiles/issues/27#issuecomment-6261300514)
+exercised the normal production reservation, observation, collection, cleanup and
+admission path for three rows. Its full schedule remains two pass, one fail, one
+cleanup-blocked and four missing. Later physical cleanup preserved the original
+blocked receipt; neither the complete comparison nor the interrupted production
+path was validated. The diagnostic source change requires fresh qualification.
 The reader does not execute or recover trials; preserve failed attempts and
 unknown costs.
 
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
-client-model admission. The four fixed receiver cases have current-source
+client-model admission. The four fixed receiver cases have historical source-bound
 observations bound by the maintained routing record; general routing
 effectiveness remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
@@ -300,6 +307,30 @@ Boundary qualification exports finite input diagnostics (`call_id_valid`,
 distinguish call identity from known whitespace, line-ending or exec-pragma differences.
 These labels never normalize acceptance: the requested script must still match
 exactly. Raw inputs, correlation identifiers and their hashes are not retained.
+
+## Process-query failure diagnosis
+
+The cleanup record includes `process_query_diagnostic`: `null` when no query
+failed, otherwise the first failure's `phase` (`launch`, `watch`, or `cleanup`),
+queried `pid`, and finite `reason`. Reasons distinguish `deadline`, `timeout`,
+`output_limit`, `control_stopped`, `exit_status`, `stderr`, `field_count`,
+`identity`, `executable_not_absolute`, and unexpected `operation` failure.
+No raw process output, executable path, error text or model content is added.
+The public refusal remains `process_query`.
+
+A macOS owned-process reproduction confirmed that an exited but unreaped child
+can return a nonabsolute executable field; after its parent reaps it, the exact
+query reports absence. This is a plausible explanation for the retained pilot
+failure, not a proven historical cause: that failed query's output was not saved.
+Apple's [process formatting source](https://github.com/apple-oss-distributions/adv_cmds/blob/6bed8737a34dbb54782a18f47dccf933a9967a12/ps/print.c)
+also has nonabsolute fallbacks, so this category alone does not establish a zombie.
+
+Later successful queries do not erase the first failure or clear
+`process_query_uncertain`. Existing ownership, watcher, deadline, auth-purge and
+recovery guards remain in force. There is no automatic retry or acceptance of a
+malformed query as process absence. Tests and the local reproduction verify the
+diagnostic behavior; they do not renew authenticated qualification, repair the
+original blocked result, or complete the EN/KO comparison.
 
 ## Recover exact owned residue
 

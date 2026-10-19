@@ -340,21 +340,36 @@ def bounded(argv, timeout, *, limit=12000, env=None, payload=None):
             'stderr': chunks[process.stderr].decode(errors='replace')}
 
 
+class ProcessQueryFailure(plan.Refusal):
+    """Keep the public refusal stable while projecting a fixed diagnostic code."""
+
+    def __init__(self, reason):
+        super().__init__('process_query')
+        self.reason = reason
+
+
 def parse_process_query(result, pid):
     if result.get('exit') == 1 and not result.get('stdout', '').strip() \
             and not result.get('stderr', '').strip() and not result.get('stop_reason'):
         return None
-    if result.get('exit') != 0 or result.get('stop_reason') or result.get('stderr', '').strip():
-        raise plan.Refusal('process_query')
+    stop = result.get('stop_reason')
+    if stop:
+        raise ProcessQueryFailure(stop if stop in ('timeout', 'output_limit') else 'control_stopped')
+    if result.get('exit') != 0:
+        raise ProcessQueryFailure('exit_status')
+    if result.get('stderr', '').strip():
+        raise ProcessQueryFailure('stderr')
     parts = result.get('stdout', '').strip().split(None, 8)
+    if len(parts) != 9:
+        raise ProcessQueryFailure('field_count')
     try:
-        if len(parts) != 9:
-            raise ValueError()
         actual, parent, group = (int(v) for v in parts[:3])
-        if actual != pid or actual <= 0 or parent < 0 or group <= 0 or not parts[8].startswith('/'):
+        if actual != pid or actual <= 0 or parent < 0 or group <= 0:
             raise ValueError()
     except (TypeError, ValueError):
-        raise plan.Refusal('process_query') from None
+        raise ProcessQueryFailure('identity') from None
+    if not parts[8].startswith('/'):
+        raise ProcessQueryFailure('executable_not_absolute')
     return {'pid': actual, 'ppid': parent, 'pgid': group,
             'start': ' '.join(parts[3:8]), 'exe': parts[8]}
 
@@ -601,6 +616,7 @@ class Controller:
         self.watch_stop = threading.Event()
         self.watcher = None
         self.process_uncertain = False
+        self.process_query_diagnostic = None
         self.watch_error = False
         self.watch_diagnostic = None
         self.auth_copy_attempted = False
@@ -842,12 +858,22 @@ class Controller:
             # query still has its own two-second bound; actual query failures
             # remain uncertainty. Cleanup stops/drains the watcher before close.
             deadline = time.monotonic()+2 if watch else (self.cleanup_deadline if cleanup else self.deadline)
-            plan.require(deadline is not None and time.monotonic() < deadline, 'process_deadline')
+            if deadline is None or time.monotonic() >= deadline:
+                raise ProcessQueryFailure('deadline')
             result = bounded(['/bin/ps', '-p', str(pid), '-o', 'pid=,ppid=,pgid=,lstart=,comm='],
                              min(2, max(.01, deadline-time.monotonic())), limit=2048, env=self.env)
             return parse_process_query(result, pid)
-        except Exception:
+        except Exception as exc:
             self.process_uncertain = True
+            # One finite first-failure record, never ps output or exception text.
+            # A later successful query cannot erase uncertainty or authorize purge.
+            with self.process_lock:
+                if self.process_query_diagnostic is None:
+                    self.process_query_diagnostic = {
+                        'phase': 'watch' if watch else ('cleanup' if cleanup else 'launch'),
+                        'pid': pid,
+                        'reason': exc.reason if isinstance(exc, ProcessQueryFailure) else 'operation',
+                    }
             raise plan.Refusal('process_query') from None
 
     def watch(self):
@@ -1082,6 +1108,7 @@ class Controller:
                 process_failure = True
                 result['errors'].append('process_cleanup')
         result['process_query_uncertain'] = self.process_uncertain
+        result['process_query_diagnostic'] = getattr(self, 'process_query_diagnostic', None)
         result['processes_stopped'] = bool((getattr(self, 'recovery_prior_shutdown', False) or not self.launch_called or
             (self.launch_complete and self.live is not None and self.live.proc is not None
              and close and close.get('process_reaped') is True and not close.get('group_signal_error')))
@@ -1415,6 +1442,7 @@ def recover(attempt):
         controller.process_lock = threading.Lock()
         controller.watch_stop = threading.Event()
         controller.process_uncertain = controller.watch_error = controller.capture_failed = False
+        controller.process_query_diagnostic = None
         controller.begun, controller.ids = set(), {}
         for value in records.get('container_create_intent', []):
             key = next((k for k in ('stage', 'executor') if controller.names[k] == value.get('name')), None)
