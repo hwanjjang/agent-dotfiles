@@ -186,8 +186,10 @@ qualification records now share [original-proof provenance](docs/verification/na
 The credential-free bridge does not exercise production `observe`/`finish`;
 a later [partial pilot](docs/native-trials.md#offline-artifact-admission) exercised
 the normal production path for three rows. Its full comparison remains incomplete.
-Eight fresh observations now qualify the process-query, cleanup-settling and
-exact-prompt source recorded in the [current checkpoint](docs/native-trials.md#current-qualification-checkpoint--2026-10-19). Later source changes require renewed evidence. The
+Eight recorded observations qualified the process-query, cleanup-settling and
+exact-prompt source recorded in the [current checkpoint](docs/native-trials.md#current-qualification-checkpoint--2026-10-19). The later startup-diagnostic, interruption-retention and optional pre-turn-continuation
+changes require renewed runtime/grader evidence; local conformance checks do not
+renew that qualification. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)

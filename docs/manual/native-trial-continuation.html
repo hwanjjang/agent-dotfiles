@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8"><title>Independent-row continuation</title><style>body{margin:0;background:#eef1f6;color:#172638;font:17px system-ui;padding:30px}h1{font-size:28px;margin:0 0 12px}p{margin:0 0 15px}pre{background:#142332;color:#eaf7ff;padding:20px;border-radius:12px;font:16px/1.25 ui-monospace,monospace;white-space:pre-wrap}footer{font-size:16px;color:#274d69}</style><h1>Keep the failed row. Continue only the next row.</h1><p>Actual CLI output · fixed native-run STUB · fake qualifications and usage · no model/auth/VM</p><pre>$ trial_reservation.py initialize --continue-after-no-turn ...
+status: ready  |  next_launch_allowed: true
+
+$ trial_reservation.py run-next --plan &lt;first-frozen-plan&gt; ...
+{
+  &quot;status&quot;: &quot;blocked&quot;,
+  &quot;reserved_initial_turns&quot;: 1,
+  &quot;known_tokens&quot;: 0,
+  &quot;total_tokens&quot;: null,
+  &quot;unknown_attempts&quot;: 1,
+  &quot;admission_tokens&quot;: 131072,
+  &quot;next_launch_allowed&quot;: true
+}
+
+$ trial_reservation.py run-next --plan &lt;next-frozen-plan&gt; ...
+{
+  &quot;status&quot;: &quot;blocked&quot;,
+  &quot;reserved_initial_turns&quot;: 2,
+  &quot;known_tokens&quot;: 160,
+  &quot;total_tokens&quot;: null,
+  &quot;unknown_attempts&quot;: 1,
+  &quot;admission_tokens&quot;: 131232,
+  &quot;next_launch_allowed&quot;: true
+}
+
+$ trial_reservation.py run-next --plan &lt;same-plan-again&gt; ...
+{&quot;status&quot;:&quot;refused&quot;,&quot;reason&quot;:&quot;reservation_unavailable&quot;}</pre><footer>Blocked and unknown stay visible. The admission allowance is not provider billing.<br>Replay refused; both original reservations remain.</footer>

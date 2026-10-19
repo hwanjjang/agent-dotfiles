@@ -19,6 +19,28 @@ The [controller](../scripts/improvement/native_trial.py) and
 These commands do not install account settings, activate hooks, create a VM,
 change Docker context, log in, compare arms, grade general tasks or promote changes.
 
+## Startup diagnostics and interruption retention
+
+A failed startup RPC now includes optional `rpc_failure` metadata with a fixed
+method, phase, failure kind and standard JSON-RPC code category. Messages, data,
+authentication and arbitrary codes are never retained. Existing failure verdicts
+remain unchanged; for example `protocol_refusal` can now identify `account/read`
+and `internal_error` without storing the provider response. This class identifies
+the failed operation, not a proven cause or permission to repeat a model task.
+
+Supervisor interruption preserves attempted/started turn counts and already
+observed usage in the blocked observation before the existing collection and
+cleanup path runs. It never upgrades an interrupted result to completed. The
+[serial contract](decisions/evaluation-accounting.md#continue-untouched-rows-after-a-verified-startup-failure)
+owns optional independent-row continuation; possible turn start or uncertain
+cleanup cannot use it.
+
+These changes invalidate the previous runtime/grader identities. Their local
+protocol, lifecycle and CLI checks are conformance evidence; actual qualification,
+production interruption and comparison on the changed source remain pending.
+The checkpoint below records the prior qualified bytes and is not renewed by
+these changes.
+
 ## Current qualification checkpoint — 2026-10-19
 
 All eight fixed checks ran afresh on source commit `2f50e00` and passed: one

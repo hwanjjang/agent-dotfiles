@@ -2656,7 +2656,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Offline artifact/routing admission, client-model observations and reservations are implemented with eight fresh source-bound qualifications; the actual development comparison remains incomplete.",
+      "summary": "Offline artifact/routing admission and reservations are implemented. Startup diagnostics and opt-in pre-turn continuation have local checks; changed runtime/grader identities await renewed native qualification. Prior qualification and incomplete comparison records retain their original bindings.",
       "when": [
         "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting.",
         "Recorded native artifact snapshots need trusted offline admission without relabeling receipts as synthetic completions."
@@ -2670,7 +2670,7 @@
         "Use account doctor for setup readiness; its live-account smoke scenarios do not qualify isolated comparisons or promotion.",
         "Admit only source-bound owned attempt journals with matching maintained execution/grading/collection qualification; missing or changed proof remains blocked; the recorded eight-case qualification is not a production task result. Artifact hashes do not establish routing, exposure or quiescent task state.",
         "Native attempts preserve all submissions and unknown costs, charge one observed cumulative usage total per distinct attempt, and keep failed or unassigned attempts visible.",
-        "Audit every serial reservation independently of submitted completions. Reserve initial turns and declared phase-time permanently; stop on unknown/incomplete prior facts or observed token overshoot. This is not a hard provider request, token or spending cap.",
+        "Audit every serial reservation independently of submitted completions. Reserve turns and phase-time permanently. Default stop on incomplete facts; a frozen opt-in permits only untouched rows after verified pre-turn startup failure and cleanup, retaining blocked/unknown results and charging the soft allowance. No retry or hard provider cap.",
         "Grade qualified first-page routing signals separately from artifacts; healthy none can fail an expected read. Persisted client-model facts do not verify backend identity. Declared same-host scope retains unverified/not-assessed/null custody limits."
       ],
       "outputs": [

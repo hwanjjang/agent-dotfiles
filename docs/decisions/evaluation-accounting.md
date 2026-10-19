@@ -420,13 +420,46 @@ busy lock, exhausted allowance or incomplete prior attempt prevents that launch.
 A reserved slot is permanent: crash, refusal, interruption and recovery do not
 refund it or reset the schedule. Preserve blocked state and original receipts.
 
+### Continue untouched rows after a verified startup failure
+
+Default behavior still stops on incomplete prior attempts. To select the narrower
+continuation policy **before any launch**, initialize a fresh frozen experiment
+with `--continue-after-no-turn`. The header records
+`independent_after_no_turn_v1`; each reservation binds that header. This is not a
+resume switch for old experiments or permission to rewrite a source identity.
+
+The gate permits only the next unreserved manifest when every incomplete attempt
+has a source-bound startup RPC failure at `initialize` or `account/read`, zero
+attempted/started initial turns, and verified completed cleanup. It rechecks the
+manifest, receipt, boundary, finalization and source guards at every launch.
+Missing receipts, possible/unknown turn start, inconsistent cleanup, tampering,
+and exceeded allowances still stop before authentication. A normally completed
+but poorly scored task already allows independent rows to continue.
+
+`next_launch_allowed` reports this separate launch decision. **`status` remains
+`blocked`, exit code remains 1, and `total_tokens` remains null** while incomplete
+cost facts exist. No failed result becomes a success or disappears. The
+`admission_tokens` counter charges each incomplete attempt at least its declared
+`soft_total_tokens` allowance (or larger observed subtotal); it is neither observed
+billing nor an upper bound on provider use. Subsequent admission checks use that
+counter plus the next allowance. There is no automatic loop, retry, refund or
+replacement: a caller must explicitly invoke the next row and preserve all
+outcomes. Multiple completions remain ambiguous to the evaluator.
+
+The [reservation walkthrough](../manual/native-trial-reservations.pdf) includes
+actual local CLI output using a fixed native-run stub. This is conformance evidence,
+not renewed native qualification. Runtime and grader changes require fresh
+source-bound qualification before an actual comparison.
+
 The frozen `model_requests` allowance counts reserved **initial turns**, not HTTP
 requests or provider retries. Each reservation permanently charges the declared
 `setup_seconds + wall_seconds + cleanup_seconds` against `budget.seconds`; this
 is declared phase-time accounting, not measured provider time or refunded elapsed
 time. Before another turn, known cumulative usage plus the next plan's
 `soft_total_tokens` must fit the remaining token allowance. Observed overshoot,
-unknown or incomplete prior evidence stops further launches. Token checks are
+unknown or incomplete prior evidence stops further launches by default. The explicit
+startup-only policy above reserves the missing allowance and retains the unknown
+result while permitting an independent next row. Token checks are
 post-use soft observations and may overshoot; wire requests, billing and currency
 remain unknown. Do not describe this as a hard provider budget.
 

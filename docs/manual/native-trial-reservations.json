@@ -1,10 +1,10 @@
 {
   "title": "Serial native trial reservations",
-  "scenario": "Evaluation-accounting workflow on Python 3.11+. Browser-rendered actual CLI/process summaries use a fixed native-run STUB and fake qualifications, journals and usage. Not terminal images or native/model evidence.",
+  "scenario": "Evaluation-accounting workflow on Python 3.11+. Browser-rendered actual CLI/process summaries use a fixed native-run STUB and fake qualifications, journals and usage. Not terminal images or native/model evidence. Steps 1-2 are historical captures at their recorded source; step3 is the new continuation conformance run. Native qualification on the changed source is pending.",
   "steps": [
     {
       "title": "Initialize and follow the frozen order",
-      "instruction": "Read the serial contract before using trial_reservation.py initialize, status or run-next. Supply the frozen stdin context and private execution root. Launch plans in that root only through run-next; direct native run bypasses this gate. Current public qualification refuses initialization; the positive example uses a fixed test-only native-run stub.",
+      "instruction": "Read the serial contract before using trial_reservation.py initialize, status or run-next. Supply the frozen stdin context and private execution root. Launch plans in that root only through run-next; direct native run bypasses this gate. The historical public qualification refused initialization; the positive example uses a fixed test-only native-run stub.",
       "screenshot": "native-trial-reservations-check.png",
       "caption": "Exact bytes from renewed smoke match checkpoint a8b0f9785457 after execution. The commit was created later; this is not execution at that checkpoint. Thirteen runner and three grader hashes match.",
       "expected": "After two stubbed attempts: two reserved turns, 630 declared seconds and 320 synthetic tokens. Wrong order and retry refuse. These are initial-turn and permanent phase-time reservations, not provider request counts."
@@ -15,6 +15,13 @@
       "screenshot": "native-trial-reservations-result.png",
       "caption": "A separate process directly appended Journal reserve, then exited 23. It did not crash inside run-next. Native lifecycle is synthetic; separate lock probes ran before task and after stubbed cleanup.",
       "expected": "Three reservations and 945 declared seconds remain. Synthetic 320 tokens are known; total is unknown and the next launch refuses. Post-use soft token checks may overshoot; hard_provider_cap and live_eligible stay false."
+    },
+    {
+      "title": "Continue only an untouched row after verified no-turn failure",
+      "instruction": "Before launching a new frozen experiment, select initialize --continue-after-no-turn. After a blocked startup, inspect next_launch_allowed. Only verified initialize/account-read failure before any turn with completed cleanup can permit the next scheduled manifest. Keep every reservation and the original failed row. Do not replay the failed or just-completed plan.",
+      "screenshot": "native-trial-continuation.png",
+      "caption": "Five actual CLI subprocesses with a fixed native-run stub. Status remains blocked and total usage unknown; the first allowance remains charged. No real model, credential or VM was used.",
+      "expected": "The second row runs once; replay refuses. admission_tokens is131232 while known synthetic tokens are160. This permission does not repair the first row or establish complete comparison/qualification."
     }
   ]
 }

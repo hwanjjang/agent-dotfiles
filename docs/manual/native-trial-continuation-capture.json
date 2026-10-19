@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "scope": "Actual local stdio/CLI processes; fixed native-run stub, fake qualification/journals; no model/auth/VM",
+  "sources": {
+    "native_trial_protocol.py": "b5cc4794f5aa9e4156712b00ae63306f980b0e287f5a4013050160de8401c974",
+    "trial_admission.py": "743e0bea56d390113275f91747842fa062e548a77853b8bb563edfb138db56b8",
+    "trial_reservation.py": "582ea17b57a173c3514bcf4008da5c3bb327fc7ed4128af89e532124dafeb5e8"
+  },
+  "smoke_sha256": "1ab8e45886b1c09c56793e2dc409567688de2ffe7241ecac47a025cea61bdd2d",
+  "actual_result_summary": {
+    "first": {
+      "admission_tokens": 131072,
+      "backend_identity_verified": false,
+      "billing_usage": null,
+      "continuation_policy": "independent_after_no_turn_v1",
+      "currency_amount": null,
+      "declared_seconds": 315,
+      "hard_provider_cap": false,
+      "initial_turn_requests_attempted": [
+        0
+      ],
+      "known_tokens": 0,
+      "limits_exceeded": false,
+      "live_eligible": false,
+      "next_launch_allowed": true,
+      "reserved_initial_turns": 1,
+      "scheduled": 4,
+      "status": "blocked",
+      "total_tokens": null,
+      "unknown_attempts": 1,
+      "wire_requests": null
+    },
+    "second": {
+      "admission_tokens": 131232,
+      "backend_identity_verified": false,
+      "billing_usage": null,
+      "continuation_policy": "independent_after_no_turn_v1",
+      "currency_amount": null,
+      "declared_seconds": 630,
+      "hard_provider_cap": false,
+      "initial_turn_requests_attempted": [
+        0,
+        1
+      ],
+      "known_tokens": 160,
+      "limits_exceeded": false,
+      "live_eligible": false,
+      "next_launch_allowed": true,
+      "reserved_initial_turns": 2,
+      "scheduled": 4,
+      "status": "blocked",
+      "total_tokens": null,
+      "unknown_attempts": 1,
+      "wire_requests": null
+    },
+    "replay": {
+      "command": "run-next",
+      "exit": 2,
+      "result": {
+        "status": "refused",
+        "reason": "reservation_unavailable"
+      }
+    },
+    "rpc_failure": {
+      "method": "account/read",
+      "phase": "response",
+      "kind": "server_error",
+      "code": "internal_error"
+    },
+    "temporary_synthetic_root_absent": true
+  },
+  "capture_surface": "Browser-rendered sanitized actual CLI result; not a terminal image or model evidence",
+  "native_qualification": "pending on changed source",
+  "capture_method": {
+    "browser": "Installed Google Chrome, headless Playwright",
+    "viewport": {
+      "width": 1100,
+      "height": 1000
+    },
+    "horizontal_overflow": false,
+    "browser_closed": true
+  },
+  "pdf_validation": {
+    "page_count": 3,
+    "renderer": "PDFium",
+    "all_pages_visually_inspected": true,
+    "clipping_or_overlap": false,
+    "historical_pages": 2,
+    "new_synthetic_cli_page": 3
+  }
+}
