@@ -1,0 +1,55 @@
+{
+  "kind": "actual-production-interruption",
+  "observed_date": "2026-10-19",
+  "runtime_source13_identity": "86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213",
+  "status": "interruption_observed",
+  "canonical_receipt_status": "blocked",
+  "canonical_reason": "interrupted",
+  "manifest_digest": "a21df5b9d655f92bd41dd995e80b3d8f27b57d3825bfbb2c9ec3dee345efe346",
+  "private_result_sha256": "35742c7e6c59c5ea503c7696ab4f58f52dd6929634746f97cdcfeadf3b85f102",
+  "checkpoint": {
+    "interruption_injected": true,
+    "ignored_before_checkpoint": 3,
+    "raw_items": 5
+  },
+  "fixed_input_contract": "production-interruption-outer-lf-v2",
+  "accepted_variant": "trailing_lf",
+  "collected_artifact": {
+    "bytes": 30,
+    "path": "interruption-result.txt",
+    "sha256": "1277bbb896159edf25f4a8f1770a74833558213b86d6ed3f185081caa8b70fdd",
+    "status": "present"
+  },
+  "cleanup_verified": true,
+  "dedicated_VM_stopped": true,
+  "usage": {
+    "billing_usage": null,
+    "known_lower_bound": [
+      8278,
+      119
+    ],
+    "reason": "partial_snapshot_lower_bound",
+    "unknown_usage_preserved": true,
+    "usage_complete": false
+  },
+  "earlier_attempts": [
+    {
+      "status": "NOT_INJECTED",
+      "cleanup_verified": true,
+      "usage_complete": false,
+      "cause": "one trailing LF rejected by original exact checkpoint"
+    },
+    {
+      "status": "NOT_INJECTED",
+      "cleanup_verified": true,
+      "usage_complete": false,
+      "cause": "skill read preceded the required write checkpoint"
+    }
+  ],
+  "limitations": [
+    "PASS applies to interruption handling, not successful task completion. Canonical blocked/interrupted status is preserved.",
+    "Checkpoint search inspects at most 64 items and requires the exact bound write or one outer LF plus correlated output before injection.",
+    "Partial usage is a lower bound, not zero, a complete total or billing evidence.",
+    "No backend model identity, candidate improvement or account application is established."
+  ]
+}
