@@ -1,6 +1,5 @@
 """Cleanup may wait for a transient exit record; ambiguity never means absence."""
 import sys
-import time
 import unittest
 from unittest.mock import patch
 
@@ -35,15 +34,55 @@ class ProcessExitSettlingTests(unittest.TestCase):
         self.assertFalse(trial.same_process(c.seen[123], current))
         self.assertIsNotNone(current)
 
-    def test_persistent_ambiguity_expires_and_retains_uncertainty(self):
-        c = self.owned(); c.cleanup_deadline = time.monotonic() + .08
+    def test_persistent_ambiguity_parsed_at_deadline_retains_uncertainty(self):
+        c = self.owned(); c.cleanup_deadline = 11
+        now = [10]
+        query_times = iter((10.25, 11))
+
+        def ambiguous(*args, **kwargs):
+            now[0] = next(query_times)
+            return EXITING
+
+        def sleep(seconds):
+            now[0] += seconds
+
         with patch.object(sys, 'platform', 'darwin'), \
-                patch.object(trial, 'bounded', return_value=EXITING) as query:
-            with self.assertRaises(trial.plan.Refusal):
+                patch.object(trial.time, 'monotonic', side_effect=lambda: now[0]), \
+                patch.object(trial.time, 'sleep', side_effect=sleep) as wait, \
+                patch.object(trial, 'bounded', side_effect=ambiguous) as query, \
+                patch.object(trial.os, 'killpg') as signal:
+            with self.assertRaisesRegex(trial.plan.Refusal, '^process_query$'):
                 c.process(123, cleanup=True)
-        self.assertGreater(query.call_count, 1)
+        self.assertEqual(query.call_count, 2)
+        wait.assert_called_once_with(.05)
+        signal.assert_not_called()
         self.assertTrue(c.process_uncertain)
-        self.assertEqual(c.process_query_diagnostic['reason'], 'executable_not_absolute')
+        self.assertEqual(c.process_query_diagnostic,
+                         {'phase': 'cleanup', 'pid': 123, 'reason': 'executable_not_absolute'})
+        self.assertEqual(c.seen, {123: trial.parse_process_query(GOOD, 123)})
+
+    def test_deadline_before_next_query_retains_uncertainty_without_querying(self):
+        c = self.owned(); c.cleanup_deadline = 11
+        now = [10]
+
+        def sleep(seconds):
+            # Scheduling can resume at the deadline after an ambiguous result.
+            now[0] = 11
+
+        with patch.object(sys, 'platform', 'darwin'), \
+                patch.object(trial.time, 'monotonic', side_effect=lambda: now[0]), \
+                patch.object(trial.time, 'sleep', side_effect=sleep) as wait, \
+                patch.object(trial, 'bounded', side_effect=[EXITING, ABSENT]) as query, \
+                patch.object(trial.os, 'killpg') as signal:
+            with self.assertRaisesRegex(trial.plan.Refusal, '^process_query$'):
+                c.process(123, cleanup=True)
+        self.assertEqual(query.call_count, 1)
+        wait.assert_called_once_with(.05)
+        signal.assert_not_called()
+        self.assertTrue(c.process_uncertain)
+        self.assertEqual(c.process_query_diagnostic,
+                         {'phase': 'cleanup', 'pid': 123, 'reason': 'deadline'})
+        self.assertEqual(c.seen, {123: trial.parse_process_query(GOOD, 123)})
 
     def test_unknown_owner_launch_watch_and_other_platform_do_not_retry(self):
         for platform, mode, owned in [('darwin', {}, True), ('darwin', {'watch': True}, True),
