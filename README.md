@@ -48,7 +48,7 @@ selections and local feedback. See the [task-feedback walkthrough](docs/manual/t
 and [verification recipe](docs/verification/verify-repository/features/task-feedback.md).
 [Reviewed synthetic case export](account/observation/README.md#prepare-and-export-a-reviewed-synthetic-case)
 is available with an [exact-digest review walkthrough](docs/manual/reviewed-cases.pdf).
-Evidence-bound caller triage is available; automatic diagnosis and live comparative evaluation remain planned.
+Evidence-bound caller triage is available; automatic diagnosis and promotion-eligible held-out evaluation remain planned.
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
@@ -152,7 +152,7 @@ project consent and one selected client registration; default installations coll
 nothing. Codex requires native trust for four observer definitions. The
 [native platform matrix](account/observation/native.md#native-platform-evidence--2026-10-18)
 owns per-client, source-bound results, interruption limits, historical prerequisites
-and untried environments. Comparative model evaluation remains future work. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
+and untried environments. Comparisons between different models remain future work; the completed development pilot compares two configurations using one client-selected model. The implemented [account doctor](account/README.md#diagnose-and-exercise-the-installation)
 qualifies setup and bounded model behavior before experiments or after deployment;
 its PASS does not establish improvement over a baseline.
 The [collector capacity guide](account/observation/capacity.md) records bounded

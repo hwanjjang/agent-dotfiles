@@ -2656,7 +2656,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Artifact/routing admission and reservations are implemented and qualified. The completed eight-row native development pilot retained every outcome: routing 4/4 each, artifact 3/4 baseline versus 2/4 candidate; no improvement or account application.",
+      "summary": "Artifact/routing admission is source-qualified; reservations are implemented and exercised. The completed eight-row native development pilot retained every outcome: routing 4/4 each, artifact 3/4 baseline versus 2/4 candidate; no improvement or account application.",
       "when": [
         "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting.",
         "Recorded native artifact snapshots need trusted offline admission without relabeling receipts as synthetic completions."
@@ -2823,7 +2823,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/native-trials.md",
-      "summary": "Frozen native trials have eight fresh execution, scoped-IO, collection and fixed routing qualifications after process-query, macOS exit-settling and exact-prompt corrections; the completed eight-row development comparison rejects the candidate, with no missing outcomes.",
+      "summary": "Frozen native trials have eight fresh execution, scoped-IO, collection and fixed routing qualifications for the current runtime and versioned reference-input contract; the completed eight-row development comparison rejects the candidate, with no missing outcomes.",
       "when": [
         "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission.",
         "A trial needs declared output hashes or explicit missing files captured before owned cleanup, without retaining arbitrary native content."

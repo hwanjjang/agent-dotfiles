@@ -230,7 +230,7 @@ coordinates scheduled launches and audits every reserved attempt. Freeze the
 whole development schedule before execution and use its first standard production
 row to verify `observe` → cleanup/collection → `finish` → admission. This avoids a
 duplicate live smoke; that row counts only in its original frozen schedule.
-Missing rows remain in the denominator. Comparisons remain separate work and
+Missing rows remain in the denominator. Collection and comparison are separate evidence types and
 backend identity remains unknown.
 
 ## Prepare a frozen plan
@@ -331,12 +331,11 @@ the artifact through a real native tool call, not coordinator materialization.
 An actual turn/start acknowledgment was counted and correlated to its terminal;
 no author-supplied success flag replaced it. The private bridge supplies the
 observation projection and its own coordinator receipt; it calls production
-setup/cleanup/capture, while production `observe`/`finish` collection gates have
-unit-test coverage only. The existing native fixture's
+setup/cleanup/capture; these credential-free controls do not exercise the production `observe`/`finish` path. The completed development pilot supplies separate actual production evidence. The existing native fixture's
 `mock_complete`/`blocked` result and the outer private attestation stay distinct.
 These three controls made no model calls or authentication reads/copies.
-Historical authenticated boundary/routing qualification is separately recorded;
-the actual comparative evaluation remains pending.
+Current authenticated boundary/routing qualification is separately recorded;
+the [bounded development comparison](evidence/native-development-pilot-2026-10-19.md) is complete, while held-out evaluation remains pending.
 
 See the [collection flow](architecture/native-outcome-workflow.html) and
 [screenshot walkthrough](manual/native-outcome-collection.pdf) for this sequence.
@@ -532,6 +531,5 @@ integration can defer temporary cleanup until the external owner has stopped
 helpers; that option is not exposed in the JSON CLI. Pending external cleanup
 must not be presented as a fully cleaned successful qualification.
 
-Current-profile actual qualification and later evaluator admission remain separate
-work. Neither receipt type activates an account or establishes a baseline/candidate
+Current-profile qualification and evaluator admission use separate evidence, recorded above. Neither receipt type activates an account or establishes a baseline/candidate
 improvement. Keep historical results bound to their original source and topology.
