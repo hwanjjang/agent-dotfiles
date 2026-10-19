@@ -68,3 +68,23 @@ class RpcDiagnosticsTests(unittest.TestCase):
             metadata_check=lambda:{},soft_total=100,soft_output=10)
         self.assertNotIn('SECRET',json.dumps(result))
         self.assertNotIn('rpc_failure',result)
+
+    def test_real_rpc_observer_clears_old_diagnostic_before_auth_refusal_or_interrupt(self):
+        for interrupted in (False,True):
+            with self.subTest(interrupted=interrupted):
+                s=self.session({})
+                s.rpc_failure={'method':'account/read','phase':'response','kind':'server_error','code':'internal_error'}
+                responses=iter([{'id':1,'result':{}},
+                    {'id':2,'result':{'account':{'type':'apiKey'},'requiresOpenaiAuth':True}}])
+                def response(predicate):
+                    value=next(responses)
+                    if interrupted and value['id']==2:raise KeyboardInterrupt('SECRET')
+                    self.assertTrue(predicate(value))
+                    return value
+                s.until=response
+                result=protocol.observe(s,prompt='x',project='/synthetic',codehome='/synthetic/.codex',
+                    metadata_check=lambda:{},soft_total=100,soft_output=10)
+                self.assertEqual(result['reason'],'interrupted' if interrupted else 'auth_mode')
+                self.assertEqual(result['initial_turn_requests_attempted'],0)
+                self.assertNotIn('rpc_failure',result)
+                self.assertNotIn('SECRET',json.dumps(result))

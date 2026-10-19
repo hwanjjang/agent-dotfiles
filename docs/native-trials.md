@@ -27,10 +27,15 @@ authentication and arbitrary codes are never retained. Existing failure verdicts
 remain unchanged; for example `protocol_refusal` can now identify `account/read`
 and `internal_error` without storing the provider response. This class identifies
 the failed operation, not a proven cause or permission to repeat a model task.
+A tolerated `turn/interrupt` RPC failure can also appear here; the primary reason
+(such as `soft_usage_stop`) remains authoritative and cannot permit continuation.
 
 Supervisor interruption preserves attempted/started turn counts and already
 observed usage in the blocked observation before the existing collection and
-cleanup path runs. It never upgrades an interrupted result to completed. The
+cleanup path runs. After a started turn, declared collection can now run within
+the original cleanup budget, after owned processes stop and temporary auth is
+removed, before the executor is removed. Pressing Ctrl-C can therefore still wait
+for that bounded collection. It never upgrades an interrupted result to completed. The
 [serial contract](decisions/evaluation-accounting.md#continue-untouched-rows-after-a-verified-startup-failure)
 owns optional independent-row continuation; possible turn start or uncertain
 cleanup cannot use it.

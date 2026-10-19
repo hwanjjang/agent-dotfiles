@@ -102,6 +102,11 @@ class NoTurnContinuationTests(unittest.TestCase):
         self.assertFalse(self.launch()['next_launch_allowed'])
         with self.assertRaises(ValueError):self.launch(1)
 
+    def test_interruption_never_uses_a_retained_startup_diagnostic_to_continue(self):
+        self.init();self.fail_before_turn(reason='interrupted')
+        self.assertFalse(self.launch()['next_launch_allowed'])
+        with self.assertRaises(ValueError):self.launch(1)
+
     def test_no_turn_allowance_is_charged_before_next_authentication(self):
         from test_trial_reservation import SyntheticSchedule, p
         root=self.root/'bounded';root.mkdir(mode=0o700)
