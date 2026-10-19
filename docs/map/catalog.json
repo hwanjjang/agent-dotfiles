@@ -2656,7 +2656,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Artifact/routing admission and reservations are implemented and qualified. The completed eight-row native development pilot retained every outcome: routing4/4 each, artifact3/4 baseline versus2/4 candidate; no improvement or account application.",
+      "summary": "Artifact/routing admission and reservations are implemented and qualified. The completed eight-row native development pilot retained every outcome: routing 4/4 each, artifact 3/4 baseline versus 2/4 candidate; no improvement or account application.",
       "when": [
         "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting.",
         "Recorded native artifact snapshots need trusted offline admission without relabeling receipts as synthetic completions."

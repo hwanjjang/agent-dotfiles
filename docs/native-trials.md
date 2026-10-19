@@ -11,7 +11,7 @@ proof identities and scope; earlier selected records remain in immutable Git.
 These records qualify the current runtime bytes recorded at `3905185`, using
 eight fresh controls and the versioned reference input contract below. Historical
 results remain unchanged.
-Other hosts remain separately qualified. The [completed bounded EN/KO pilot](evidence/native-development-pilot-2026-10-19.md) records eight admitted attempts, no missing rows, no routing gain and one artifact regression; the candidate is rejected.
+Other hosts require their own source-bound qualification. The [completed bounded EN/KO pilot](evidence/native-development-pilot-2026-10-19.md) records eight admitted attempts, no missing rows, no routing gain and one artifact regression; the candidate is rejected.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -225,7 +225,7 @@ correctness. The [routing and client-model contract](decisions/evaluation-accoun
 now defines optional arm catalogs, finalized receiver records and persisted
 client-model admission. The four selected fixed receiver cases have current source-bound
 observations in the maintained routing record. The bounded natural EN/KO pilot
-completed with routing 4/4 for both arms and outcome 3/4 versus 2/4; broader effectiveness remains unestablished. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+completed with routing 4/4 for both arms and outcome baseline 3/4 versus candidate 2/4; broader effectiveness remains unestablished. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
 whole development schedule before execution and use its first standard production
 row to verify `observe` → cleanup/collection → `finish` → admission. This avoids a

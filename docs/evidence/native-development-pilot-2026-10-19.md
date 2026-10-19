@@ -47,7 +47,7 @@ candidate, and no account installation follows.
 
 The fixed schedule consumed 514,172 observed total tokens and 11,866 output
 tokens, with no unknown usage within this schedule. These are client counters,
-not billing totals or a hard provider cap. Across retained earlier runs, the
+not billing totals or a hard provider cap. Including retained earlier runs, the cumulative
 known lower bound is 1,794,719 total and 30,686 output, with five incomplete or
 unknown attempts still recorded. Review calls are outside that native-trial
 counter.
@@ -65,7 +65,7 @@ The coordinator audited each reservation, canonical receipt, artifact admission,
 source guards and owned-resource absence before continuing, then verified empty
 owned inventory before stopping the VM. The shared VM and ambient Docker context
 were preserved. Recommendation ran with network denied and writes denied except
-existing admission lock files and `/dev/null`; hashed input/source files were
+existing reservation/attempt lock files and `/dev/null`; hashed input/source files were
 unchanged. No authentication or raw native event content is published.
 
 The execution preparation passed 68 host-bound offline checks and independent

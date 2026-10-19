@@ -48,7 +48,7 @@
   ],
   "limitations": [
     "PASS applies to interruption handling, not successful task completion. Canonical blocked/interrupted status is preserved.",
-    "Checkpoint search inspects at most64items and requires the exact bound write or one outer LF plus correlated output before injection.",
+    "Checkpoint search inspects at most 64 items and requires the exact bound write or one outer LF plus correlated output before injection.",
     "Partial usage is a lower bound, not zero, a complete total or billing evidence.",
     "No backend model identity, candidate improvement or account application is established."
   ]
