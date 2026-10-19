@@ -172,7 +172,7 @@ The [reusable native executor fixture](docs/decisions/native-execution-fixture.m
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
 receipts and selected native-route checks; actual comparisons remain pending. The [frozen native-trial operator guide](docs/native-trials.md)
 documents implemented `check/run/recover` and the separate credential-free
-`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records original-source
+`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current-source
 credential-free and authenticated qualification for the exercised pinned profile;
 these commands do not enable comparative evaluation or account activation. A
 [screenshot manual](docs/manual/native-trials.pdf) explains the results.
@@ -186,8 +186,8 @@ qualification records now share [original-proof provenance](docs/verification/na
 The credential-free bridge does not exercise production `observe`/`finish`;
 a later [partial pilot](docs/native-trials.md#offline-artifact-admission) exercised
 the normal production path for three rows. Its full comparison remains incomplete.
-The process-query diagnostics and bounded macOS cleanup settling require fresh
-source-bound qualification. The
+Eight fresh observations now qualify the process-query, cleanup-settling and
+exact-prompt source recorded in the [current checkpoint](docs/native-trials.md#current-qualification-checkpoint--2026-10-19). Later source changes require renewed evidence. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)

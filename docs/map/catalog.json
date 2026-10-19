@@ -2656,7 +2656,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/evaluation-accounting.md",
-      "summary": "Offline artifact/routing admission, client-model observations and reservations are implemented with historical source-bound qualifications; diagnostic changes need renewed qualification and the actual development comparison remains incomplete.",
+      "summary": "Offline artifact/routing admission, client-model observations and reservations are implemented with eight fresh source-bound qualifications; the actual development comparison remains incomplete.",
       "when": [
         "Reviewed synthetic cases need reproducible deterministic grading and complete trial accounting.",
         "Recorded native artifact snapshots need trusted offline admission without relabeling receipts as synthetic completions."
@@ -2823,7 +2823,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/native-trials.md",
-      "summary": "Frozen native trials retain historical execution, scoped-IO, collection and fixed routing qualifications; process-query diagnostics and bounded macOS exit settling need renewed qualification and the partial development comparison remains incomplete.",
+      "summary": "Frozen native trials have eight fresh execution, scoped-IO, collection and fixed routing qualifications after process-query, macOS exit-settling and exact-prompt corrections; the actual development comparison remains incomplete.",
       "when": [
         "A maintainer needs to inspect or execute one explicitly authorized, source-bound trial before evaluator admission.",
         "A trial needs declared output hashes or explicit missing files captured before owned cleanup, without retaining arbitrary native content."
@@ -2836,7 +2836,7 @@
         "Preserve blocked attempts and cleanup uncertainty; recovery cannot waive unresolved native ownership. No VM lifecycle, account activation, grading or promotion.",
         "Historical source-bound credential-free native command/child probes cover task IO and protected synthetic access. Host controller/scorer retain account access. Those results do not qualify changed source bytes.",
         "After owned host shutdown and known-home purge, capture only declared artifact metadata/hashes inside the original cleanup budget. Unsafe or unavailable capture blocks; an interrupted task remains blocked even if its partial file is captured. No quiescent or grading claim.",
-        "Only the native main-file first-page read signal is projected. It does not establish all pages, semantic adherence, successful outcome or backend identity; fixed receiver checks and maintained admission bindings are historical and require renewal for changed sources. The normal production path has partial evidence; the full development comparison remains incomplete.",
+        "Only the native main-file first-page read signal is projected. It does not establish all pages, semantic adherence, successful outcome or backend identity; eight fresh fixed receiver/execution checks match the maintained admission bindings; later source changes require renewal. The normal production path has partial evidence; the full development comparison remains incomplete.",
         "Copy the exact qualification loader between its touching tags, preserving its exec pragma and excluding a final newline. Retain finite boundary input, signal-error and first process-query failure diagnostics without weakening acceptance or cleanup guards. macOS exited-group recovery requires owned-leader reap, complete stream drain and a non-destructive absence probe of the exact original process group; EOF alone cannot waive cleanup uncertainty. Cleanup may wait within the existing two-second query bound for a recorded macOS process whose executable is temporarily nonabsolute; only a fresh strict result can establish absence."
       ],
       "outputs": [

@@ -197,10 +197,9 @@ a different path and cannot substitute for that check.
 
 ## Working-source qualification checkpoint
 
-The [2026-10-19 checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) records the eight bounded
-cases, current source identity, failed attempts, recovery and evidence reuse.
-All selected receipts have verified owned cleanup and now supply the maintained
-qualification references. They do not qualify arbitrary task outcomes,
+The [current checkpoint](../../../native-trials.md#current-qualification-checkpoint--2026-10-19) records eight fresh bounded cases and their exact source identity.
+All current selected receipts have verified owned cleanup and supply the maintained
+qualification references. The [earlier checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) retains its historical source, failures, recovery and evidence reuse. They do not qualify arbitrary task outcomes,
 other hosts, backend identity, candidate benefit or account activation. Historical
 manuals and diagrams retain their own source/capture identities.
 
@@ -220,3 +219,5 @@ existing reservation and production lifecycle. Do not populate `observation` or
 write a replacement completion receipt to satisfy that check.
 
 For macOS exit settling, run `python3 -m unittest discover -s tests -p "test_process_*.py"`: a transient nonabsolute executable must resolve through a fresh strict query, persistent ambiguity must remain uncertain, and watch/launch/unrecorded-owner queries must not retry.
+
+Current selected evidence: eight fresh fixed observations bind source13 `42c0035b3c649b8c85e4c21b1c9900bcb781048cf284c8f409b24da1bd4a4eef`. Verify the provenance and run `test_public_qualification_bindings.py` against the current source; require no qualification error for matching records and rejection of stale or missing proofs. This does not complete the actual development comparison.

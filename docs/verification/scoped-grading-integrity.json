@@ -11,7 +11,7 @@
     "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "1e312fa8a06eb84fce146418b0e904cc3a776881f8bffd4899541b3ce6e5c5ff",
+    "native_trial.py": "8c99babce9699d2b579dd6432071df5db576aeb403a2b5335c9808ce730696fa",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
     "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
     "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
@@ -115,7 +115,7 @@
   },
   "provenance": {
     "path": "docs/verification/native-qualification-provenance.json",
-    "sha256": "dec10d1d1cf49f8ab6823597c60e037e5f2677cc818c43a5fc8d5f94d855c5eb",
+    "sha256": "76085d98adb11289ea867d51699f6ac11c9eedcead427e1e2615dbd47608c2b0",
     "cases": [
       "present-missing",
       "unsafe"
@@ -127,10 +127,10 @@
   ],
   "previous_selected_evidence": [
     {
-      "commit": "5be8753ccf8d1e1d8f2dceaccd8d924b875815fa",
+      "commit": "2f50e007afdf0ef90ca833839200f21c4741e46f",
       "path": "docs/verification/scoped-grading-integrity.json",
-      "sha256": "6ff3c6e1b5b11190ecfc39781bb07601e0580f3643c5d24700390bc56b90e424",
-      "scope": "Historical selected record with its original source binding and full preceding history; retained in immutable Git, not relabeled."
+      "sha256": "8a5d3853d579f65e3b450cc6bae8753429b8145725e8d5fc85dc5b343d95c17f",
+      "scope": "Historical selected record and preceding history retained in immutable Git; not relabeled."
     }
   ]
 }

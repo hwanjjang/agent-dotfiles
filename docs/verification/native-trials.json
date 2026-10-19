@@ -9,7 +9,7 @@
     "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "1e312fa8a06eb84fce146418b0e904cc3a776881f8bffd4899541b3ce6e5c5ff",
+    "native_trial.py": "8c99babce9699d2b579dd6432071df5db576aeb403a2b5335c9808ce730696fa",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
     "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
     "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
@@ -94,14 +94,14 @@
   },
   "provenance": {
     "path": "docs/verification/native-qualification-provenance.json",
-    "sha256": "dec10d1d1cf49f8ab6823597c60e037e5f2677cc818c43a5fc8d5f94d855c5eb",
+    "sha256": "76085d98adb11289ea867d51699f6ac11c9eedcead427e1e2615dbd47608c2b0",
     "cases": [
       "boundary"
     ]
   },
   "failure_history": {
     "previous_records_preserved": true,
-    "campaign_failed_attempts_preserved": 7,
+    "campaign_failed_attempts_preserved": 5,
     "current_pass_does_not_relabel_failures": true
   },
   "limitations": [
@@ -111,10 +111,10 @@
   ],
   "previous_selected_evidence": [
     {
-      "commit": "5be8753ccf8d1e1d8f2dceaccd8d924b875815fa",
+      "commit": "2f50e007afdf0ef90ca833839200f21c4741e46f",
       "path": "docs/verification/native-trials.json",
-      "sha256": "aa4c77a421b7675780094655659ba3292d417cba017d6a8e66d68834aa40c64d",
-      "scope": "Historical selected record with its original source binding and full preceding history; retained in immutable Git, not relabeled."
+      "sha256": "8efcac70d273020d9865e34a56d0975fddb6217d0f6f48e0efc21b1df36f131b",
+      "scope": "Historical selected record and preceding history retained in immutable Git; not relabeled."
     }
   ]
 }
