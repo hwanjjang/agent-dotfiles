@@ -233,7 +233,7 @@ def verify_source(context, *, repository, baseline_commit, candidate_commit, com
         finally: os.close(fd)
     before = identity(); deadline = min(_deadline, time.monotonic() + 12) if _deadline is not None else time.monotonic() + 12
     ev.require(type(context) is ad.NativeContext and context.digest == ev.digest(context.data), 'source_context')
-    ev.require(isinstance(component_roots, list) and 1 <= len(component_roots) <= 8
+    ev.require(isinstance(component_roots, list) and 1 <= len(component_roots) <= p.MAX_FILES
                and all(isinstance(r, str) for r in component_roots)
                and component_roots == sorted(set(component_roots)), 'source_roots')
     for root in component_roots:

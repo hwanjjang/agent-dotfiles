@@ -1,8 +1,10 @@
 # Evidence-bound source-review recommendations
 
 Implemented: the legacy diagnostic gate, native report/committed-source consumer,
-and optional same-host held-out receipt verifier. Current-source native
-qualification and actual development/held-out comparisons remain pending.
+and optional same-host held-out receipt verifier. The
+[2026-10-19 actual-report check](../evidence/native-recommendation-2026-10-19.md)
+reproducibly rejects a source-bound, incomplete development comparison. The
+complete paired comparison and actual held-out evaluation remain pending.
 Positive **FAKE synthetic conformance** tests exercise the recommendation branch;
 they establish no actual beneficial candidate or unseen-evaluation result.
 
@@ -83,8 +85,10 @@ source delta includes each changed path, old/new modes and raw-byte SHA-256s;
 additions/deletions use null for the absent side. Dirty checkout content is not
 committed evidence and is not used to construct this delta.
 
-Supported roots are one to eight `skills/<name>`, `policies/...` or `mcp/...`
-paths; each must select an existing inventory in at least one arm. Every changed
+Supported roots are one to 64 `skills/<name>`, `policies/...` or `mcp/...`
+paths; each must select an existing inventory in at least one arm. This root
+ceiling matches the existing per-arm file limit, allowing a skill catalog and
+individual shared policy files to retain their complete inventory. Every changed
 file must be inside their union. Complete selected arm inventories must contain
 one to 64 ordinary `100644` files, each at most 512 KiB and together at most
 4 MiB per arm. Executables, symlinks, gitlinks and mode-only candidates are refused:
@@ -343,13 +347,17 @@ conformance exercises recommend/reject/inconclusive using **FAKE** qualification
 lifecycle, usage/clock journals, context/tool receipts and remote metadata.
 It makes no real GitHub freeze lookup, preparer dispatch, inference or unseen-pack
 claim. The [native walkthrough](../manual/native-recommendation.pdf) and
-[editable source](../manual/native-recommendation.json) retain the FAKE labels. Current public qualification stays unavailable. The
+[editable source](../manual/native-recommendation.json) retain the FAKE labels.
+The [dated actual-report check](../evidence/native-recommendation-2026-10-19.md)
+admits qualified recorded native evidence for its frozen runtime/grader
+identities. Changed consumed identities require renewed qualification. The
 [host-dependent fast-exit/drain limit](evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 and closed catalog/frontmatter grammar remain prerequisites; favorable mock
 records cannot waive them. Follow the
 [feature recipe](../verification/verify-repository/features/promotion-recommendation.md)
-for repeatable checks; actual current-source qualification, actual pack preparation and real comparison results
-remain separate completion prerequisites. A separately frozen real source candidate
+for repeatable checks. The complete paired comparison and actual held-out pack
+preparation/evaluation remain pending; the recorded negative recommendation
+does not complete them. A separately frozen real source candidate
 is not created or evaluated by these synthetic CLI fixtures.
 
 Implementation follows the already accepted same-host design. Primary behavior
