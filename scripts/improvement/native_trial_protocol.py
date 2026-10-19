@@ -4,12 +4,14 @@ The caller owns authentication, source/profile release and resource cleanup.
 These app-server observations do not authorize evaluator admission or prove
 backend model identity, provider billing, or a hard token/request limit.
 """
+import errno
 import json
 import os
 from pathlib import Path
 import selectors
 import signal
 import subprocess
+import sys
 import time
 
 from native_execution import Refusal, Session, encoded
@@ -210,21 +212,27 @@ class NativeSession(Session):
         end = min(time.monotonic()+2, getattr(self, 'cleanup_deadline', float('inf')))
         grace = min(end, time.monotonic()+.5)
         signaled = attempted = grace_expired = False
-        signal_error = None
+        signal_error = signal_error_code = None
+        owned_pgid = self.proc.pid
+        group_absent_after_reap = False
 
         def signal_owned_group():
-            nonlocal signaled, attempted, signal_error
+            nonlocal signaled, attempted, signal_error, signal_error_code
             if attempted:
                 return
             attempted = True
             try:
-                os.killpg(self.proc.pid, signal.SIGKILL)
+                os.killpg(owned_pgid, signal.SIGKILL)
                 signaled = True
             except ProcessLookupError:
                 pass
-            except OSError:
+            except OSError as exc:
                 signal_error = 'signal_failed'
-                self.routing.fail('routing_drain')
+                signal_error_code = {errno.EPERM: 'permission_denied',
+                    errno.EACCES: 'permission_denied', errno.EINVAL: 'invalid_argument',
+                    errno.EINTR: 'interrupted'}.get(exc.errno, 'other_os_error')
+                if sys.platform != 'darwin' or signal_error_code != 'permission_denied':
+                    self.routing.fail('routing_drain')
 
         self.deadline = end
         try:
@@ -259,9 +267,26 @@ class NativeSession(Session):
             self.routing.fail('routing_drain')
         finally:
             signal_owned_group()
+            waited = False
             try:
                 self.proc.wait(timeout=max(.001, end-time.monotonic()))
+                waited = True
             except subprocess.TimeoutExpired:
+                self.routing.fail('routing_drain')
+            # Darwin can return EPERM for a group containing only a zombie.
+            # After reaping, only a non-destructive absence probe is safe.
+            if (sys.platform == 'darwin' and signal_error_code == 'permission_denied'
+                    and waited and self.proc.returncode is not None and time.monotonic() < end
+                    and {'stdout', 'stderr'} <= self.eof
+                    and not self.buffer and not self.routing.buffer and not self.pending):
+                try:
+                    os.killpg(owned_pgid, 0)
+                except ProcessLookupError:
+                    group_absent_after_reap = True
+                    signal_error = None
+                except OSError:
+                    pass
+            if signal_error:
                 self.routing.fail('routing_drain')
             transport = {'stdout_eof': 'stdout' in self.eof, 'stderr_eof': 'stderr' in self.eof,
                 'trailing_bytes': len(self.buffer)+len(self.routing.buffer), 'pending_records': len(self.pending),
@@ -278,6 +303,8 @@ class NativeSession(Session):
                 stream.close()
         return {'process_reaped': transport['process_reaped'], 'exit_code': self.proc.returncode,
                 'owned_process_group_kill_sent': signaled, 'group_signal_error': signal_error,
+                'group_signal_error_code': signal_error_code,
+                'group_absent_after_reap': group_absent_after_reap,
                 'escaped_descendants_verified_absent': False, 'routing_drain': transport}
 
     def send(self, value):

@@ -31,6 +31,43 @@ def _unique(pairs):
     return result
 
 
+def _without_exec_pragma(script):
+    header, newline, body = script.partition('\n')
+    if not newline or not header.startswith('// @exec:'):
+        return script
+    try:
+        options = json.loads(header[len('// @exec:'):], object_pairs_hook=_unique)
+        if (isinstance(options, dict) and set(options) <= {'yield_time_ms', 'max_output_tokens'}
+                and all(type(value) is int and 0 <= value <= 2147483647 for value in options.values())):
+            return body
+    except (ValueError, RecursionError):
+        pass
+    return script
+
+
+def _input_diagnostics(value, expected, present):
+    """Bounded comparison labels only; never alter exact acceptance."""
+    string = isinstance(value, str)
+    shape = dict(observed=True, present=present, is_string=string,
+                 empty=string and not value, over_limit=string and len(value) > MAX_SCRIPT,
+                 has_crlf=False, has_bare_cr=False, outer_whitespace=False, leading_exec_pragma=False)
+    if not string or shape['over_limit']:
+        return 'other', shape
+    shape.update(has_crlf='\r\n' in value, has_bare_cr='\r' in value.replace('\r\n', ''),
+                 outer_whitespace=value != value.strip(), leading_exec_pragma=value.startswith('// @exec:'))
+    if value == expected:
+        variant = 'exact'
+    elif value.strip() == expected.strip():
+        variant = 'outer_whitespace_only'
+    elif value.replace('\r\n', '\n').replace('\r', '\n') == expected.replace('\r\n', '\n').replace('\r', '\n'):
+        variant = 'line_endings_only'
+    elif _without_exec_pragma(value) == _without_exec_pragma(expected):
+        variant = 'exec_pragma_only'
+    else:
+        variant = 'other'
+    return variant, shape
+
+
 def _lines(output):
     if isinstance(output, str):
         text = output
@@ -184,6 +221,10 @@ class Qualification:
         self._items = self._calls = self._outputs = self._finals = self._unexpected = 0
         self._script_exact = self._boundary_verified = self._challenge_match = self._final_match = False
         self._catalog = None
+        self._call_id_valid = self._input_matches_expected = False
+        self._input_variant = 'not_observed'
+        self._input_shape = dict.fromkeys(('observed', 'present', 'is_string', 'empty', 'over_limit',
+            'has_crlf', 'has_bare_cr', 'outer_whitespace', 'leading_exec_pragma'), False)
         self._header, self._seen_mask, self._matching_mask, self._stage = 'other', 0, 0, 'unknown'
 
     def _fail(self, reason):
@@ -237,11 +278,16 @@ class Qualification:
             if self._calls != 1 or self._finals or item.get('name') != 'exec' or item.get('namespace') not in (None, 'functions'):
                 self._unexpected += 1
                 self._fail('unexpected_call')
-            elif not _identifier(item.get('call_id')) or item.get('input') != self._script:
-                self._fail('script_or_call_mismatch')
             else:
-                self._call = item['call_id']
-                self._script_exact = True
+                self._call_id_valid = _identifier(item.get('call_id'))
+                self._input_matches_expected = item.get('input') == self._script
+                self._input_variant, self._input_shape = _input_diagnostics(
+                    item.get('input'), self._script, 'input' in item)
+                if not self._call_id_valid or not self._input_matches_expected:
+                    self._fail('script_or_call_mismatch')
+                else:
+                    self._call = item['call_id']
+                    self._script_exact = True
         elif kind == 'custom_tool_call_output':
             self._outputs += 1
             if self._outputs != 1 or self._call is None or self._finals or item.get('call_id') != self._call or item.get('name') not in (None, 'exec'):
@@ -271,6 +317,9 @@ class Qualification:
                 'boundary_record_matching_mask': self._matching_mask, 'failure_stage': self._stage,
                 **{'catalog_'+role+'_'+field: self._catalog[role][field] if self._catalog else None
                    for role in ('advertised', 'callable') for field in ('mask', 'count', 'unknown', 'duplicates')},
+                'call_id_valid': self._call_id_valid, 'input_matches_expected': self._input_matches_expected,
+                'input_variant': self._input_variant,
+                **{'input_shape_'+name: value for name, value in self._input_shape.items()},
                 'script_exact': self._script_exact, 'boundary_checks_verified': self._boundary_verified,
                 'challenge_output_match': self._challenge_match, 'final_match': self._final_match,
                 'raw_contents_retained': False, 'content_hashes_retained': False,

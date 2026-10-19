@@ -808,7 +808,13 @@ class Controller:
             'challenge_value_or_hash_retained': False,
             'tested_actor_scope': 'remote_task_result_producer_and_child',
             'trusted_local_controller_and_scorer_access': 'retained'})
-        return 'Use the selected remote executor. Run exactly one exec call with the following exact JavaScript, without changes or additional calls. Then return only the 32-character REMOTE_CHALLENGE value printed by that call. Do not infer it.\n\n' + loader
+        return ('Use the selected remote executor. Run exactly one exec call with the exact JavaScript '
+                'between the delimiter lines below, without changes or additional calls. '
+                'Exclude both delimiter lines and the newline immediately after the opening delimiter '
+                'and immediately before the closing delimiter. Retain the first // @exec: pragma line verbatim, '
+                'including its parameters. Add no tags, code fences, leading or trailing whitespace, and no final newline. '
+                'Then return only the 32-character REMOTE_CHALLENGE value printed by that call. Do not infer it.\n\n'
+                '<qualification-exec-input>\n' + loader + '\n</qualification-exec-input>')
 
     def deliver_challenge(self):
         """Deliver the in-memory value only after the remote executor exists."""
@@ -1046,6 +1052,11 @@ class Controller:
                 self.routing_drain = close.get('routing_drain')
                 result['native_reaped'] = close.get('process_reaped') is True
                 result['group_signal_uncertain'] = bool(close.get('group_signal_error'))
+                code = close.get('group_signal_error_code')
+                result['group_signal_error_code'] = (code if code in (
+                    None, 'permission_denied', 'invalid_argument', 'interrupted', 'other_os_error')
+                    else 'other_os_error')
+                result['group_absent_after_reap'] = close.get('group_absent_after_reap') is True
             except Exception:
                 result['errors'].append('native_close')
         result['watch_uncertain'] = self.watch_error or alive

@@ -5,9 +5,10 @@ trial. Historical V9/V10 credential-free and authenticated results apply only to
 their recorded sources. The [12-source collection evidence](verification/native-outcome-collection.json)
 records historical credential-free native collection and the fixed scoped grading
 probes. The earlier [grading record](verification/scoped-grading-integrity.json)
-retains its own 11-source provenance; changed sources have not renewed authenticated
-qualification. Other hosts, natural routing and comparative evaluation
-remain unqualified.
+retains its own 11-source provenance. The working-source checkpoint below renews
+bounded boundary, receiver and collection checks for one profile; maintained
+evaluator bindings, other hosts, general routing outcomes and comparative
+evaluation remain unqualified.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -15,6 +16,24 @@ The [controller](../scripts/improvement/native_trial.py) and
 [plan validator](../scripts/improvement/native_trial_plan.py) own the exact schema.
 These commands do not install account settings, activate hooks, create a VM,
 change Docker context, log in, compare arms, grade general tasks or promote changes.
+
+## Working-source checkpoint — 2026-10-19
+
+The [source-bound checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) records all eight planned
+bounded checks passing: one authenticated boundary, four authenticated fixed
+routing cells and three credential-free collection/interruption cases. Runtime
+source13 identity is
+`96432af6d5eb5c60a42b7a04fb9fb7ae13e5be832128e9cc00cd7a8a0ddf677a`.
+At this checkpoint the tested code was a local candidate based on main `484e9d9`.
+
+Failed attempts remain preserved, including one process-query cleanup failure
+resolved through separately verified owned recovery before a fresh check. The
+original failed receipt was not changed. Six observations retain their original
+reviewed private-helper revisions under unchanged relevant conditions; only the
+two corrected prompt cases have fresh observations. Credential-free checks keep
+the private-bridge limits below; they do not exercise full public `observe`/`finish`.
+Maintained evaluator qualification references have not yet been renewed. Candidate
+benefit, backend model identity and account activation are not established.
 
 ## Selected evidence and current limits
 
@@ -74,16 +93,19 @@ The [admission contract](decisions/evaluation-accounting.md#admit-recorded-nativ
 connects exact recorded artifact collections to the existing evaluator through
 `trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
 the reader checks frozen attempt, dispatch, source, collection and maintained
-qualification bindings. Current qualification has not been renewed for the
-current reservation, model-selection and routing sources, so real admission remains blocked. The reader does
-not execute or recover trials; preserve failed attempts and unknown costs.
+qualification bindings. Maintained qualification references have not been renewed
+for the current sources, so real admission remains blocked despite the bounded
+working-source checks above. The reader does not execute or recover trials;
+preserve failed attempts and unknown costs.
 
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
-client-model admission. Its actual current-source qualification remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
-now coordinates scheduled launches and audits every reserved attempt. Actual
-current-source routing/admission qualification and comparisons remain separate work. Backend identity remains unknown.
+client-model admission. The four fixed receiver cases have current-source
+observations in the checkpoint above; maintained admission bindings and general
+routing effectiveness remain pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+coordinates scheduled launches and audits every reserved attempt. Admission
+renewal and comparisons remain separate work. Backend identity remains unknown.
 
 ## Prepare a frozen plan
 
@@ -250,6 +272,25 @@ usage and cleanup facts. Optional collection adds only explicitly declared file
 metadata/hashes; raw native prompts/tool contents and general answers are not retained. The recorded retention denominator excludes frozen inputs and temporary
 native state. `live_eligible` remains false; provider request/retry counts and
 billing usage remain unknown, and backend model identity is not verified.
+
+Cleanup records include the finite `group_signal_error_code` category rather than
+OS error messages. On macOS an already-exited, unreaped group can return
+`permission_denied`. The routed session reconciles that case only after reaping
+its owned leader, draining both streams with no buffered records, and observing
+that a non-destructive signal-0 probe of the exact original group returns
+process-not-found. The receipt retains the original error category and
+`group_absent_after_reap=true`; EOF alone or another permission error never
+supplies that proof. No destructive signal is sent after leader reap.
+
+The qualification prompt delimits the exact loader input, explicitly preserves
+its exec pragma and excludes a terminal newline. Only the loader asset's final
+LF is omitted; its statements and pragma parameters remain unchanged.
+
+Boundary qualification exports finite input diagnostics (`call_id_valid`,
+`input_matches_expected`, `input_variant` and boolean `input_shape_*` flags) to
+distinguish call identity from known whitespace, line-ending or exec-pragma differences.
+These labels never normalize acceptance: the requested script must still match
+exactly. Raw inputs, correlation identifiers and their hashes are not retained.
 
 ## Recover exact owned residue
 

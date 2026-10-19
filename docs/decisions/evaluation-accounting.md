@@ -324,6 +324,17 @@ A peer that deliberately remains alive after EOF does not qualify the fast-exit
 path. Keep uncertain resources under the existing custody/recovery rules; do not
 add a broad process scan or waive signaling to obtain a positive result.
 
+The macOS routed-close path now distinguishes the bounded permission-error
+category. Its only recovery is positive absence of the original group after
+owned-leader reap and complete stream drain; it retains the original category
+and explicit `group_absent_after_reap` fact. The group is probed with signal 0,
+never another destructive signal after reap. Any other group/probe uncertainty
+remains blocked. This addresses a reproduced controller-host EOF/zombie case,
+not historical model failures or current native qualification. Primary review:
+[Apple XNU group-signal implementation](https://github.com/apple-oss-distributions/xnu/blob/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/kern/kern_sig.c)
+excludes zombie members and can return EPERM when no member is counted (checked
+2026-10-19); no Apple source is copied into the implementation.
+
 Routed contexts require the exact maintained path
 `docs/verification/native-routing-observer.json` in `qualification_refs.routing`.
 That record is not currently available as qualified public evidence. It must bind

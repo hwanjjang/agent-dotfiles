@@ -300,12 +300,13 @@ def loader_source(expected_script_bytes):
     """Render only the fixed loader; the owner binds the readonly ASCII file.
 
     A length check detects truncation, not content identity or OS immutability.
-    No caller-provided JavaScript or filename is accepted.
+    No caller-provided JavaScript or filename is accepted. Remove only the final
+    asset LF so the exact tool input has no ambiguous terminal newline.
     """
     if type(expected_script_bytes) is not int or not 1 <= expected_script_bytes <= 32768:
         raise ValueError('invalid_expected_script_bytes')
     return (SOURCE/'native_execution_loader.js').read_text().replace(
-        'EXPECTED_SCRIPT_BYTES', str(expected_script_bytes))
+        'EXPECTED_SCRIPT_BYTES', str(expected_script_bytes)).removesuffix('\n')
 
 
 def _fixture_scenario(scenario, expected_script_bytes):
