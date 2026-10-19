@@ -172,8 +172,8 @@ The [reusable native executor fixture](docs/decisions/native-execution-fixture.m
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
 receipts and selected native-route checks; actual comparisons remain pending. The [frozen native-trial operator guide](docs/native-trials.md)
 documents implemented `check/run/recover` and the separate credential-free
-`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records historical source-bound
-credential-free and authenticated qualification for the exercised pinned profile;
+`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current source-bound
+credential-free and authenticated qualification at runtime revision `3905185` for the exercised pinned profile;
 these commands do not enable comparative evaluation or account activation. A
 [screenshot manual](docs/manual/native-trials.pdf) explains the results.
 
@@ -191,9 +191,10 @@ Eight recorded observations qualified the process-query, cleanup-settling and
 exact-prompt source recorded in the [previous checkpoint](docs/native-trials.md#previous-fully-qualified-checkpoint--2026-10-19).
 The later startup-diagnostic, interruption-retention, pre-turn-continuation and
 owned-child cleanup changes have local conformance checks. Their
-[current renewal](docs/evidence/native-runtime-renewal-2026-10-19.json) ran eight
-checks with seven passes and one exact-input failure; all owned resources were
-cleaned. It does not renew qualification or release the pending comparison. The
+[current renewal](docs/evidence/reference-cell-qualification-2026-10-19.json) has
+eight fresh passing controls after a reviewed private fixed-input contract revision;
+all owned resources were cleaned. Earlier failures remain recorded. Fixed controls
+do not establish production interruption or candidate comparison outcomes. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
@@ -206,7 +207,7 @@ The [source-review recommendation guide](docs/decisions/promotion-recommendation
 documents the diagnostic gate, native report/committed-object verification and
 selected same-host evidence verifier. The [workflow diagram](docs/architecture/native-recommendation-workflow.html)
 shows optional preflight and read-only recommend/reject/inconclusive paths. Positive
-FAKE conformance is not actual improvement; current qualifying trials remain pending.
+FAKE conformance is not actual improvement; current candidate-comparison trials remain pending.
 Recommendations never authorize source acceptance, merge or installation.
 
 The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)

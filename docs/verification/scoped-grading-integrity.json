@@ -11,14 +11,14 @@
     "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "8c99babce9699d2b579dd6432071df5db576aeb403a2b5335c9808ce730696fa",
+    "native_trial.py": "7d60cf8c542574e49e8cf5aa1d4877dc0a4147704620f6328b32f788da1294c2",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
     "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
-    "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
+    "native_trial_protocol.py": "b5cc4794f5aa9e4156712b00ae63306f980b0e287f5a4013050160de8401c974",
     "native_trial_qualification.py": "b104023dc69a0bfae7214bb0b92c8c8ed0c0ef080ab5d5ed612cdc54e4d38c4b",
     "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
     "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
-    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
+    "trial_reservation.py": "582ea17b57a173c3514bcf4008da5c3bb327fc7ed4128af89e532124dafeb5e8"
   },
   "runtime_digests": {
     "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
@@ -30,7 +30,7 @@
   "grader_source_sha256": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
   "admission_grader_source_digests": {
     "evaluation.py": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
-    "trial_admission.py": "bb07e3c5cd3d8d8a5612f649d10cff25d4236a0d5c972e6cba43326f0c589f3e",
+    "trial_admission.py": "743e0bea56d390113275f91747842fa062e548a77853b8bb563edfb138db56b8",
     "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
   },
   "actors": {
@@ -115,7 +115,7 @@
   },
   "provenance": {
     "path": "docs/verification/native-qualification-provenance.json",
-    "sha256": "76085d98adb11289ea867d51699f6ac11c9eedcead427e1e2615dbd47608c2b0",
+    "sha256": "df447fe5617ffbc7fc8bf53b43392fe42f1302e43051e5a245a567c0679a3b6c",
     "cases": [
       "present-missing",
       "unsafe"
@@ -127,9 +127,9 @@
   ],
   "previous_selected_evidence": [
     {
-      "commit": "2f50e007afdf0ef90ca833839200f21c4741e46f",
+      "commit": "9cde18e52a65e1878c6fd4b365e1dda09b585a4e",
       "path": "docs/verification/scoped-grading-integrity.json",
-      "sha256": "8a5d3853d579f65e3b450cc6bae8753429b8145725e8d5fc85dc5b343d95c17f",
+      "sha256": "fba0ad255c5643a45340e973a389b1ec67b8578f826224c963d09b40e643cefb",
       "scope": "Historical selected record and preceding history retained in immutable Git; not relabeled."
     }
   ]

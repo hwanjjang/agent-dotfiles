@@ -1,0 +1,145 @@
+{
+  "kind": "runtime-qualification-contract-renewal",
+  "observed_date": "2026-10-19",
+  "source_commit": "3905185ad6e9645226815c6c046bf44a8bfd3979",
+  "source13_identity": "86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213",
+  "status": "eight_controls_passed",
+  "cases": [
+    {
+      "case": "boundary",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        17241,
+        201
+      ],
+      "manifest_digest": "4168296cefd307c7e4c9b33b8eac336d61875343666743b49caf50eddb696d6d",
+      "canonical_receipt_digest": "58a45584d67a485e4de2ebd7d50f10ba9159ad21b8da29c3102a2fdaa8dd4c4f",
+      "fixed_input": null
+    },
+    {
+      "case": "assigned_main",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        16953,
+        221
+      ],
+      "manifest_digest": "7f248dc08fb36a455221cf66c35b8452ab521ed855b3dc8350c54a26d0ceaea7",
+      "canonical_receipt_digest": "01e437cff0c11c13722bbacdfab1f0492d6f835e76c697c71f06b5b2383a965a",
+      "fixed_input": {
+        "input_contract": "exact-v1",
+        "accepted_variant": "exact",
+        "exact_fixed_source": true,
+        "accepted_fixed_source": true,
+        "expected_native_output": true,
+        "diagnostic_code": null
+      }
+    },
+    {
+      "case": "list_only",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        16791,
+        178
+      ],
+      "manifest_digest": "e9817d92b19b4b2be24ca10656dde79f9426ea96b683e5a4acf415ad1ad34d9a",
+      "canonical_receipt_digest": "761c94d69a72b4a1ed46d12d4b96cf37433ba780f5f5887c2c3ee938784934f3",
+      "fixed_input": {
+        "input_contract": "exact-v1",
+        "accepted_variant": "exact",
+        "exact_fixed_source": true,
+        "accepted_fixed_source": true,
+        "expected_native_output": true,
+        "diagnostic_code": null
+      }
+    },
+    {
+      "case": "reference_only",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        17005,
+        232
+      ],
+      "manifest_digest": "904bdeb6986b712ff781a4cbcf8df5a03c2ff9d70825e0f7c212c85c44e35072",
+      "canonical_receipt_digest": "fa66d9fba786323f4fd12e33d3017db6fc5a20b7c2f2f85570afa7e22f7694f2",
+      "fixed_input": {
+        "input_contract": "reference-outer-lf-v2",
+        "accepted_variant": "exact",
+        "exact_fixed_source": true,
+        "accepted_fixed_source": true,
+        "expected_native_output": true,
+        "diagnostic_code": null
+      }
+    },
+    {
+      "case": "failed_main",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        17153,
+        271
+      ],
+      "manifest_digest": "b85098935f924a4f4acf479171007c25598bf376a0eba72c68cb612479bf918f",
+      "canonical_receipt_digest": "8999a9b1c6465c06a1d37abd1899db1e880490bf74686efbb53b360418dc59ec",
+      "fixed_input": {
+        "input_contract": "exact-v1",
+        "accepted_variant": "exact",
+        "exact_fixed_source": true,
+        "accepted_fixed_source": true,
+        "expected_native_output": true,
+        "diagnostic_code": null
+      }
+    },
+    {
+      "case": "present-missing",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        0,
+        0
+      ],
+      "manifest_digest": "27617df9b3a548e228cba23080e114f3055b077be9e6bbe3f824407fd7493c41",
+      "canonical_receipt_digest": "93e271ffa64f0de28177bc3205367065fbd1e8f9fbf300bbe35bd9df95efd0b7",
+      "fixed_input": null
+    },
+    {
+      "case": "unsafe",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        0,
+        0
+      ],
+      "manifest_digest": "33e39a7282cb7887eb87f722c0878f121e9ba2e892d5cc7b06e35db10a6a04c0",
+      "canonical_receipt_digest": "3c8f8da8f499aac240c64f4d134d214334888f2d71621b32a850f6f1a857962b",
+      "fixed_input": null
+    },
+    {
+      "case": "interrupted",
+      "passed": true,
+      "cleanup_verified": true,
+      "observed_usage": [
+        0,
+        0
+      ],
+      "manifest_digest": "8f58142273b35be06b966b0429391a6f9a2c4f38a80de3fa077c87e24f3eec86",
+      "canonical_receipt_digest": "0de45d6b9605bf48617ebeb920f512e3ee17150ad7d274a0e73471b8a8198a5c",
+      "fixed_input": null
+    }
+  ],
+  "known_observed_total_tokens": 85143,
+  "known_observed_output_tokens": 1103,
+  "all_owned_resources_cleaned": true,
+  "dedicated_VM_stopped": true,
+  "previous_campaign": "native-runtime-renewal-2026-10-19.json",
+  "previous_failures_reclassified": false,
+  "native_LF_variant_observed": false,
+  "limitations": [
+    "Observed usage counters are not billing totals; previous campaign totals remain separate.",
+    "Fixed qualification does not establish natural-language skill effectiveness, production interruption, candidate improvement or account installation.",
+    "The revised reference input contract has local finite-variant checks; actual accepted variant is recorded per case."
+  ]
+}

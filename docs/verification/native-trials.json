@@ -9,14 +9,14 @@
     "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "8c99babce9699d2b579dd6432071df5db576aeb403a2b5335c9808ce730696fa",
+    "native_trial.py": "7d60cf8c542574e49e8cf5aa1d4877dc0a4147704620f6328b32f788da1294c2",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
     "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
-    "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
+    "native_trial_protocol.py": "b5cc4794f5aa9e4156712b00ae63306f980b0e287f5a4013050160de8401c974",
     "native_trial_qualification.py": "b104023dc69a0bfae7214bb0b92c8c8ed0c0ef080ab5d5ed612cdc54e4d38c4b",
     "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
     "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
-    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
+    "trial_reservation.py": "582ea17b57a173c3514bcf4008da5c3bb327fc7ed4128af89e532124dafeb5e8"
   },
   "runtime_digests": {
     "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
@@ -94,14 +94,14 @@
   },
   "provenance": {
     "path": "docs/verification/native-qualification-provenance.json",
-    "sha256": "76085d98adb11289ea867d51699f6ac11c9eedcead427e1e2615dbd47608c2b0",
+    "sha256": "df447fe5617ffbc7fc8bf53b43392fe42f1302e43051e5a245a567c0679a3b6c",
     "cases": [
       "boundary"
     ]
   },
   "failure_history": {
     "previous_records_preserved": true,
-    "campaign_failed_attempts_preserved": 5,
+    "campaign_failed_attempts_preserved": 0,
     "current_pass_does_not_relabel_failures": true
   },
   "limitations": [
@@ -111,9 +111,9 @@
   ],
   "previous_selected_evidence": [
     {
-      "commit": "2f50e007afdf0ef90ca833839200f21c4741e46f",
+      "commit": "9cde18e52a65e1878c6fd4b365e1dda09b585a4e",
       "path": "docs/verification/native-trials.json",
-      "sha256": "8efcac70d273020d9865e34a56d0975fddb6217d0f6f48e0efc21b1df36f131b",
+      "sha256": "e048dab2d9a4af10e92446249f911ac76e68278b5e2a0988310d713b6d0e7d9f",
       "scope": "Historical selected record and preceding history retained in immutable Git; not relabeled."
     }
   ]

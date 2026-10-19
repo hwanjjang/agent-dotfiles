@@ -8,8 +8,9 @@ trial. Retained [execution](verification/native-trials.json),
 bounded checks to runtime source13 and the admission grader. Their shared
 [provenance](verification/native-qualification-provenance.json) preserves original
 proof identities and scope; earlier selected records remain in immutable Git.
-These records qualify the historical source checkpoint below. The current source
-renewal is incomplete; historical results cannot be relabeled.
+These records qualify the current runtime bytes recorded at `3905185`, using
+eight fresh controls and the versioned reference input contract below. Historical
+results remain unchanged.
 Other hosts and completed natural EN/KO comparisons remain pending.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
@@ -41,14 +42,46 @@ owns optional independent-row continuation; possible turn start or uncertain
 cleanup cannot use it.
 
 These changes invalidate the previous runtime/grader identities. Local protocol,
-lifecycle and CLI checks passed. Current-source qualification finished its eight
-planned executions with seven passes and one exact-input failure; it remains
-incomplete. Production interruption and comparison are not released by these
-results. The accepted records still refer to the prior qualified bytes.
+lifecycle and CLI checks passed. Current-source qualification now has eight fresh
+passing controls after the private input-contract correction below. Production interruption and candidate
+comparison require their own evidence; fixed controls do not complete them.
+
+## Authorized qualification correction — 2026-10-19
+
+The [maintainer-approved correction](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6267785297)
+versions the private reference-only input contract. It accepts only the fixed
+cell, that cell with one leading LF, or that cell with one trailing LF. The other
+fixed cells remain exact. Body edits, additional commands, other whitespace,
+wrong call identity, wrong output and wrong routing still fail. This is a
+qualification-contract revision, not evidence of a production runtime defect.
+
+The observer retains its first failure while collecting bounded later diagnostic
+facts. An accepted-variant label distinguishes exact, leading LF and trailing LF;
+raw inputs, outputs and correlation identifiers are not exported. Local stub
+execution confirmed identical calls and output for these three fixed variants;
+it does not establish native behavior. Independent review and eight fresh controls
+now support the contract. Historical failures and the previous checkpoint below
+remain unchanged. Production interruption, fixed candidate
+comparison and account application are not established by this correction.
 
 ## Current qualification checkpoint — 2026-10-19
 
-The [current renewal record](evidence/native-runtime-renewal-2026-10-19.json)
+The [fresh contract-renewal record](evidence/reference-cell-qualification-2026-10-19.json)
+contains eight passing controls: five actual native turns and three credential-free
+collection checks. All owned authentication/resources were removed and the dedicated
+VM was stopped. Runtime13 and grader sources remain unchanged from `3905185`.
+The five maintained qualification records are renewed from these original manifests,
+receipts and journals; the unchanged evaluator's consumer checks verify their use.
+
+The new reference-only run used the **exact** fixed input, so it verifies the full
+call/output/routing path but is not an observed native LF-variant execution.
+Single-LF variants have local stub and finite-predicate coverage only. Earlier
+failures remain unchanged. Eight passing fixed controls do not by themselves
+establish actual production interruption, candidate benefit or account installation.
+
+## Previous incomplete renewal — 2026-10-19
+
+The [previous renewal record](evidence/native-runtime-renewal-2026-10-19.json)
 records all eight planned executions on source commit `3905185`: seven passed and
 `reference_only` failed. Source13 is
 `86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213`.
@@ -72,10 +105,10 @@ two failures and 170,346 observed total / 2,236 output tokens, including earlier
 source attempts. The latest eight used 85,189 / 1,126. These are observed trial
 counters, not billing totals.
 
-No accepted qualification record was refreshed. The required eight-pass gate
-still blocks the prepared production-interruption probe and fixed development
-comparison. This is a completed execution schedule with an incomplete
-qualification, not overall verification completion or candidate improvement.
+At that checkpoint, no accepted qualification record was refreshed. The unmet
+eight-pass gate blocked the prepared production-interruption probe and fixed
+development comparison. That schedule was complete but its qualification was
+incomplete; the later renewal above does not rewrite those results.
 
 ## Previous fully qualified checkpoint — 2026-10-19
 
@@ -126,8 +159,8 @@ source/runtime identities and custody observations associated by the trusted
 coordinator with each original evidence location. The custody audit's fixed
 all-true content hash can repeat; distinct manifest, receipt, journal and metadata
 digests identify cases. It is not a case-unique or independently signed audit.
-All eight selected observations were fresh for their historical source change.
-They do not qualify the current runtime changes.
+All eight selected observations are fresh for the current runtime bytes recorded
+at `3905185`; the private reference input contract is `reference-outer-lf-v2`.
 No earlier source success or failed receipt is relabeled.
 
 Execution, grading and collection records point to their exact preceding Git
@@ -183,7 +216,7 @@ admission path for three rows. The later preserved pilot report records three pa
 three missing rows. Its actual recommendation is reject, as documented in the
 [recommendation record](evidence/native-recommendation-2026-10-19.md). Physical
 cleanup preserved the original blocked receipt; neither the complete comparison
-nor the interrupted production path was validated. The current incomplete
+nor the interrupted production path was validated. The current completed fixed
 qualification does not complete that pilot.
 The reader does not execute or recover trials; preserve failed attempts and
 unknown costs.
@@ -191,9 +224,9 @@ unknown costs.
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
-client-model admission. The four selected fixed receiver cases have historical source-bound
-observations in the maintained routing record; current renewal and general routing
-effectiveness remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+client-model admission. The four selected fixed receiver cases have current source-bound
+observations in the maintained routing record. Natural EN/KO routing effectiveness
+and candidate comparison remain pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
 whole development schedule before execution and use its first standard production
 row to verify `observe` → cleanup/collection → `finish` → admission. This avoids a
