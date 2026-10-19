@@ -168,9 +168,20 @@ signal is not all-page reading, semantic adherence or outcome correctness. Keep
 historical evidence tied to its original bytes; no changed-source proof is implied.
 
 Verify owned-group signaling is attempted before leader reap even after graceful
-EOF; EOF alone cannot establish descendant absence. Retain signal errors and the
-primary stop reason. Exercise descendant-held pipes, bounded drain/stream failures
-and unsupported frontmatter grammar with those focused tests. The
+EOF; EOF alone cannot establish descendant absence. Retain finite signal error
+categories and the primary stop reason. Test the macOS exited-group case:
+reconciliation requires a reaped owned leader, both drained streams, no pending/trailing records and
+process-not-found from a signal-0 probe of the exact original group. A present
+group, denied/failed probe, missing EOF, another OS or expired deadline stays
+blocked. No destructive signal may be sent after reap. Verify the original error
+category and `group_absent_after_reap` reach the canonical cleanup receipt.
+Exercise descendant-held pipes, bounded drain/stream failures and unsupported
+frontmatter grammar with those focused tests. Also check finite boundary input
+diagnostics for invalid call identifiers and known presentation differences;
+every non-exact input remains blocked and arbitrary content must stay absent.
+Extract the delimited qualification prompt and compare it byte-for-byte with the
+canonical loader, including its unchanged pragma and absence of a final LF.
+The old/new loader must perform identical synthetic remote operations. The
 [source-backed routing workflow](../../../architecture/native-routing-workflow.html)
 pins its inspected source revision; its browser checks do not qualify native execution.
 
@@ -179,3 +190,12 @@ stdio check on that host. Follow the accounting contract's host-dependent
 signal/cleanup limit: an exited leader with uncertain group signaling remains
 unknown even after successful output. A synthetic peer held alive after EOF is
 a different path and cannot substitute for that check.
+
+## Working-source qualification checkpoint
+
+The [2026-10-19 checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) records the eight bounded
+cases, current source identity, failed attempts, recovery and evidence reuse.
+All selected receipts have verified owned cleanup. This does not replace the
+maintained evaluator qualification references or qualify arbitrary task outcomes,
+other hosts, backend identity, candidate benefit or account activation. Historical
+manuals and diagrams retain their own source/capture identities.
