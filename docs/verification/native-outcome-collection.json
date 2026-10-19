@@ -11,7 +11,7 @@
     "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "1e312fa8a06eb84fce146418b0e904cc3a776881f8bffd4899541b3ce6e5c5ff",
+    "native_trial.py": "8c99babce9699d2b579dd6432071df5db576aeb403a2b5335c9808ce730696fa",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
     "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
     "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
@@ -30,7 +30,7 @@
   "cases": [
     {
       "case": "present-missing",
-      "manifest_digest": "e35de425ff3c2a807da954b6818aa4ee31623876963d743b25bebfedb7b978e7",
+      "manifest_digest": "c81c387d7e53b88e5afdfcb543c4a4a30c5d20ffdd75fda4f18ae5cf94d69197",
       "expected_runtime_behavior_observed": true,
       "native_fixture_status": "mock_complete",
       "native_terminal_completed": true,
@@ -62,7 +62,7 @@
     },
     {
       "case": "unsafe",
-      "manifest_digest": "5bc318990eca0f8a494498632dd4a69e9734b4534695126ca2df03804c531827",
+      "manifest_digest": "a7e971f8ac3c1979df41c1c51abe78ad8b8629bafbb1da8f5fb32419724be4c4",
       "expected_runtime_behavior_observed": true,
       "native_fixture_status": "mock_complete",
       "native_terminal_completed": true,
@@ -81,7 +81,7 @@
     },
     {
       "case": "interrupted",
-      "manifest_digest": "eab8465efc8d95998f04587a2646bb95c9c78ee8ec00815a621cca3ddea5f5aa",
+      "manifest_digest": "2dcacafbdd77e9adf4a91a38703838500b35cafca2ba0ded353965212462eb72",
       "expected_runtime_behavior_observed": true,
       "native_fixture_status": "blocked",
       "native_terminal_completed": false,
@@ -114,7 +114,7 @@
   ],
   "provenance": {
     "path": "docs/verification/native-qualification-provenance.json",
-    "sha256": "dec10d1d1cf49f8ab6823597c60e037e5f2677cc818c43a5fc8d5f94d855c5eb",
+    "sha256": "76085d98adb11289ea867d51699f6ac11c9eedcead427e1e2615dbd47608c2b0",
     "cases": [
       "present-missing",
       "unsafe",
@@ -133,10 +133,10 @@
   ],
   "previous_selected_evidence": [
     {
-      "commit": "5be8753ccf8d1e1d8f2dceaccd8d924b875815fa",
+      "commit": "2f50e007afdf0ef90ca833839200f21c4741e46f",
       "path": "docs/verification/native-outcome-collection.json",
-      "sha256": "d71363cd2a23a66a3d0d01ebc73c9cac431e3fb818bad867a8e17bcb164414e2",
-      "scope": "Historical selected record with its original source binding and full preceding history; retained in immutable Git, not relabeled."
+      "sha256": "1e1997539335c003325e641702074d9d8ae7b9f4917d5db7ec619ca083b17680",
+      "scope": "Historical selected record and preceding history retained in immutable Git; not relabeled."
     }
   ]
 }

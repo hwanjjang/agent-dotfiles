@@ -1,15 +1,16 @@
 # Frozen native trials: operator guide
 
 The source implements `check`, `run` and guarded `recover` for one pinned native
-trial. Current [execution](verification/native-trials.json),
+trial. Retained [execution](verification/native-trials.json),
 [scoped grading](verification/scoped-grading-integrity.json),
 [collection](verification/native-outcome-collection.json) and
 [fixed routing](verification/native-routing-observer.json) records bind the eight
 bounded checks to runtime source13 and the admission grader. Their shared
 [provenance](verification/native-qualification-provenance.json) preserves original
 proof identities and scope; earlier selected records remain in immutable Git.
-These are qualification prerequisites. Production task-to-report evidence,
-other hosts, natural EN/KO selection effectiveness and comparisons remain pending.
+These records qualify the exact current checkpoint below. Later source changes
+require renewed source-bound evidence; historical results cannot be relabeled.
+Other hosts and completed natural EN/KO comparisons remain pending.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -18,7 +19,26 @@ The [controller](../scripts/improvement/native_trial.py) and
 These commands do not install account settings, activate hooks, create a VM,
 change Docker context, log in, compare arms, grade general tasks or promote changes.
 
-## Working-source checkpoint — 2026-10-19
+## Current qualification checkpoint — 2026-10-19
+
+All eight fixed checks ran afresh on source commit `2f50e00` and passed: one
+authenticated boundary, four authenticated routing controls and three
+credential-free collection/interruption controls. Runtime source13 identity is
+`42c0035b3c649b8c85e4c21b1c9900bcb781048cf284c8f409b24da1bd4a4eef`.
+The unchanged admission reader accepts the selected execution, scoped-grading,
+collection and routing records for that source. Each observation retains its
+original manifest, canonical receipt, reviewed private-helper hashes and custody
+audit. All owned temporary authentication and control resources were removed,
+and the dedicated validation VM was stopped.
+
+Five earlier renewal failures remain unchanged, including one with unknown
+usage. A later pass does not erase those failures or establish reliability.
+The corrections address bounded macOS exit settling and unambiguous prompt
+copying; exact input, output, challenge and cleanup predicates remain enforced.
+This completes the fixed executor qualification, not candidate comparison,
+backend-model attestation or account installation.
+
+## Historical qualification checkpoint — 2026-10-19
 
 The [source-bound checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) records all eight planned
 bounded checks passing: one authenticated boundary, four authenticated fixed
@@ -29,28 +49,27 @@ At this checkpoint the tested code was a local candidate based on main `484e9d9`
 
 Failed attempts remain preserved, including one process-query cleanup failure
 resolved through separately verified owned recovery before a fresh check. The
-original failed receipt was not changed. Six observations retain their original
-reviewed private-helper revisions under unchanged relevant conditions; only the
-two corrected prompt cases have fresh observations. Credential-free checks keep
+original failed receipt was not changed. At that checkpoint, six observations
+retained their original reviewed private-helper revisions under unchanged relevant
+conditions; only the two corrected prompt cases had fresh observations. Credential-free checks keep
 the private-bridge limits below; they do not exercise full public `observe`/`finish`.
-PR #71 merged the identical runtime at `5be8753`. The maintained records now
-project those original observations without another native/model call. This
-renewal does not establish a production task outcome, candidate benefit, backend
+PR #71 merged the identical runtime at `5be8753`. At that historical checkpoint,
+the maintained records projected those observations without another native/model
+call. That renewal did not establish a production task outcome, candidate benefit, backend
 model identity or account activation.
 
 ## Selected evidence and current limits
 
 The [execution record](verification/native-trials.json) selects the authenticated
-boundary receipt and verified cleanup for the current source/profile. The
+boundary receipt and verified cleanup for its recorded source/profile. The
 [provenance companion](verification/native-qualification-provenance.json) binds
 all eight original manifests, canonical receipts, reviewed private helpers,
 source/runtime identities and custody observations associated by the trusted
 coordinator with each original evidence location. The custody audit's fixed
 all-true content hash can repeat; distinct manifest, receipt, journal and metadata
 digests identify cases. It is not a case-unique or independently signed audit.
-Six observations retain
-their original helper revisions under unchanged relevant plans; two have fresh
-corrected-prompt observations. No failed receipt is relabeled.
+All eight selected observations are fresh after the final source change.
+No earlier source success or failed receipt is relabeled.
 
 Execution, grading and collection records point to their exact preceding Git
 revision and file digest. That revision preserves historical V7/V8/V9/V10 and
@@ -67,7 +86,7 @@ orchestration command or protection against a hostile same-account owner.
 
 ## Scoped grading integrity
 
-The [current scoped evidence](verification/scoped-grading-integrity.json) verifies
+The [retained scoped evidence](verification/scoped-grading-integrity.json) verifies
 actual task read/write/readback and known protected grading, other-arm and synthetic
 installer receipt/journal read/write/create probes through a native command and an
 explicit Python child. The owner creates those eight synthetic protected files
@@ -98,15 +117,20 @@ connects exact recorded artifact collections to the existing evaluator through
 `trial_admission.py report`. A `completed_ungraded` receipt alone is insufficient:
 the reader checks frozen attempt, dispatch, source, collection and maintained
 qualification bindings. The maintained records now satisfy the unchanged
-qualification checks for their exact profile. No actual production task has yet
-been admitted: the credential-free bridge cannot supply that missing result.
+qualification checks for their recorded source/profile. A later
+[partial development pilot](https://github.com/hwanjjang/agent-dotfiles/issues/27#issuecomment-6261300514)
+exercised the normal production reservation, observation, collection, cleanup and
+admission path for three rows. Its full schedule remains two pass, one fail, one
+cleanup-blocked and four missing. Later physical cleanup preserved the original
+blocked receipt; neither the complete comparison nor the interrupted production
+path was validated. The current fixed qualification does not complete that pilot.
 The reader does not execute or recover trials; preserve failed attempts and
 unknown costs.
 
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
-client-model admission. The four fixed receiver cases have current-source
+client-model admission. The four fixed receiver cases have fresh current-source
 observations bound by the maintained routing record; general routing
 effectiveness remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
@@ -208,7 +232,7 @@ snapshot. `completed_ungraded` still means ungraded. Recovery only reconciles
 owned residue and never recaptures outputs.
 
 The [selected collection record](verification/native-outcome-collection.json)
-retains its exact historical 12-source, runtime and three credential-free cases:
+retains its exact current 13-source/runtime binding and three credential-free cases:
 present/missing, unsafe symlink and interrupted native task. The fixed task wrote
 the artifact through a real native tool call, not coordinator materialization.
 An actual turn/start acknowledgment was counted and correlated to its terminal;
@@ -217,8 +241,9 @@ observation projection and its own coordinator receipt; it calls production
 setup/cleanup/capture, while production `observe`/`finish` collection gates have
 unit-test coverage only. The existing native fixture's
 `mock_complete`/`blocked` result and the outer private attestation stay distinct.
-There were no model calls or authentication reads/copies. Current-source
-authenticated/routing renewal and comparative admission remain pending.
+These three controls made no model calls or authentication reads/copies.
+Current-source authenticated boundary/routing qualification is separately complete;
+the actual comparative evaluation remains pending.
 
 See the [collection flow](architecture/native-outcome-workflow.html) and
 [screenshot walkthrough](manual/native-outcome-collection.pdf) for this sequence.
@@ -291,8 +316,9 @@ process-not-found. The receipt retains the original error category and
 `group_absent_after_reap=true`; EOF alone or another permission error never
 supplies that proof. No destructive signal is sent after leader reap.
 
-The qualification prompt delimits the exact loader input, explicitly preserves
-its exec pragma and excludes a terminal newline. Only the loader asset's final
+The qualification prompt places its tags directly against the exact loader
+input, leaving no delimiter-adjacent newline to copy. It explicitly preserves
+the exec pragma and excludes a terminal newline. Only the loader asset's final
 LF is omitted; its statements and pragma parameters remain unchanged.
 
 Boundary qualification exports finite input diagnostics (`call_id_valid`,
@@ -300,6 +326,38 @@ Boundary qualification exports finite input diagnostics (`call_id_valid`,
 distinguish call identity from known whitespace, line-ending or exec-pragma differences.
 These labels never normalize acceptance: the requested script must still match
 exactly. Raw inputs, correlation identifiers and their hashes are not retained.
+
+## Process-query failure diagnosis
+
+The cleanup record includes `process_query_diagnostic`: `null` when no query
+failed, otherwise the first failure's `phase` (`launch`, `watch`, or `cleanup`),
+queried `pid`, and finite `reason`. Reasons distinguish `deadline`, `timeout`,
+`output_limit`, `control_stopped`, `exit_status`, `stderr`, `field_count`,
+`identity`, `executable_not_absolute`, and unexpected `operation` failure.
+No raw process output, executable path, error text or model content is added.
+The public refusal remains `process_query`.
+
+A macOS owned-process reproduction confirmed that an exited but unreaped child
+can return a nonabsolute executable field; after its parent reaps it, the exact
+query reports absence. This is a plausible explanation for the retained pilot
+failure, not a proven historical cause: that failed query's output was not saved.
+Apple's [process formatting source](https://github.com/apple-oss-distributions/adv_cmds/blob/6bed8737a34dbb54782a18f47dccf933a9967a12/ps/print.c)
+also has nonabsolute fallbacks, so this category alone does not establish a zombie.
+
+During macOS cleanup only, an already recorded owner whose executable field
+is temporarily nonabsolute may be queried again within the original two-second
+query bound and cleanup deadline. That record never authorizes a signal or
+counts as absence. A fresh strict query must establish absence or return a
+process for the existing ownership check. Persistent ambiguity and every other
+query error still fail closed. Launch, watcher and unrecorded-process queries
+do not use this settling wait.
+
+Once a query fails, later successful queries do not erase its diagnostic or
+clear `process_query_uncertain`. Existing ownership, watcher, auth-purge and
+recovery guards remain in force. A real owned-child reproduction fails before
+the correction and passes after reaping occurs during the bounded wait. These
+checks do not by themselves renew authenticated qualification, repair an original
+blocked result, or complete the EN/KO comparison.
 
 ## Recover exact owned residue
 
