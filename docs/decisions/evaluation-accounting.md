@@ -337,12 +337,15 @@ excludes zombie members and can return EPERM when no member is counted (checked
 
 Routed contexts require the exact maintained path
 `docs/verification/native-routing-observer.json` in `qualification_refs.routing`.
-That record is not currently available as qualified public evidence. It must bind
-current source/runtime/image and the three-source admission grader, observer
-profile, normalized catalog, four actual native cases (assigned main, list only,
-reference only, failed main), cleanup and false-marker falsification. A caller
-flag or synthetic qualification fixture cannot substitute. Existing historical
-execution/collection proofs also require renewal for changed sources.
+The [current record](../verification/native-routing-observer.json) binds
+source/runtime/image and the three-source admission grader, observer profile,
+normalized catalog, four actual native cases (assigned main, list only,
+reference only, failed main), cleanup and false-marker falsification. Its
+[provenance companion](../verification/native-qualification-provenance.json)
+retains the original proof identities and fixed-case scope. A caller flag or
+synthetic qualification fixture cannot substitute. Execution, grading and
+collection references are renewed from the same current-source observations;
+changed source/runtime/grader bytes invalidate affected evidence.
 
 Only qualified, bound projections expose typed criterion targets
 `native.routing.none` and `native.routing.implicit_read.<catalog-name>` to the
@@ -358,8 +361,10 @@ model facts, the report uses `selection_evidence=persisted_thread_start_client_m
 and removes only `explicit_observed_model_projection_unavailable`. Otherwise it
 retains the older source-guarded/no-export label and blocker. Neither path attests
 server weights: `backend_identity_verified=false`, live eligibility and promotion
-stay unavailable. Current implementation has offline fake-journal verification;
-actual current-source native routing/admission and EN/KO comparisons remain pending.
+stay unavailable. Current fixed routing qualification has genuine source-bound
+observations; actual production artifact-to-report admission and natural EN/KO
+comparison remain pending. Existing offline synthetic journals are regression
+checks, not that missing task evidence.
 
 ## Serial native launch reservations
 

@@ -1,24 +1,25 @@
 {
   "schema_version": 1,
-  "observed_date": "2026-10-18",
   "kind": "scoped-grading-integrity-qualification",
+  "observed_date": "2026-10-19",
   "status": "credential_free_scoped_executor_verified",
-  "status_authority": "private_coordinator_attestation; not a public CLI qualification status",
+  "status_authority": "private_coordinator_attestation",
   "profile": "codex-0.163-macos-arm64-linux-arm64-v1",
   "source_digests": {
-    "native_execution.py": "45c98f1d39584f40e7d53fbbc065deb7fa5dfc0fcdddf8bbc80483a3ba4f2ca2",
+    "native_execution.py": "fee4ee83f41b4e72e226696194a2fd3563840ffa2bb8201597dede3438bbfd59",
     "native_execution_catalog.py": "c6bc481374df52cb94449a96d02ff4984f31272a46c5b384fff3a910135911ce",
     "native_execution_command_skills.js": "38757ed79d9d170eb83b26f7d1749e203f95ee5e107a3a23e3816e4484d32b79",
     "native_execution_loader.js": "5c14d58d52d34e07ce0018626ccd15657f7b7f00f5db643ca4e1f25022229973",
     "native_isolation.py": "046b040aede2dec6f0c6d0dd383bf732f8c998a9ae054c8ee779833e5049eb68",
-    "native_trial.py": "419c3f54b3f85777e4eb774924f37d51fffdbdc3d56ae904150ebcd52d23bd62",
+    "native_trial.py": "1e312fa8a06eb84fce146418b0e904cc3a776881f8bffd4899541b3ce6e5c5ff",
     "native_trial_owner.py": "153f7c4478c0b4d977ebd6e9ec3aad1a2fd99e4684ecf39a04061bf222fca52c",
-    "native_trial_plan.py": "1841fad7addac7514df2014330e999a9fd4f501021a4e4a61e29b334ac5baeeb",
-    "native_trial_protocol.py": "f4296680b39bd14ec55456e2b26a11f18afe8752e1b2357bb7030795386dd97a",
-    "native_trial_qualification.py": "ad5e8e745c39595adae68575bbd521dff7cffbfb0fdc87cd9b5007944d01e6e1",
-    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3"
+    "native_trial_plan.py": "93fcac9850f7ad733c22890cc804f602c5204a824cff212062170aacc4c159fe",
+    "native_trial_protocol.py": "9dfbd975badce91c049827d72e1b723b7524c339a6484daca00eb90069e965fc",
+    "native_trial_qualification.py": "b104023dc69a0bfae7214bb0b92c8c8ed0c0ef080ab5d5ed612cdc54e4d38c4b",
+    "native_trial_results.py": "a5cafd0c5440fe47c0885439b15b82be62497526592385e76a176a9bf42d8ddb",
+    "native_usage.py": "f8de6f23d7a8c5e609b88ebce94265cc6f0ee0beeb8a07dbbe253abfebef42a3",
+    "trial_reservation.py": "ebf3b4315bd272ce179a493d3b4e99703b4b04da90acd7badd79160acba15102"
   },
-  "grader_source_sha256": "30d03dc92ea55ce763d2f830e376664fb2a3b152bc86e9c8c37a0cebc5f567af",
   "runtime_digests": {
     "code_mode_host": "79f123a85dbc61e8f5d0f0c050dfc3f4b81a8305d33a32b41e008b7f6e035698",
     "codex": "8813367285524ac798dd96d1b071aea30d58708c7226fd236cd275cf1cfdee31",
@@ -26,9 +27,14 @@
     "executor_archive": "9d8ecf2d19d3e184877983902d6c85de48b3888dcb72c382a8a0c975845927fb"
   },
   "image_digest": "sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
-  "manifest_digest": "9e7b5eb06d091f6ad79eecaaa851a46f593754ca3cacd46fd1959149c491d43f",
+  "grader_source_sha256": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
+  "admission_grader_source_digests": {
+    "evaluation.py": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
+    "trial_admission.py": "bb07e3c5cd3d8d8a5612f649d10cff25d4236a0d5c972e6cba43326f0c589f3e",
+    "trial_dispatch.py": "b4fa3bf4f7f4a6b66411cef09a9420c9ecea3b59496f59adcd8daad17eaebb13"
+  },
   "actors": {
-    "tested": "remote native task/result producer and explicit Python child",
+    "tested": "remote task/result producer and explicit child",
     "trusted_access_retained": [
       "local controller",
       "local scorer",
@@ -37,7 +43,8 @@
     "hostile_same_account_prevention": false
   },
   "actual_checks": {
-    "native_mock_terminal": "completed",
+    "protected_files_exist_outside_mounts_and_unchanged_after_shutdown": true,
+    "protected_fixture_files": 8,
     "scoped_io": {
       "child": {
         "denied": {
@@ -92,47 +99,38 @@
         "task_write_readback": true
       }
     },
-    "protected_files_exist_outside_mounts_and_unchanged_after_shutdown": true,
-    "protected_fixture_files": 8,
-    "installer_targets": "Synthetic installed receipt and transaction journal only; no live account paths accessed",
-    "denial_meaning": "ENOENT for actual known owner-side files absent from executor mounts, supported by outer boundary inspection; not general EACCES or hostile-host proof"
-  },
-  "inference": {
-    "model_calls": 0,
-    "authentication_copied": false,
-    "public_fixture_status": "mock_complete",
-    "live_eligible": false,
-    "authenticated_current_sources_qualified": false
+    "denial_meaning": "ENOENT for known host-side synthetic targets absent from executor mounts, not general EACCES."
   },
   "cleanup": {
     "owned_processes_and_groups_absent": true,
     "owned_containers_absent": true,
-    "owned_volumes_absent": true,
-    "native_home_auth_control_absent": true,
-    "vm_restored_stopped": true,
-    "ambient_context_preserved": true,
-    "host_original_work_unchanged_during_run": true
+    "owned_volumes_absent": true
   },
-  "verification": {
-    "focused_tests": 93,
-    "grading_drift": "Unit tests preserve entry-stale diagnostics and block late source/spec/experiment drift; already observed critical diagnostics remain under blocked verdict",
-    "native_result": "Actual credential-free fixed tool execution, not a paid model or comparison",
-    "archive": "Same262144-byte combined retained cap; raw native events retained, duplicated synthetic HTTP request bodies omitted by private bridge",
-    "first_attempt": "Blocked on archive_limit; all cleanup complete, VM stopped. Kept historical, not relabeled pass."
+  "inference": {
+    "model_calls": 0,
+    "authentication_copied": false,
+    "actual_inference": false,
+    "public_fixture_status": "mock_complete",
+    "live_eligible": false
   },
-  "private_artifact_digests": {
-    "fixture_run.py": "89b1ec1fca34476347b830b8b17bd8a6c9286284aad747d98f5047ef52b69625",
-    "coordinate_fixture.py": "e69c91d62f121a635f2cf5270a7ad7ee9bc716ece453b817931bb78498e19905",
-    "release-scope.json": "8d606f1944c50d95a453ec7afcf29d12bb0b3fd193ac2b97a25f5d93554b97bb",
-    "root-final-audit.json": "a8d94715b66d2866dc88fc9f8fae35cb59c0f2272bccc0a308c7fa8d97fd84a7",
-    "fixture-native/receipt.json": "a50a2ffd08d035c18e5b6243042f9ebc8ece0759328a7fd1b2a91a262c40ddf4"
+  "provenance": {
+    "path": "docs/verification/native-qualification-provenance.json",
+    "sha256": "c34a4867f7d20c8cf5d59c1ba5512458125913fce4fa80968b436b7316690fda",
+    "cases": [
+      "present-missing",
+      "unsafe"
+    ]
   },
   "limits": [
-    "One existing pinned macOS/Linux arm64 topology; no additional host/account/custodian created.",
-    "Private bridge combines run_fixture with observed outer ownership/cleanup; public run_fixture remains mock_complete, authentication/isolation flags false.",
-    "Task/result-producer paths are scoped; host controller/scorer keep account access.",
-    "Public fixtures are development material; no held-out exposure or performance claim.",
-    "Old V9/V10 authenticated evidence remains historical for its original source; changed source requires affected renewal.",
-    "Hashes identify retained bytes, not signatures or hostile-host attestation."
+    "Credential-free cases use a private bridge with production setup/cleanup/capture_collection, not production observe/finish or DIRECT/OpenAI inference; public fixture remains mock_complete/blocked.",
+    "No hostile-host or same-account controller/scorer containment."
+  ],
+  "previous_selected_evidence": [
+    {
+      "commit": "5be8753ccf8d1e1d8f2dceaccd8d924b875815fa",
+      "path": "docs/verification/scoped-grading-integrity.json",
+      "sha256": "6ff3c6e1b5b11190ecfc39781bb07601e0580f3643c5d24700390bc56b90e424",
+      "scope": "Historical selected record with its original source binding and full preceding history; retained in immutable Git, not relabeled."
+    }
   ]
 }

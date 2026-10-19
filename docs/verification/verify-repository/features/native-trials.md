@@ -7,11 +7,15 @@ Scenario ID: `native-trials`. Surfaces: the public `native_trial.py`
 Read the [operator guide](../../../native-trials.md) for exact prerequisites,
 manifest fields, commands and result meanings, and the
 [design contract](../../../decisions/native-trial-execution.md) for ownership and
-acceptance rules. The [historical selected evidence](../../../verification/native-trials.json) and
-[current scoped grading evidence](../../../verification/scoped-grading-integrity.json)
-retain their separate source/profile qualification status. The [collection record](../../../verification/native-outcome-collection.json)
-owns current 12-source collection checks. Reconcile each consumed record's exact source digests with the candidate; historical results and a working CLI do
-not qualify new bytes.
+acceptance rules. The [execution](../../../verification/native-trials.json),
+[scoped grading](../../../verification/scoped-grading-integrity.json),
+[collection](../../../verification/native-outcome-collection.json) and
+[fixed routing](../../../verification/native-routing-observer.json) records share
+current source13/profile bindings and a
+[provenance companion](../../../verification/native-qualification-provenance.json).
+Check every consumed digest; historical results and a working CLI do not qualify
+new bytes. Record-binding tests and the offline admission smoke cannot substitute
+for a standard production task's observed result and cleanup.
 Missing evidence is pending, not pass. Do not reproduce schema or last-run status
 in this recipe.
 
@@ -195,7 +199,22 @@ a different path and cannot substitute for that check.
 
 The [2026-10-19 checkpoint](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901) records the eight bounded
 cases, current source identity, failed attempts, recovery and evidence reuse.
-All selected receipts have verified owned cleanup. This does not replace the
-maintained evaluator qualification references or qualify arbitrary task outcomes,
+All selected receipts have verified owned cleanup and now supply the maintained
+qualification references. They do not qualify arbitrary task outcomes,
 other hosts, backend identity, candidate benefit or account activation. Historical
 manuals and diagrams retain their own source/capture identities.
+
+## Maintained qualification bindings
+
+Run `python3 -m unittest discover -s tests -p test_public_qualification_bindings.py -v`
+from the repository root. The checks load current maintained records through the
+unchanged reader, reject a rehashed stale source record and reject missing/false
+routing falsification. Their experiment/context fixtures are synthetic; no
+native execution, credential access or model inference occurs. Later source drift
+must remain unqualified; passing these checks never renews native evidence.
+
+An offline CLI smoke with a frozen synthetic schedule and no completions must keep
+every scheduled row missing/inconclusive with no fabricated pass. The next actual
+full-path check belongs to the first preregistered development row, using the
+existing reservation and production lifecycle. Do not populate `observation` or
+write a replacement completion receipt to satisfy that check.
