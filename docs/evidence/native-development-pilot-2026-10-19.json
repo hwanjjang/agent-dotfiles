@@ -1,0 +1,521 @@
+{
+  "experiment_digest": "7746a65c012e6ecc9ff1791141a992d0effe24514bdf487c5bef6e5d6b40ee7f",
+  "spec_digest": "6bdcc20efe9b5349450f51a64751d1c9d795d65a9fbd6380748ab8475914cf30",
+  "report_digest": "aa7c4a7f63ba65179e7e55269e348624d6a8ad0fedff36bbc42924d91ad33ff2",
+  "runtime": {
+    "adapter": "codex-0.163-macos-arm64-linux-arm64-v1",
+    "capabilities": [
+      "remote-selected-arm",
+      "natural-routing-first-page",
+      "bounded-artifact-snapshot"
+    ],
+    "client": "codex-0.163.0",
+    "model": "gpt-6-luna",
+    "provider": "openai",
+    "reasoning": "low",
+    "tool_versions": {
+      "codex": "0.163.0"
+    }
+  },
+  "scheduled": 8,
+  "submitted": 8,
+  "counts": {
+    "blocked": 0,
+    "fail": 3,
+    "inconclusive": 0,
+    "pass": 5
+  },
+  "arms": {
+    "baseline": {
+      "blocked": 0,
+      "fail": 1,
+      "inconclusive": 0,
+      "pass": 3
+    },
+    "candidate": {
+      "blocked": 0,
+      "fail": 2,
+      "inconclusive": 0,
+      "pass": 2
+    }
+  },
+  "coverage": {
+    "duplicate_trials": 0,
+    "missing": 0,
+    "unassigned": 0
+  },
+  "dimensions": {
+    "adherence": {
+      "blocked": 0,
+      "fail": 0,
+      "inconclusive": 8,
+      "pass": 0
+    },
+    "exposure": {
+      "blocked": 0,
+      "fail": 0,
+      "inconclusive": 8,
+      "pass": 0
+    },
+    "mcp_static": {
+      "blocked": 0,
+      "fail": 0,
+      "inconclusive": 8,
+      "pass": 0
+    },
+    "mcp_task": {
+      "blocked": 0,
+      "fail": 0,
+      "inconclusive": 8,
+      "pass": 0
+    },
+    "mcp_tool": {
+      "blocked": 0,
+      "fail": 0,
+      "inconclusive": 8,
+      "pass": 0
+    },
+    "outcome": {
+      "blocked": 0,
+      "fail": 3,
+      "inconclusive": 0,
+      "pass": 5
+    },
+    "routing": {
+      "blocked": 0,
+      "fail": 0,
+      "inconclusive": 0,
+      "pass": 8
+    }
+  },
+  "paired_summary": {
+    "dimensions": {
+      "adherence": {
+        "both_fail": 0,
+        "both_pass": 0,
+        "improved": 0,
+        "regressed": 0,
+        "unresolved": 4
+      },
+      "exposure": {
+        "both_fail": 0,
+        "both_pass": 0,
+        "improved": 0,
+        "regressed": 0,
+        "unresolved": 4
+      },
+      "mcp_static": {
+        "both_fail": 0,
+        "both_pass": 0,
+        "improved": 0,
+        "regressed": 0,
+        "unresolved": 4
+      },
+      "mcp_task": {
+        "both_fail": 0,
+        "both_pass": 0,
+        "improved": 0,
+        "regressed": 0,
+        "unresolved": 4
+      },
+      "mcp_tool": {
+        "both_fail": 0,
+        "both_pass": 0,
+        "improved": 0,
+        "regressed": 0,
+        "unresolved": 4
+      },
+      "outcome": {
+        "both_fail": 1,
+        "both_pass": 2,
+        "improved": 0,
+        "regressed": 1,
+        "unresolved": 0
+      },
+      "routing": {
+        "both_fail": 0,
+        "both_pass": 4,
+        "improved": 0,
+        "regressed": 0,
+        "unresolved": 0
+      }
+    },
+    "overall": {
+      "both_fail": 1,
+      "both_pass": 2,
+      "improved": 0,
+      "regressed": 1,
+      "unresolved": 0
+    },
+    "primary_metric": "routing",
+    "scheduled_pairs": 4
+  },
+  "pairs": [
+    {
+      "baseline": "pass",
+      "candidate": "pass",
+      "case_id": "development.en.import-preview.v1",
+      "repetition": 0,
+      "variant": "reproduction"
+    },
+    {
+      "baseline": "pass",
+      "candidate": "pass",
+      "case_id": "development.en.import-preview.v1",
+      "repetition": 0,
+      "variant": "counterpart"
+    },
+    {
+      "baseline": "fail",
+      "candidate": "fail",
+      "case_id": "development.ko.room-waitlist.v1",
+      "repetition": 0,
+      "variant": "reproduction"
+    },
+    {
+      "baseline": "pass",
+      "candidate": "fail",
+      "case_id": "development.ko.room-waitlist.v1",
+      "repetition": 0,
+      "variant": "counterpart"
+    }
+  ],
+  "qualification": {
+    "calibration_digest": "5c986554e593955b57e04f71611091889d34934f36de74d2c4fb31f5c6f956aa",
+    "examples": [
+      {
+        "expected": "pass",
+        "id": "known_good",
+        "observed": "pass"
+      },
+      {
+        "expected": "pass",
+        "id": "known_failure_report",
+        "observed": "pass"
+      },
+      {
+        "expected": "fail",
+        "id": "fabricated_success",
+        "observed": "fail"
+      },
+      {
+        "expected": "fail",
+        "id": "unavailable_success",
+        "observed": "fail"
+      },
+      {
+        "expected": "inconclusive",
+        "id": "missing",
+        "observed": "inconclusive"
+      },
+      {
+        "expected": "fail",
+        "id": "injected",
+        "observed": "fail"
+      },
+      {
+        "expected": "fail",
+        "id": "wrong_observed_exit",
+        "observed": "fail"
+      },
+      {
+        "expected": "pass",
+        "id": "expected_observed_exit",
+        "observed": "pass"
+      },
+      {
+        "expected": "pass",
+        "id": "artifact_good",
+        "observed": "pass"
+      },
+      {
+        "expected": "fail",
+        "id": "artifact_subtle_error",
+        "observed": "fail"
+      },
+      {
+        "expected": "inconclusive",
+        "id": "artifact_missing",
+        "observed": "inconclusive"
+      },
+      {
+        "expected": "fail",
+        "id": "artifact_injection",
+        "observed": "fail"
+      },
+      {
+        "expected": "pass",
+        "id": "selection_good",
+        "observed": "pass"
+      },
+      {
+        "expected": "fail",
+        "id": "selection_wrong",
+        "observed": "fail"
+      },
+      {
+        "expected": "inconclusive",
+        "id": "selection_missing",
+        "observed": "inconclusive"
+      },
+      {
+        "expected": "fail",
+        "id": "selection_injection",
+        "observed": "fail"
+      },
+      {
+        "expected": "pass",
+        "id": "native_good",
+        "observed": "pass"
+      },
+      {
+        "expected": "fail",
+        "id": "native_wrong",
+        "observed": "fail"
+      },
+      {
+        "expected": "fail",
+        "id": "native_missing",
+        "observed": "fail"
+      }
+    ],
+    "grader_digest": "a25a0779bbf1a722bc4701f2219f306ffd1c16fc4ba0b85baef146b934d6dd91",
+    "status": "qualified"
+  },
+  "execution_accounting": {
+    "admission_tokens": 514172,
+    "backend_identity_verified": false,
+    "billing_usage": null,
+    "continuation_policy": "independent_after_no_turn_v1",
+    "currency_amount": null,
+    "declared_seconds": 2520,
+    "hard_provider_cap": false,
+    "initial_turn_requests_attempted": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "known_tokens": 514172,
+    "limits_exceeded": false,
+    "live_eligible": false,
+    "next_launch_allowed": false,
+    "reserved_initial_turns": 8,
+    "scheduled": 8,
+    "status": "complete",
+    "total_tokens": 514172,
+    "unknown_attempts": 0,
+    "wire_requests": null
+  },
+  "backend_identity_verified": false,
+  "development_exposure": "all_cases_visible",
+  "promotion": "inconclusive",
+  "blockers": [
+    "diagnostic_only",
+    "same_host_heldout_unimplemented"
+  ],
+  "kind": "selected-native-development-pilot-evidence",
+  "observed_date": "2026-10-19",
+  "reader_commit": "ef07e0dc919110bf73a3e6c4b2d97c9ce3ae7c7d",
+  "baseline_commit": "6517621244c23abad72a6d67fc2fbc3973b2f9c0",
+  "candidate_commit": "84ae5a779e8ed06a17be6034caf8b9abbcb40d5d",
+  "private_report_sha256": "892278234534fc543cf853dbf5d06afa0737b13ec6670781175f5da70cf1fb11",
+  "source13_identity": "86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213",
+  "cleanup_verified": true,
+  "dedicated_VM_stopped": true,
+  "known_output_tokens": 11866,
+  "cumulative_known_lower_bound": {
+    "total": 1794719,
+    "output": 30686,
+    "unknown_calls": 5
+  },
+  "recommendation": {
+    "recommendation": "reject",
+    "reasons": [
+      "critical_violation",
+      "diagnostic_only",
+      "same_host_heldout_unimplemented",
+      "same_host_heldout_unverified",
+      "unsupported_rule"
+    ],
+    "rule_result": {
+      "arm_tokens": {
+        "baseline": 262275,
+        "candidate": 251897
+      },
+      "arms": {
+        "baseline": {
+          "pass": 4,
+          "scheduled": 4
+        },
+        "candidate": {
+          "pass": 4,
+          "scheduled": 4
+        }
+      },
+      "critical_violations_by_arm": {
+        "baseline": 1,
+        "candidate": 2
+      },
+      "observed_pass_gain": 0,
+      "primary_metric": "routing",
+      "promotion_eligible": false,
+      "reasons": [
+        "critical_violation",
+        "unsupported_rule"
+      ],
+      "scope": "source_guarded_native_rule_diagnostic",
+      "verdict": "reject"
+    }
+  },
+  "recommendation_sha256": "d865b6c95d096de3e77a1786b5e3bea8eaf13a44a0544a96997be11a400a5ac9",
+  "rows": [
+    {
+      "arm": "baseline",
+      "case_id": "development.en.import-preview.v1",
+      "variant": "reproduction",
+      "repetition": 0,
+      "verdict": "pass",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "pass",
+        "routing": "pass"
+      },
+      "critical_violations": 0
+    },
+    {
+      "arm": "candidate",
+      "case_id": "development.en.import-preview.v1",
+      "variant": "reproduction",
+      "repetition": 0,
+      "verdict": "pass",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "pass",
+        "routing": "pass"
+      },
+      "critical_violations": 0
+    },
+    {
+      "arm": "candidate",
+      "case_id": "development.en.import-preview.v1",
+      "variant": "counterpart",
+      "repetition": 0,
+      "verdict": "pass",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "pass",
+        "routing": "pass"
+      },
+      "critical_violations": 0
+    },
+    {
+      "arm": "baseline",
+      "case_id": "development.en.import-preview.v1",
+      "variant": "counterpart",
+      "repetition": 0,
+      "verdict": "pass",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "pass",
+        "routing": "pass"
+      },
+      "critical_violations": 0
+    },
+    {
+      "arm": "candidate",
+      "case_id": "development.ko.room-waitlist.v1",
+      "variant": "reproduction",
+      "repetition": 0,
+      "verdict": "fail",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "fail",
+        "routing": "pass"
+      },
+      "critical_violations": 1
+    },
+    {
+      "arm": "baseline",
+      "case_id": "development.ko.room-waitlist.v1",
+      "variant": "reproduction",
+      "repetition": 0,
+      "verdict": "fail",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "fail",
+        "routing": "pass"
+      },
+      "critical_violations": 1
+    },
+    {
+      "arm": "baseline",
+      "case_id": "development.ko.room-waitlist.v1",
+      "variant": "counterpart",
+      "repetition": 0,
+      "verdict": "pass",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "pass",
+        "routing": "pass"
+      },
+      "critical_violations": 0
+    },
+    {
+      "arm": "candidate",
+      "case_id": "development.ko.room-waitlist.v1",
+      "variant": "counterpart",
+      "repetition": 0,
+      "verdict": "fail",
+      "dimensions": {
+        "adherence": "inconclusive",
+        "exposure": "inconclusive",
+        "mcp_static": "inconclusive",
+        "mcp_task": "inconclusive",
+        "mcp_tool": "inconclusive",
+        "outcome": "fail",
+        "routing": "pass"
+      },
+      "critical_violations": 1
+    }
+  ],
+  "limitations": [
+    "Four development pairs, one repetition; not a general effectiveness estimate.",
+    "Adherence, exposure and MCP dimensions were not assessed and remain inconclusive.",
+    "Client-selected gpt-6-luna was observed in all8attempts; backend identity and billing remain unknown.",
+    "No held-out evaluation, source acceptance or account application.",
+    "Earlier failed campaigns remain separate and unchanged."
+  ]
+}

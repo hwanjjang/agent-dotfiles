@@ -11,7 +11,7 @@ proof identities and scope; earlier selected records remain in immutable Git.
 These records qualify the current runtime bytes recorded at `3905185`, using
 eight fresh controls and the versioned reference input contract below. Historical
 results remain unchanged.
-Other hosts and completed natural EN/KO comparisons remain pending.
+Other hosts remain separately qualified. The [completed bounded EN/KO pilot](evidence/native-development-pilot-2026-10-19.md) records eight admitted attempts, no missing rows, no routing gain and one artifact regression; the candidate is rejected.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
 acceptance rules. This guide covers operator inputs and result interpretation.
@@ -44,7 +44,7 @@ cleanup cannot use it.
 These changes invalidate the previous runtime/grader identities. Local protocol,
 lifecycle and CLI checks passed. Current-source qualification now has eight fresh
 passing controls after the private input-contract correction below. Production interruption and candidate
-comparison require their own evidence; fixed controls do not complete them.
+comparison have [separate actual evidence](evidence/native-development-pilot-2026-10-19.md); fixed controls alone do not complete them.
 
 ## Authorized qualification correction — 2026-10-19
 
@@ -216,8 +216,7 @@ admission path for three rows. The later preserved pilot report records three pa
 three missing rows. Its actual recommendation is reject, as documented in the
 [recommendation record](evidence/native-recommendation-2026-10-19.md). Physical
 cleanup preserved the original blocked receipt; neither the complete comparison
-nor the interrupted production path was validated. The current completed fixed
-qualification does not complete that pilot.
+nor the interrupted production path was validated by that historical pilot. A separate [completed eight-row experiment and actual interruption check](evidence/native-development-pilot-2026-10-19.md) now provide those results without rewriting it.
 The reader does not execute or recover trials; preserve failed attempts and
 unknown costs.
 
@@ -225,8 +224,8 @@ Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
 client-model admission. The four selected fixed receiver cases have current source-bound
-observations in the maintained routing record. Natural EN/KO routing effectiveness
-and candidate comparison remain pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+observations in the maintained routing record. The bounded natural EN/KO pilot
+completed with routing 4/4 for both arms and outcome 3/4 versus 2/4; broader effectiveness remains unestablished. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
 whole development schedule before execution and use its first standard production
 row to verify `observe` → cleanup/collection → `finish` → admission. This avoids a

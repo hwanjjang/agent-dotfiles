@@ -170,7 +170,7 @@ no execution or real-evidence admission.
 
 The [reusable native executor fixture](docs/decisions/native-execution-fixture.md)
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
-receipts and selected native-route checks; actual comparisons remain pending. The [frozen native-trial operator guide](docs/native-trials.md)
+receipts and selected native-route checks. The [completed development pilot](docs/evidence/native-development-pilot-2026-10-19.md) records all eight actual trials and rejects the candidate. The [frozen native-trial operator guide](docs/native-trials.md)
 documents implemented `check/run/recover` and the separate credential-free
 `command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current source-bound
 credential-free and authenticated qualification at runtime revision `3905185` for the exercised pinned profile;
@@ -186,7 +186,7 @@ qualification records now share [original-proof provenance](docs/verification/na
 The credential-free bridge does not exercise production `observe`/`finish`;
 a later [partial pilot](docs/native-trials.md#offline-artifact-admission) exercised
 the normal production path; its retained schedule has three pass, one fail, one
-blocked and three missing rows. Its full comparison remains incomplete.
+blocked and three missing rows. That historical comparison remains incomplete.
 Eight recorded observations qualified the process-query, cleanup-settling and
 exact-prompt source recorded in the [previous checkpoint](docs/native-trials.md#previous-fully-qualified-checkpoint--2026-10-19).
 The later startup-diagnostic, interruption-retention, pre-turn-continuation and
@@ -194,12 +194,12 @@ owned-child cleanup changes have local conformance checks. Their
 [current renewal](docs/evidence/reference-cell-qualification-2026-10-19.json) has
 eight fresh passing controls after a reviewed private fixed-input contract revision;
 all owned resources were cleaned. Earlier failures remain recorded. Fixed controls
-do not establish production interruption or candidate comparison outcomes. The
+do not establish production interruption or candidate comparison outcomes. Separate [actual interruption and eight-row comparison evidence](docs/evidence/native-development-pilot-2026-10-19.md) now records those outcomes, with verified cleanup and no candidate benefit. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 admits bound receiver records offline only with matching source-bound qualification;
-natural EN/KO comparisons remain pending. An optional [same-host scope declaration](docs/decisions/evaluation-accounting.md#optional-same-host-scope-declaration)
+the completed bounded EN/KO development pilot found no routing gain and one artifact regression. An optional [same-host scope declaration](docs/decisions/evaluation-accounting.md#optional-same-host-scope-declaration)
 is explicitly unverified, with no custody or unseen-case claim. The trusted host controller keeps
 normal account access; no external evaluator environment is required.
 
@@ -207,7 +207,7 @@ The [source-review recommendation guide](docs/decisions/promotion-recommendation
 documents the diagnostic gate, native report/committed-object verification and
 selected same-host evidence verifier. The [workflow diagram](docs/architecture/native-recommendation-workflow.html)
 shows optional preflight and read-only recommend/reject/inconclusive paths. Positive
-FAKE conformance is not actual improvement; current candidate-comparison trials remain pending.
+FAKE conformance is not actual improvement; the actual fixed comparison returned reject, with no candidate acceptance.
 Recommendations never authorize source acceptance, merge or installation.
 
 The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
