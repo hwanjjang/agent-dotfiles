@@ -290,5 +290,6 @@
       "sha256": "76085d98adb11289ea867d51699f6ac11c9eedcead427e1e2615dbd47608c2b0",
       "scope": "Historical original bindings and preceding evidence retained in immutable Git."
     }
-  ]
+  ],
+  "failure_counter_scope": "failures_preserved counts this fresh eight-execution campaign only (zero). The preceding campaign retains two failures across thirteen attempts; see preceding_campaign and its linked record. Earlier campaigns remain separate and unchanged."
 }

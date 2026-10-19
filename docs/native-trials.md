@@ -8,8 +8,9 @@ trial. Retained [execution](verification/native-trials.json),
 bounded checks to runtime source13 and the admission grader. Their shared
 [provenance](verification/native-qualification-provenance.json) preserves original
 proof identities and scope; earlier selected records remain in immutable Git.
-These records qualify the historical source checkpoint below. The current source
-renewal is incomplete; historical results cannot be relabeled.
+These records qualify the current runtime bytes recorded at `3905185`, using
+eight fresh controls and the versioned reference input contract below. Historical
+results remain unchanged.
 Other hosts and completed natural EN/KO comparisons remain pending.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
@@ -104,10 +105,10 @@ two failures and 170,346 observed total / 2,236 output tokens, including earlier
 source attempts. The latest eight used 85,189 / 1,126. These are observed trial
 counters, not billing totals.
 
-No accepted qualification record was refreshed. The required eight-pass gate
-still blocks the prepared production-interruption probe and fixed development
-comparison. This is a completed execution schedule with an incomplete
-qualification, not overall verification completion or candidate improvement.
+At that checkpoint, no accepted qualification record was refreshed. The unmet
+eight-pass gate blocked the prepared production-interruption probe and fixed
+development comparison. That schedule was complete but its qualification was
+incomplete; the later renewal above does not rewrite those results.
 
 ## Previous fully qualified checkpoint — 2026-10-19
 
@@ -158,8 +159,8 @@ source/runtime identities and custody observations associated by the trusted
 coordinator with each original evidence location. The custody audit's fixed
 all-true content hash can repeat; distinct manifest, receipt, journal and metadata
 digests identify cases. It is not a case-unique or independently signed audit.
-All eight selected observations were fresh for their historical source change.
-They do not qualify the current runtime changes.
+All eight selected observations are fresh for the current runtime bytes recorded
+at `3905185`; the private reference input contract is `reference-outer-lf-v2`.
 No earlier source success or failed receipt is relabeled.
 
 Execution, grading and collection records point to their exact preceding Git
@@ -215,7 +216,7 @@ admission path for three rows. The later preserved pilot report records three pa
 three missing rows. Its actual recommendation is reject, as documented in the
 [recommendation record](evidence/native-recommendation-2026-10-19.md). Physical
 cleanup preserved the original blocked receipt; neither the complete comparison
-nor the interrupted production path was validated. The current incomplete
+nor the interrupted production path was validated. The current completed fixed
 qualification does not complete that pilot.
 The reader does not execute or recover trials; preserve failed attempts and
 unknown costs.
@@ -223,9 +224,9 @@ unknown costs.
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
-client-model admission. The four selected fixed receiver cases have historical source-bound
-observations in the maintained routing record; current renewal and general routing
-effectiveness remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
+client-model admission. The four selected fixed receiver cases have current source-bound
+observations in the maintained routing record. Natural EN/KO routing effectiveness
+and candidate comparison remain pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
 whole development schedule before execution and use its first standard production
 row to verify `observe` → cleanup/collection → `finish` → admission. This avoids a

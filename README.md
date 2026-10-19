@@ -172,8 +172,8 @@ The [reusable native executor fixture](docs/decisions/native-execution-fixture.m
 and [two-page walkthrough](docs/manual/native-execution.pdf) add retained mock
 receipts and selected native-route checks; actual comparisons remain pending. The [frozen native-trial operator guide](docs/native-trials.md)
 documents implemented `check/run/recover` and the separate credential-free
-`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records historical source-bound
-credential-free and authenticated qualification for the exercised pinned profile;
+`command-skills-loader` fixture. The [selected evidence](docs/verification/native-trials.json) records current source-bound
+credential-free and authenticated qualification at runtime revision `3905185` for the exercised pinned profile;
 these commands do not enable comparative evaluation or account activation. A
 [screenshot manual](docs/manual/native-trials.pdf) explains the results.
 
@@ -207,7 +207,7 @@ The [source-review recommendation guide](docs/decisions/promotion-recommendation
 documents the diagnostic gate, native report/committed-object verification and
 selected same-host evidence verifier. The [workflow diagram](docs/architecture/native-recommendation-workflow.html)
 shows optional preflight and read-only recommend/reject/inconclusive paths. Positive
-FAKE conformance is not actual improvement; current qualifying trials remain pending.
+FAKE conformance is not actual improvement; current candidate-comparison trials remain pending.
 Recommendations never authorize source acceptance, merge or installation.
 
 The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
