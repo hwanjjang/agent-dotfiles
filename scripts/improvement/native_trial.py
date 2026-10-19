@@ -860,9 +860,23 @@ class Controller:
             deadline = time.monotonic()+2 if watch else (self.cleanup_deadline if cleanup else self.deadline)
             if deadline is None or time.monotonic() >= deadline:
                 raise ProcessQueryFailure('deadline')
-            result = bounded(['/bin/ps', '-p', str(pid), '-o', 'pid=,ppid=,pgid=,lstart=,comm='],
-                             min(2, max(.01, deadline-time.monotonic())), limit=2048, env=self.env)
-            return parse_process_query(result, pid)
+            query_end = min(deadline, time.monotonic()+2)
+            while True:
+                result = bounded(['/bin/ps', '-p', str(pid), '-o', 'pid=,ppid=,pgid=,lstart=,comm='],
+                                 max(.01, query_end-time.monotonic()), limit=2048, env=self.env)
+                try:
+                    return parse_process_query(result, pid)
+                except ProcessQueryFailure as exc:
+                    # Darwin can briefly replace comm with a non-path while an
+                    # owned child exits. Do not signal or infer absence from it.
+                    # Only cleanup of an already recorded owner may wait for a
+                    # fresh strict query, within the original two-second bound.
+                    remaining = query_end-time.monotonic()
+                    if not (cleanup and not watch and sys.platform == 'darwin'
+                            and pid in getattr(self, 'seen', {})
+                            and exc.reason == 'executable_not_absolute' and remaining > 0):
+                        raise
+                    time.sleep(min(.05, remaining))
         except Exception as exc:
             self.process_uncertain = True
             # One finite first-failure record, never ps output or exception text.

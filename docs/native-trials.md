@@ -325,12 +325,20 @@ failure, not a proven historical cause: that failed query's output was not saved
 Apple's [process formatting source](https://github.com/apple-oss-distributions/adv_cmds/blob/6bed8737a34dbb54782a18f47dccf933a9967a12/ps/print.c)
 also has nonabsolute fallbacks, so this category alone does not establish a zombie.
 
-Later successful queries do not erase the first failure or clear
-`process_query_uncertain`. Existing ownership, watcher, deadline, auth-purge and
-recovery guards remain in force. There is no automatic retry or acceptance of a
-malformed query as process absence. Tests and the local reproduction verify the
-diagnostic behavior; they do not renew authenticated qualification, repair the
-original blocked result, or complete the EN/KO comparison.
+During macOS cleanup only, an already recorded owner whose executable field
+is temporarily nonabsolute may be queried again within the original two-second
+query bound and cleanup deadline. That record never authorizes a signal or
+counts as absence. A fresh strict query must establish absence or return a
+process for the existing ownership check. Persistent ambiguity and every other
+query error still fail closed. Launch, watcher and unrecorded-process queries
+do not use this settling wait.
+
+Once a query fails, later successful queries do not erase its diagnostic or
+clear `process_query_uncertain`. Existing ownership, watcher, auth-purge and
+recovery guards remain in force. A real owned-child reproduction fails before
+the correction and passes after reaping occurs during the bounded wait. These
+checks do not by themselves renew authenticated qualification, repair an original
+blocked result, or complete the EN/KO comparison.
 
 ## Recover exact owned residue
 

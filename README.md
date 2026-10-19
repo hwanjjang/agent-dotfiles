@@ -186,7 +186,8 @@ qualification records now share [original-proof provenance](docs/verification/na
 The credential-free bridge does not exercise production `observe`/`finish`;
 a later [partial pilot](docs/native-trials.md#offline-artifact-admission) exercised
 the normal production path for three rows. Its full comparison remains incomplete.
-The process-query diagnostic change requires fresh source-bound qualification. The
+The process-query diagnostics and bounded macOS cleanup settling require fresh
+source-bound qualification. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)

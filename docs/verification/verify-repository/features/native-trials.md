@@ -218,3 +218,5 @@ every scheduled row missing/inconclusive with no fabricated pass. The next actua
 full-path check belongs to the first preregistered development row, using the
 existing reservation and production lifecycle. Do not populate `observation` or
 write a replacement completion receipt to satisfy that check.
+
+For macOS exit settling, run `python3 -m unittest discover -s tests -p "test_process_*.py"`: a transient nonabsolute executable must resolve through a fresh strict query, persistent ambiguity must remain uncertain, and watch/launch/unrecorded-owner queries must not retry.
