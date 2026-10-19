@@ -1,0 +1,194 @@
+{
+  "kind": "incomplete-runtime-qualification-checkpoint",
+  "observed_date": "2026-10-19",
+  "source_commit": "3905185ad6e9645226815c6c046bf44a8bfd3979",
+  "source13_identity": "86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213",
+  "status": "incomplete",
+  "passed": 7,
+  "failed": 1,
+  "all_owned_resources_cleaned": true,
+  "cases": [
+    {
+      "case": "boundary",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": "observed_native_completion",
+      "observed_usage": [
+        17245,
+        203
+      ],
+      "manifest_digest": "b5565f6954c4032244ab95955130ceca971849bf87b21c1294de15e3c57d67ce",
+      "canonical_receipt_digest": "7a1bc6cf0577e7d2fa09ab0ff1a0498425ea7da6190a933c0aae4d172d67ba25",
+      "fixed_diagnostic": null
+    },
+    {
+      "case": "assigned_main",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": "observed_native_completion",
+      "observed_usage": [
+        16953,
+        221
+      ],
+      "manifest_digest": "096e485748bddbda99022df2161be2a2cf95255c5757a47c1ad9e18ceaa2d452",
+      "canonical_receipt_digest": "cc467431012e724269565c0b570eb847d7e0b409a67aed4751a5dbdd7099e633",
+      "fixed_diagnostic": {
+        "diagnostic_code": null,
+        "source_difference": null,
+        "input_shape": {
+          "chars": 879,
+          "contains_exact_cell": true,
+          "exec_command": false,
+          "exec_pragma": false,
+          "fixed_marker": true,
+          "lines": 1,
+          "skills_list": true,
+          "skills_read": true
+        },
+        "exact_fixed_source": true,
+        "expected_native_output": true
+      }
+    },
+    {
+      "case": "list_only",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": "observed_native_completion",
+      "observed_usage": [
+        16791,
+        178
+      ],
+      "manifest_digest": "830836c945a07633ba7af430c391d41b887c621dd932b181b8a882d7aece729b",
+      "canonical_receipt_digest": "7633d062c9a179ded07cf0c3c94529ae8e99b0a062897e9be1e7c6498a892c05",
+      "fixed_diagnostic": {
+        "diagnostic_code": null,
+        "source_difference": null,
+        "input_shape": {
+          "chars": 682,
+          "contains_exact_cell": true,
+          "exec_command": false,
+          "exec_pragma": false,
+          "fixed_marker": true,
+          "lines": 1,
+          "skills_list": true,
+          "skills_read": false
+        },
+        "exact_fixed_source": true,
+        "expected_native_output": true
+      }
+    },
+    {
+      "case": "reference_only",
+      "passed": false,
+      "cleanup_verified": true,
+      "actual_inference": "observed_native_completion",
+      "observed_usage": [
+        17005,
+        232
+      ],
+      "manifest_digest": "a180537908314311d94c23f09be3639c310d960a91937d9674adc26f84c0af43",
+      "canonical_receipt_digest": "91877eae727a1719f4c7c5b7e62f09eeaed875f27b22659839085090ec853d0b",
+      "fixed_diagnostic": {
+        "diagnostic_code": "input_match",
+        "source_difference": "outer_whitespace_only",
+        "input_shape": {
+          "chars": 926,
+          "contains_exact_cell": true,
+          "exec_command": false,
+          "exec_pragma": false,
+          "fixed_marker": true,
+          "lines": 2,
+          "skills_list": true,
+          "skills_read": true
+        },
+        "exact_fixed_source": false,
+        "expected_native_output": false
+      }
+    },
+    {
+      "case": "failed_main",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": "observed_native_completion",
+      "observed_usage": [
+        17195,
+        292
+      ],
+      "manifest_digest": "0a8c031518f0a4c81aec81eb7789ecfe6ba73a0f3d9e950e63352602bef7a38b",
+      "canonical_receipt_digest": "4ed91da71e8c709ff42d42a84588bcb7a5d056935dc32e1175ff412f48573a77",
+      "fixed_diagnostic": {
+        "diagnostic_code": null,
+        "source_difference": null,
+        "input_shape": {
+          "chars": 1040,
+          "contains_exact_cell": true,
+          "exec_command": false,
+          "exec_pragma": false,
+          "fixed_marker": true,
+          "lines": 1,
+          "skills_list": true,
+          "skills_read": true
+        },
+        "exact_fixed_source": true,
+        "expected_native_output": true
+      }
+    },
+    {
+      "case": "present-missing",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": false,
+      "observed_usage": [
+        0,
+        0
+      ],
+      "manifest_digest": "0da9f2efc27fa2db02c7e1e6eaa893cd498d56460941ef3703a7d621359e5fd9",
+      "canonical_receipt_digest": "324349323c66d7ebc8261965d06b7209312eae34eb4c370727d3a534a0fde14f",
+      "fixed_diagnostic": null
+    },
+    {
+      "case": "unsafe",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": false,
+      "observed_usage": [
+        0,
+        0
+      ],
+      "manifest_digest": "716f7d62a965c1516b0ce520a613aacb167467c437b6cd6bfde4adfc99966ed8",
+      "canonical_receipt_digest": "576741a10a47ffb34fa10f03d9cd69b4b7222deceef1dddee6c96e5e7edbb5a1",
+      "fixed_diagnostic": null
+    },
+    {
+      "case": "interrupted",
+      "passed": true,
+      "cleanup_verified": true,
+      "actual_inference": false,
+      "observed_usage": [
+        0,
+        0
+      ],
+      "manifest_digest": "1cfd78ede0c4a603af773a5c89fa404725719b00ffdecc5250ff39c71ab16e39",
+      "canonical_receipt_digest": "626726111debb2c74bcb02a5e4db5bc83e8334ce8c3726d22f38d207b58569bc",
+      "fixed_diagnostic": null
+    }
+  ],
+  "campaign_history": {
+    "attempts": 13,
+    "failures": 2,
+    "known_total": 170346,
+    "known_output": 2236,
+    "unknown_attempts": 0
+  },
+  "current_batch_usage": {
+    "total": 85189,
+    "output": 1126
+  },
+  "scope": [
+    "Five actual model turns and three credential-free controls; no candidate comparison.",
+    "All earlier attempts remain unchanged, including the prior-source cleanup failure.",
+    "reference_only added one LF at an unknown outer edge; exact input comparison correctly failed. Its outputs counter stopped after mismatch, so zero does not prove missing tool output.",
+    "No identical rerun, source normalization, accepted-proof refresh, production interruption release, or account application.",
+    "Same-account trusted coordinator hashes are not independent signatures; usage is observed trial counters, not billing."
+  ]
+}

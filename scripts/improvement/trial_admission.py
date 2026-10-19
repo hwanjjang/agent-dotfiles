@@ -526,6 +526,21 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
         info['cost_bound'] = True
         if 'routing' in manifest:
             require(same(_final_observation(records, ordered), observation), 'receipt_changed')
+    if cost_only:
+        # A separately bound launch decision, never evidence of complete cost or
+        # task success. Only the two read-only startup RPCs can qualify.
+        diagnostic = nt.protocol.rpc_failure(observation.get('rpc_failure'))
+        info['no_turn_cleanup_verified'] = (
+            observation.get('status') == 'blocked' and observation.get('reason') in
+                ('protocol_refusal', 'deadline', 'native_eof', 'native_stdin_closed', 'protocol_operation')
+            and info['initial_turn_requests_attempted'] == 0
+            and type(observation.get('initial_turns')) is int and observation['initial_turns'] == 0
+            and observation.get('terminal_completed') is False
+            and observation.get('auth_chatgpt_observed') is False
+            and diagnostic is not None and diagnostic['method'] in ('initialize', 'account/read')
+            and receipt.get('status') == 'blocked' and receipt.get('capture_failed') is False
+            and cleanup_complete(cleanup)
+            and receipt['protected_synthetic_files_unchanged'] in (None, True))
     timing = receipt.get('controller_timing')
     if timing is not None:
         require(ev.keys(timing, 'clock scope elapsed_ms') and timing['clock'] == 'monotonic_ns'
@@ -533,6 +548,8 @@ def _read_attempt(batch, ref, row, info, *, cost_only=False, expected_manifest_d
                 and ev.integer(timing['elapsed_ms']), 'controller_timing')
         row['latency_ms'] = timing['elapsed_ms']
         info['latency_scope'] = timing['scope']
+    if cost_only and info.get('no_turn_cleanup_verified') is True:
+        return
     observed_model = model_selection(observation['model_selection'], ctx.spec['runtime']['model']) if 'model_selection' in observation else None
     require('routing' not in manifest or observed_model is not None, 'model_selection_unavailable')
     if cost_only:
@@ -590,13 +607,15 @@ def read_cost_facts(context, row, guard):
                       expected_limits=row['limits'])
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
         info['complete'] = False
+        info['no_turn_cleanup_verified'] = False
     finally:
         batch.close()
     counters = info.get('counters') if info.get('cost_bound') else None
     return {'known_tokens': counters['totalTokens'] if counters is not None else None,
             'complete': info.get('complete') is True and counters is not None,
             'initial_turn_requests_attempted': info.get('initial_turn_requests_attempted'),
-            'receipt_digest': info.get('receipt_digest')}
+            'receipt_digest': info.get('receipt_digest'),
+            'no_turn_cleanup_verified': info.get('no_turn_cleanup_verified') is True}
 
 
 def read_attempts(context, refs):

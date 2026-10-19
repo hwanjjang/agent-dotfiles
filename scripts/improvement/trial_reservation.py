@@ -15,6 +15,7 @@ else:
     import trial_admission as ad
 p, nt, ev = ad.p, ad.nt, ad.ev
 require, same = ad.require, ad.same
+CONTINUATION = 'independent_after_no_turn_v1'
 HEADER, RECORDS, LOCK = 'experiment-reservation.json', 'experiment-records', 'experiment.lock'
 
 
@@ -70,7 +71,9 @@ class Lease:
 
     def validate_header(self):
         h, ctx = self.header, self.ctx
-        require(ev.keys(h, 'schema_version kind experiment_digest spec_digest budget_digest context_digest root_identity lock_identity schedule')
+        fields = 'schema_version kind experiment_digest spec_digest budget_digest context_digest root_identity lock_identity schedule'
+        require(ev.keys(h, fields + (' continuation_policy' if 'continuation_policy' in h else ''))
+                and ('continuation_policy' not in h or h['continuation_policy'] == CONTINUATION)
                 and type(h['schema_version']) is int and h['schema_version'] == 1
                 and h['kind'] == 'serial_native_reservation_v1'
                 and h['experiment_digest'] == ctx.experiment['experiment_digest']
@@ -136,13 +139,24 @@ def audit(lease):
         facts.append(ad.read_cost_facts(ctx, row, guard))
     known = sum(f['known_tokens'] for f in facts if f['known_tokens'] is not None)
     unknown = sum(not f['complete'] for f in facts)
+    continuation = header.get('continuation_policy') == CONTINUATION
+    resumable = all(f['complete'] or f['no_turn_cleanup_verified'] for f in facts)
+    # Admission allowances are not observed/billed usage or provider hard caps.
+    admission = sum(max(f['known_tokens'] or 0, row['limits']['soft_total_tokens'])
+                    if not f['complete'] else f['known_tokens']
+                    for row, f in zip(rows, facts))
     seconds = sum(sum(row['limits'][k] for k in ('setup_seconds', 'wall_seconds', 'cleanup_seconds')) for row in rows)
     exceeded = (len(rows) > ctx.spec['budget']['model_requests'] or seconds > ctx.spec['budget']['seconds']
                 or known > ctx.spec['budget']['tokens']
+                or (continuation and admission > ctx.spec['budget']['tokens'])
                 or any(f['known_tokens'] is not None and f['known_tokens'] > row['limits']['soft_total_tokens']
                        for row, f in zip(rows, facts)))
     require(lease.check() and guard.check(), 'reservation_changed')
     summary = {'status': 'blocked' if unknown or exceeded else 'complete' if len(rows) == len(header['schedule']) else 'ready',
+               'next_launch_allowed': (not exceeded and len(rows) < len(header['schedule'])
+                                       and (unknown == 0 or (continuation and resumable))),
+               'continuation_policy': header.get('continuation_policy'),
+               'admission_tokens': admission,
                'scheduled': len(header['schedule']), 'reserved_initial_turns': len(rows),
                'declared_seconds': seconds, 'known_tokens': known, 'unknown_attempts': unknown,
                'total_tokens': None if unknown else known, 'limits_exceeded': exceeded,
@@ -153,7 +167,8 @@ def audit(lease):
     return summary, guard, journal
 
 
-def initialize(root, experiment, current_spec, context_path, plan_paths):
+def initialize(root, experiment, current_spec, context_path, plan_paths, *, continue_after_no_turn=False):
+    require(type(continue_after_no_turn) is bool, 'continuation_policy')
     ctx = context(root, experiment, current_spec, context_path)
     require(ctx.qualification_error is None, 'qualification_unavailable')
     require(isinstance(plan_paths, list) and 1 <= len(plan_paths) <= 64
@@ -173,6 +188,8 @@ def initialize(root, experiment, current_spec, context_path, plan_paths):
                         'context_digest': ctx.digest, 'root_identity': list(lease.guard.dirs[lease.root][:3]),
                         'lock_identity': [os.fstat(lease.fd).st_dev, os.fstat(lease.fd).st_ino, os.fstat(lease.fd).st_uid],
                         'schedule': schedule}
+        if continue_after_no_turn:
+            lease.header['continuation_policy'] = CONTINUATION
         require(lease.check(), 'reservation_changed')
         nt.Journal(lease.root / RECORDS, 262144)
         nt.private_write(lease.root / HEADER, p.encoded(lease.header) + b'\n')
@@ -198,7 +215,7 @@ def run_next(root, experiment, current_spec, context_path, plan_path, auth_sourc
     lease = Lease(ctx)
     try:
         summary, guard, journal = audit(lease)
-        require(summary['status'] == 'ready', 'experiment_blocked_or_complete')
+        require(summary['next_launch_allowed'], 'experiment_blocked_or_complete')
         index = summary['reserved_initial_turns']
         expected = lease.header['schedule'][index]
         chosen = selected(ctx, plan_path)
@@ -206,7 +223,7 @@ def run_next(root, experiment, current_spec, context_path, plan_path, auth_sourc
         budget, limits = ctx.spec['budget'], expected['limits']
         seconds = sum(limits[k] for k in ('setup_seconds', 'wall_seconds', 'cleanup_seconds'))
         require(index + 1 <= budget['model_requests'] and summary['declared_seconds'] + seconds <= budget['seconds']
-                and summary['known_tokens'] + limits['soft_total_tokens'] <= budget['tokens'], 'aggregate_budget')
+                and summary['admission_tokens'] + limits['soft_total_tokens'] <= budget['tokens'], 'aggregate_budget')
         require(lease.check() and guard.check(), 'reservation_changed')
         journal.save('reserve', reserve_record(lease.header, index))
         reserved, reserved_guard, _ = audit(lease)
@@ -225,6 +242,9 @@ def main():
     for name in ('initialize', 'status', 'run-next'):
         command = sub.add_parser(name)
         command.add_argument('--root', required=True, type=Path)
+        if name == 'initialize':
+            command.add_argument('--continue-after-no-turn', action='store_true',
+                                 help='Freeze opt-in independent-row continuation after verified startup RPC failure; no retry or success inference')
         if name == 'run-next':
             command.add_argument('--plan', required=True, type=Path)
             command.add_argument('--auth-source', required=True, type=Path)
@@ -238,6 +258,8 @@ def main():
         require(ev.keys(data, fields), 'reservation_input')
         fn = {'initialize': initialize, 'status': status, 'run-next': run_next}[args.command]
         extra = {'plan_path': args.plan, 'auth_source': args.auth_source} if args.command == 'run-next' else {}
+        if args.command == 'initialize':
+            extra['continue_after_no_turn'] = args.continue_after_no_turn
         result = fn(args.root, **data, **extra)
         sys.stdout.buffer.write(ev.encoded(result))
         return 1 if result['status'] == 'blocked' else 0

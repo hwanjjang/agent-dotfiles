@@ -8,8 +8,8 @@ trial. Retained [execution](verification/native-trials.json),
 bounded checks to runtime source13 and the admission grader. Their shared
 [provenance](verification/native-qualification-provenance.json) preserves original
 proof identities and scope; earlier selected records remain in immutable Git.
-These records qualify the exact current checkpoint below. Later source changes
-require renewed source-bound evidence; historical results cannot be relabeled.
+These records qualify the historical source checkpoint below. The current source
+renewal is incomplete; historical results cannot be relabeled.
 Other hosts and completed natural EN/KO comparisons remain pending.
 
 The [design contract](decisions/native-trial-execution.md) owns the boundary and
@@ -19,7 +19,65 @@ The [controller](../scripts/improvement/native_trial.py) and
 These commands do not install account settings, activate hooks, create a VM,
 change Docker context, log in, compare arms, grade general tasks or promote changes.
 
+## Startup diagnostics and interruption retention
+
+A failed startup RPC now includes optional `rpc_failure` metadata with a fixed
+method, phase, failure kind and standard JSON-RPC code category. Messages, data,
+authentication and arbitrary codes are never retained. Existing failure verdicts
+remain unchanged; for example `protocol_refusal` can now identify `account/read`
+and `internal_error` without storing the provider response. This class identifies
+the failed operation, not a proven cause or permission to repeat a model task.
+A tolerated `turn/interrupt` RPC failure can also appear here; the primary reason
+(such as `soft_usage_stop`) remains authoritative and cannot permit continuation.
+
+Supervisor interruption preserves attempted/started turn counts and already
+observed usage in the blocked observation before the existing collection and
+cleanup path runs. After a started turn, declared collection can now run within
+the original cleanup budget, after owned processes stop and temporary auth is
+removed, before the executor is removed. Pressing Ctrl-C can therefore still wait
+for that bounded collection. It never upgrades an interrupted result to completed. The
+[serial contract](decisions/evaluation-accounting.md#continue-untouched-rows-after-a-verified-startup-failure)
+owns optional independent-row continuation; possible turn start or uncertain
+cleanup cannot use it.
+
+These changes invalidate the previous runtime/grader identities. Local protocol,
+lifecycle and CLI checks passed. Current-source qualification finished its eight
+planned executions with seven passes and one exact-input failure; it remains
+incomplete. Production interruption and comparison are not released by these
+results. The accepted records still refer to the prior qualified bytes.
+
 ## Current qualification checkpoint — 2026-10-19
+
+The [current renewal record](evidence/native-runtime-renewal-2026-10-19.json)
+records all eight planned executions on source commit `3905185`: seven passed and
+`reference_only` failed. Source13 is
+`86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213`.
+The boundary, assigned-main, list-only, failed-main and three credential-free
+controls passed. All eight owned authentication/process/container/control cleanups
+were verified and the dedicated VM was stopped.
+
+The failed input contained the exact 925-character cell plus one outer LF. The
+observer correctly rejected it; which edge held the LF was not retained. The
+prompt, cell, adapter, runtime and limits matched the earlier successful
+reference-only observation. No construction defect was established, so neither
+an identical rerun nor whitespace normalization was used to obtain a pass. The
+observer stops on this mismatch; its zero output count does not prove the native
+tool produced no output.
+
+The prior-source cleanup failure remains unchanged. A reproduced owned-child
+signal race motivated the bounded correction described below; its original errno
+was unavailable. The corrected failed-main run passed, but that does not erase
+history or establish reliability. The renewal campaign retains thirteen attempts,
+two failures and 170,346 observed total / 2,236 output tokens, including earlier
+source attempts. The latest eight used 85,189 / 1,126. These are observed trial
+counters, not billing totals.
+
+No accepted qualification record was refreshed. The required eight-pass gate
+still blocks the prepared production-interruption probe and fixed development
+comparison. This is a completed execution schedule with an incomplete
+qualification, not overall verification completion or candidate improvement.
+
+## Previous fully qualified checkpoint — 2026-10-19
 
 All eight fixed checks ran afresh on source commit `2f50e00` and passed: one
 authenticated boundary, four authenticated routing controls and three
@@ -68,7 +126,8 @@ source/runtime identities and custody observations associated by the trusted
 coordinator with each original evidence location. The custody audit's fixed
 all-true content hash can repeat; distinct manifest, receipt, journal and metadata
 digests identify cases. It is not a case-unique or independently signed audit.
-All eight selected observations are fresh after the final source change.
+All eight selected observations were fresh for their historical source change.
+They do not qualify the current runtime changes.
 No earlier source success or failed receipt is relabeled.
 
 Execution, grading and collection records point to their exact preceding Git
@@ -120,18 +179,20 @@ qualification bindings. The maintained records now satisfy the unchanged
 qualification checks for their recorded source/profile. A later
 [partial development pilot](https://github.com/hwanjjang/agent-dotfiles/issues/27#issuecomment-6261300514)
 exercised the normal production reservation, observation, collection, cleanup and
-admission path for three rows. Its full schedule remains two pass, one fail, one
-cleanup-blocked and four missing. Later physical cleanup preserved the original
-blocked receipt; neither the complete comparison nor the interrupted production
-path was validated. The current fixed qualification does not complete that pilot.
+admission path for three rows. The later preserved pilot report records three pass, one fail, one blocked and
+three missing rows. Its actual recommendation is reject, as documented in the
+[recommendation record](evidence/native-recommendation-2026-10-19.md). Physical
+cleanup preserved the original blocked receipt; neither the complete comparison
+nor the interrupted production path was validated. The current incomplete
+qualification does not complete that pilot.
 The reader does not execute or recover trials; preserve failed attempts and
 unknown costs.
 
 Matching artifact bytes do not establish routing, exposure or general task
 correctness. The [routing and client-model contract](decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)
 now defines optional arm catalogs, finalized receiver records and persisted
-client-model admission. The four fixed receiver cases have fresh current-source
-observations bound by the maintained routing record; general routing
+client-model admission. The four selected fixed receiver cases have historical source-bound
+observations in the maintained routing record; current renewal and general routing
 effectiveness remains pending. The [serial reservation contract](decisions/evaluation-accounting.md#serial-native-launch-reservations)
 coordinates scheduled launches and audits every reserved attempt. Freeze the
 whole development schedule before execution and use its first standard production
@@ -242,7 +303,7 @@ setup/cleanup/capture, while production `observe`/`finish` collection gates have
 unit-test coverage only. The existing native fixture's
 `mock_complete`/`blocked` result and the outer private attestation stay distinct.
 These three controls made no model calls or authentication reads/copies.
-Current-source authenticated boundary/routing qualification is separately complete;
+Historical authenticated boundary/routing qualification is separately recorded;
 the actual comparative evaluation remains pending.
 
 See the [collection flow](architecture/native-outcome-workflow.html) and
@@ -315,6 +376,23 @@ that a non-destructive signal-0 probe of the exact original group returns
 process-not-found. The receipt retains the original error category and
 `group_absent_after_reap=true`; EOF alone or another permission error never
 supplies that proof. No destructive signal is sent after leader reap.
+
+Owned-child cleanup separately handles a process exiting between its strict
+identity query and group signal. `ESRCH`, or `EPERM`/`EACCES` on macOS, allows
+only a bounded absence check: a fresh strict PID query and a non-destructive
+signal-0 probe must both establish absence within the original two-second
+settling window and cleanup deadline. Each query uses the remaining window;
+no second destructive signal is sent. A changed owner, present group, query
+ambiguity or expired window still blocks cleanup and auth removal. Successful
+signals also require absence confirmation within this window. A PID-query timeout
+at that boundary retains `process_query_uncertain`; it does not become absence.
+
+`process_signal_reconciliations` records only the PID, finite original signal
+error category and verified group absence. The first unreconciled failure has
+`process_cleanup_diagnostic` with PID, finite phase/reason and signal category;
+raw OS errors and process output are excluded. A local owned-child test
+reproduces macOS `EPERM` before reap and verifies PID/group absence afterward.
+This reproduces the race, not the unknown cause of an older failed receipt.
 
 The qualification prompt places its tags directly against the exact loader
 input, leaving no delimiter-adjacent newline to copy. It explicitly preserves

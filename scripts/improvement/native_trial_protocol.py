@@ -17,6 +17,25 @@ import time
 from native_execution import Refusal, Session, encoded
 from native_usage import Usage
 
+# Closed projections only: error messages/data and arbitrary numeric codes are never retained.
+RPC_METHODS = frozenset(('initialize', 'account/read', 'hooks/list', 'skills/list',
+    'skills/config/write', 'thread/start', 'mcpServerStatus/list', 'turn/start', 'turn/interrupt'))
+RPC_CODES = {-32700: 'parse_error', -32600: 'invalid_request', -32601: 'method_not_found',
+             -32602: 'invalid_params', -32603: 'internal_error'}
+
+
+def rpc_failure(value):
+    if not isinstance(value, dict) or set(value) != {'method', 'phase', 'kind', 'code'}:
+        return None
+    choices = {'method': RPC_METHODS | {'other'},
+        'phase': {'dispatch', 'await_response', 'response'},
+        'kind': {'server_error', 'missing_result', 'timeout', 'transport_refusal', 'operation'},
+        'code': set(RPC_CODES.values()) | {'other', 'none'}}
+    if all(type(value[k]) is str and value[k] in choices[k] for k in choices):
+        return dict(value)
+    return None
+
+
 FRAME_LIMIT = 65536
 STREAM_LIMIT = 1048576
 
@@ -178,6 +197,36 @@ class NativeSession(Session):
         self.routing = None
         self.eof = set()
         self._turn_context = None
+
+    def rpc(self, method, params):
+        # Same request identity, deadline, error and return semantics as Session.rpc.
+        # Keep the failed method while dropping all error payload contents.
+        self.rpc_failure = None
+        diagnostic = {'method': method if method in RPC_METHODS else 'other',
+                      'phase': 'dispatch', 'kind': 'operation', 'code': 'none'}
+        try:
+            self.next_id += 1
+            identity = self.next_id
+            self.send({'id': identity, 'method': method, 'params': params})
+            diagnostic['phase'] = 'await_response'
+            value = self.until(lambda v: v.get('id') == identity)
+            diagnostic['phase'] = 'response'
+            if 'error' in value or 'result' not in value:
+                if 'error' in value:
+                    diagnostic['kind'] = 'server_error'
+                    error = value['error']
+                    code = error.get('code') if isinstance(error, dict) else None
+                    diagnostic['code'] = RPC_CODES.get(code, 'other') if type(code) is int else 'other'
+                else:
+                    diagnostic['kind'] = 'missing_result'
+                raise Refusal('native_rpc_error:' + method)
+            return value['result']
+        except Exception as exc:
+            if diagnostic['phase'] != 'response':
+                diagnostic['kind'] = ('timeout' if isinstance(exc, TimeoutError) else
+                                      'transport_refusal' if isinstance(exc, Refusal) else 'operation')
+            self.rpc_failure = diagnostic
+            raise
 
     def start(self, argv, cwd, env, on_launch):
         if self.proc is not None or self.close_result is not None:
@@ -553,11 +602,19 @@ def observe(session, *, prompt, project, codehome, metadata_check,
         reason = str(exc)
         reason = reason if reason in SAFE_REASONS else 'protocol_refusal'
         result['post_stop_observation' if result.get('_stopping') else 'reason'] = reason
+    except (KeyboardInterrupt, SystemExit):
+        # Return the finite progress snapshot so the controller can persist it
+        # before its mandatory cleanup; interruption never completes a trial.
+        result['status'] = 'blocked'
+        result['post_stop_observation' if result.get('_stopping') else 'reason'] = 'interrupted'
     except TimeoutError:
         result['post_stop_observation' if result.get('_stopping') else 'reason'] = 'deadline'
     except Exception:
         result['post_stop_observation' if result.get('_stopping') else 'reason'] = 'protocol_operation'
     finally:
+        diagnostic = rpc_failure(getattr(session, 'rpc_failure', None))
+        if result['status'] == 'blocked' and diagnostic is not None:
+            result['rpc_failure'] = diagnostic
         result['usage'] = usage.summary()
         result.pop('_stopping', None)
     return result
