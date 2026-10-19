@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts.improvement import evaluation as ev, trial_admission as ad
-from test_trial_admission import SyntheticAttempts, save
+from test_trial_admission import SyntheticAttempts, RoutedAttempts, save
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -24,9 +24,9 @@ def current_sources():
             for name in ad.p.SOURCE_NAMES}
 
 
-def qualification_context(root, *, proof_root=ROOT):
+def qualification_context(root, *, proof_root=ROOT, routed=False):
     """Synthetic arm/spec only; qualifications are the actual maintained records."""
-    fixture = SyntheticAttempts(root)
+    fixture = (RoutedAttempts if routed else SyntheticAttempts)(root)
     execution = record(ad.QUALIFICATIONS['execution'])
     fixture.runtime.update(source_digests=current_sources(),
         runtime_digests=execution['runtime_digests'], image_digest=execution['image_digest'])
@@ -40,7 +40,8 @@ def qualification_context(root, *, proof_root=ROOT):
         collection_by_trial={row['trial_id']: declaration for row in fixture.experiment['trials']},
         qualification_refs={key: {'path': name, 'sha256': hashlib.sha256(
             (proof_root / name).read_bytes()).hexdigest()}
-            for key, name in ad.QUALIFICATIONS.items()})
+            for key, name in {**ad.QUALIFICATIONS, **({'routing': ad.ROUTING_QUALIFICATION}
+                if routed else {})}.items()})
     save(fixture.context_path, fixture.context)
     return fixture
 
@@ -48,7 +49,7 @@ def qualification_context(root, *, proof_root=ROOT):
 class MaintainedQualificationTests(unittest.TestCase):
     def test_selected_proof_matches_record_and_current_source_gate(self):
         with tempfile.TemporaryDirectory() as folder:
-            fixture = qualification_context(Path(folder).resolve())
+            fixture = qualification_context(Path(folder).resolve(), routed=True)
             context = ad.load_context(fixture.experiment, fixture.spec, fixture.context_path)
             execution = record(ad.QUALIFICATIONS['execution'])
             proof = record('docs/verification/native-qualification-provenance.json')
@@ -58,11 +59,13 @@ class MaintainedQualificationTests(unittest.TestCase):
             self.assertEqual(ev.digest(grading.get('admission_grader_source_digests', {})),
                              proof['provenance']['admission_grader_identity'])
             proof_path = ROOT / 'docs/verification/native-qualification-provenance.json'
-            for name in ad.QUALIFICATIONS.values():
+            for name in (*ad.QUALIFICATIONS.values(), ad.ROUTING_QUALIFICATION):
                 selected = record(name)
-                self.assertEqual(selected['source_digests'], execution['source_digests'])
-                self.assertEqual(selected['provenance']['sha256'],
-                                 hashlib.sha256(proof_path.read_bytes()).hexdigest())
+                for key in ('source_digests', 'runtime_digests', 'image_digest', 'profile'):
+                    self.assertEqual(selected[key], execution[key])
+                if name != ad.ROUTING_QUALIFICATION:
+                    self.assertEqual(selected['provenance']['sha256'],
+                                     hashlib.sha256(proof_path.read_bytes()).hexdigest())
             matches = (execution['source_digests'] == current_sources()
                        and grading.get('admission_grader_source_digests') == ad.native_grader_sources())
             self.assertEqual(context.qualification_error,
@@ -71,12 +74,15 @@ class MaintainedQualificationTests(unittest.TestCase):
 
     def test_actual_four_case_routing_record_passes_unchanged_reader(self):
         value = record(ad.ROUTING_QUALIFICATION)
-        context = SimpleNamespace(data={'runtime': {'source_digests': value.get('source_digests', {})}},
+        context = SimpleNamespace(data={'runtime': {'source_digests': current_sources()}},
                                   spec={'runtime': {'model': 'gpt-6-luna'}})
-        try:
+        matches = (value.get('source_digests') == current_sources()
+                   and value.get('admission_grader_source_digests') == ad.native_grader_sources())
+        if matches:
             ad.qualify_routing(value, context)
-        except (ValueError, KeyError, TypeError) as error:
-            self.fail('Current routing qualification rejected: ' + str(error))
+        else:
+            with self.assertRaises(ValueError):
+                ad.qualify_routing(value, context)
 
     def test_rehashed_stale_source_record_remains_unqualified(self):
         with tempfile.TemporaryDirectory() as folder:

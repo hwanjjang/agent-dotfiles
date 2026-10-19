@@ -44,7 +44,11 @@ The [execution record](verification/native-trials.json) selects the authenticate
 boundary receipt and verified cleanup for the current source/profile. The
 [provenance companion](verification/native-qualification-provenance.json) binds
 all eight original manifests, canonical receipts, reviewed private helpers,
-source/runtime identities and independent custody audits. Six observations retain
+source/runtime identities and custody observations associated by the trusted
+coordinator with each original evidence location. The custody audit's fixed
+all-true content hash can repeat; distinct manifest, receipt, journal and metadata
+digests identify cases. It is not a case-unique or independently signed audit.
+Six observations retain
 their original helper revisions under unchanged relevant plans; two have fresh
 corrected-prompt observations. No failed receipt is relabeled.
 

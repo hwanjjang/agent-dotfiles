@@ -257,5 +257,6 @@
   "observed_date": "2026-10-19",
   "source_checkpoint": "https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6257672901",
   "projection_authority": "Trusted local coordinator selected exact original canonical observations; not a cryptographic signature or protection against a hostile same-account owner.",
-  "scope": "Current-source bounded execution, scoped-IO, collection and fixed routing qualification only. No production observe/finish task-to-admission, candidate comparison, backend identity or account activation established."
+  "scope": "Current-source bounded execution, scoped-IO, collection and fixed routing qualification only. No production observe/finish task-to-admission, candidate comparison, backend identity or account activation established.",
+  "custody_audit_scope": "Custody-audit digests identify fixed all-true audit content and can repeat across cases. Association with each original owned evidence location is a trusted coordinator observation; distinct manifest, receipt, journal and metadata digests identify cases. These are not case-unique or independently signed custody attestations."
 }
