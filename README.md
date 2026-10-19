@@ -191,9 +191,10 @@ Eight recorded observations qualified the process-query, cleanup-settling and
 exact-prompt source recorded in the [previous checkpoint](docs/native-trials.md#previous-fully-qualified-checkpoint--2026-10-19).
 The later startup-diagnostic, interruption-retention, pre-turn-continuation and
 owned-child cleanup changes have local conformance checks. Their
-[current renewal](docs/evidence/native-runtime-renewal-2026-10-19.json) ran eight
-checks with seven passes and one exact-input failure; all owned resources were
-cleaned. It does not renew qualification or release the pending comparison. The
+[current renewal](docs/evidence/reference-cell-qualification-2026-10-19.json) has
+eight fresh passing controls after a reviewed private fixed-input contract revision;
+all owned resources were cleaned. Earlier failures remain recorded. Fixed controls
+do not establish production interruption or candidate comparison outcomes. The
 [serial reservation gate](docs/decisions/evaluation-accounting.md#serial-native-launch-reservations)
 now binds ordered initial turns, declared phase-time and observed soft-token
 accounting. It does not impose a hard provider budget. The [declared-catalog routing and client-model component](docs/decisions/evaluation-accounting.md#declared-catalog-routing-and-client-model-observations)

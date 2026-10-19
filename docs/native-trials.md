@@ -41,14 +41,46 @@ owns optional independent-row continuation; possible turn start or uncertain
 cleanup cannot use it.
 
 These changes invalidate the previous runtime/grader identities. Local protocol,
-lifecycle and CLI checks passed. Current-source qualification finished its eight
-planned executions with seven passes and one exact-input failure; it remains
-incomplete. Production interruption and comparison are not released by these
-results. The accepted records still refer to the prior qualified bytes.
+lifecycle and CLI checks passed. Current-source qualification now has eight fresh
+passing controls after the private input-contract correction below. Production interruption and candidate
+comparison require their own evidence; fixed controls do not complete them.
+
+## Authorized qualification correction — 2026-10-19
+
+The [maintainer-approved correction](https://github.com/hwanjjang/agent-dotfiles/issues/54#issuecomment-6267785297)
+versions the private reference-only input contract. It accepts only the fixed
+cell, that cell with one leading LF, or that cell with one trailing LF. The other
+fixed cells remain exact. Body edits, additional commands, other whitespace,
+wrong call identity, wrong output and wrong routing still fail. This is a
+qualification-contract revision, not evidence of a production runtime defect.
+
+The observer retains its first failure while collecting bounded later diagnostic
+facts. An accepted-variant label distinguishes exact, leading LF and trailing LF;
+raw inputs, outputs and correlation identifiers are not exported. Local stub
+execution confirmed identical calls and output for these three fixed variants;
+it does not establish native behavior. Independent review and eight fresh controls
+now support the contract. Historical failures and the previous checkpoint below
+remain unchanged. Production interruption, fixed candidate
+comparison and account application are not established by this correction.
 
 ## Current qualification checkpoint — 2026-10-19
 
-The [current renewal record](evidence/native-runtime-renewal-2026-10-19.json)
+The [fresh contract-renewal record](evidence/reference-cell-qualification-2026-10-19.json)
+contains eight passing controls: five actual native turns and three credential-free
+collection checks. All owned authentication/resources were removed and the dedicated
+VM was stopped. Runtime13 and grader sources remain unchanged from `3905185`.
+The five maintained qualification records are renewed from these original manifests,
+receipts and journals; the unchanged evaluator's consumer checks verify their use.
+
+The new reference-only run used the **exact** fixed input, so it verifies the full
+call/output/routing path but is not an observed native LF-variant execution.
+Single-LF variants have local stub and finite-predicate coverage only. Earlier
+failures remain unchanged. Eight passing fixed controls do not by themselves
+establish actual production interruption, candidate benefit or account installation.
+
+## Previous incomplete renewal — 2026-10-19
+
+The [previous renewal record](evidence/native-runtime-renewal-2026-10-19.json)
 records all eight planned executions on source commit `3905185`: seven passed and
 `reference_only` failed. Source13 is
 `86fce9ebf44d18211a23269136090ff4923bba7806ef8f9aa4296b15d6c35213`.
