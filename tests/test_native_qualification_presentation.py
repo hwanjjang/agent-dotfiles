@@ -34,18 +34,21 @@ class PresentationTests(unittest.TestCase):
                 controller.data={'inputs':{'entrypoint':'skills/assigned/SKILL.md'}}
                 controller.protected={};controller.journal=Mock();controller.checked=Mock()
                 prompt=controller.prepare_qualification(credential_free=credential_free)
-                opening='<qualification-exec-input>\n';closing='\n</qualification-exec-input>'
+                opening='<qualification-exec-input>';closing='</qualification-exec-input>'
                 self.assertEqual(prompt.count(opening),1)
                 copied=prompt.split(opening,1)[1].split(closing,1)[0]
                 expected=execution.loader_source(len(controller.qualification_source))
                 self.assertEqual(copied,expected)
+                self.assertEqual((copied[0],copied[-1]),('/',';'))
+                self.assertIn('starts with / and ends with ;',prompt)
                 self.assertFalse(copied.endswith('\n'))
                 self.assertIn('Retain the first // @exec: pragma line verbatim',prompt)
                 self.assertIn('no final newline',prompt)
                 controller.checked.assert_not_called()
                 self.assertTrue(controller.verify_protected())
                 challenge='0'*32
-                for value,matches in ((copied,True),(copied+'\n',False)):
+                for value,matches in ((copied,True),(copied+'\n',False),
+                                      ('\n'+copied,False),(copied+' ',False)):
                     observer=qualification.Qualification(expected,challenge)
                     event={'method':'rawResponseItem/completed','params':{'threadId':'thread','turnId':'turn',
                         'item':{'type':'custom_tool_call','name':'exec','call_id':'call','input':value}}}

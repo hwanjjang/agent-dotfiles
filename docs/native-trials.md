@@ -298,8 +298,9 @@ process-not-found. The receipt retains the original error category and
 `group_absent_after_reap=true`; EOF alone or another permission error never
 supplies that proof. No destructive signal is sent after leader reap.
 
-The qualification prompt delimits the exact loader input, explicitly preserves
-its exec pragma and excludes a terminal newline. Only the loader asset's final
+The qualification prompt places its tags directly against the exact loader
+input, leaving no delimiter-adjacent newline to copy. It explicitly preserves
+the exec pragma and excludes a terminal newline. Only the loader asset's final
 LF is omitted; its statements and pragma parameters remain unchanged.
 
 Boundary qualification exports finite input diagnostics (`call_id_valid`,
