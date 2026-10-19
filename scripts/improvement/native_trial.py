@@ -1,5 +1,6 @@
 """Explicit frozen native-trial controller; no import-time runtime actions."""
 import json
+import errno
 import argparse
 import fcntl
 import base64
@@ -852,18 +853,23 @@ class Controller:
         except Exception:
             return False
 
-    def process(self, pid, *, cleanup=False, watch=False):
+    def process(self, pid, *, cleanup=False, watch=False, until=None):
         try:
             # Supervision must not inherit the model observation expiry. Each
             # query still has its own two-second bound; actual query failures
             # remain uncertainty. Cleanup stops/drains the watcher before close.
             deadline = time.monotonic()+2 if watch else (self.cleanup_deadline if cleanup else self.deadline)
+            if cleanup and until is not None and deadline is not None:
+                deadline = min(deadline, until)
             if deadline is None or time.monotonic() >= deadline:
                 raise ProcessQueryFailure('deadline')
             query_end = min(deadline, time.monotonic()+2)
             while True:
+                remaining = query_end-time.monotonic()
+                if remaining <= 0:
+                    raise ProcessQueryFailure('deadline')
                 result = bounded(['/bin/ps', '-p', str(pid), '-o', 'pid=,ppid=,pgid=,lstart=,comm='],
-                                 max(.01, query_end-time.monotonic()), limit=2048, env=self.env)
+                                 remaining, limit=2048, env=self.env)
                 try:
                     return parse_process_query(result, pid)
                 except ProcessQueryFailure as exc:
@@ -1076,7 +1082,8 @@ class Controller:
         self.cleanup_deadline = time.monotonic() + self.data['limits']['cleanup_seconds']
         result = {'complete': False, 'processes_stopped': False, 'process_absence': [],
                   'containers_absent': [], 'volume_absent': not self.volume_begun,
-                  'native_home': None, 'control_absent': False, 'errors': []}
+                  'native_home': None, 'control_absent': False, 'errors': [],
+                  'process_signal_reconciliations': [], 'process_cleanup_diagnostic': None}
         # Stop owner discovery before terminating the native parent. Otherwise
         # an already-recorded child can be reparented during our own shutdown.
         self.watch_stop.set()
@@ -1105,22 +1112,65 @@ class Controller:
         process_failure = False
         with getattr(self, 'process_lock', threading.Lock()):
             saved_processes = list(self.seen.values())
+        signal_codes = {errno.ESRCH: 'not_found', errno.EPERM: 'permission_denied',
+                        errno.EACCES: 'permission_denied', errno.EINVAL: 'invalid_argument',
+                        errno.EINTR: 'interrupted'}
         for saved in saved_processes:
+            phase, signal_code = 'owner_query', None
             try:
                 current = self.process(saved['pid'], cleanup=True)
                 if current is not None:
+                    phase = 'owner_match'
                     plan.require(same_process(saved, current) and saved['pgid'] == saved['pid']
                                  and saved['exe'] in (self.runtime['codex'], self.runtime['code_mode_host'], self.runtime['docker']),
                                  'cleanup_process_owner')
-                    os.killpg(saved['pgid'], signal.SIGKILL)
+                    phase = 'signal'
                     until = min(self.cleanup_deadline, time.monotonic()+2)
-                    while time.monotonic() < until and self.process(saved['pid'], cleanup=True) is not None:
-                        time.sleep(.05)
-                    plan.require(self.process(saved['pid'], cleanup=True) is None, 'process_present')
+                    try:
+                        os.killpg(saved['pgid'], signal.SIGKILL)
+                    except OSError as exc:
+                        signal_code = signal_codes.get(exc.errno, 'other_os_error')
+                        # A known child may exit between the identity query and
+                        # signal. Darwin can also deny signaling its zombie group.
+                        # Neither error proves absence or permits another kill.
+                        plan.require(exc.errno == errno.ESRCH or (sys.platform == 'darwin'
+                                     and exc.errno in (errno.EPERM, errno.EACCES)), 'process_signal')
+                    absent = False
+                    while time.monotonic() < until:
+                        phase = 'absence_query'
+                        current = self.process(saved['pid'], cleanup=True, until=until)
+                        plan.require(time.monotonic() <= until, 'process_present')
+                        if current is None:
+                            if signal_code is None:
+                                absent = True
+                                break
+                            phase = 'group_absence'
+                            try:
+                                os.killpg(saved['pgid'], 0)
+                            except ProcessLookupError:
+                                absent = True
+                                break
+                            except OSError as exc:
+                                plan.require(sys.platform == 'darwin'
+                                             and exc.errno in (errno.EPERM, errno.EACCES),
+                                             'process_group_query')
+                        else:
+                            plan.require(same_process(saved, current), 'cleanup_process_owner')
+                        time.sleep(min(.05, max(0, until-time.monotonic())))
+                    plan.require(absent and time.monotonic() <= until, 'process_present')
+                    if signal_code is not None:
+                        result['process_signal_reconciliations'].append({
+                            'pid': saved['pid'], 'signal_error_code': signal_code, 'group_absent': True})
                 result['process_absence'].append({'pid': saved['pid'], 'absent': True})
-            except Exception:
+            except Exception as exc:
                 process_failure = True
                 result['errors'].append('process_cleanup')
+                if result['process_cleanup_diagnostic'] is None:
+                    reason = str(exc) if isinstance(exc, plan.Refusal) and str(exc) in (
+                        'cleanup_process_owner', 'process_signal', 'process_group_query',
+                        'process_present', 'process_query') else 'operation'
+                    result['process_cleanup_diagnostic'] = {'pid': saved['pid'], 'phase': phase,
+                        'reason': reason, 'signal_error_code': signal_code}
         result['process_query_uncertain'] = self.process_uncertain
         result['process_query_diagnostic'] = getattr(self, 'process_query_diagnostic', None)
         result['processes_stopped'] = bool((getattr(self, 'recovery_prior_shutdown', False) or not self.launch_called or

@@ -343,6 +343,21 @@ process-not-found. The receipt retains the original error category and
 `group_absent_after_reap=true`; EOF alone or another permission error never
 supplies that proof. No destructive signal is sent after leader reap.
 
+Owned-child cleanup separately handles a process exiting between its strict
+identity query and group signal. `ESRCH`, or `EPERM`/`EACCES` on macOS, allows
+only a bounded absence check: a fresh strict PID query and a non-destructive
+signal-0 probe must both establish absence within the original two-second
+settling window and cleanup deadline. Each query uses the remaining window;
+no second destructive signal is sent. A changed owner, present group, query
+ambiguity or expired window still blocks cleanup and auth removal.
+
+`process_signal_reconciliations` records only the PID, finite original signal
+error category and verified group absence. The first unreconciled failure has
+`process_cleanup_diagnostic` with PID, finite phase/reason and signal category;
+raw OS errors and process output are excluded. A local owned-child test
+reproduces macOS `EPERM` before reap and verifies PID/group absence afterward.
+This reproduces the race, not the unknown cause of an older failed receipt.
+
 The qualification prompt places its tags directly against the exact loader
 input, leaving no delimiter-adjacent newline to copy. It explicitly preserves
 the exec pragma and excludes a terminal newline. Only the loader asset's final
