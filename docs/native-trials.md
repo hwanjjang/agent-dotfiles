@@ -349,7 +349,9 @@ only a bounded absence check: a fresh strict PID query and a non-destructive
 signal-0 probe must both establish absence within the original two-second
 settling window and cleanup deadline. Each query uses the remaining window;
 no second destructive signal is sent. A changed owner, present group, query
-ambiguity or expired window still blocks cleanup and auth removal.
+ambiguity or expired window still blocks cleanup and auth removal. Successful
+signals also require absence confirmation within this window. A PID-query timeout
+at that boundary retains `process_query_uncertain`; it does not become absence.
 
 `process_signal_reconciliations` records only the PID, finite original signal
 error category and verified group absence. The first unreconciled failure has

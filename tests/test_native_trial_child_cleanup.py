@@ -49,6 +49,29 @@ class ChildCleanupTests(unittest.TestCase):
                 self.assertNotIn('SECRET', str(result))
                 c.release()
 
+    def test_successful_signal_waits_for_same_owner_then_confirms_absence(self):
+        c, saved = self.owned(); c.data['limits']['cleanup_seconds']=.5
+        with patch.object(c, 'process', side_effect=[saved, saved, None]), \
+             patch.object(trial.os, 'killpg') as kill:
+            result=c.cleanup()
+        self.assertTrue(result['complete'])
+        kill.assert_called_once_with(saved['pgid'], signal.SIGKILL)
+        self.assertEqual(result['process_signal_reconciliations'], [])
+
+    def test_permission_race_waits_for_same_owner_and_group_before_absence(self):
+        c, saved = self.owned(); c.data['limits']['cleanup_seconds']=.5
+        with patch.object(trial.sys, 'platform', 'darwin'), \
+             patch.object(c, 'process', side_effect=[saved, saved, None, None]), \
+             patch.object(trial.os, 'killpg', side_effect=[
+                 PermissionError(errno.EPERM, 'private'), PermissionError(errno.EPERM, 'private'),
+                 ProcessLookupError(errno.ESRCH, 'gone')]) as kill:
+            result=c.cleanup()
+        self.assertTrue(result['complete'])
+        self.assertEqual([call.args for call in kill.call_args_list],
+                         [(saved['pgid'], signal.SIGKILL), (saved['pgid'], 0), (saved['pgid'], 0)])
+        self.assertEqual(result['process_signal_reconciliations'], [dict(
+            pid=saved['pid'], signal_error_code='permission_denied', group_absent=True)])
+
     def test_unrecognized_signal_error_or_non_darwin_permission_stays_blocked(self):
         for platform, code in (('linux', errno.EPERM), ('darwin', errno.EINVAL)):
             with self.subTest(platform=platform, code=code):
@@ -118,7 +141,7 @@ class ChildCleanupTests(unittest.TestCase):
         self.assertIn('home_retained', result['errors'])
 
     def test_absence_query_uses_remaining_owner_window_not_another_two_seconds(self):
-        c=self.controller(); c.cleanup_deadline=time.monotonic()+45
+        c=self.controller(); c.cleanup_deadline=145
         until=100.004
         def query(argv, timeout, **kwargs):
             self.assertLessEqual(timeout, .004001)
