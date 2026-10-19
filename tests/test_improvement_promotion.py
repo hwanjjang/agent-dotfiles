@@ -346,6 +346,43 @@ class NativePromotionTests(unittest.TestCase):
                        dict(component_roots=['skills/first','skills/first/SKILL.md'])]:
             with self.subTest(values=values),self.assertRaises(ValueError): self.source(**values)
 
+    def add_policy_roots(self, count):
+        """Extend the complete frozen inventories, without faking Git objects."""
+        names = [f'policies/policy-{i:02d}.md' for i in range(count)]
+        for arm in ev.ARMS:
+            value = self.f.context['arms'][arm]
+            for name in names:
+                raw = b'Synthetic shared policy\n'
+                path = Path(value['root']) / name
+                path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(raw)
+                value['files'].append(dict(path=name,sha256=hashlib.sha256(raw).hexdigest()))
+            value['files'].sort(key=lambda row:row['path'])
+            self.f.spec['identities'][arm] = ev.digest({k:value[k] for k in ('entrypoint','files','routing')})
+            for row in value['files']:
+                path = self.repo / row['path']; path.parent.mkdir(parents=True,exist_ok=True)
+                path.write_bytes((Path(value['root']) / row['path']).read_bytes())
+            self.commits[ev.ARMS.index(arm)] = self.commit()
+        self.roots = sorted(self.roots + names)
+        self.f.experiment = ev.freeze(self.f.spec)
+        declaration = next(iter(self.f.context['collection_by_trial'].values()))
+        self.f.context.update(experiment_digest=self.f.experiment['experiment_digest'],
+            collection_by_trial={t['trial_id']:declaration for t in self.f.experiment['trials']})
+        self.save(self.f.context_path,self.f.context)
+
+    def test_complete_skill_and_policy_inventory_can_exceed_eight_roots(self):
+        self.add_policy_roots(12)
+        source = self.source()
+        self.assertEqual(len(source['component_roots']),15)
+        self.assertEqual(len(source['changes']),3)
+        with self.assertRaisesRegex(ValueError,'source_inventory'):
+            self.source(component_roots=self.roots[1:])
+
+    def test_root_capacity_matches_existing_sixty_four_file_inventory(self):
+        self.add_policy_roots(61)
+        self.assertEqual(len(self.source()['component_roots']),64)
+        with self.assertRaisesRegex(ValueError,'source_roots'):
+            self.source(component_roots=sorted(self.roots + ['policies/unselected.md']))
+
     def test_complete_component_inventory_and_outside_delta_required(self):
         extra = self.repo/'skills/first/references/extra.md'; extra.parent.mkdir(); extra.write_text('synthetic')
         extra_commit = self.commit()
