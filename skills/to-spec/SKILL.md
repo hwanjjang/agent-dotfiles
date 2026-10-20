@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Synthesize agreed requirements, conversation decisions and repository evidence into a concise behavior specification, or update an existing spec. Use for spec drafting without starting implementation or ticket publication.
+description: Synthesize requirements from agreed decisions, documents, meeting notes and repository evidence into a concise behavior specification, preserving proposals and gaps, or update an existing spec. Use for spec drafting without starting implementation or ticket publication.
 ---
 
 # Turn settled requirements into a spec
@@ -19,6 +19,9 @@ Follow the shared [evidence](../../policies/evidence.md) and
    glossary and ADRs where available. Reuse adequate investigation; distinguish
    inspected behavior from a reported baseline. Missing source access remains a
    stated limit, not a reason to invent how the system works.
+   When documents or meeting notes supply requirements, first use
+   [source extraction](references/source-extraction.md) to preserve locations,
+   modality, decisions versus proposals and unresolved owners/dates.
 2. Preserve settled scope, exclusions and constraints. For an existing system,
    record the relevant behavior being retained, changed or added so the spec does
    not turn existing capabilities into new work. Use only distinctions that affect

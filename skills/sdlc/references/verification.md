@@ -174,4 +174,8 @@ Use [effort authority](state-contract.md#reviewer-effort-authority) and [shared-
 
 ## 2026-10-15 permission-mode update
 
-Permission-mode settings are optional. A mode-setting/observation failure alone must not stop review: continue with verified read-only isolation under existing permissions. Record model/effort/independence normally and preserve observed mode values without relabeling them. Only a concrete inability to establish the read-only boundary or perform required checks invokes fallback/skip. See [host execution contract](host-adapters.md#read-only-review-with-optional-mode-settings); this supersedes earlier literal auto/full requirements.
+Permission-mode settings are optional. A mode-setting/observation failure alone must not stop review: continue under existing permissions with isolation observations/limitations recorded. Record model/effort/independence normally and preserve observed mode values without relabeling them. Optional isolation setup/verification must not trigger fallback or skip. An explicitly required isolation boundary or unavailable required checks still can. See [host execution contract](host-adapters.md#read-only-review-with-optional-mode-settings); this supersedes earlier literal auto/full requirements.
+
+## 2026-10-20 optional isolation update
+
+Enforced read-only isolation is optional for all reviewer roles, including requested models. Prefer restrictions when available; otherwise continue with a review-only assignment and honest unverified status. `read_only_required: true` is an explicit opt-in gate. No source edits, external writes or further delegation are authorized by the review assignment. See the [host contract](host-adapters.md#read-only-review-with-optional-mode-settings).

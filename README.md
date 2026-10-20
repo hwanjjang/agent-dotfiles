@@ -18,7 +18,7 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 23 skill packages, ten portable policies,
+**Status:** Initial content collection: 24 skill packages, ten portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
@@ -52,6 +52,14 @@ Evidence-bound caller triage is available; automatic diagnosis and promotion-eli
 
 The shared [logging policy](policies/logging.md) combines Addy Osmani's severity
 and structured-event rules with Matt Pocock's temporary debug-log cleanup rules.
+
+[Account content preservation](docs/decisions/account-content-preservation.md)
+keeps optional reviewer isolation in SDLC, adds a portable
+[grounded-citations](skills/grounded-citations/SKILL.md) source register, and
+extends existing spec/ticket and architecture methods with source extraction and
+bounded feasibility experiments. The [CLI example](docs/guides/grounded-citations.md)
+explains citation checks and their limits. Source inclusion does not update
+already installed account snapshots.
 
 The [architecture policy](policies/architecture.md) keeps three minimum principles:
 findable code, clear boundaries and responsibilities, and verifiable changes.

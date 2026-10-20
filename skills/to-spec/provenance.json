@@ -18,6 +18,24 @@
       "license_path": "LICENSE",
       "sha256": "f623ea0bbe94e9b314657dd0c9da4c4b7dbb71830cba78af7c2bb70ca79ffa90",
       "role": "Upstream explanation inspected; not an independent community evaluation."
+    },
+    {
+      "upstream": "https://github.com/NousResearch/hermes-agent",
+      "revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
+      "path": "skills/productivity/document-to-action-items/SKILL.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "8a7556754aca2a7d04d38847131fb4db8d6705fa2106fcb154279e26117b41ee",
+      "role": "Method reference adapted into the existing owner; not a second workflow."
+    },
+    {
+      "upstream": "https://github.com/NousResearch/hermes-agent",
+      "revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
+      "path": "skills/productivity/meeting-action-items/SKILL.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "1902f782551da96ee1f9b34d6f13af627f06150a498d874b0cc2a75d06d35aa8",
+      "role": "Method reference adapted into the existing owner; not a second workflow."
     }
   ],
   "local_sources": [
@@ -42,7 +60,8 @@
     "Preserves settled decisions; consequential gaps remain explicit instead of routine re-interview or invented readiness.",
     "Removes automatic tracker publication, setup and label dependencies, exhaustive stories, fixed test-boundary counts and explicit-only invocation metadata.",
     "Uses proportionate artifact content, caller-selected paths or task-local fallback, and no-write inline output.",
-    "Keeps planning, ticket creation, implementation and external writes with their existing owners."
+    "Keeps planning, ticket creation, implementation and external writes with their existing owners.",
+    "Added one shared source-extraction reference for documents and meeting notes: version/coordinates, modality, decisions/proposals, explicit and unresolved fields; existing spec/ticket and publication owners retained."
   ],
   "skill_dependencies": [],
   "policy_dependencies": [

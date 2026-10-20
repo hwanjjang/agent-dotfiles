@@ -15,12 +15,24 @@
   "adaptations": [
     "Portable design-only entrypoint; dependencies declared.",
     "Three-provider preference for consequential decisions; actual availability reported.",
-    "Removed references to unbundled principle skills and recursive candidate invocation."
+    "Removed references to unbundled principle skills and recursive candidate invocation.",
+    "Added a conditional feasibility-experiment reference: falsifiable questions, kill-risk-first ordering, bounded disposable artifacts and evidence-bound three-way verdicts; no new orchestrator, fixed counts or routine checkpoint. Retained GSD attribution."
   ],
   "skill_dependencies": [
     "how",
     "arena"
   ],
   "runtime_requirements": [],
-  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+  "validation": "Source inspected; client discovery and behavioral execution not yet verified.",
+  "additional_sources": [
+    {
+      "upstream": "https://github.com/NousResearch/hermes-agent",
+      "revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
+      "path": "skills/software-development/spike/SKILL.md",
+      "license": "MIT",
+      "license_path": "LICENSE",
+      "sha256": "573d8fc0d6699eaf5308e742402bc02c883152ffeebe14607f164c6c538495c2",
+      "role": "Method reference adapted into the existing owner; not a second workflow."
+    }
+  ]
 }
