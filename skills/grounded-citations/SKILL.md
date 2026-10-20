@@ -24,6 +24,7 @@ Follow shared [evidence](../../policies/evidence.md) and
    text. Keep access date and relevant revision/context. Normalization removes
    URL fragments and trailing slashes for identity; retain exact section/page
    locations alongside the claim when needed. Do not register credential URLs.
+   `ingest` validates all extracted URLs before registering any of them.
 3. **Attach and assess evidence.** Save the retrieved text locally; `quote`
    rejects wording absent from that text, ignoring case, whitespace and Markdown
    emphasis/links. Check manually that the quote supports the particular claim,
@@ -57,6 +58,9 @@ The helper reads supplied files and writes the selected register or an explicitl
 selected `--replace-in` draft; it never fetches URLs, installs dependencies or
 publishes. `list` inspects an existing register. `render --cited-in` prints only
 sources used in a numbered draft. `--help` describes the remaining commands.
+Replacement removes only the last unfenced numbered HTTP(S) source list and its
+rendered evidence quotes, preserves following prose/code, and appends the updated
+list at the end. Citations in following sections are still checked.
 On lock timeout, reconcile the existing writer; never delete its lock to retry
 while it may be active. An interrupted writer may leave a lock requiring local
 recovery after confirming it is stopped.

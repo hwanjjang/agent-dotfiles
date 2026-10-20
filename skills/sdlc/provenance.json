@@ -17,7 +17,8 @@
     "Required and additional reviewers apply the existing code-review-and-quality method inside their assigned context through the canonical skill-routing table; no second review orchestrator.",
     "Consolidated useful account runtime continuity into the existing host adapter contract; no second runtime policy, private authorization or launcher settings imported.",
     "Connected evidence-based intake and consequential reassessment through references/intake.md; reuse stage routing and triage/receipt records without a separate skill, classifier agent or schema.",
-    "Preserved the 2026-10-20 account amendment making enforced reviewer isolation optional, with explicit read_only_required opt-in, honest evidence and unchanged other gates; retained newer repository intake."
+    "Preserved the 2026-10-20 account amendment making enforced reviewer isolation optional, with explicit read_only_required opt-in, honest evidence and unchanged other gates; retained newer repository intake.",
+    "Review correction: classify malformed nonboolean read_only_required as probe-required, matching receipt validation without treating strings or integers as opt-in values."
   ],
   "skill_dependencies": [
     "planning-with-files",

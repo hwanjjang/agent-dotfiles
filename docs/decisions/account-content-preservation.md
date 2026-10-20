@@ -76,6 +76,10 @@ application and repository checks establish only the exercised behavior.
 The regression test reproduced the original isolation rejection before the fix.
 CLI tests exercise source registration, task separation, quote mismatch, missing
 evidence, unknown IDs, URL mismatch, repeat rendering and lock contention. The
+review corrections additionally check unfenced sections following Sources,
+multiline evidence rendering, whole-ingest URL prevalidation and malformed
+isolation opt-in values. Source replacement preserves following prose/code and
+regenerates the bounded numbered list at the document end. The
 [worked CLI guide](../guides/grounded-citations.md) supplies an additional real
 synthetic workflow. Maps, links, metadata and dependency closure are checked.
 The PR retains exact candidate/check/review results and any unavailable checks.

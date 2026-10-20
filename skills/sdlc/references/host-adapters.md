@@ -84,7 +84,8 @@ object on stdin. Verified boundary evidence returns `read-only`; observed legacy
 auto/full evidence returns `verified-mode`. Otherwise it returns
 `existing-permissions` with `read_only_verified: false`. `probe-required` is
 reserved for an explicit `read_only_required: true` without proof, or a claimed
-verified boundary without evidence. A real launch failure with evidence still
+verified boundary without evidence, or a malformed nonboolean
+`read_only_required` value. A real launch failure with evidence still
 returns `unavailable`. This helper does not launch reviewers or prove a PASS.
 
 ## Validation claims

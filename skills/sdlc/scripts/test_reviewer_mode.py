@@ -63,6 +63,18 @@ class ReviewerModeTests(unittest.TestCase):
                                     evidence='Observed legacy mode', read_only_verified=True))['decision'],
                          'probe-required')
 
+    def test_malformed_isolation_requirement_needs_correction(self):
+        for value in ('true', 'false', 0, 1, None, [], {}):
+            for boundary in ({}, {'read_only_verified': True,
+                                  'read_only_evidence': 'Observed immutable source boundary'}):
+                with self.subTest(value=value, boundary=boundary):
+                    result = assess(dict(read_only_required=value, **boundary))
+                    self.assertEqual(result['decision'], 'probe-required')
+
+    def test_explicit_isolation_opt_in_requires_evidence(self):
+        self.assertEqual(assess({'read_only_required': True})['decision'], 'probe-required')
+        self.assertEqual(assess({'read_only_required': False})['decision'], 'existing-permissions')
+
     def test_real_launch_failure_is_not_hidden_by_read_only_isolation(self):
         result = assess({'unavailable_reason': '402 quota exhausted', 'evidence': 'Actual launcher returned402',
                          'read_only_verified': True, 'read_only_evidence': 'Isolated source'})

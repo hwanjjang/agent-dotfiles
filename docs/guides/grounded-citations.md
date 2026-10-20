@@ -28,6 +28,15 @@ The commands return `[1]`, report one attached quote, generate a trailing Source
 block, and finish with `citations OK`. Change the quote to say eight days:
 `quote` rejects the mismatch. Replace the inline marker with `[9]`:
 `verify` returns a failure instead of accepting a source that was never registered.
+Sections after an existing Sources list remain part of verification. Replacement
+preserves those sections and moves the updated list to the end. Fenced Sources
+examples remain body content. Only numbered HTTP(S) entries and rendered evidence
+quotes belong to the replaceable list; keep other annotations outside that list.
+
+`ingest` validates every extracted URL before registering any of them. A later
+credential-bearing or malformed HTTP(S) URL rejects the input without changing
+the register; this is input validation, not a transaction guarantee for interrupted
+writes or concurrent writers.
 
 Keep the register on resume so IDs remain stable; `reset` intentionally removes
 the mapping. Use a separate register for another task. Raw text and registers

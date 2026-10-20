@@ -2918,6 +2918,7 @@
         "Register actual retrieved HTTP(S) URLs and titles before drafting; preserve source context and gaps.",
         "Match supporting quotes to supplied retrieved text; manually assess claim support and source reliability.",
         "Use destination-supported citations; verify numbered Markdown report IDs, URLs and optional evidence.",
+        "Preserve and check body sections after Sources; validate all ingest URLs before ledger mutation.",
         "Keep state local to the selected task; no Hermes runtime, retrieval backend or automatic installs."
       ],
       "outputs": [

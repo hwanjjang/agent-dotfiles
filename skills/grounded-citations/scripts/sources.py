@@ -46,7 +46,7 @@ SCHEMA_VERSION = 1
 # following "(" or ":".
 _CITE_RE = re.compile(r"\[(\d{1,4})\](?![(:])")
 _SOURCES_HEADER_RE = re.compile(r"^\s*(?:#{1,6}\s*)?(?:\*\*)?sources:?(?:\*\*)?\s*$", re.IGNORECASE)
-_SOURCE_LINE_RE = re.compile(r"^\s*\[(\d{1,4})\]\s*[-–:]?\s*(\S+)")
+_SOURCE_LINE_RE = re.compile(r"^\s*\[(\d{1,4})\]\s*[-–:]?\s*(https?://\S+)")
 _URL_IN_TEXT_RE = re.compile(r"https?://[^\s\"'<>)\]}]+")
 _FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 # Explicit declaration that a claim comes from model knowledge, not a source.
@@ -138,6 +138,20 @@ def _by_url(sources: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return {s["url"]: s for s in sources}
 
 
+def _validate_urls(urls: Iterable[str]) -> None:
+    """Validate the complete registration input before any ledger mutation."""
+    for url in urls:
+        try:
+            parsed = urlsplit(url)
+            valid = (parsed.scheme in ('http', 'https') and parsed.hostname
+                     and parsed.username is None and parsed.password is None
+                     and not any(c.isspace() for c in url))
+        except ValueError:
+            valid = False
+        if not valid:
+            raise SystemExit('error: register only HTTP(S) URLs without credentials or whitespace')
+
+
 def add_sources(
     path: Path,
     urls: Iterable[str],
@@ -148,12 +162,7 @@ def add_sources(
     urls = [u for u in (str(u).strip() for u in urls) if u]
     if not urls:
         return []
-    for url in urls:
-        parsed = urlsplit(url)
-        if (parsed.scheme not in ('http', 'https') or not parsed.hostname
-                or parsed.username is not None or parsed.password is not None
-                or any(c.isspace() for c in url)):
-            raise SystemExit('error: register only HTTP(S) URLs without credentials or whitespace')
+    _validate_urls(urls)
     with _LedgerLock(path):
         data = load_ledger(path)
         sources = data["sources"]
@@ -311,7 +320,7 @@ def render_sources(
         lines.append(f"[{s['id']}] {s['url']}{suffix}")
         if style == "evidence":
             for q in s.get("quotes", []):
-                lines.append(f'    > "{q.get("text", "")}"')
+                lines.extend('    > ' + line for line in f'"{q.get("text", "")}"'.splitlines())
     return "\n".join(lines)
 
 
@@ -337,47 +346,55 @@ def _unfenced_lines(lines: list[str]) -> Iterable[tuple[int, str]]:
         yield i, line
 
 
-def _split_draft(text: str) -> tuple[str, dict[int, str]]:
-    """Split a draft into (prose, sources_block_map).
+def _sources_span(lines: list[str]) -> tuple[int, int] | None:
+    """Find the last unfenced source list, stopping before following body text.
 
-    The sources block is everything after the last ``Sources`` header; its
-    ``[n] url`` lines are parsed out so they aren't counted as prose citations.
-    Fenced code blocks are dropped from prose.
+    Only numbered HTTP(S) entries, rendered evidence quotes and blank lines
+    belong to the list. A heading alone is not a generated source list.
     """
+    headers = [i for i, line in _unfenced_lines(lines) if _SOURCES_HEADER_RE.match(line)]
+    if not headers:
+        return None
+    start = headers[-1]
+    end = start + 1
+    has_entry = False
+    while end < len(lines):
+        line = lines[end]
+        if _SOURCE_LINE_RE.match(line):
+            has_entry = True
+        elif not line.strip():
+            pass
+        elif has_entry and line.startswith('    > '):
+            pass
+        else:
+            break
+        end += 1
+    return (start, end) if has_entry else None
+
+
+def _split_draft(text: str) -> tuple[str, dict[int, str]]:
+    """Exclude the bounded source list and fenced code; check all other prose."""
     lines = text.splitlines()
-    header_idx = -1
-    visible = list(_unfenced_lines(lines))
-    for i, line in visible:
-        if _SOURCES_HEADER_RE.match(line):
-            header_idx = i
+    span = _sources_span(lines)
     listed: dict[int, str] = {}
-    if header_idx >= 0:
-        for i, line in visible:
-            if i <= header_idx:
-                continue
+    if span:
+        for line in lines[span[0] + 1:span[1]]:
             m = _SOURCE_LINE_RE.match(line)
             if m:
                 url_match = _URL_IN_TEXT_RE.search(line)
                 listed[int(m.group(1))] = url_match.group(0) if url_match else m.group(2)
-    prose = [line for i, line in visible if header_idx < 0 or i < header_idx]
+    prose = [line for i, line in _unfenced_lines(lines)
+             if span is None or not span[0] <= i < span[1]]
     return "\n".join(prose), listed
 
 
 def _strip_sources_block(text: str) -> str:
-    """Return the draft with its trailing Sources block removed.
-
-    Everything from the last Sources header onward goes; a draft with no such
-    header is returned unchanged.  This is what makes ``render --replace-in``
-    idempotent instead of stacking duplicate blocks.
-    """
+    """Remove only the source list, preserving any following sections or code."""
     lines = text.splitlines()
-    header_idx = -1
-    for i, line in _unfenced_lines(lines):
-        if _SOURCES_HEADER_RE.match(line):
-            header_idx = i
-    if header_idx < 0:
+    span = _sources_span(lines)
+    if span is None:
         return text
-    return "\n".join(lines[:header_idx])
+    return "\n".join(lines[:span[0]] + lines[span[1]:])
 
 
 def _sentences(prose: str) -> list[str]:
@@ -596,6 +613,7 @@ def main(argv: list[str] | None = None) -> int:
         if not pairs:
             print("no urls found in input", file=sys.stderr)
             return 1
+        _validate_urls(url for url, _ in pairs)
         for url, title in pairs:
             entry = add_sources(path, [url], title=title or None)[0]
             print(f"[{entry['id']}] {entry['url']}")

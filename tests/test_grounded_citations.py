@@ -99,6 +99,49 @@ class CitationTests(unittest.TestCase):
         self.assertTrue(draft.read_text().startswith(body))
         self.cli('verify', str(draft), '--evidence', expected=1)
 
+    def test_ingest_invalid_later_url_leaves_ledger_unchanged(self):
+        payload = self.root / 'retrieval.json'
+        payload.write_text(json.dumps([{'url': 'https://example.com/new'},
+                                       {'url': 'https://user:secret@example.com/private'}]))
+        self.cli('ingest', str(payload), expected=1)
+        self.assertFalse(self.ledger.exists())
+        self.cli('add', 'https://example.com/original')
+        before = self.ledger.read_bytes()
+        self.cli('ingest', str(payload), expected=1)
+        self.assertEqual(self.ledger.read_bytes(), before)
+
+    def test_sources_suffix_citations_are_checked_and_body_is_preserved(self):
+        self.cli('add', 'https://example.com/source')
+        draft = self.root / 'draft.md'
+        for suffix in ['## Appendix\nAppendix claim cites [5] here.\n',
+                       'A later paragraph cites [5] here.\n',
+                       '```python\nprint("keep this code")\n```\nLater prose cites [5].\n']:
+            with self.subTest(suffix=suffix):
+                draft.write_text('Claim [1].\n\n## Sources\n\n[1] https://example.com/source\n\n' + suffix)
+                self.cli('verify', str(draft), expected=1)
+                self.cli('render', '--replace-in', str(draft))
+                self.assertIn(suffix, draft.read_text())
+                self.assertIn('Claim [1].', draft.read_text())
+                self.cli('verify', str(draft), expected=1)
+                once = draft.read_bytes()
+                self.cli('render', '--replace-in', str(draft))
+                self.assertEqual(draft.read_bytes(), once)
+
+    def test_multiline_evidence_render_round_trip(self):
+        self.cli('add', 'https://example.com/source')
+        quote = 'First line of evidence.\nSecond line mentions [8] in the source.'
+        evidence = self.root / 'page.txt'
+        evidence.write_text(quote)
+        self.cli('quote', '1', '--text', quote, '--from', str(evidence))
+        draft = self.root / 'draft.md'
+        draft.write_text('First line of evidence.[1]\n')
+        self.cli('render', '--style', 'evidence', '--replace-in', str(draft))
+        self.cli('verify', str(draft), '--strict', '--evidence')
+        once = draft.read_bytes()
+        self.cli('render', '--style', 'evidence', '--replace-in', str(draft))
+        self.assertEqual(draft.read_bytes(), once)
+        self.cli('verify', str(draft), '--strict', '--evidence')
+
     def test_live_lock_is_not_stolen(self):
         # Use the same helper's bounded lock directly so the test need not sleep.
         import importlib.util

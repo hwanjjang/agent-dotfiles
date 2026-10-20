@@ -14,6 +14,9 @@ def assess(observation):
     reason = observation.get('unavailable_reason')
     if isinstance(reason, str) and reason.strip() and has_evidence:
         return {'decision': 'unavailable', 'reason': reason}
+    if type(observation.get('read_only_required', False)) is not bool:
+        return {'decision': 'probe-required',
+                'reason': 'read_only_required must be a boolean; correct the assignment.'}
     if (observation.get('read_only_verified') is True
             and isinstance(observation.get('read_only_evidence'), str)
             and observation['read_only_evidence'].strip()):
