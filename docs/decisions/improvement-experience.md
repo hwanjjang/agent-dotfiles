@@ -48,7 +48,8 @@ Adopted as design:
   candidates. Harness² `1cfe254` diffs reflection evidence against the adopted
   harness instead (`core/selection.py` L418 → `core/context.py` L306; upstream
   [PR #79](https://github.com/google-research/harness2/pull/79)).
-- Retrieval reads only reviewed entries from earlier cycles, through a frozen index.
+- Retrieval reads only entries from earlier cycles that a maintainer marked reusable,
+  through a frozen index; the loop section defines the exact rule.
 - Workspace facts are labeled and re-verified before reuse.
 
 Deferred: propose → probe → compose. Paper ablations support it, but the local
@@ -104,7 +105,7 @@ Inspected on 2026-10-20. No independent model-backed replication was found.
   Hermes agent. These are opinions, not results.
 - [Jahanzaib guide](https://www.jahanzaib.ai/blog/google-harness2-setup-guide)
   (2026-10-18) and [NxCode](https://www.nxcode.io/resources/news/harness2-recursive-agent-harness-local-demo-2026)
-  (commercial site) report running the deterministic demo only. No model-backed
+  (2026-10-19, commercial site) report running the deterministic demo only. No model-backed
   benchmark was run.
 - [Wavect](https://wavect.io/blog/google-harness2-setup-cost-safety/)
   (2026-10-16, commercial blog) warns that benchmark gains are not production
@@ -131,14 +132,15 @@ adding a similar heuristic to writing-for-agents, the current skill was tested.
 `skills/writing-for-agents/SKILL.md` and six scenarios: an authentication failure,
 a single unexplained mistake, a repeated syntactic defect, unbounded tool retries,
 a customer-specific fact, and automatic hook installation. Each scenario ran three
-times and was graded against a rubric written before the runs.
+times. The builder graded the answers against a rubric written before the runs.
 
 **Result.** All 18 scenario runs already made the intended choice, so adding the
 heuristic was not expected to change behavior. Following writing-for-agents
 step 5, it was not added.
 
 **Limits.** The test used one model and English scenarios that named the
-candidate forms explicitly. A future observed failure can reopen the question
+candidate forms explicitly, and the builder, not an independent grader, applied
+the rubric. A future observed failure can reopen the question
 with its own case.
 
 ## Verification boundary

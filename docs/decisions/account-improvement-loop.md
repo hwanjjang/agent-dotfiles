@@ -178,7 +178,7 @@ an installer-managed asset or part of its rollback payload.
 | Task | User goal linked to explicit actor/turn ranges across sessions; no account-global current task |
 | Feedback/finding | Author/source, selected task/events, symptom, evidence, contrary examples, suspected cause and confidence; feedback is an observation, not a verified diagnosis |
 | Reviewed case | Synthetic prompt/input fixture, observable outcome contract, development/holdout class, artifact hashes and private lineage reference |
-| Candidate | Baseline tree hash, minimal patch, resulting tree hash, changed components/dependency closure, hypothesis and case IDs |
+| Candidate | Baseline tree hash, minimal patch, resulting tree hash, changed components/dependency closure, hypothesis, case IDs and the frozen experience index digest |
 | Trial/comparison | Frozen experiment hash, exact arm/run identity, actual environment manifest, artifacts, independent grades, missing evidence, costs and verdict |
 | Improvement experience | Referenced finding, case, candidate and comparison identities; per-component edit rows and verdicts; one lesson or `NO_ENTRY`; review status, applicability and exposure class. See [Learn from earlier attempts](#learn-from-earlier-attempts) |
 | Deployment observation | Accepted source identity, installer transaction reference, delivered hashes, qualification result and any rollback reference |
@@ -403,10 +403,11 @@ Conditions for such a round:
 - Composition happens only before the candidate is frozen. The frozen candidate
   still states one hypothesis and its changed components.
 - Use [arena](../../skills/arena/SKILL.md) and declare the budget before running.
-- A claim about one component's contribution needs a matching ablation. The
-  evaluator compares only baseline and candidate
-  (`scripts/improvement/evaluation.py`), so each ablation needs its own frozen
-  pairwise experiment.
+- A claim about one component's contribution needs a matching ablation: the
+  targeted third arm described under [Frozen comparison](#frozen-comparison).
+  The evaluator compares only baseline and candidate
+  (`scripts/improvement/evaluation.py`), so that arm currently runs as its own
+  frozen pairwise experiment.
 - Results are development signals, not promotion evidence.
 
 Activate this round only when a concrete candidate has competing hypotheses. See
@@ -708,10 +709,11 @@ imports; unsupported features remain disabled while other slices can progress.
 ## Research and validation limits
 
 The design is original repository work; no upstream runtime or skill is copied.
-The improvement experience record adapts methods from Harness²; its sources,
-evidence and limits are in the [selection note](improvement-experience.md).
-References were inspected on 2026-10-17 at moving upstream branches, not adopted
-as pinned dependencies. Pin source and preserve licenses before any future import.
+The improvement experience record adapts methods from Harness², pinned at
+`1cfe254` and inspected on 2026-10-20; its sources, evidence and limits are in the
+[selection note](improvement-experience.md). The other references below were
+inspected on 2026-10-17 at moving upstream branches and are not pinned
+dependencies. Pin source and preserve licenses before any future import.
 
 - [pstack eval](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/eval.md)
   informs organic tasks, blinding and verification from actual artifacts/traces.

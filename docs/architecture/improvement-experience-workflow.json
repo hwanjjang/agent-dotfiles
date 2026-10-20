@@ -243,7 +243,7 @@
       "col": 2,
       "type": "database",
       "label": "Frozen index",
-      "sublabel": "Earlier, reviewed only",
+      "sublabel": "Earlier, reusable only",
       "tag": "No held-out hints",
       "width": 150,
       "sources": [
@@ -251,7 +251,7 @@
           "path": "docs/decisions/account-improvement-loop.md",
           "line": 366,
           "end_line": 376,
-          "label": "Frozen, earlier, reviewed only"
+          "label": "Frozen, earlier, reusable only"
         }
       ]
     }

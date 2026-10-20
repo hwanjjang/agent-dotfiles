@@ -2634,7 +2634,7 @@
       "when": [
         "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change."
       ],
-      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; read the frozen index of reviewed improvement experience first and open entries selectively; bind the baseline, diff and resulting identity before comparison.",
+      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; read the frozen index of reusable improvement experience first and open entries selectively; bind the baseline, diff and resulting identity before comparison.",
       "behavior": [
         "Check infrastructure and routing causes before adding instructions.",
         "Keep graders, fixtures and hidden answers outside the updater; do not change them during an experiment.",
