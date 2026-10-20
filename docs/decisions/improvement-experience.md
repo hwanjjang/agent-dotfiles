@@ -20,6 +20,8 @@ Keep grading, held-out evaluation, promotion and delivery unchanged. Document
 propose → probe → compose exploration as an optional method that is not yet
 active. A proposed component-selection heuristic was evaluated before any edit
 and not added.
+The [workflow diagram](../architecture/improvement-experience-workflow.html)
+shows where the record enters and leaves the loop.
 
 ## Sources
 
