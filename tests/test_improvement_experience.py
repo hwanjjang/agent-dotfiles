@@ -383,6 +383,19 @@ class PackageTests(ExperienceFixture):
         self.assertIn(('baseline/right/denied', 'unavailable: PermissionError'), gaps)
         self.assertNotIn(('baseline/denied', 'unavailable: PermissionError'), gaps)
 
+    def test_manifest_digest_is_read_through_the_package_descriptor(self):
+        real = experience.open_beneath
+        calls = []
+        def tracking(path, **kwargs):
+            calls.append(Path(path).name)
+            return real(path, **kwargs)
+        with mock.patch.object(experience, 'open_beneath', tracking):
+            manifest = self.build()
+        self.assertNotIn('manifest.json', calls)
+        self.assertRegex(manifest['manifest_sha256'], r'\A[0-9a-f]{64}\Z')
+        readme = (self.output / 'README.md').read_text()
+        self.assertIn('Excluded by pattern: 1 path(s)', readme)
+
     def test_pruned_directories_are_reported_as_excluded(self):
         manifest = self.build(exclude=['.answers'])
         self.assertIn('baseline/.answers/', manifest['excluded'])

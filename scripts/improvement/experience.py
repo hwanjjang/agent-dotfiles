@@ -163,8 +163,9 @@ class Package:
             stream.write(text)
         self.items.append(relative)
 
-    def digest_of(self, relative):
-        fd, _ = open_beneath(self.root / relative)
+    def digest_of(self, name):
+        """Hash a top-level package file through the package descriptor, never by path."""
+        fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=self.fd)
         with os.fdopen(fd, 'rb') as stream:
             return hashlib.sha256(stream.read()).hexdigest()
 
@@ -322,7 +323,7 @@ def _fill(package, spec, case, index, patterns):
     readme += [f'- `{item}`' for item in sorted(package.items)]
     readme += ['', '## Gaps', '']
     readme += [f'- {gap["item"]}: {gap["reason"]}' for gap in package.gaps] or ['- none']
-    readme += ['', f'Excluded by pattern: {len(package.excluded)} file(s). Costs: authoring '
+    readme += ['', f'Excluded by pattern: {len(package.excluded)} path(s). Costs: authoring '
                f'{totals["authoring_usd"]}, execution {totals["execution_usd"]} (USD; unknown when not recorded).', '']
     package.write('README.md', '\n'.join(readme))
     package.write('manifest.json', json.dumps(manifest, indent=2, sort_keys=True) + '\n')
