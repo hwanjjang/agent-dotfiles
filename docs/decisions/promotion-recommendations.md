@@ -356,9 +356,10 @@ identities. Changed consumed identities require renewed qualification. The
 and closed catalog/frontmatter grammar remain prerequisites; favorable mock
 records cannot waive them. Follow the
 [feature recipe](../verification/verify-repository/features/promotion-recommendation.md)
-for repeatable checks. The complete paired comparison and actual held-out pack
-preparation/evaluation remain pending; the recorded negative recommendation
-does not complete them. A separately frozen real source candidate
+for repeatable checks. The complete paired development comparison has since
+[returned reject](../evidence/native-development-pilot-2026-10-19.md); actual
+held-out pack preparation/evaluation remains pending, and neither negative
+recommendation completes it. A separately frozen real source candidate
 is not created or evaluated by these synthetic CLI fixtures.
 
 Implementation follows the already accepted same-host design. Primary behavior

@@ -244,8 +244,8 @@ These guards do not contain a malicious same-UID host. Remote protected-file
 checks retain their own source-bound scope. `live_eligible` stays false and
 promotion inconclusive, even when an artifact criterion passes. Current-source
 qualification, real comparisons and same-host held-out evaluation remain distinct
-requirements; this component alone did not complete issue #26, which closed with the
-[completed development comparison](../evidence/native-development-pilot-2026-10-19.md).
+requirements; this component alone did not complete issue #26. PR #77 later closed
+#26 together with the [completed development comparison](../evidence/native-development-pilot-2026-10-19.md).
 
 ## Declared-catalog routing and client-model observations
 
@@ -364,8 +364,9 @@ retains the older source-guarded/no-export label and blocker. Neither path attes
 server weights: `backend_identity_verified=false`, live eligibility and promotion
 stay unavailable. Current fixed routing qualification has genuine source-bound
 observations. Actual production artifact-to-report admission and the natural EN/KO
-development comparison are [complete](../evidence/native-development-pilot-2026-10-19.md) with a reject result; held-out
-evaluation remains pending. Existing offline synthetic journals are regression
+development comparison are [complete](../evidence/native-development-pilot-2026-10-19.md),
+and the committed-source recommendation returned reject; held-out evaluation
+remains pending. Existing offline synthetic journals are regression
 checks, not that missing task evidence.
 
 ## Serial native launch reservations

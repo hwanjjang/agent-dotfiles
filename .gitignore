@@ -186,3 +186,6 @@ vite.config.ts.timestamp-*
 # Local workflow and diagram runtime evidence
 /.archify/
 /reports/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

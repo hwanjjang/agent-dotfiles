@@ -609,9 +609,12 @@ declared reference machine, tested with concurrent writers and 10,000 synthetic
 events. Record the actual distribution and durability cost; this is a target,
 not an availability promise. Bound every payload/batch and report dropped fields.
 
-Next steps are authenticated Linux and native-child qualification, a qualified
-isolated execution/evidence adapter, same-model development comparison, then
-operational recommendation and disposable-account delivery/rollback. Existing
+The planned sequence was authenticated Linux and native-child qualification, a
+qualified isolated execution/evidence adapter, same-model development comparison,
+then operational recommendation and disposable-account delivery/rollback. The
+[development comparison](../evidence/native-development-pilot-2026-10-19.md) is
+complete with a reject result; held-out evaluation, an operational recommendation
+for an eligible candidate and disposable-account delivery/rollback remain. Existing
 Codex collection and task feedback/case export do not need reimplementation. The
 doctor supplies readiness checks; the separate native adapters own collection. Real-account activation, comparison
 model-budget selection and any recurring analysis are later explicit operations.
