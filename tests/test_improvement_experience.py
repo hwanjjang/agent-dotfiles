@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 
+from account.observation.cases import public_case
 from account.observation.store import InvalidEvent, Store
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,7 +44,7 @@ class ExperienceFixture(unittest.TestCase):
         self.grant = self.store.grant(self.project)
         self.task, self.case = self.make_case('one')
 
-    def make_case(self, label, script='raise SystemExit(2)\n'):
+    def make_case(self, label, script='raise SystemExit(2)\n', review=True):
         event = self.store.capture(self.grant['registration_id'], self.grant['epoch'], json.dumps(dict(
             schema_version=1, project_root=str(self.project), client='synthetic', profile='default',
             source='fixture-v1', session_id='session-' + label, sequence=1, source_event_id='event-' + label,
@@ -55,8 +56,9 @@ class ExperienceFixture(unittest.TestCase):
         case = self.store.prepare_case(task['task_id'], revision_id=task['revision_id'],
             feedback_ids=[feedback['feedback_id']], synthetic_case=synthetic_case(script),
             request_id='case-' + label, triage=dict(category='instruction', evidence_ids=event['event_ids']))
-        self.store.review_case(task['task_id'], case['case_id'], expected_digest=case['case_digest'],
-                               reviewer='maintainer', synthetic_data_confirmed=True, privacy_reviewed=True)
+        if review:
+            self.store.review_case(task['task_id'], case['case_id'], expected_digest=case['case_digest'],
+                                   reviewer='maintainer', synthetic_data_confirmed=True, privacy_reviewed=True)
         return task, case
 
     def add(self, request_id='exp', task=None, case=None, **changes):
@@ -92,6 +94,23 @@ class ExperienceRecordTests(ExperienceFixture):
             self.add(exposure='public')
         with self.assertRaisesRegex(InvalidEvent, 'experience_lesson'):
             self.add(lesson=dict(cue='When a description changes', lesson='Do something'))
+
+    def test_add_requires_reviewed_case(self):
+        task, case = self.make_case('unreviewed', review=False)
+        with self.assertRaisesRegex(InvalidEvent, 'case_not_reviewed'):
+            self.add('x', task=task, case=case)
+
+    def test_show_returns_full_record_and_status(self):
+        lesson = dict(cue='When a description already routes correctly', lesson='Keep skills/to-tickets unchanged',
+                      evidence='edit row 1', confidence='low')
+        record = self.add(lesson=lesson)
+        shown = self.store.experience(self.task['task_id'], record['experience_id'])
+        self.assertEqual((shown['review_status'], shown['experience']['lesson']), ('draft', lesson))
+        self.review(record)
+        self.assertEqual(self.store.experience(self.task['task_id'], record['experience_id'])['review_status'],
+                         'reusable')
+        entry = self.store.experience_index(cycle=2, scope='to-tickets')['entries'][0]
+        self.assertEqual((entry['task_id'], entry['lesson_cue']), (self.task['task_id'], lesson['cue']))
 
     def test_review_latest_status_wins_and_duplicates(self):
         record = self.add()
@@ -134,6 +153,25 @@ class ExperienceIndexTests(ExperienceFixture):
         self.assertNotEqual(self.store.experience_index(cycle=2, scope='to-tickets')['index_digest'],
                             first['index_digest'])
 
+    def test_same_request_id_in_two_tasks_stays_distinct(self):
+        other_task, other_case = self.make_case('two')
+        first = self.add('same'); self.review(first, request_id='r1')
+        second = self.add('same', task=other_task, case=other_case)
+        self.review(second, request_id='r1', task=other_task)
+        entries = self.store.experience_index(cycle=2, scope='to-tickets')['entries']
+        self.assertEqual({e['task_id'] for e in entries}, {self.task['task_id'], other_task['task_id']})
+
+    def test_corrupted_review_status_never_passes(self):
+        record = self.add(); review = self.review(record)
+        directory = self.store.root / 'tasks' / self.task['task_id']
+        for path in directory.glob('*.json'):
+            row = json.loads(path.read_text())
+            if row['kind'] == 'experience_review':
+                row['status'] = 'typo'
+                path.write_text(json.dumps(row))
+        index = self.store.experience_index(cycle=2, scope='to-tickets')
+        self.assertEqual((index['entries'], index['excluded']), ([], {'invalid_review': 1}))
+
     def test_revoked_task_is_inactive_and_purged(self):
         record = self.add(); self.review(record)
         self.store.revoke(self.grant['registration_id'])
@@ -144,7 +182,7 @@ class ExperienceIndexTests(ExperienceFixture):
 class PackageTests(ExperienceFixture):
     def setUp(self):
         super().setUp()
-        self.public = dict(synthetic_case(), case_digest=self.case['case_digest'])
+        self.public = dict(public_case(synthetic_case()), case_digest=self.case['case_digest'])
         self.baseline = self.base / 'baseline'; (self.baseline / 'skills').mkdir(parents=True)
         (self.baseline / 'skills/SKILL.md').write_text('Old description\n')
         (self.baseline / '.answers').mkdir(); (self.baseline / '.answers/key.json').write_text('{"answer": 1}\n')
@@ -200,7 +238,7 @@ class PackageTests(ExperienceFixture):
 
     def test_changed_case_input_invalidates_cached_result(self):
         _, changed = self.make_case('two', script='raise SystemExit(3)\n')
-        public = dict(synthetic_case('raise SystemExit(3)\n'), case_digest=changed['case_digest'])
+        public = dict(public_case(synthetic_case('raise SystemExit(3)\n')), case_digest=changed['case_digest'])
         self.assertEqual(public['case_id'], self.public['case_id'])
         manifest = self.build(case=public)
         self.assertNotIn('cand1', manifest['results'])
@@ -220,6 +258,44 @@ class PackageTests(ExperienceFixture):
         self.assertEqual(manifest['index_digest'], 'c' * 64)
         with self.assertRaises(FileExistsError):
             self.build()
+
+    def test_case_digest_must_match_content(self):
+        changed = json.loads(json.dumps(self.public)); changed['inputs']['request'] = 'Changed request.'
+        with self.assertRaisesRegex(InvalidEvent, 'package_case_digest_mismatch'):
+            self.build(case=changed)
+
+    def test_parent_symlinks_are_refused(self):
+        private = self.base / 'private'; private.mkdir(); (private / 'trajectory.txt').write_text('secret\n')
+        alias = self.base / 'alias'; os.symlink(private, alias)
+        result = self.spec()['results'][0] | dict(trajectory_path=str(alias / 'trajectory.txt'))
+        manifest = self.build(results=[result])
+        self.assertIn(('results/cand1/trajectory', 'symlink_in_path'),
+                      {(g['item'], g['reason']) for g in manifest['gaps']})
+        self.assertFalse((self.output / 'results/cand1/trajectory.txt').exists())
+        with self.assertRaisesRegex(InvalidEvent, 'package_path'):
+            experience.build_package(alias / 'package', self.spec())
+        self.assertFalse((private / 'package').exists())
+        linked = self.base / 'linked-baseline'; os.symlink(self.baseline, linked)
+        other = self.base / 'package2'
+        manifest = experience.build_package(other, self.spec(baseline_dir=str(linked)))
+        self.assertIn(('baseline', 'symlink_in_path'), {(g['item'], g['reason']) for g in manifest['gaps']})
+
+    def test_missing_or_stale_results_make_costs_unknown(self):
+        manifest = self.build(results=[])
+        self.assertEqual(manifest['costs'], dict(authoring_usd='unknown', execution_usd='unknown'))
+        complete = self.spec()['results'][0] | dict(costs=dict(authoring_usd=1, execution_usd=float('inf')))
+        manifest = experience.build_package(self.base / 'package-inf', self.spec(results=[complete]))
+        self.assertEqual(manifest['costs'], dict(authoring_usd=1, execution_usd='unknown'))
+
+    def test_duplicate_result_labels_are_refused(self):
+        result = self.spec()['results'][0]
+        with self.assertRaisesRegex(InvalidEvent, 'package_result_duplicate'):
+            self.build(results=[result, result])
+
+    def test_bare_directory_pattern_excludes_children(self):
+        self.assertTrue(experience.excluded('.answers/key.json', ['.answers']))
+        self.assertTrue(experience.excluded('nested/.answers/key.json', ['.answers']))
+        self.assertFalse(experience.excluded('.answers-public/notes.md', ['.answers']))
 
     def test_symlinks_are_not_followed(self):
         os.symlink(self.base / 'trajectory.txt', self.candidate / 'skills/link.txt')
@@ -261,7 +337,7 @@ class ExperienceCliTests(ExperienceFixture):
         self.assertEqual(self.call('add', body=dict(body, exposure='public'), expected=1)['status'], 'rejected')
         baseline = self.base / 'b'; baseline.mkdir(); (baseline / 'x.md').write_text('a\n')
         spec_path = self.base / 'spec.json'
-        spec_path.write_text(json.dumps(dict(case=dict(synthetic_case(), case_digest=self.case['case_digest']),
+        spec_path.write_text(json.dumps(dict(case=dict(public_case(synthetic_case()), case_digest=self.case['case_digest']),
             baseline_dir=str(baseline), candidates={}, results=[], index=index, exclude=[])))
         package = self.call('package', '--input', str(spec_path), '--output', str(self.base / 'pkg'))
         self.assertEqual(package['status'], 'packaged')

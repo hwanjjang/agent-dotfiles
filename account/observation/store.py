@@ -717,6 +717,8 @@ class Store:
         require(len(encoded(payload)) <= TASK_INPUT_LIMIT, 'task_input_size')
         with self._locked() as files:
             rows, case = self._case(files, task_id, case_id, case_digest)
+            require(any(r['kind'] == 'case_review' and r['case_id'] == case_id
+                        and r['expected_digest'] == case_digest for r in rows), 'case_not_reviewed')
             ident, previous = self._task_retry(files, task_id, rows, 'experience', request_id, payload)
             if previous:
                 return dict(status='duplicate', experience_id=ident,
@@ -752,6 +754,28 @@ class Store:
             return dict(status='duplicate' if previous else 'reviewed', experience_id=experience_id,
                         review_status=status)
 
+    def experience(self, task_id, experience_id):
+        """Open one selected entry in full, with its current review status."""
+        with self._locked() as files:
+            rows = self._task_records(files, task_id)
+            entry = next((r for r in rows if r['kind'] == 'experience' and r['record_id'] == experience_id), None)
+            require(entry is not None, 'experience_not_found')
+            require(digest(entry['experience']) == entry['experience_digest'], 'corrupt_task')
+            return dict(status='ok', task_id=task_id, experience_id=experience_id,
+                        experience_digest=entry['experience_digest'], experience=entry['experience'],
+                        review_status=self._review_state(rows, entry))
+
+    @staticmethod
+    def _review_state(rows, entry):
+        review = None
+        for row in rows:
+            if row['kind'] == 'experience_review' and row.get('experience_id') == entry['record_id']:
+                review = row
+        if review is None or review.get('expected_digest') != entry['experience_digest']:
+            return 'draft'
+        status = review.get('status')
+        return status if status in REVIEW_STATUSES else 'invalid'
+
     def experience_index(self, *, cycle, scope):
         """Freeze reusable development entries from earlier cycles; report exclusions by count only."""
         require(type(cycle) is int and 1 <= cycle <= 2**31 and token(scope), 'experience_index')
@@ -772,25 +796,20 @@ class Store:
                             raise
                         skip('inactive')
                         continue
-                    reviews = {}
-                    for row in rows:
-                        if row['kind'] == 'experience_review':
-                            reviews[row['experience_id']] = row
                     for row in rows:
                         if row['kind'] != 'experience':
                             continue
                         value = row['experience']
                         require(digest(value) == row['experience_digest'], 'corrupt_task')
-                        review = reviews.get(row['record_id'])
-                        state = 'draft' if review is None else review['status']
-                        if review is not None and review['expected_digest'] != row['experience_digest']:
-                            state = 'draft'
+                        state = self._review_state(rows, row)
                         if value['cycle'] >= cycle:
                             skip('later_cycle')
                         elif state in ('draft', 'reviewed'):
                             skip('unreviewed')
                         elif state in ('superseded', 'rejected'):
                             skip(state)
+                        elif state != 'reusable':
+                            skip('invalid_review')
                         elif value['exposure'] != 'development':
                             skip('heldout_or_unknown_exposure')
                         elif value['grade_derived']:
@@ -799,7 +818,8 @@ class Store:
                             skip('other_scope')
                         else:
                             entries.append(dict(
-                                experience_id=row['record_id'], experience_digest=row['experience_digest'],
+                                task_id=task_id, experience_id=row['record_id'],
+                                experience_digest=row['experience_digest'],
                                 cycle=value['cycle'], scope=value['scope'],
                                 decision=value['comparison']['decision'],
                                 edits=[dict(component=e['component'], verdict=e['verdict'])
@@ -807,7 +827,7 @@ class Store:
                                 lesson_cue='NO_ENTRY' if value['lesson'] is None else value['lesson']['cue']))
         except FileNotFoundError:
             pass
-        entries.sort(key=lambda entry: entry['experience_id'])
+        entries.sort(key=lambda entry: (entry['task_id'], entry['experience_id']))
         index = dict(cycle=cycle, scope=scope, entries=entries)
         return dict(index, status='frozen', excluded=excluded, index_digest=digest(index))
 

@@ -5,6 +5,7 @@ import difflib
 import fnmatch
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -12,7 +13,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from account.observation.files import BusyStore, UnsafeStore
-from account.observation.store import TASK_INPUT_LIMIT, InvalidEvent, Store, decode, require, token
+from account.observation.store import TASK_INPUT_LIMIT, InvalidEvent, Store, decode, digest, require, token
 
 FILE_LIMIT = 262144
 MAX_FILES = 512
@@ -32,12 +33,35 @@ def normalize_pattern(pattern):
 
 
 def excluded(relative, patterns):
-    return any(fnmatch.fnmatchcase(relative, p) or fnmatch.fnmatchcase(relative, '*/' + p) for p in patterns)
+    for pattern in patterns:
+        if fnmatch.fnmatchcase(relative, pattern) or fnmatch.fnmatchcase(relative, '*/' + pattern):
+            return True
+        # A pattern without wildcards names a path; exclude that path and everything below it.
+        if not any(c in pattern for c in '*?[') and (
+                relative == pattern or relative.startswith(pattern + '/')
+                or ('/' + pattern + '/') in ('/' + relative) or relative.endswith('/' + pattern)):
+            return True
+    return False
+
+
+def canonical(path):
+    """Return the absolute path, or None when any component is a symlink (or the path is relative)."""
+    path = Path(path)
+    if not path.is_absolute():
+        return None
+    absolute = Path(os.path.abspath(path))
+    return absolute if Path(os.path.realpath(absolute)) == absolute else None
 
 
 def read_text(path):
     """Return (text, status) without following symlinks; never raises for unreadable evidence."""
+    if not path:
+        return None, 'missing'
     path = Path(path)
+    parent = canonical(path.parent) if path.is_absolute() else None
+    if parent is None:
+        return (None, 'symlink_in_path') if os.path.lexists(path) else (None, 'missing')
+    path = parent / path.name
     try:
         info = os.lstat(path)
     except FileNotFoundError:
@@ -59,7 +83,9 @@ def read_text(path):
 class Package:
     def __init__(self, destination):
         self.root = Path(destination)
-        require(self.root.is_absolute(), 'package_path')
+        parent = canonical(self.root.parent) if self.root.is_absolute() else None
+        require(parent is not None and parent.is_dir() and self.root.name not in ('', '.', '..'), 'package_path')
+        self.root = parent / self.root.name
         os.mkdir(self.root, 0o700)  # FileExistsError: never reuse or overwrite a package
         os.chmod(self.root, 0o700)
         self.items, self.gaps, self.excluded = [], [], []
@@ -77,8 +103,12 @@ class Package:
 
     def tree(self, label, source, patterns):
         """Copy a tree as inert text; return {relative path: text} for diffs."""
-        source = Path(source)
-        if not source.is_dir() or source.is_symlink():
+        safe = canonical(source)
+        if safe is None:
+            self.gap(label, 'symlink_in_path' if os.path.lexists(source) else 'missing')
+            return None
+        source = safe
+        if not source.is_dir():
             self.gap(label, 'missing')
             return None
         copied = {}
@@ -109,7 +139,7 @@ def diff(baseline, candidate, label):
 
 
 def cost(value):
-    return value if type(value) in (int, float) and value >= 0 else 'unknown'
+    return value if type(value) in (int, float) and math.isfinite(value) and value >= 0 else 'unknown'
 
 
 def build_package(destination, spec):
@@ -119,6 +149,9 @@ def build_package(destination, spec):
     case, index = spec['case'], spec['index']
     require(isinstance(case, dict) and token(case.get('case_id', '')) and isinstance(case.get('case_digest'), str)
             and len(case['case_digest']) == 64, 'package_case')
+    # The digest must describe these exact case bytes, so a changed case cannot reuse old results.
+    require(digest({k: v for k, v in case.items() if k != 'case_digest'}) == case['case_digest'],
+            'package_case_digest_mismatch')
     require(isinstance(index, dict) and isinstance(index.get('index_digest'), str), 'package_index')
     require(isinstance(spec['candidates'], dict) and all(token(k) for k in spec['candidates'])
             and isinstance(spec['results'], list) and isinstance(spec['exclude'], list), 'package_fields')
@@ -135,15 +168,18 @@ def build_package(destination, spec):
     by_label = {}
     for result in spec['results']:
         require(isinstance(result, dict) and token(result.get('label', '')), 'package_result')
+        require(result['label'] not in by_label, 'package_result_duplicate')
         by_label[result['label']] = result
     for label in sorted(set(spec['candidates']) | set(by_label)):
         result = by_label.get(label)
         if result is None:
             package.gap(f'results/{label}', 'missing')
+            totals = dict.fromkeys(totals, 'unknown')
             continue
         if result.get('case_id') != case['case_id'] or result.get('case_input_digest') != case['case_digest']:
             # A cached result for changed case inputs is not evidence about this case.
             package.gap(f'results/{label}', 'stale_result')
+            totals = dict.fromkeys(totals, 'unknown')
             continue
         record = {}
         trajectory, record['trajectory_status'] = read_text(result.get('trajectory_path') or '')
@@ -186,6 +222,9 @@ def parser():
     for name in ('--task', '--experience', '--digest', '--reviewer', '--request-id'):
         review.add_argument(name, required=True)
     review.add_argument('--status', required=True, choices=('reviewed', 'reusable', 'superseded', 'rejected'))
+    show = commands.add_parser('show', help='Open one entry selected from a frozen index')
+    show.add_argument('--task', required=True)
+    show.add_argument('--experience', required=True)
     index = commands.add_parser('index')
     index.add_argument('--cycle', type=int, required=True)
     index.add_argument('--scope', required=True)
@@ -223,6 +262,8 @@ def main(argv=None):
                 output = store.review_experience(args.task, args.experience, expected_digest=args.digest,
                                                  reviewer=args.reviewer, status=args.status,
                                                  request_id=args.request_id)
+            elif args.command == 'show':
+                output = store.experience(args.task, args.experience)
             else:
                 output = store.experience_index(cycle=args.cycle, scope=args.scope)
     except InvalidEvent as error:

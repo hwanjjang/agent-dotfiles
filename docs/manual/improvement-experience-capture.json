@@ -1,21 +1,22 @@
 {
   "captured": "2026-10-20",
-  "baseline": "b6fc17c",
-  "status": "premerge_capture",
+  "baseline": "c779b96",
+  "status": "correction_capture",
   "scenario": "improvement-experience",
   "source_sha256": {
-    "account/observation/store.py": "98622af18335d2225f71f29367572db5dd2e0f8bd1d7e823cc156ff2037c24bc",
-    "scripts/improvement/experience.py": "e5a78a91e6b4c80c2d9723fecc6fe62562d1693677e3f7a5a702ae98175b6c09",
-    "tests/test_improvement_experience.py": "86fbfc2befa81f76b10672c74822670bf12a436ddc10e4304ca728222caf7acb",
-    "docs/map/catalog.json": "e89613c14c640823d951277348352d3f1d05ad1127abf806f8570aff7692f4cd"
+    "account/observation/store.py": "2314a91f6896b630102c1e4d12ef8ce3c2c3f2069d13e9477f6c0caad8bcb9bc",
+    "scripts/improvement/experience.py": "c5f2059aa0101abc62c820c45c068e7bb2f1587313a127b2f803ea8c87db7d92",
+    "tests/test_improvement_experience.py": "90b14531f63c08efbeb8be4b4d003c466b51c21ad4a9b433973e3115a48749d6",
+    "docs/map/catalog.json": "06fe324e1623586744e0f75f4144f9752cbe61ff9334a2228da6d6af4a025b25"
   },
   "images": {
-    "improvement-experience-map.png": "b786475bf1a0912764cac406b07f93b7845bdd858d598514f2420cb774d48283",
-    "improvement-experience-result.png": "a2d35a988430fefe41a705ee37340ca39baf2ae7f96986e55f820c6a17771e88"
+    "improvement-experience-map.png": "d85edba5ca8ec2a756fed75ce4f77166d7ca12baf5618af3aefcf94520a1f8ac",
+    "improvement-experience-result.png": "6c1e20b62714afc486db68b6a33f11ca77e578a618d69ba6e3bb062841a4de2c"
   },
   "notes": [
     "Actual local repository map detail (docs/map/index.html#item=improvement-candidate) captured with headless Chromium 1243 at 1360x900.",
-    "Result image is a browser-rendered summary of actual CLI outputs (add, add held-out, review, index, package, refused overwrite, index after revoke) in a disposable home with synthetic data; digests shortened and temporary paths replaced with $TMP.",
-    "No model, native client or network call. Both PDF pages rendered with PDFium, individually viewed and text-checked (NO_ENTRY, reusable, .answers/key.json, trajectory, $TMP, experience.py)."
+    "Result image is a browser-rendered summary of actual CLI outputs (add, add held-out, review, index, show, package, refused overwrite, index after revoke) in a disposable home with synthetic data; digests shortened and temporary paths replaced with $TMP.",
+    "No model, native client or network call. Both PDF pages rendered with PDFium, individually viewed and text-checked (NO_ENTRY, reusable, .answers/key.json, trajectory, $TMP, experience.py, show).",
+    "Captured on the round-1 correction working tree atop c779b96; source_sha256 records the exact captured source bytes."
   ]
 }

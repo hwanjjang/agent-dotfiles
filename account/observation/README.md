@@ -383,7 +383,8 @@ actual synthetic prepare/show/review/export, refusal and purge scenarios.
 An improvement experience records what one candidate attempt showed, following the
 [design contract](../../docs/decisions/account-improvement-loop.md#learn-from-earlier-attempts).
 Records are task records under the same task consent: revoking or pruning the task
-removes them. Each record references a reviewed case and needs:
+removes them. Each record references a case that has already been reviewed with
+`review_case`, and needs:
 
 - per-component edit rows (`helped`, `hurt`, `no_observed_effect`, `confounded`);
 - one lesson, or `null` for `NO_ENTRY`;
@@ -397,6 +398,7 @@ python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" add < experi
 python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" review --task TASK \
   --experience EXPERIENCE --digest DIGEST --reviewer maintainer --status reusable --request-id R1
 python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" index --cycle 3 --scope to-tickets
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" show --task TASK --experience EXPERIENCE
 python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" package \
   --input package.json --output /absolute/new/package
 ```
@@ -411,8 +413,10 @@ latest review decides the entry's status.
 `index` freezes the entries to give a candidate author. It includes only `reusable`
 entries with development exposure, no grade-derived content, the requested scope,
 and a cycle earlier than the requested one. It reports excluded entries as counts
-by reason, never their content. Its `index_digest` stays the same for unchanged
-inputs; record it with the candidate.
+by reason, never their content. A missing or unrecognized review status counts
+as `unreviewed` or `invalid_review` and never passes. Each entry names its task,
+so `show` can open the full record, including edit rows and the lesson. The
+`index_digest` stays the same for unchanged inputs; record it with the candidate.
 
 `package` writes a new directory for the author:
 
@@ -425,11 +429,20 @@ inputs; record it with the candidate.
 
 Package safety rules:
 
+- The case must be the exported case JSON; its `case_digest` must match its
+  content, or the package is refused.
 - A result for changed case inputs is reported as `stale_result` and not copied.
+  A missing or stale result makes the cost totals `unknown`.
+- Result labels must be unique.
 - A rendering failure never replaces the trajectory.
 - Exclusion patterns remove only a leading `./`, so `.answers/**` still excludes
-  `.answers/key.json` but not `answers/notes.md`.
-- Files are copied without execute permission, and symlinks are not followed.
+  `.answers/key.json` but not `answers/notes.md`. A pattern without wildcards,
+  such as `.answers`, excludes that path and everything below it.
+- Pass canonical absolute paths. An input path whose directories include a
+  symlink is reported as `symlink_in_path` and not read. A symlinked file is
+  reported as `symlink_skipped`. An output directory below a symlinked parent is
+  refused.
+- Files are copied without execute permission.
 - The package is not reviewed for privacy. Supply only approved development
   evidence.
 
