@@ -34,7 +34,8 @@ alternatives. Screen them against [design red flags](references/design-red-flags
 Compare interface depth, state ownership, testability, migration and operational cost.
 
 Record the selection using [the rationale](references/rationale-template.md).
-Use a targeted experiment for disputed empirical claims. The resulting design
+Use [bounded feasibility experiments](references/feasibility-experiments.md)
+for disputed empirical claims that source inspection cannot resolve. The resulting design
 must remain coherent after combining compatible improvements.
 
 ## Handoff

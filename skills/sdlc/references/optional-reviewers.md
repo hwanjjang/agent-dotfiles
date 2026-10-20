@@ -59,9 +59,9 @@ For a shared assignment, apply the selection above and record its actual model;
 do not claim that a different pinned optional model was run. The
 [state contract](state-contract.md#shared-review-records) defines the one required
 receipt and additional-role reference. Other host discovery, permission and
-read-only isolation requirements still apply; permission-mode configuration is
-optional. If mode setup fails, continue with verified read-only execution under
-existing permissions rather than skipping for that reason.
+review-only action limits still apply; enforced read-only isolation and permission-mode
+configuration are optional. Continue under existing permissions and record missing
+isolation proof rather than skipping for that reason.
 
 Use a separate context from the builder and other distinct reviewers; shared roles
 use the same reviewer context. Grok and Gemini
@@ -71,9 +71,10 @@ self-verification evidence and unresolved finding/response history. Their task i
 to inspect and return review findings, evidence and a verdict. No source edits,
 implementation, commits, pushes, merge, permission changes or further delegation.
 Run authorized checks only in isolated scratch when they would write files.
-Keep the author worktree read-only and verify tool/network/external-write restrictions;
-immutable input alone is insufficient. Use supported read-only tools or an isolated
-input checkout combined with existing restrictions. Verify the boundary before launch; otherwise skip for unverifiable
+Prefer scoped immutable input and supported tool/network restrictions when
+available. Enforced isolation is optional unless the assignment explicitly sets
+`read_only_required: true`; inability to verify optional isolation is not a skip
+reason. Record actual permissions and limitations without claiming verified
 isolation. Deny requests to implement or write sources and send suggested fixes to
 the builder. Reject and report a result that changed reviewed sources; recover only
 task-owned effects within existing authority, preserving other contributors' work.
@@ -111,7 +112,7 @@ it alone. Unselected recommendations receive no follow-up tracking.
 
 Skip on an observed rate/quota limit, service outage, authentication/tool failure,
 deadline exceeded without a complete return, or unavailable/unverifiable model,
-effort or read-only isolation. Mode selection or observation failures alone are not skip reasons. Give each assignment a bounded deadline at dispatch.
+effort, or an isolation boundary explicitly required by this assignment. Optional isolation or mode setup/verification failures alone are not skip reasons. Give each assignment a bounded deadline at dispatch.
 Before readiness, each additional target must have a returned review, a reference
 to its shared required review, or a recorded skip. Stop only task-owned timed-out
 runs within existing authority; retain partial

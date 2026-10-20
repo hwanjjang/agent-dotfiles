@@ -13,6 +13,10 @@ not authorize implementation. This skill works without starting SDLC.
 1. Read the source and relevant decisions, including current issue discussion
    when an issue is the input. Resolve the requirements authority and destination
    conventions. Do not require an upstream setup skill, label scheme or tracker.
+   When raw documents or meeting notes are the input, use the shared
+   [source-extraction method](../to-spec/references/source-extraction.md) first;
+   keep its citations, proposals and unresolved fields in the handoff. Reuse an
+   existing extracted source record rather than extracting the same material again.
 2. Reuse an adequate task graph. If decomposition is missing or incomplete, use
    [planning-and-task-breakdown](../planning-and-task-breakdown/SKILL.md) to repair
    that same plan. Preserve stable task IDs and agreed granularity. Respect
