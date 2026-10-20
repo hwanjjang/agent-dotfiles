@@ -784,49 +784,54 @@ class Store:
         def skip(reason):
             excluded[reason] = excluded.get(reason, 0) + 1
 
-        try:
-            with self._locked() as files:
-                for task_id in files.names(('tasks',)):
-                    if not KEY.fullmatch(task_id):
+        # A missing store or lock raises: an unreadable store must never look like an empty index.
+        with self._locked() as files:
+            for task_id in files.names(('tasks',)):
+                if not KEY.fullmatch(task_id):
+                    continue
+                try:
+                    rows = self._task_records(files, task_id)
+                except InvalidEvent as error:
+                    if str(error) != 'task_inactive':
+                        raise
+                    skip('inactive')
+                    continue
+                for row in rows:
+                    if row['kind'] != 'experience':
                         continue
+                    value = row['experience']
+                    require(digest(value) == row['experience_digest'], 'corrupt_task')
                     try:
-                        rows = self._task_records(files, task_id)
-                    except InvalidEvent as error:
-                        if str(error) != 'task_inactive':
-                            raise
-                        skip('inactive')
+                        # Re-validate stored fields so a malformed record fails closed.
+                        require(isinstance(value, dict), 'experience_record')
+                        self._experience_payload(**value)
+                    except (InvalidEvent, TypeError):
+                        skip('invalid_record')
                         continue
-                    for row in rows:
-                        if row['kind'] != 'experience':
-                            continue
-                        value = row['experience']
-                        require(digest(value) == row['experience_digest'], 'corrupt_task')
-                        state = self._review_state(rows, row)
-                        if value['cycle'] >= cycle:
-                            skip('later_cycle')
-                        elif state in ('draft', 'reviewed'):
-                            skip('unreviewed')
-                        elif state in ('superseded', 'rejected'):
-                            skip(state)
-                        elif state != 'reusable':
-                            skip('invalid_review')
-                        elif value['exposure'] != 'development':
-                            skip('heldout_or_unknown_exposure')
-                        elif value['grade_derived']:
-                            skip('grade_derived')
-                        elif value['scope'] != scope:
-                            skip('other_scope')
-                        else:
-                            entries.append(dict(
-                                task_id=task_id, experience_id=row['record_id'],
-                                experience_digest=row['experience_digest'],
-                                cycle=value['cycle'], scope=value['scope'],
-                                decision=value['comparison']['decision'],
-                                edits=[dict(component=e['component'], verdict=e['verdict'])
-                                       for e in value['edits']],
-                                lesson_cue='NO_ENTRY' if value['lesson'] is None else value['lesson']['cue']))
-        except FileNotFoundError:
-            pass
+                    state = self._review_state(rows, row)
+                    if value['cycle'] >= cycle:
+                        skip('later_cycle')
+                    elif state in ('draft', 'reviewed'):
+                        skip('unreviewed')
+                    elif state in ('superseded', 'rejected'):
+                        skip(state)
+                    elif state != 'reusable':
+                        skip('invalid_review')
+                    elif value['exposure'] != 'development':
+                        skip('heldout_or_unknown_exposure')
+                    elif value['grade_derived']:
+                        skip('grade_derived')
+                    elif value['scope'] != scope:
+                        skip('other_scope')
+                    else:
+                        entries.append(dict(
+                            task_id=task_id, experience_id=row['record_id'],
+                            experience_digest=row['experience_digest'],
+                            cycle=value['cycle'], scope=value['scope'],
+                            decision=value['comparison']['decision'],
+                            edits=[dict(component=e['component'], verdict=e['verdict'])
+                                   for e in value['edits']],
+                            lesson_cue='NO_ENTRY' if value['lesson'] is None else value['lesson']['cue']))
         entries.sort(key=lambda entry: (entry['task_id'], entry['experience_id']))
         index = dict(cycle=cycle, scope=scope, entries=entries)
         return dict(index, status='frozen', excluded=excluded, index_digest=digest(index))

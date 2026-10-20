@@ -7,9 +7,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from account.observation.cases import public_case
-from account.observation.store import InvalidEvent, Store
+from account.observation.store import InvalidEvent, Store, digest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts/improvement'))
@@ -175,8 +176,35 @@ class ExperienceIndexTests(ExperienceFixture):
     def test_revoked_task_is_inactive_and_purged(self):
         record = self.add(); self.review(record)
         self.store.revoke(self.grant['registration_id'])
+        self.assertFalse((self.store.root / 'tasks' / self.task['task_id']).exists())
         index = self.store.experience_index(cycle=2, scope='to-tickets')
         self.assertEqual(index['entries'], [])
+
+    def test_same_cycle_and_rejected_entries_are_excluded(self):
+        same = self.add('same', cycle=2); self.review(same, request_id='r-same')
+        rejected = self.add('rejected'); self.review(rejected, status='rejected', request_id='r-rej')
+        index = self.store.experience_index(cycle=2, scope='to-tickets')
+        self.assertEqual((index['entries'], index['excluded']), ([], {'later_cycle': 1, 'rejected': 1}))
+
+    def test_missing_store_or_lock_is_an_error_not_an_empty_index(self):
+        empty = self.base / 'empty-home'; empty.mkdir()
+        with self.assertRaises(FileNotFoundError):
+            Store(empty).experience_index(cycle=2, scope='to-tickets')
+        (self.store.root / 'store.lock').unlink()
+        with self.assertRaises(FileNotFoundError):
+            self.store.experience_index(cycle=2, scope='to-tickets')
+
+    def test_corrupted_record_fields_never_pass(self):
+        record = self.add(); self.review(record)
+        directory = self.store.root / 'tasks' / self.task['task_id']
+        for path in directory.glob('*.json'):
+            row = json.loads(path.read_text())
+            if row['kind'] == 'experience':
+                row['experience']['grade_derived'] = 0
+                row['experience_digest'] = digest(row['experience'])
+                path.write_text(json.dumps(row))
+        index = self.store.experience_index(cycle=2, scope='to-tickets')
+        self.assertEqual((index['entries'], index['excluded']), ([], {'invalid_record': 1}))
 
 
 class PackageTests(ExperienceFixture):
@@ -296,6 +324,31 @@ class PackageTests(ExperienceFixture):
         self.assertTrue(experience.excluded('.answers/key.json', ['.answers']))
         self.assertTrue(experience.excluded('nested/.answers/key.json', ['.answers']))
         self.assertFalse(experience.excluded('.answers-public/notes.md', ['.answers']))
+
+    def test_reads_do_not_follow_parent_symlinks_even_after_a_check(self):
+        # Simulate a swap after any path check: the read itself must refuse the symlinked parent.
+        private = self.base / 'private'; private.mkdir(); (private / 'trajectory.txt').write_text('secret\n')
+        alias = self.base / 'alias'; os.symlink(private, alias)
+        with mock.patch.object(experience, 'canonical', lambda path: Path(os.path.abspath(path))):
+            self.assertEqual(experience.read_text(alias / 'trajectory.txt'), (None, 'symlink_in_path'))
+            manifest = experience.build_package(self.base / 'swapped', self.spec(baseline_dir=str(alias)))
+        self.assertIn(('baseline', 'symlink_in_path'), {(g['item'], g['reason']) for g in manifest['gaps']})
+        self.assertFalse((self.base / 'swapped/baseline').exists())
+
+    def test_output_inside_an_input_tree_is_refused(self):
+        with self.assertRaisesRegex(InvalidEvent, 'package_overlaps_input'):
+            experience.build_package(self.baseline / 'package', self.spec())
+        with self.assertRaisesRegex(InvalidEvent, 'package_overlaps_input'):
+            experience.build_package(self.candidate / 'nested-package', self.spec())
+        self.assertFalse((self.baseline / 'package').exists())
+
+    def test_hard_links_are_skipped(self):
+        outside = self.base / 'outside.txt'; outside.write_text('outside\n')
+        os.link(outside, self.candidate / 'skills/hard.txt')
+        manifest = self.build()
+        self.assertFalse((self.output / 'candidates/cand1/skills/hard.txt').exists())
+        self.assertIn(('candidates/cand1/skills/hard.txt', 'hardlink_skipped'),
+                      {(g['item'], g['reason']) for g in manifest['gaps']})
 
     def test_symlinks_are_not_followed(self):
         os.symlink(self.base / 'trajectory.txt', self.candidate / 'skills/link.txt')

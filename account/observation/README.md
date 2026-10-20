@@ -405,7 +405,8 @@ python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" package \
 
 `add` reads `task_id`, `case_id`, `case_digest`, `request_id`, `cycle`, `scope`,
 `exposure`, `grade_derived`, `candidate`, `comparison`, `edits` and `lesson` from
-stdin.
+stdin. Here `case_id` is the private case record ID returned by `prepare`, not the
+public `case_id` inside the exported case JSON that `package` uses.
 
 `review` appends a status: `reviewed`, `reusable`, `superseded` or `rejected`. The
 latest review decides the entry's status.
@@ -414,7 +415,9 @@ latest review decides the entry's status.
 entries with development exposure, no grade-derived content, the requested scope,
 and a cycle earlier than the requested one. It reports excluded entries as counts
 by reason, never their content. A missing or unrecognized review status counts
-as `unreviewed` or `invalid_review` and never passes. Each entry names its task,
+as `unreviewed` or `invalid_review`, and a malformed stored record counts as
+`invalid_record`; neither passes. A missing store or lock file is an error, never
+an empty index. Each entry names its task,
 so `show` can open the full record, including edit rows and the lesson. The
 `index_digest` stays the same for unchanged inputs; record it with the candidate.
 
@@ -440,8 +443,11 @@ Package safety rules:
   such as `.answers`, excludes that path and everything below it.
 - Pass canonical absolute paths. An input path whose directories include a
   symlink is reported as `symlink_in_path` and not read. A symlinked file is
-  reported as `symlink_skipped`. An output directory below a symlinked parent is
-  refused.
+  reported as `symlink_skipped`, and a file with more than one hard link as
+  `hardlink_skipped`. Every path is opened one directory at a time without
+  following links, so a symlink swapped in after a check is still refused. An
+  output directory below a symlinked parent, or inside or above an input tree,
+  is refused.
 - Files are copied without execute permission.
 - The package is not reviewed for privacy. Supply only approved development
   evidence.

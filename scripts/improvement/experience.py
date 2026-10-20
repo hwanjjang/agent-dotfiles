@@ -53,31 +53,70 @@ def canonical(path):
     return absolute if Path(os.path.realpath(absolute)) == absolute else None
 
 
-def read_text(path):
-    """Return (text, status) without following symlinks; never raises for unreadable evidence."""
-    if not path:
-        return None, 'missing'
-    path = Path(path)
-    parent = canonical(path.parent) if path.is_absolute() else None
-    if parent is None:
-        return (None, 'symlink_in_path') if os.path.lexists(path) else (None, 'missing')
-    path = parent / path.name
+def open_beneath(path, *, directory=False):
+    """Open an absolute path one component at a time without following any symlink.
+
+    Returns (fd, status). Because every component is opened relative to its parent's
+    descriptor, a symlink swapped in after an earlier check is refused at open time.
+    """
+    parts = Path(os.path.abspath(path)).parts
+    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
     try:
-        info = os.lstat(path)
-    except FileNotFoundError:
-        return None, 'missing'
-    if stat.S_ISLNK(info.st_mode):
-        return None, 'symlink_skipped'
-    if not stat.S_ISREG(info.st_mode):
-        return None, 'not_regular'
-    if info.st_size > FILE_LIMIT:
-        return None, 'oversized'
+        for name in parts[1:-1]:
+            try:
+                child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            except FileNotFoundError:
+                return None, 'missing'
+            except (NotADirectoryError, OSError):
+                return None, 'symlink_in_path'
+            os.close(fd)
+            fd = child
+        try:
+            info = os.stat(parts[-1], dir_fd=fd, follow_symlinks=False)
+        except FileNotFoundError:
+            return None, 'missing'
+        if stat.S_ISLNK(info.st_mode):
+            return None, 'symlink_in_path' if directory else 'symlink_skipped'
+        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | (os.O_DIRECTORY if directory else 0)
+        try:
+            return os.open(parts[-1], flags, dir_fd=fd), 'present'
+        except OSError as error:
+            return None, 'unavailable: ' + type(error).__name__
+    finally:
+        os.close(fd)
+
+
+def read_fd(fd):
+    """Read one opened regular file as UTF-8 text; never raises for unreadable evidence."""
     try:
-        return path.read_bytes().decode('utf-8'), 'present'
+        opened = os.fstat(fd)
+        if not stat.S_ISREG(opened.st_mode):
+            return None, 'not_regular'
+        if opened.st_nlink != 1:
+            return None, 'hardlink_skipped'
+        if opened.st_size > FILE_LIMIT:
+            return None, 'oversized'
+        with os.fdopen(fd, 'rb', closefd=False) as stream:
+            body = stream.read(FILE_LIMIT + 1)
+        if len(body) > FILE_LIMIT:
+            return None, 'oversized'
+        return body.decode('utf-8'), 'present'
     except UnicodeDecodeError:
         return None, 'unavailable: not UTF-8 text'
     except OSError as error:
         return None, 'unavailable: ' + type(error).__name__
+    finally:
+        os.close(fd)
+
+
+def read_text(path):
+    """Return (text, status) for an absolute path without following any symlink."""
+    if not path or not Path(path).is_absolute() or canonical(Path(path).parent) is None:
+        if path and os.path.lexists(path):
+            return None, 'symlink_in_path' if Path(path).is_absolute() else 'unavailable: relative path'
+        return None, 'missing'
+    fd, status = open_beneath(path)
+    return (None, status) if fd is None else read_fd(fd)
 
 
 class Package:
@@ -103,29 +142,45 @@ class Package:
 
     def tree(self, label, source, patterns):
         """Copy a tree as inert text; return {relative path: text} for diffs."""
-        safe = canonical(source)
-        if safe is None:
+        if canonical(source) is None:
             self.gap(label, 'symlink_in_path' if os.path.lexists(source) else 'missing')
             return None
-        source = safe
-        if not source.is_dir():
-            self.gap(label, 'missing')
+        root, status = open_beneath(source, directory=True)
+        if root is None:
+            self.gap(label, status)
             return None
         copied = {}
-        for directory, names, files in os.walk(source, followlinks=False):
-            names.sort()
-            for name in sorted(files) + [n for n in names if (Path(directory) / n).is_symlink()]:
-                relative = (Path(directory) / name).relative_to(source).as_posix()
-                if excluded(relative, patterns):
-                    self.excluded.append(f'{label}/{relative}')
-                    continue
-                text, status = read_text(Path(directory) / name)
-                if status != 'present':
-                    self.gap(f'{label}/{relative}', status)
-                    continue
-                require(len(copied) < MAX_FILES, 'package_capacity')
-                copied[relative] = text
-                self.write(f'{label}/{relative}', text)
+        try:
+            # fwalk hands out directory descriptors, so files are opened beneath an already-open directory.
+            for directory, names, files, dir_fd in os.fwalk('.', dir_fd=root, follow_symlinks=False):
+                names.sort()
+                prefix = Path(directory)
+                for name in sorted(files + names):
+                    relative = (prefix / name).as_posix().removeprefix('./')
+                    info = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+                    if stat.S_ISDIR(info.st_mode):
+                        continue
+                    if excluded(relative, patterns):
+                        self.excluded.append(f'{label}/{relative}')
+                        continue
+                    if stat.S_ISLNK(info.st_mode):
+                        self.gap(f'{label}/{relative}', 'symlink_skipped')
+                        continue
+                    try:
+                        fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=dir_fd)
+                    except OSError as error:
+                        self.gap(f'{label}/{relative}', 'unavailable: ' + type(error).__name__)
+                        continue
+                    text, status = read_fd(fd)
+                    if status != 'present':
+                        self.gap(f'{label}/{relative}', status)
+                        continue
+                    require(len(copied) < MAX_FILES, 'package_capacity')
+                    copied[relative] = text
+                    self.write(f'{label}/{relative}', text)
+                names[:] = [n for n in names if not excluded((prefix / n).as_posix().removeprefix('./'), patterns)]
+        finally:
+            os.close(root)
         return copied
 
 
@@ -156,6 +211,12 @@ def build_package(destination, spec):
     require(isinstance(spec['candidates'], dict) and all(token(k) for k in spec['candidates'])
             and isinstance(spec['results'], list) and isinstance(spec['exclude'], list), 'package_fields')
     patterns = [normalize_pattern(p) for p in spec['exclude']]
+    target = Path(os.path.abspath(destination))
+    for source in [spec['baseline_dir'], *spec['candidates'].values()]:
+        source = Path(os.path.abspath(source)) if isinstance(source, str) and source else None
+        # Writing inside an input tree would copy the package into itself.
+        require(source is None or not (target == source or source in target.parents
+                                       or target in source.parents), 'package_overlaps_input')
     package = Package(destination)
     package.write('case.json', json.dumps(case, indent=2, sort_keys=True) + '\n')
     package.write('experience-index.json', json.dumps(index, indent=2, sort_keys=True) + '\n')
