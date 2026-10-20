@@ -217,8 +217,14 @@ class Package:
                     relative = (prefix / name).as_posix().removeprefix('./')
                     if excluded(relative, patterns):
                         self.excluded.append(f'{label}/{relative}/')
-                    else:
-                        kept.append(name)
+                        continue
+                    # Probe before fwalk descends: its onerror reports only the basename of a nested failure.
+                    try:
+                        os.close(os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=dir_fd))
+                    except OSError as error:
+                        self.gap(f'{label}/{relative}', 'unavailable: ' + type(error).__name__)
+                        continue
+                    kept.append(name)
                 names[:] = kept
         finally:
             os.close(root)

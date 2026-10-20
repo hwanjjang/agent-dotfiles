@@ -367,6 +367,22 @@ class PackageTests(ExperienceFixture):
         self.assertIn(('baseline/skills', 'unavailable: PermissionError'),
                       {(g['item'], g['reason']) for g in manifest['gaps']})
 
+    def test_nested_unreadable_directories_keep_their_full_paths(self):
+        for side in ('left', 'right'):
+            (self.baseline / side / 'denied').mkdir(parents=True)
+            (self.baseline / side / 'denied' / 'note.md').write_text(side + '\n')
+        real = os.open
+        def refusing(path, flags, *args, **kwargs):
+            if os.path.basename(os.fspath(path)) == 'denied' and flags & os.O_DIRECTORY:
+                raise PermissionError(13, 'Permission denied', path)
+            return real(path, flags, *args, **kwargs)
+        with mock.patch.object(experience.os, 'open', refusing):
+            manifest = self.build()
+        gaps = {(g['item'], g['reason']) for g in manifest['gaps']}
+        self.assertIn(('baseline/left/denied', 'unavailable: PermissionError'), gaps)
+        self.assertIn(('baseline/right/denied', 'unavailable: PermissionError'), gaps)
+        self.assertNotIn(('baseline/denied', 'unavailable: PermissionError'), gaps)
+
     def test_pruned_directories_are_reported_as_excluded(self):
         manifest = self.build(exclude=['.answers'])
         self.assertIn('baseline/.answers/', manifest['excluded'])
