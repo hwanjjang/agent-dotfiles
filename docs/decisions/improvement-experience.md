@@ -1,8 +1,10 @@
 # Improvement experience selection
 
 Decision date: 2026-10-20. Status: adopted as design guidance for
-[issue #80](https://github.com/hwanjjang/agent-dotfiles/issues/80); private storage and
-retrieval are not implemented. The
+[issue #80](https://github.com/hwanjjang/agent-dotfiles/issues/80). Private storage, the
+frozen index and author packages are a manual CLI
+([store guide](../../account/observation/README.md#record-and-retrieve-improvement-experience)); automated use in a
+candidate-authoring loop is not implemented. The
 [account improvement design](account-improvement-loop.md#learn-from-earlier-attempts)
 owns the rules. This note records the sources, the choice and its limits.
 Community validation is **provisional**.
@@ -145,8 +147,8 @@ with its own case.
 
 ## Verification boundary
 
-This change defines design rules, a worked example and authoring guidance.
-Retrieval, persistence and package generation are separate work in
-[#81](https://github.com/hwanjjang/agent-dotfiles/issues/81). The heuristic
+The design defines rules and a worked example; [#81](https://github.com/hwanjjang/agent-dotfiles/issues/81)
+adds offline-tested private storage, retrieval and packaging with synthetic
+fixtures only. No real candidate has used them yet. The heuristic
 evaluation is a bounded pre-change check. It does not show how installed clients
 behave in ordinary work.

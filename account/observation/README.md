@@ -378,6 +378,61 @@ The [reviewed-case walkthrough](../../docs/manual/reviewed-cases.pdf) and
 [recipe](../../docs/verification/verify-repository/features/reviewed-cases.md) cover
 actual synthetic prepare/show/review/export, refusal and purge scenarios.
 
+## Record and retrieve improvement experience
+
+An improvement experience records what one candidate attempt showed, following the
+[design contract](../../docs/decisions/account-improvement-loop.md#learn-from-earlier-attempts).
+Records are task records under the same task consent: revoking or pruning the task
+removes them. Each record references a reviewed case and needs:
+
+- per-component edit rows (`helped`, `hurt`, `no_observed_effect`, `confounded`);
+- one lesson, or `null` for `NO_ENTRY`;
+- a caller-declared `cycle`, `scope` and `exposure` (`development`, `heldout`, `unknown`);
+- `grade_derived`, the candidate tree digests and the comparison decision.
+
+A record never replaces the comparison's grades.
+
+```sh
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" add < experience.json
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" review --task TASK \
+  --experience EXPERIENCE --digest DIGEST --reviewer maintainer --status reusable --request-id R1
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" index --cycle 3 --scope to-tickets
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" package \
+  --input package.json --output /absolute/new/package
+```
+
+`add` reads `task_id`, `case_id`, `case_digest`, `request_id`, `cycle`, `scope`,
+`exposure`, `grade_derived`, `candidate`, `comparison`, `edits` and `lesson` from
+stdin.
+
+`review` appends a status: `reviewed`, `reusable`, `superseded` or `rejected`. The
+latest review decides the entry's status.
+
+`index` freezes the entries to give a candidate author. It includes only `reusable`
+entries with development exposure, no grade-derived content, the requested scope,
+and a cycle earlier than the requested one. It reports excluded entries as counts
+by reason, never their content. Its `index_digest` stays the same for unchanged
+inputs; record it with the candidate.
+
+`package` writes a new directory for the author:
+
+- the exported case, the index, inert text copies of the baseline and candidate
+  trees, and diffs against the original baseline;
+- for results whose case ID and `case_input_digest` match the current case,
+  separate trajectory and rendered-artifact files with their own statuses;
+- a manifest and a README listing present items, explicit gaps, excluded paths
+  and authoring/execution costs (`unknown` when not recorded).
+
+Package safety rules:
+
+- A result for changed case inputs is reported as `stale_result` and not copied.
+- A rendering failure never replaces the trajectory.
+- Exclusion patterns remove only a leading `./`, so `.answers/**` still excludes
+  `.answers/key.json` but not `answers/notes.md`.
+- Files are copied without execute permission, and symlinks are not followed.
+- The package is not reviewed for privacy. Supply only approved development
+  evidence.
+
 ## Verification
 
 ```sh
@@ -385,6 +440,7 @@ python3.11 -m unittest discover -s tests -p 'test_observation_store.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_cli.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_feedback*.py' -v
 python3.11 -m unittest discover -s tests -p 'test_improvement_cases*.py' -v
+python3.11 -m unittest discover -s tests -p 'test_improvement_experience.py' -v
 ```
 
 Tests use temporary homes and synthetic records. They cover scope isolation,

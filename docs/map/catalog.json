@@ -2634,11 +2634,11 @@
       "when": [
         "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change."
       ],
-      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; read the frozen index of reusable improvement experience first and open entries selectively; bind the baseline, diff and resulting identity before comparison.",
+      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; read the frozen index of reusable improvement experience first (scripts/improvement/experience.py index; see account/observation/README.md) and open entries selectively; bind the baseline, diff and resulting identity before comparison.",
       "behavior": [
         "Check infrastructure and routing causes before adding instructions.",
         "Keep graders, fixtures and hidden answers outside the updater; do not change them during an experiment.",
-        "Record an improvement experience for every attempt: per-component verdicts (helped, hurt, no observed effect, confounded) and one lesson or NO_ENTRY; private storage and retrieval are not implemented yet.",
+        "Record an improvement experience for every attempt: per-component verdicts (helped, hurt, no observed effect, confounded) and one lesson or NO_ENTRY in the private store; package approved evidence with explicit gaps.",
         "Propose, probe and compose exploration is documented but not active."
       ],
       "outputs": [

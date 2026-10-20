@@ -5,9 +5,9 @@ This is a published, sanitized example of an
 record. It is derived only from the public
 [development comparison evidence](native-development-pilot-2026-10-19.md) and
 [#27](https://github.com/hwanjjang/agent-dotfiles/issues/27). It adds no new run and
-does not change that comparison's **reject** decision. A canonical private record
-and its retrieval are not implemented yet
-([#81](https://github.com/hwanjjang/agent-dotfiles/issues/81)).
+does not change that comparison's **reject** decision. No canonical private record
+of this attempt exists; the [store guide](../../account/observation/README.md#record-and-retrieve-improvement-experience)
+describes how one would be recorded.
 
 ## Edit rows
 

@@ -375,8 +375,9 @@ only relevant entries. The index excludes:
 Later exposure follows the held-out reclassification rules below.
 
 **Storage.** Canonical records, attempt history and retrieval state stay private,
-under the observation store's ownership. That store does not yet accept this
-record kind; see [#81](https://github.com/hwanjjang/agent-dotfiles/issues/81).
+under the observation store's ownership; the
+[store guide](../../account/observation/README.md#record-and-retrieve-improvement-experience) owns the
+commands.
 Publish only sanitized examples that are understandable on their own, through a
 reviewed PR under `docs/evidence/`. The first is the
 [development pilot example](../evidence/improvement-experience-pilot-2026-10-19.md).
