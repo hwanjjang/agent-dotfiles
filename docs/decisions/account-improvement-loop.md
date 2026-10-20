@@ -406,8 +406,8 @@ Conditions for such a round:
 - A claim about one component's contribution needs a matching ablation: the
   targeted third arm described under [Frozen comparison](#frozen-comparison).
   The evaluator compares only baseline and candidate
-  (`scripts/improvement/evaluation.py`), so that arm currently runs as its own
-  frozen pairwise experiment.
+  (`scripts/improvement/evaluation.py`), so that arm has to be its own frozen
+  pairwise experiment.
 - Results are development signals, not promotion evidence.
 
 Activate this round only when a concrete candidate has competing hypotheses. See
