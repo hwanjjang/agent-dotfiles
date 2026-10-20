@@ -165,7 +165,9 @@ Main publishes attributed results; the builder implements all selected fixes.
 
 ## 2026-10-15 optional reviewer permission-mode configuration
 
-Source: AK requested that permission-mode setup be optional and that reviewers continue read-only if it cannot be set. This supersedes previous mandatory auto/full mode requirements. Required and optional reviewers may use an omitted, default or unverified mode when read-only isolation under existing permissions is verified and recorded. Session-only restrictions may narrow access; no global permission edits, bypass/escalation or new accounts are granted. A mode-setting failure alone is not reviewer unavailability. Model/effort/independence, required checks, finding resolution, authority and integration gates remain unchanged. Use the [host contract](../host-adapters.md#read-only-review-with-optional-mode-settings) and retain actual execution and source-integrity evidence.
+AK made permission-mode setup optional on 2026-10-15. The former isolation
+prerequisite was superseded by the 2026-10-20 amendment below. Preserve historical
+receipts and apply the [current host contract](../host-adapters.md#read-only-review-with-optional-mode-settings).
 
 ## Public distribution scope amendment
 
@@ -186,3 +188,16 @@ Follow the [single-assignment contract](../optional-reviewers.md#one-assignment-
 and [receipt mapping](../state-contract.md#shared-review-records). They supersede
 earlier separate-context and literal-medium requirements for shared reviews.
 Preserve the required review gates and the actual execution history.
+
+## 2026-10-20 optional enforced reviewer isolation
+
+Source: AK explicitly changed mandatory read-only isolation to an option. Prefer
+supported isolation; if unavailable/unverified, proceed with existing permissions
+and a bounded review-only assignment, recording the actual limitations. This
+applies to required, additional and explicitly requested reviewers. Do not skip or
+repeatedly probe merely to establish optional isolation. Only an explicit
+`read_only_required: true` assignment requires proof. Verified claims must retain
+evidence; source integrity and reviewer action scope still apply. This supersedes
+earlier mandatory isolation wording while preserving model/effort, independence,
+finding resolution and authorization/endpoint gates. No permission escalation,
+new accounts, source edits or production actions are granted.

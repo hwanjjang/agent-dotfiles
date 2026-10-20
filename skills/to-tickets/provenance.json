@@ -14,11 +14,13 @@
     "Retains outcome tickets and blocker mapping; adds source-commitment and connector coverage checks.",
     "Reuses issue-writing and shared lifecycle/publication authority, stable identifiers and uncertain-write reconciliation.",
     "Replaces upstream setup, fixed labels, scratch paths and explicit-only metadata with portable defaults; no implied implementation.",
-    "Consolidated repeated rules into their existing policy/planning/body authorities; consuming steps link to those rules and retain only adapter-specific actions."
+    "Consolidated repeated rules into their existing policy/planning/body authorities; consuming steps link to those rules and retain only adapter-specific actions.",
+    "Raw document/meeting input reuses to-spec source-extraction reference with citations and unresolved fields; avoids a competing extraction or publication method."
   ],
   "skill_dependencies": [
     "planning-and-task-breakdown",
-    "issue-writing"
+    "issue-writing",
+    "to-spec"
   ],
   "policy_dependencies": [
     "policies/issue-workflow.md",

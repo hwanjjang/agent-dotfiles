@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/NousResearch/hermes-agent",
+  "revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
+  "path": "skills/research/grounded-citations",
+  "license": "MIT",
+  "license_path": "LICENSE",
+  "retrieved": "2026-10-20",
+  "upstream_files": {
+    "SKILL.md": "19fba3a4ceedf768af6851e094b268a66b62af750d4d0689c5d62d5d50c032b6",
+    "scripts/sources.py": "0c216e29e092faedcaa1ebae129db15dfc100465169490704b3628446db96788"
+  },
+  "upstream_license_sha256": "821556e6336796450ab852d375117b48a4887e71d255794fd6318d99982a5ab6",
+  "adaptations": [
+    "Portable focused entry point with explicit per-task --ledger; removed Hermes runtime import and account-global defaults.",
+    "Preserved retrieved source registration, quote matching, rendering and reference/evidence checks; one writer per register.",
+    "Never steal an active lock on timeout; reject non-HTTP(S) and credential URLs before changing the ledger.",
+    "Use host-supported chat citations; helper validation is scoped to numbered Markdown reports, not truth, entailment or other rendered formats.",
+    "No automatic skill installs, universal citation format or mandatory coverage threshold.",
+    "Review correction: recognize Sources headings only outside Markdown fences; preserve fenced examples and later prose during verification and source-block replacement."
+  ],
+  "skill_dependencies": [],
+  "policy_dependencies": [
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "Python 3.10+ standard library; writable selected task-local register. Retrieval is supplied by the host."
+  ],
+  "validation": "CLI and dependency portability checks are recorded in docs/decisions/account-content-preservation.md; native routing and live research effectiveness are separate, unclaimed checks."
+}

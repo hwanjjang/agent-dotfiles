@@ -393,14 +393,14 @@ def validate_reviewer_configuration(review, revised=False, expected_effort="medi
             'Review cannot select reviewer effort authority')
     read_only = (review.get('read_only_verified') is True
                  and nonempty(review.get('read_only_evidence')))
-    # Preserve historical receipts; new templates require explicit read-only evidence.
-    legacy_mode = (review.get('mode') in ('auto', 'full')
-                   and review.get('requested_mode') == review['mode']
-                   and review.get('mode_verified') is True)
-    if 'read_only_verified' in review or 'read_only_evidence' in review:
-        require(read_only, 'Reviewer read-only boundary must be verified with evidence')
-    require(read_only or legacy_mode,
-            'Reviewer needs verified read-only isolation; permission-mode configuration is optional')
+    # Isolation is optional unless the assignment explicitly opts in. Never turn
+    # an unavailable boundary into a verified claim or weaken other review gates.
+    require(type(review.get('read_only_required', False)) is bool,
+            'Reviewer read_only_required must be boolean')
+    if review.get('read_only_verified') is True:
+        require(read_only, 'A verified read-only claim needs actual evidence')
+    if review.get('read_only_required') is True:
+        require(read_only, 'This assignment requires verified read-only isolation')
 
 
 def validate_review(review, candidate, revised=False, expected_effort="medium", effort_authority=None):

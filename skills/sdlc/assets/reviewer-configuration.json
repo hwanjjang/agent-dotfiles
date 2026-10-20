@@ -28,6 +28,7 @@
   "author_changes_remaining": [],
   "reviewer_effort_authority": null,
   "shared_optional_review": null,
+  "read_only_required": false,
   "read_only_verified": false,
   "read_only_evidence": ""
 }

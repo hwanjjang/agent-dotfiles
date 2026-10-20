@@ -19,14 +19,20 @@ def assess(observation):
             and observation['read_only_evidence'].strip()):
         return {'decision': 'read-only', 'mode': observation.get('effective_mode'),
                 'mode_verified': observation.get('mode_verified') is True}
-    if 'read_only_verified' in observation or 'read_only_evidence' in observation:
+    if observation.get('read_only_verified') is True:
         return {'decision': 'probe-required',
-                'reason': 'Explicit read-only boundary proof is incomplete.'}
+                'reason': 'A verified read-only claim needs actual evidence.'}
+    if observation.get('read_only_required') is True:
+        return {'decision': 'probe-required',
+                'reason': 'This assignment explicitly requires verified read-only isolation.'}
     if (observation.get('effective_mode') in ('auto', 'full')
             and observation.get('mode_verified') is True and has_evidence):
         return {'decision': 'verified-mode', 'mode': observation['effective_mode']}
-    return {'decision': 'probe-required',
-            'reason': 'Verify a read-only boundary under existing permissions; mode configuration is optional.'}
+    return {'decision': 'existing-permissions',
+            'mode': observation.get('effective_mode'),
+            'mode_verified': observation.get('mode_verified') is True,
+            'read_only_verified': False,
+            'reason': 'Read-only isolation and mode configuration are optional; record limitations and continue within review scope.'}
 
 
 def main():

@@ -345,7 +345,8 @@
         "Sketch caller usage, types, signatures, state ownership and recovery behavior before filling in implementation.",
         "For consequential choices, use arena with three providers when available and permitted; record actual participation and capability gaps.",
         "Compare interface depth, testability, migration and operational cost; validate disputed claims with focused experiments.",
-        "Record the selected design, rejected alternatives and assumptions that must be checked during implementation."
+        "Record the selected design, rejected alternatives and assumptions that must be checked during implementation.",
+        "For empirical uncertainty, run a bounded disposable feasibility experiment and retain a validated, partial or invalidated result with conditions."
       ],
       "outputs": [
         "A selected interface/ownership design with caller examples, rationale and open questions."
@@ -377,7 +378,8 @@
         ],
         "adaptation_notes": [
           "AK is design-only by default. The reference map describes upstream architect proceeding into implementation.",
-          "Three providers is an AK preference for consequential decisions, not a universal pstack requirement."
+          "Three providers is an AK preference for consequential decisions, not a universal pstack requirement.",
+          "Hermes spike contributes the conditional feasibility-experiment reference; the existing architect remains the design owner."
         ],
         "calls": [
           "how",
@@ -391,6 +393,10 @@
           {
             "label": "Local adoption and differences",
             "source": "skills/architect/provenance.json"
+          },
+          {
+            "label": "Feasibility experiment method",
+            "source": "skills/architect/references/feasibility-experiments.md"
           }
         ]
       }
@@ -1154,6 +1160,7 @@
         "Choose comparable design alternatives when warranted; execute independent authorized implementation slices with isolated resources, explicit owners and serial integration.",
         "Verify the combined candidate with the single tdd method or its explicit alternatives, additional integrated smoke and affected documentation/manual checks.",
         "For PR work, select eligible independent reviewers, deduplicate matching required/additional roles and apply code-review-and-quality inside each assigned context. Preserve findings through fallback, correction and renewed review.",
+        "Treat enforced reviewer isolation as optional unless explicitly required; record actual evidence and limitations while retaining model, effort, independence and action limits.",
         "Stop at the selected endpoint. Pre-merge means verified readiness without merge authority; an authorized merge requires current head/base and gate checks followed by remote integration verification."
       ],
       "outputs": [
@@ -1367,7 +1374,8 @@
       ],
       "usage": "Read this policy and preserve destination instructions and task authority.",
       "behavior": [
-        "Defines scoped expectations; installation and deterministic enforcement are separate."
+        "Defines scoped expectations; installation and deterministic enforcement are separate.",
+        "Use grounded-citations when a source register helps research/document claims; incidental lookups need no ledger."
       ],
       "outputs": [
         "A selected shared rule with a clear application boundary."
@@ -2125,6 +2133,7 @@
       "usage": "Load skills/to-tickets/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use to-tickets to turn the agreed plan into local ticket drafts with blockers and acceptance criteria. Resolve the methods named in the skill before use; invoke conditional dependencies only when their trigger applies.",
       "behavior": [
         "Resolve the source authority, existing task graph and requested destination.",
+        "For raw document/meeting input, reuse the shared to-spec source-extraction reference and preserve citations and unresolved fields.",
         "Reuse planning-and-task-breakdown to repair missing decomposition in the same plan, preserving stable task IDs.",
         "Check source and connector coverage before converting each task into an issue body.",
         "Use issue-writing for acceptance and body structure; reference the plan instead of copying another spec.",
@@ -2167,7 +2176,8 @@
         ],
         "calls": [
           "planning-and-task-breakdown",
-          "issue-writing"
+          "issue-writing",
+          "to-spec"
         ],
         "sources": [
           {
@@ -2177,6 +2187,10 @@
           {
             "label": "Local adoption and differences",
             "source": "skills/to-tickets/provenance.json"
+          },
+          {
+            "label": "Shared source extraction",
+            "source": "skills/to-spec/references/source-extraction.md"
           }
         ]
       }
@@ -2287,11 +2301,13 @@
       "summary": "Synthesize agreed requirements and repository evidence into one behavior specification with observable acceptance, preserving existing scope and unresolved decisions.",
       "when": [
         "The agreed change needs a durable specification across sessions.",
-        "An existing spec must be updated without losing retained behavior, constraints or acceptance."
+        "An existing spec must be updated without losing retained behavior, constraints or acceptance.",
+        "Documents or meeting notes need to become requirements while preserving proposals and uncertainty."
       ],
       "usage": "Load skills/to-spec/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use to-spec to capture the agreed export behavior and access constraints in the existing spec. Do not publish tickets.",
       "behavior": [
         "Locate the current requirements authority, spec, glossary and relevant source evidence.",
+        "Extract source locations, modality and confirmed commitments from documents/meeting notes; keep proposals and unresolved owners/dates visible.",
         "Preserve agreed scope and distinguish retained, changed and new behavior where it matters.",
         "Write observable requirements, relevant contracts and verification approaches; leave consequential unmade decisions explicit.",
         "Reuse acceptance IDs and adequate existing checks; proposed tests remain strategy, not execution evidence.",
@@ -2339,6 +2355,10 @@
           {
             "label": "Local adoption and differences",
             "source": "skills/to-spec/provenance.json"
+          },
+          {
+            "label": "Shared document/meeting source extraction",
+            "source": "skills/to-spec/references/source-extraction.md"
           }
         ]
       }
@@ -2530,7 +2550,7 @@
       ],
       "usage": "Use the incomplete-mode-discovery section of the existing SDLC host adapter contract; retain all required review gates.",
       "behavior": [
-        "Keep actual account settings local and classify launch, quota and isolation failures honestly."
+        "Reuse supported routes and classify real launch/quota failures honestly; optional isolation gaps are recorded rather than treated as provider unavailability."
       ],
       "outputs": [
         "A reusable supported route or a concrete review gap, without duplicate reviewers."
@@ -2881,6 +2901,70 @@
         "synthetic",
         "dispatch"
       ]
+    },
+    {
+      "id": "grounded-citations",
+      "title": "Grounded citations",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/grounded-citations/SKILL.md",
+      "summary": "Keep retrieved sources and supporting quotes in one task-local register and verify numbered report references without imposing a chat citation format.",
+      "when": [
+        "Research or source-heavy documents need traceable retrieved sources and supporting quotes."
+      ],
+      "usage": "Read the skill; choose one task-local --ledger path. Register sources during retrieval, assess quotes and run applicable report checks. See the worked CLI example.",
+      "behavior": [
+        "Register actual retrieved HTTP(S) URLs and titles before drafting; preserve source context and gaps.",
+        "Match supporting quotes to supplied retrieved text; manually assess claim support and source reliability.",
+        "Use destination-supported citations; verify numbered Markdown report IDs, URLs and optional evidence.",
+        "Keep state local to the selected task; no Hermes runtime, retrieval backend or automatic installs."
+      ],
+      "outputs": [
+        "A sourced answer/report, local register and explicit verification limits."
+      ],
+      "tags": [
+        "research",
+        "sources",
+        "citations",
+        "evidence"
+      ],
+      "explanation": {
+        "example": {
+          "situation": "A comparison report must preserve the evidence behind its claims.",
+          "youType": "Use grounded-citations to track retrieved sources and verify this numbered report.",
+          "whatHappens": [
+            "Select a local register and add retrieved sources.",
+            "Match quotes against retrieved text.",
+            "Render report sources and check references."
+          ],
+          "youGet": "A traceable report with honest sourcing gaps; not a claim of automatic truth verification."
+        },
+        "flows": [
+          [
+            "Retrieve",
+            "Register",
+            "Assess quote support",
+            "Draft",
+            "Verify applicable format"
+          ]
+        ],
+        "calls": [],
+        "adaptation_notes": [
+          "Explicit task-local ledger replaces the Hermes account cache.",
+          "Chat uses host-supported links/annotations; numeric report checks do not prove truth or entailment."
+        ],
+        "sources": [
+          {
+            "label": "Selected source and adaptations",
+            "source": "skills/grounded-citations/provenance.json"
+          },
+          {
+            "label": "Worked CLI example",
+            "source": "docs/guides/grounded-citations.md"
+          }
+        ]
+      }
     }
   ],
   "relationships": [
@@ -3428,6 +3512,16 @@
       "from": "improvement-eval",
       "to": "frozen-trial-dispatch",
       "label": "Prepare one selected executor input"
+    },
+    {
+      "from": "policy-evidence",
+      "to": "grounded-citations",
+      "label": "Source-heavy research"
+    },
+    {
+      "from": "to-tickets",
+      "to": "to-spec",
+      "label": "Shares source extraction"
     }
   ]
 }

@@ -4,11 +4,11 @@ from reviewer_mode import assess
 
 
 class ReviewerModeTests(unittest.TestCase):
-    def test_empty_modes_and_disabled_auto_accept_require_probe(self):
-        self.assertEqual(assess({'available_modes': [], 'auto_accept': False})['decision'], 'probe-required')
+    def test_empty_modes_and_disabled_auto_accept_continue(self):
+        self.assertEqual(assess({'available_modes': [], 'auto_accept': False})['decision'], 'existing-permissions')
 
     def test_advertised_mode_does_not_verify_effective_execution(self):
-        self.assertEqual(assess({'available_modes': ['auto']})['decision'], 'probe-required')
+        self.assertEqual(assess({'available_modes': ['auto']})['decision'], 'existing-permissions')
 
     def test_observed_provider_error_is_concrete_unavailability(self):
         result = assess({'available_modes': [], 'unavailable_reason': '402 usage balance exhausted',
@@ -17,19 +17,19 @@ class ReviewerModeTests(unittest.TestCase):
         self.assertIn('402', result['reason'])
 
     def test_unavailability_claim_without_evidence_is_not_accepted(self):
-        self.assertEqual(assess({'unavailable_reason': 'Unsupported mode'})['decision'], 'probe-required')
+        self.assertEqual(assess({'unavailable_reason': 'Unsupported mode'})['decision'], 'existing-permissions')
 
     def test_empty_catalog_can_have_verified_native_equivalent(self):
         result = assess({'available_modes': [], 'effective_mode': 'auto', 'mode_verified': True,
                          'evidence': 'Observed native approval mechanism under existing boundaries'})
         self.assertEqual(result['decision'], 'verified-mode')
 
-    def test_missing_or_unverified_effective_mode_never_passes(self):
+    def test_missing_or_unverified_effective_mode_is_optional(self):
         for mode, verified, evidence in [(None, True, 'observed'), ('manual', True, 'observed'),
                                         ('auto', False, 'observed'), ('auto', True, '')]:
             with self.subTest(mode=mode, verified=verified, evidence=evidence):
                 self.assertEqual(assess({'effective_mode': mode, 'mode_verified': verified,
-                                         'evidence': evidence})['decision'], 'probe-required')
+                                         'evidence': evidence})['decision'], 'existing-permissions')
 
     def test_mode_setting_failure_continues_with_verified_read_only_boundary(self):
         result = assess({'requested_mode': 'auto', 'effective_mode': 'default',
@@ -47,18 +47,21 @@ class ReviewerModeTests(unittest.TestCase):
         self.assertIsNone(result['mode'])
 
     def test_read_only_claim_without_actual_evidence_does_not_pass(self):
-        for verified, evidence in [(False, 'observed'), (True, ''), (True, None)]:
+        for verified, evidence in [(True, ''), (True, None)]:
             with self.subTest(verified=verified, evidence=evidence):
                 self.assertEqual(assess({'read_only_verified': verified,
                                          'read_only_evidence': evidence})['decision'], 'probe-required')
 
-    def test_explicit_incomplete_read_only_proof_precedes_legacy_mode(self):
+    def test_optional_unverified_isolation_preserves_legacy_mode(self):
         for fields in [{'read_only_verified': False, 'read_only_evidence': ''},
-                       {'read_only_verified': True}, {'read_only_evidence': 'observed'}]:
+                       {'read_only_evidence': 'observed'}]:
             with self.subTest(fields=fields):
                 self.assertEqual(assess(dict(effective_mode='auto', mode_verified=True,
                                              evidence='Observed legacy mode', **fields))['decision'],
-                                 'probe-required')
+                                 'verified-mode')
+        self.assertEqual(assess(dict(effective_mode='auto', mode_verified=True,
+                                    evidence='Observed legacy mode', read_only_verified=True))['decision'],
+                         'probe-required')
 
     def test_real_launch_failure_is_not_hidden_by_read_only_isolation(self):
         result = assess({'unavailable_reason': '402 quota exhausted', 'evidence': 'Actual launcher returned402',

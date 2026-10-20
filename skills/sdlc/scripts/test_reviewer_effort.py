@@ -73,7 +73,7 @@ class EffortTests(unittest.TestCase):
         self.check(shared)
         for change in ({'requested_effort':'high', 'effort':'high'},
                        {'effort_verified':False}, {'latest_ga_model_verified':False},
-                       {'context_id':'build-context'}, {'read_only_verified':False},
+                       {'context_id':'build-context'}, {'read_only_required':True, 'read_only_verified':False},
                        {'author_provider':'grok'}, {'reviewer_slot':2}):
             with self.subTest(change=change), self.assertRaises(s.GateError):
                 self.check(dict(shared, **change))
@@ -138,7 +138,7 @@ class EffortTests(unittest.TestCase):
         s.validate_premerge_readiness(self.root,self.state,gate)
         old=copy.deepcopy(self.state)
         for change in ({'effort':'medium'},{'requested_effort':'medium'},{'effort_verified':False},
-                       {'account':'unapproved-account'},{'mode_verified':False}):
+                       {'account':'unapproved-account'}):
             self.state['stages']['independent-verification']['history'][-1]['receipt']['verifier']['configuration']=dict(config,**change)
             with self.subTest(change=change), self.assertRaises(s.GateError):
                 s.validate_premerge_readiness(self.root,self.state,gate)
@@ -149,7 +149,7 @@ class EffortTests(unittest.TestCase):
         valid = dict(reviewer(), requested_effort='high', effort='high')
         for change in ({'effort':'medium'}, {'requested_effort':'medium'}, {'effort_verified':False},
                        {'latest_ga_model_verified':False}, {'context_id':'build-context'}, {'provider':'openai'},
-                       {'mode':'manual'}, {'mode_verified':False}, {'requested_mode':'full'}, {'account':''},
+                       {'account':''},
                        {'reviewer_slot':3, 'provider':'openai', 'unavailable_reviewers':[]}):
             with self.subTest(change=change), self.assertRaises(s.GateError): self.check(dict(valid, **change))
 
@@ -165,7 +165,9 @@ class EffortTests(unittest.TestCase):
         self.check(dict(config, read_only_verified=True, read_only_evidence='Observed read-only boundary'))
 
     def test_read_only_claim_requires_evidence_and_preserves_other_gates(self):
-        for changes in ({'read_only_verified':False, 'read_only_evidence':'observed'},
+        self.check(dict(reviewer(), read_only_verified=False, read_only_evidence=''))
+        self.check(dict(reviewer(), mode=None, requested_mode=None, mode_verified=False))
+        for changes in ({'read_only_required':True, 'read_only_verified':False},
                         {'read_only_verified':True, 'read_only_evidence':''}):
             with self.subTest(changes=changes), self.assertRaises(s.GateError):
                 self.check(dict(reviewer(), **changes))
