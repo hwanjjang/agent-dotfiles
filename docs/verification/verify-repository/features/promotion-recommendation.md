@@ -85,7 +85,8 @@ conformance establishes neither unseen cases nor actual model performance.
 
 Regenerate/check both maps, then use both maintained browser recipes. Open
 `improvement-review` and follow the source link. Step 5 must distinguish available
-source/native/same-host verifier code from pending actual qualifying comparisons.
+source/native/same-host verifier code from the completed development comparison
+(reject) and the pending held-out evaluation that a positive recommendation needs.
 Read the [source-backed workflow](../../../architecture/native-recommendation-workflow.html)
 and [native recommendation walkthrough](../../../manual/native-recommendation.pdf)
 with its [editable source](../../../manual/native-recommendation.json).
