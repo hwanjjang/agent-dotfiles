@@ -1,0 +1,21 @@
+{
+  "captured": "2026-10-20",
+  "baseline": "b6fc17c",
+  "status": "premerge_capture",
+  "scenario": "improvement-experience",
+  "source_sha256": {
+    "account/observation/store.py": "98622af18335d2225f71f29367572db5dd2e0f8bd1d7e823cc156ff2037c24bc",
+    "scripts/improvement/experience.py": "e5a78a91e6b4c80c2d9723fecc6fe62562d1693677e3f7a5a702ae98175b6c09",
+    "tests/test_improvement_experience.py": "86fbfc2befa81f76b10672c74822670bf12a436ddc10e4304ca728222caf7acb",
+    "docs/map/catalog.json": "e89613c14c640823d951277348352d3f1d05ad1127abf806f8570aff7692f4cd"
+  },
+  "images": {
+    "improvement-experience-map.png": "b786475bf1a0912764cac406b07f93b7845bdd858d598514f2420cb774d48283",
+    "improvement-experience-result.png": "a2d35a988430fefe41a705ee37340ca39baf2ae7f96986e55f820c6a17771e88"
+  },
+  "notes": [
+    "Actual local repository map detail (docs/map/index.html#item=improvement-candidate) captured with headless Chromium 1243 at 1360x900.",
+    "Result image is a browser-rendered summary of actual CLI outputs (add, add held-out, review, index, package, refused overwrite, index after revoke) in a disposable home with synthetic data; digests shortened and temporary paths replaced with $TMP.",
+    "No model, native client or network call. Both PDF pages rendered with PDFium, individually viewed and text-checked (NO_ENTRY, reusable, .answers/key.json, trajectory, $TMP, experience.py)."
+  ]
+}

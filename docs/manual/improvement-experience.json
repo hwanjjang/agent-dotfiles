@@ -1,0 +1,20 @@
+{
+  "title": "Record, index and package improvement experience",
+  "scenario": "Scenario: improvement-experience. Capture on the #81 candidate (stacked on #80). Python 3.11+, a disposable home and synthetic case and records; no model call.",
+  "steps": [
+    {
+      "title": "Find the candidate step and its CLI",
+      "instruction": "Open docs/map/index.html and select 3. Prepare a minimal candidate. Its usage points to scripts/improvement/experience.py index and the store guide. Read the loop's Learn from earlier attempts section for the rules before recording anything.",
+      "screenshot": "improvement-experience-map.png",
+      "caption": "Actual local map detail for the candidate step. The CLI is manual; nothing runs automatically.",
+      "expected": "The candidate author reads a frozen index of reusable experience first and opens entries selectively. Rules live in the loop design; the map only points to them."
+    },
+    {
+      "title": "Record, review, index and package",
+      "instruction": "Pipe one experience JSON to experience.py add (edit rows, NO_ENTRY lesson, exposure, scope, cycle). Review it as reusable with its exact digest. Freeze the index for the next cycle and scope. Build a package from an exported case, baseline and candidate trees, results and the index, using a new absolute output directory.",
+      "screenshot": "improvement-experience-result.png",
+      "caption": "Browser-rendered summary of actual CLI results in a disposable home; digests shortened and temporary paths replaced with $TMP.",
+      "expected": "The held-out record never enters the index. The package excludes .answers/key.json, keeps the trajectory when rendering is missing, lists gaps and marks unknown cost. An existing output is refused, and revoking the grant empties the index. A stable digest for unchanged inputs is checked by the tests, not by this capture."
+    }
+  ]
+}

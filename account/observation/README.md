@@ -433,6 +433,9 @@ Package safety rules:
 - The package is not reviewed for privacy. Supply only approved development
   evidence.
 
+The [experience walkthrough](../../docs/manual/improvement-experience.pdf) shows an
+actual synthetic CLI journey.
+
 ## Verification
 
 ```sh
