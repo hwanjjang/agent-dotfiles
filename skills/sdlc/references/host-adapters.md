@@ -8,34 +8,57 @@ Record host/version, inspected tool or CLI help/catalog source and timestamp, ac
 
 For Codex, inspect the exposed delegation tools and their schema or installed CLI's documented capability. For Claude Code, inspect its exposed agent/delegation tools or installed CLI's documented capability. Use the supported call with the common bounded assignment; retain actual execution identity and return evidence. Do not assume a `provider` field, a particular model enum, or cross-provider access exists.
 
-If a native mechanism exposes only one provider, changing its role or model name does not produce another provider. An external provider may be used only through an available authenticated launcher whose supported configuration, isolation, permissions and actual provider can be verified. Do not install profiles, authenticate accounts or elevate permissions as an implicit fallback.
+If a native mechanism exposes only one provider, changing its role or model name does not produce another provider. An external provider may be used only through an available authenticated launcher whose supported configuration and actual provider can be verified, with available permission/isolation observations recorded. Do not install profiles, authenticate accounts or elevate permissions as an implicit fallback.
 
-If required file/tool boundaries cannot be represented, use supported isolation; otherwise report the unsupported boundary. Do not silently omit restrictions. Missing optional delegation permits main-agent fallback for non-independent duties; an unavailable PR reviewer triggers the next eligible reviewer; exhaustion leaves review incomplete.
+If explicitly required file/tool boundaries cannot be represented, report the gap. Read-only isolation is otherwise optional: prefer supported restrictions and continue with recorded limitations when unavailable. Missing optional delegation permits main-agent fallback for non-independent duties; an unavailable PR reviewer triggers the next eligible reviewer; exhaustion leaves review incomplete.
 
 ## Required PR reviewer selection
 
 The additional Grok/Gemini list has its own [optional-review contract](optional-reviewers.md),
 including shared-assignment selection, model/effort defaults and non-blocking skip behavior. The selection
 and mandatory provider/model/effort receipts below govern the existing required
-reviewer. Existing permissions and read-only isolation apply to all reviewers; mode configuration is optional.
+reviewer. Existing authority applies to all reviewers; enforced read-only isolation and mode configuration are optional.
 
 At review creation:
 
 1. Record actual implementation author provider/context and contributing authors. Assign reviewer 1 and reviewer 2 from providers different from the builder. When both cannot proceed, permit reviewer 3 from the builder provider in a separate context. For mixed-provider authorship record independence from the contributing author contexts.
 2. Inspect available authenticated alternate providers and current model catalogs. Select the latest generally available model of the actual selected provider. Use authoritative provider information with date/source when catalog data cannot establish recency. Do not substitute a remembered or preview model or infer recency from an account/profile label.
 3. Prefer a configured eligible review provider. Otherwise use documented review-evaluation quality, then provider identifier order as a tie-breaker.
-4. Before dispatch, reconcile the roster using [one assignment per reviewer](optional-reviewers.md#one-assignment-per-reviewer), including any required fallback. Resolve and observe the selected effort under that contract and the intent authority; the ordinary default remains `medium`. Permission-mode configuration is optional. Prefer a supported session setting within existing permissions; if it is omitted, unsupported, mismatched or fails, continue with a verified read-only boundary as described below. Do not change global settings or escalate access to satisfy a mode label. Keep the author branch read-only and generated checks isolated.
+4. Before dispatch, reconcile the roster using [one assignment per reviewer](optional-reviewers.md#one-assignment-per-reviewer), including any required fallback. Resolve and observe the selected effort under that contract and the intent authority; the ordinary default remains `medium`. Permission-mode configuration is optional. Prefer a supported session setting within existing permissions; if it is omitted, unsupported, mismatched or fails, continue under existing permissions with honest isolation observations as described below. Do not change global settings or escalate access to satisfy a mode label. Instruct the reviewer not to edit the author branch; use isolated generated checks when available.
 5. Inspect resolved settings, execute the reviewer and preserve a receipt containing author/reviewer providers and contexts, exact model, effort, mode, selection source/timestamp, host/tool configuration, isolation, base/head, actual review record ID, scope, findings and verdict.
 
 A personal/team account label is not a model provider. Resolve the executing provider and model even when a named profile is used. If required selection/execution or a required check cannot be performed, retain the exact gap and try the next reviewer. Permit the author provider only after both earlier alternate-provider reviewers cannot proceed. Never label the builder context independent or silently weaken required configuration.
 
 ## Read-only review with optional mode settings
 
-Mode selection is an optional convenience, not a review eligibility gate. A missing catalog, null/default mode, failed inheritance or mismatch between requested and observed mode does not by itself make the provider unavailable. Continue in read-only review under the existing permissions. A session-only setting that narrows access (for example native plan/read-only mode) is allowed; no new account, authentication, global permission edit, bypass flag or access escalation is implied.
+Permission-mode configuration and enforced read-only isolation are optional.
+Prefer a supported session restriction, but proceed under existing permissions
+when setup, observation or enforcement is unavailable. This applies to required,
+additional and explicitly requested reviewers. Do not block, skip, substitute a
+model or repeatedly probe solely to obtain isolation proof. Session settings may
+narrow access; do not change global permissions, authenticate new accounts or
+escalate privileges to satisfy this preference.
 
-Verify the review boundary before dispatch using supported read-only tool restrictions or an isolated non-writable input checkout combined with existing tool/network restrictions. Input immutability alone does not prevent external writes: boundary evidence must cover available tools, network/external mutations and source integrity. Give checks that generate files a separate scratch location. Exclude source editing, commits/pushes, external messages, production/provider mutations and further delegation; main publishes findings. Retain actual launcher/tool/isolation observations and confirm source hashes after the return. A prompt-only promise is not verification. If safe read-only execution cannot be established, record that concrete isolation failure and use the reviewer fallback/optional skip rules.
+Give the reviewer a bounded review-only assignment: inspect and return findings;
+no source edits, commits/pushes, external messages/publication, production/provider
+mutations or further delegation. Main publishes findings within its authority.
+Prefer immutable scoped input and separate scratch for generated checks, retain
+actual tool/launcher observations, and compare source hashes after the return.
+These checks record what happened; a prompt or immutable copy alone must not be
+reported as verified tool/network isolation. Missing proof is a recorded limitation,
+not reviewer unavailability. Reject source-changing results and reconcile only
+task-owned effects within existing authority.
 
-New configuration receipts use `read_only_verified: true` plus nonempty `read_only_evidence` referencing the observed boundary. Record `requested_mode`, observed `mode` and `mode_verified` honestly; modes may be omitted/null/default, and an unverified mode stays unverified. A mode-setting error is diagnostic, not an `unavailable_reason`. Real authentication/quota/launch failures and inability to perform required checks still advance the existing fallback chain.
+Receipts default to `read_only_required: false`. Record `read_only_verified: false`
+and available evidence/limitations when isolation is absent or unverified. A true
+verified claim still needs actual evidence covering the claimed boundary. Only an
+assignment explicitly opting in with `read_only_required: true` makes verified
+read-only boundary evidence a prerequisite. Set this opt-in only for an explicit
+user choice or applicable repository requirement, never merely the adapter's
+preference. Requested/observed mode fields may be
+omitted/null/default and must reflect actual observations. Authentication, quota,
+launch failures and inability to perform required checks still use the existing
+fallback chain.
 
 ## Incomplete mode discovery
 
@@ -52,9 +75,18 @@ After an automatic approval rejection, retain its reason and retry only with new
 trusted evidence or a narrower authorized action; changing tools does not bypass
 that rejection. An unresolved refusal is a reported review gap.
 
-Do not spend repeated attempts obtaining an auto/full label. Inspect the native contract only as needed to establish the read-only boundary, then launch a bounded review with existing permissions. For example Grok may continue with its observed default mode and native Read/Grep/Glob-only tools; a Gemini wrapper that only exposes bypass permissions should be replaced by an existing native read-only/plan launcher when available, rather than enabling bypass.
+Do not spend repeated attempts obtaining a mode label or optional isolation
+proof. Prefer an available native plan/read-only launcher when useful, or continue
+through an existing authenticated route with observed limitations.
 
-The read-only [mode assessment helper](../scripts/reviewer_mode.py) accepts an observation object on stdin. `read_only_verified: true` and nonempty `read_only_evidence` produce `read-only`, independently of mode fields. Verified auto/full evidence still produces the historical `verified-mode` outcome for old callers without the new fields. Explicitly incomplete read-only fields produce `probe-required` before that legacy classification. A real `unavailable_reason` with observed `evidence` remains `unavailable`; otherwise the helper returns `probe-required` to establish isolation, not to force mode configuration. The helper trusts adapter evidence; it neither launches a provider nor proves a review PASS.
+The [mode assessment helper](../scripts/reviewer_mode.py) accepts an observation
+object on stdin. Verified boundary evidence returns `read-only`; observed legacy
+auto/full evidence returns `verified-mode`. Otherwise it returns
+`existing-permissions` with `read_only_verified: false`. `probe-required` is
+reserved for an explicit `read_only_required: true` without proof, or a claimed
+verified boundary without evidence, or a malformed nonboolean
+`read_only_required` value. A real launch failure with evidence still
+returns `unavailable`. This helper does not launch reviewers or prove a PASS.
 
 ## Validation claims
 

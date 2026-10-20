@@ -1,7 +1,7 @@
 # Source adoption and update records
 
 The public source set contains selections from pstack, Matt Pocock, Addy Osmani,
-and AK-authored material supplied for public reuse. Private source addresses and
+Hermes method references, and AK-authored material supplied for public reuse. Private source addresses and
 raw history are intentionally absent. Source-level private provenance is retained
 locally; public AK packages use this repository's MIT license.
 
@@ -97,6 +97,12 @@ The [spec extraction](../decisions/spec-extraction.md) combines Matt's focused
 and content checklist moved into one standalone skill; SDLC now links to it.
 Automatic issue publication, fixed labels and exhaustive story templates were
 not adopted. Current discovery and behavioral limits remain separately recorded.
+
+The [account-content preservation decision](../decisions/account-content-preservation.md)
+adds a portable Hermes-derived citation helper and narrowly adapts document/meeting
+extraction and feasibility experiments into existing owners. Affected packages
+retain selected revisions, hashes and MIT notices, including secondary Hermes/GSD
+attribution. Community effectiveness remains provisional.
 
 ## Update procedure
 

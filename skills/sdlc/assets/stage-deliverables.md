@@ -135,7 +135,7 @@ The independent-verification stage is historical only in the revised PR route; n
 
 - Actual PR review/comment URL and stable record ID; publication status.
 - Exact reviewed base/head and consumed upstream revisions.
-- Author/reviewer providers and contexts, exact latest GA reviewer model, observed effort under [current selection](../references/optional-reviewers.md#one-assignment-per-reviewer), verified read-only boundary/evidence, optional honest requested/observed permission mode, host/isolation.
+- Author/reviewer providers and contexts, exact latest GA reviewer model, observed effort under [current selection](../references/optional-reviewers.md#one-assignment-per-reviewer), optional enforced isolation with actual status/evidence/limitations (`read_only_required: false` by default), honest requested/observed permission mode, host/isolation.
 - Current model-selection source/timestamp and actual execution receipt; profile/account labels separately from actual provider identity.
 - Reviewer slot, unavailable earlier reviewers and actual failure evidence; received finding IDs, author responses/fixes and remaining checks.
 - Review scope/lenses and fixed-schema findings:
