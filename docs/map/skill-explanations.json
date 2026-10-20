@@ -23,7 +23,7 @@
       "adopted_upstream": "https://github.com/cursor/plugins",
       "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
       "adopted_path": "pstack/skills/architect",
-      "local_skill_sha256": "82fbc8f20caf25341283f1e11dc8376912a7bead01f3568389b1bae6b3d42ec6"
+      "local_skill_sha256": "c23d78ae9fd4973cda64863011051b0191a0db8fbe7493d2678943c9e0fde291"
     },
     {
       "id": "arena",
@@ -131,7 +131,7 @@
       "adopted_upstream": "https://github.com/mattpocock/skills",
       "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
       "adopted_path": "skills/engineering/to-spec",
-      "local_skill_sha256": "ca742706b121daf8eb7a720f7a1921fa631578bc9d8371356bf28c9f2e3e0019"
+      "local_skill_sha256": "28eaa6ee477d1bed01da854c0bbbb425f9883ee21163ba4684a16d6ad3d87107"
     },
     {
       "id": "to-tickets",
@@ -140,7 +140,7 @@
       "adopted_upstream": "https://github.com/mattpocock/skills",
       "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
       "adopted_path": "skills/engineering/to-tickets",
-      "local_skill_sha256": "9d1d378e91e408a4a891f1ae1080038fb2e44e3a95c50373fd39d5e39edf0415"
+      "local_skill_sha256": "971c282aabc7db2f271b387e915ab750701afc5aa32856840118c220e5b237af"
     },
     {
       "id": "writing-for-agents",
@@ -208,14 +208,22 @@
     {
       "id": "sdlc",
       "source_basis": "local-original",
-      "local_skill_sha256": "caba6a6525c13f4f502ea9b0ff74e8443a3ce3541f7a38c408b82f7751bf6ace",
+      "local_skill_sha256": "938fb4712345ef44f15915f2ca7823de9e94555941eaf56d4bd8abaef83de4b4",
       "supporting_sources": {
         "skills/sdlc/references/skill-routing.md": "f8143d7b8638e9412d89ad0fe7667dedd591f2cc9713cc0c61fb653389722d2d",
-        "skills/sdlc/references/verification.md": "17179cf97c068699e93cbcc7f822157bfc26515b452099795315a5dcba4dfe8d",
-        "skills/sdlc/references/optional-reviewers.md": "283de4dc04d94d0b7e31af9e27ffba08f898ef2ce8d75604805addfce70c8152",
-        "skills/sdlc/references/host-adapters.md": "87dc354f87537b2b2c56a72db48b27e247c56838199b51e28be1350aab33364b",
+        "skills/sdlc/references/verification.md": "93ab29ae7a67017ba4ebbeefe0db9817ee29c2e14eabb7c0f585f82dacf0c3d4",
+        "skills/sdlc/references/optional-reviewers.md": "63a4caff73eccd60114f250ceae3c251d242a8fcfe3e708579e1d1b79b0e8361",
+        "skills/sdlc/references/host-adapters.md": "5bb5c6df8292b624b806a8a8e3ea422b053cd6ebd2b0873fe56f43182698d061",
         "skills/sdlc/references/intake.md": "cf8629f12f91b97aa01bf86b961c8d89f5647007f9b0b3ca65fd841305665904"
       }
+    },
+    {
+      "id": "grounded-citations",
+      "reference_map": "local",
+      "adopted_upstream": "https://github.com/NousResearch/hermes-agent",
+      "adopted_revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
+      "adopted_path": "skills/research/grounded-citations",
+      "local_skill_sha256": "ecea74f35a15f6d0f08561a298a28b02cea73d05dbafd35074900f81fa3f7bb7"
     }
   ]
 }

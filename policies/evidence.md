@@ -3,6 +3,10 @@
 Scope: shared execution guidance for tasks that produce or change an artifact.
 
 - Define completion in terms of the requested observable result.
+- For source-heavy research or documents, use
+  [grounded-citations](../skills/grounded-citations/SKILL.md) when a retrieved-source
+  register and supporting quotes would make claims checkable. Incidental lookups
+  need no ledger; citation checks do not establish the truth of a claim.
 - Verify the actual artifact or behavior at the relevant revision. Compilation,
   successful copying, and worker self-reports establish only what they directly check.
 - Reuse adequate evidence. Add a focused reproduction, test, or direct inspection

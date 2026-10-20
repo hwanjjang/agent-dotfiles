@@ -18,9 +18,15 @@ Do not copy this repository's root AGENTS.md as a shared policy.
 | Verification construction and maintenance | create-verification-skill, maintain-verification-skill |
 | Verification, review and issues | tdd, code-review-and-quality, make-pr-easy-to-review, issue-writing, to-tickets |
 | Instruction authoring | writing-for-agents |
+| Research evidence | grounded-citations |
 | Diagrams and user manuals | archify, screenshot-manual |
 
 `grill-me` requires `grilling`; `grill-with-docs` also requires `domain-modeling`.
+`to-tickets` also consumes `to-spec`'s shared document/meeting source-extraction
+reference; keep that package available even when writing only ticket drafts.
+`architect` retains ownership of its conditional feasibility-experiment reference.
+`grounded-citations` requires Python 3.10+ and explicit task-local `--ledger` state;
+it has no Hermes runtime or automatic retrieval dependency.
 `architect` uses `how` and `arena`; `diagnosing-bugs` uses `tdd` for authorized
 corrections. SDLC selects methods through its
 [stage routing](sdlc/references/skill-routing.md); its provenance lists the full
