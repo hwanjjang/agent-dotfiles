@@ -4,7 +4,7 @@ Status: offline synthetic comparison and trusted offline native artifact admissi
 are implemented. Current native admission remains blocked until maintained
 qualification records match the frozen sources and include current authenticated
 qualification. Cooperating-host serial launch reservations, recorded client-model selection and
-declared-catalog routing admission are implemented; actual comparisons and same-host held-out evaluation remain incomplete. This is the bounded accounting slice of the
+declared-catalog routing admission are implemented. The [bounded development comparison](../evidence/native-development-pilot-2026-10-19.md) is complete and returned reject; same-host held-out evaluation remains incomplete. This is the bounded accounting slice of the
 [account improvement design](account-improvement-loop.md#comparative-evaluation-contract).
 The evaluator and admission reader do not launch agents or execute trace commands.
 The separate serial gate below can invoke one explicitly authorized native trial;
@@ -244,7 +244,8 @@ These guards do not contain a malicious same-UID host. Remote protected-file
 checks retain their own source-bound scope. `live_eligible` stays false and
 promotion inconclusive, even when an artifact criterion passes. Current-source
 qualification, real comparisons and same-host held-out evaluation remain distinct
-requirements; this component does not complete issue #26.
+requirements; this component alone did not complete issue #26, which closed with the
+[completed development comparison](../evidence/native-development-pilot-2026-10-19.md).
 
 ## Declared-catalog routing and client-model observations
 
@@ -362,8 +363,9 @@ and removes only `explicit_observed_model_projection_unavailable`. Otherwise it
 retains the older source-guarded/no-export label and blocker. Neither path attests
 server weights: `backend_identity_verified=false`, live eligibility and promotion
 stay unavailable. Current fixed routing qualification has genuine source-bound
-observations; actual production artifact-to-report admission and natural EN/KO
-comparison remain pending. Existing offline synthetic journals are regression
+observations. Actual production artifact-to-report admission and the natural EN/KO
+development comparison are [complete](../evidence/native-development-pilot-2026-10-19.md) with a reject result; held-out
+evaluation remains pending. Existing offline synthetic journals are regression
 checks, not that missing task evidence.
 
 ## Serial native launch reservations

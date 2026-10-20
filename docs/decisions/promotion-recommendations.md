@@ -3,8 +3,9 @@
 Implemented: the legacy diagnostic gate, native report/committed-source consumer,
 and optional same-host held-out receipt verifier. The
 [2026-10-19 actual-report check](../evidence/native-recommendation-2026-10-19.md)
-reproducibly rejects a source-bound, incomplete development comparison. The
-complete paired comparison and actual held-out evaluation remain pending.
+reproducibly rejects a source-bound, incomplete development comparison. The later
+[complete paired development comparison](../evidence/native-development-pilot-2026-10-19.md) also returned reject; actual
+held-out evaluation and any positive recommendation remain pending.
 Positive **FAKE synthetic conformance** tests exercise the recommendation branch;
 they establish no actual beneficial candidate or unseen-evaluation result.
 

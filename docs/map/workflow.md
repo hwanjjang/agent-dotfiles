@@ -82,7 +82,7 @@ ordinary investigation/specification/build/review route when appropriate; eval
 adds a behavioral comparison and does not replace project tests or independent
 review. Step 5 links the [recommendation contract](../decisions/promotion-recommendations.md)
 and [source-backed workflow](../architecture/native-recommendation-workflow.html);
-actual qualifying comparisons remain pending despite FAKE positive conformance. Collection consent does not authorize inference, publication or deployment.
+the [actual development comparison](../evidence/native-development-pilot-2026-10-19.md) returned reject, and held-out evidence for a positive recommendation remains pending despite FAKE positive conformance. Collection consent does not authorize inference, publication or deployment.
 
 Account doctor connects to this cycle as setup qualification before eval and an
 affected-client check after deployment. Failures can feed reviewed case preparation.
