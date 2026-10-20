@@ -17,6 +17,7 @@
     "Actual local repository map detail (docs/map/index.html#item=improvement-candidate) captured with headless Chromium 1243 at 1360x900.",
     "Result image is a browser-rendered summary of actual CLI outputs (add, add held-out, review, index, show, package, refused overwrite, index after revoke) in a disposable home with synthetic data; digests shortened and temporary paths replaced with $TMP.",
     "No model, native client or network call. Both PDF pages rendered with PDFium, individually viewed and text-checked (NO_ENTRY, reusable, .answers/key.json, trajectory, $TMP, experience.py, show).",
-    "Captured on the round-2 correction working tree atop 2e7d8fe; source_sha256 records the exact captured source bytes."
+    "Captured on the round-2 correction working tree atop 2e7d8fe; source_sha256 records the exact captured source bytes.",
+    "Re-verified after the round-3 corrections: a fresh journey produced the same step labels, exit codes, statuses and package manifest; images and PDF retained."
   ]
 }

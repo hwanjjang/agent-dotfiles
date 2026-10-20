@@ -342,6 +342,36 @@ class PackageTests(ExperienceFixture):
             experience.build_package(self.candidate / 'nested-package', self.spec())
         self.assertFalse((self.baseline / 'package').exists())
 
+    def test_output_parent_swap_after_check_is_refused(self):
+        target = self.base / 'elsewhere'; target.mkdir()
+        alias = self.base / 'out-alias'; os.symlink(target, alias)
+        with mock.patch.object(experience, 'canonical', lambda path: Path(os.path.abspath(path))):
+            with self.assertRaisesRegex(InvalidEvent, 'package_path'):
+                experience.build_package(alias / 'package', self.spec())
+        self.assertEqual(list(target.iterdir()), [])
+
+    def test_pathlike_inputs_cannot_bypass_the_overlap_check(self):
+        with self.assertRaisesRegex(InvalidEvent, 'package_overlaps_input'):
+            experience.build_package(self.baseline / 'package', self.spec(baseline_dir=self.baseline))
+        self.assertFalse((self.baseline / 'package').exists())
+        with self.assertRaisesRegex(InvalidEvent, 'package_fields'):
+            self.build(baseline_dir=7)
+
+    def test_walk_errors_become_gaps(self):
+        real = os.fwalk
+        def failing(top, *args, onerror=None, **kwargs):
+            onerror(PermissionError(13, 'Permission denied', 'skills'))
+            yield from real(top, *args, onerror=onerror, **kwargs)
+        with mock.patch.object(experience.os, 'fwalk', failing):
+            manifest = self.build()
+        self.assertIn(('baseline/skills', 'unavailable: PermissionError'),
+                      {(g['item'], g['reason']) for g in manifest['gaps']})
+
+    def test_pruned_directories_are_reported_as_excluded(self):
+        manifest = self.build(exclude=['.answers'])
+        self.assertIn('baseline/.answers/', manifest['excluded'])
+        self.assertFalse((self.output / 'baseline/.answers').exists())
+
     def test_hard_links_are_skipped(self):
         outside = self.base / 'outside.txt'; outside.write_text('outside\n')
         os.link(outside, self.candidate / 'skills/hard.txt')

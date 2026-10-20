@@ -120,25 +120,53 @@ def read_text(path):
 
 
 class Package:
+    """A new private directory written only through descriptors opened beneath its parent."""
+
     def __init__(self, destination):
-        self.root = Path(destination)
-        parent = canonical(self.root.parent) if self.root.is_absolute() else None
-        require(parent is not None and parent.is_dir() and self.root.name not in ('', '.', '..'), 'package_path')
-        self.root = parent / self.root.name
-        os.mkdir(self.root, 0o700)  # FileExistsError: never reuse or overwrite a package
-        os.chmod(self.root, 0o700)
+        destination = Path(destination)
+        require(destination.is_absolute() and destination.name not in ('', '.', '..')
+                and canonical(destination.parent) is not None, 'package_path')
+        parent, status = open_beneath(destination.parent, directory=True)
+        require(parent is not None, 'package_path')
+        try:
+            os.mkdir(destination.name, 0o700, dir_fd=parent)  # FileExistsError: never reuse a package
+            self.fd = os.open(destination.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+        finally:
+            os.close(parent)
+        os.fchmod(self.fd, 0o700)
+        self.root = destination
         self.items, self.gaps, self.excluded = [], [], []
+
+    def close(self):
+        os.close(self.fd)
 
     def gap(self, item, reason):
         self.gaps.append(dict(item=item, reason=reason))
 
     def write(self, relative, text):
-        target = self.root / relative
-        target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
-        with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+        parts = Path(relative).parts
+        require(parts and all(p not in ('', '.', '..') for p in parts), 'package_path')
+        fd = os.dup(self.fd)
+        try:
+            for name in parts[:-1]:
+                try:
+                    os.mkdir(name, 0o700, dir_fd=fd)
+                except FileExistsError:
+                    pass
+                child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+                os.close(fd)
+                fd = child
+            out = os.open(parts[-1], os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=fd)
+        finally:
+            os.close(fd)
+        with os.fdopen(out, 'w', encoding='utf-8') as stream:
             stream.write(text)
         self.items.append(relative)
+
+    def digest_of(self, relative):
+        fd, _ = open_beneath(self.root / relative)
+        with os.fdopen(fd, 'rb') as stream:
+            return hashlib.sha256(stream.read()).hexdigest()
 
     def tree(self, label, source, patterns):
         """Copy a tree as inert text; return {relative path: text} for diffs."""
@@ -152,7 +180,13 @@ class Package:
         copied = {}
         try:
             # fwalk hands out directory descriptors, so files are opened beneath an already-open directory.
-            for directory, names, files, dir_fd in os.fwalk('.', dir_fd=root, follow_symlinks=False):
+            def unreadable(error):
+                name = Path(error.filename or '.').as_posix().removeprefix('./')
+                self.gap(f'{label}/{name}' if name not in ('', '.') else label,
+                         'unavailable: ' + type(error).__name__)
+
+            for directory, names, files, dir_fd in os.fwalk('.', dir_fd=root, follow_symlinks=False,
+                                                            onerror=unreadable):
                 names.sort()
                 prefix = Path(directory)
                 for name in sorted(files + names):
@@ -178,7 +212,14 @@ class Package:
                     require(len(copied) < MAX_FILES, 'package_capacity')
                     copied[relative] = text
                     self.write(f'{label}/{relative}', text)
-                names[:] = [n for n in names if not excluded((prefix / n).as_posix().removeprefix('./'), patterns)]
+                kept = []
+                for name in names:
+                    relative = (prefix / name).as_posix().removeprefix('./')
+                    if excluded(relative, patterns):
+                        self.excluded.append(f'{label}/{relative}/')
+                    else:
+                        kept.append(name)
+                names[:] = kept
         finally:
             os.close(root)
         return copied
@@ -211,13 +252,22 @@ def build_package(destination, spec):
     require(isinstance(spec['candidates'], dict) and all(token(k) for k in spec['candidates'])
             and isinstance(spec['results'], list) and isinstance(spec['exclude'], list), 'package_fields')
     patterns = [normalize_pattern(p) for p in spec['exclude']]
+    sources = [spec['baseline_dir'], *spec['candidates'].values()]
+    require(all(isinstance(s, (str, os.PathLike)) and os.fspath(s) for s in sources), 'package_fields')
     target = Path(os.path.abspath(destination))
-    for source in [spec['baseline_dir'], *spec['candidates'].values()]:
-        source = Path(os.path.abspath(source)) if isinstance(source, str) and source else None
-        # Writing inside an input tree would copy the package into itself.
-        require(source is None or not (target == source or source in target.parents
-                                       or target in source.parents), 'package_overlaps_input')
+    for source in sources:
+        source = Path(os.path.abspath(os.fspath(source)))
+        # Writing inside or above an input tree would copy the package into itself.
+        require(not (target == source or source in target.parents or target in source.parents),
+                'package_overlaps_input')
     package = Package(destination)
+    try:
+        return _fill(package, spec, case, index, patterns)
+    finally:
+        package.close()
+
+
+def _fill(package, spec, case, index, patterns):
     package.write('case.json', json.dumps(case, indent=2, sort_keys=True) + '\n')
     package.write('experience-index.json', json.dumps(index, indent=2, sort_keys=True) + '\n')
     baseline = package.tree('baseline', spec['baseline_dir'], patterns) or {}
@@ -270,7 +320,7 @@ def build_package(destination, spec):
                f'{totals["authoring_usd"]}, execution {totals["execution_usd"]} (USD; unknown when not recorded).', '']
     package.write('README.md', '\n'.join(readme))
     package.write('manifest.json', json.dumps(manifest, indent=2, sort_keys=True) + '\n')
-    manifest['manifest_sha256'] = hashlib.sha256((package.root / 'manifest.json').read_bytes()).hexdigest()
+    manifest['manifest_sha256'] = package.digest_of('manifest.json')
     return manifest
 
 

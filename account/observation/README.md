@@ -447,7 +447,9 @@ Package safety rules:
   `hardlink_skipped`. Every path is opened one directory at a time without
   following links, so a symlink swapped in after a check is still refused. An
   output directory below a symlinked parent, or inside or above an input tree,
-  is refused.
+  is refused, and the package is written through descriptors opened beneath that
+  parent. A directory that cannot be read becomes a gap, and an excluded
+  directory is listed once with a trailing `/`.
 - Files are copied without execute permission.
 - The package is not reviewed for privacy. Supply only approved development
   evidence.
