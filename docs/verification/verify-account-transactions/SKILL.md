@@ -60,7 +60,7 @@ python3.11 docs/verification/verify-account-transactions/scripts/run.py .local/v
 ```
 
 `VERIFY_TLA2TOOLS_JAR` selects another copy with the same hash. Use a new evidence directory
-per run; the runner refuses an existing one. A full run takes about 30 s: the base model
+per run; the runner refuses an existing one. A full run takes about 50 s: the base model
 with coverage, seven witnesses, five broken variants, the conformance harness on the real
 code and on five paired code mutations, and the sync check. For a quick real-code check:
 `python3.11 docs/verification/verify-account-transactions/scripts/conformance.py`.
@@ -158,9 +158,12 @@ reverse: settings, skill, receipt. The harness uses the same three paths.
 
 Verified in the model: one transaction, up to two kills, two I/O errors and one later user
 edit or deletion between commands, with any number of rollback retries. The harness drives
-the real functions in synthetic homes at every replace, unlink, symlink, temp-file creation
-and copy step they make, with simulated kills, injected errors, twelve real process exits and
-a lock held by a second process.
+the real functions in synthetic homes at every replace, unlink, symlink, mkdir, `os.open`
+(including directory descriptors) and copy step they make, with simulated kills, injected
+errors, real process exits at every apply step and a lock held by a second process. A
+`ValueError` caused by an `OSError` is an I/O error, not a refusal: `_below` wraps directory
+errors as `Unsafe parent`. The harness counts these as an observation, because the CLI shows
+them to the user as if the path were unsafe.
 
 Not covered: power loss or an OS crash (`write` does not fsync the parent directory); edits
 by other programs while a command holds the lock (documented: close clients during apply);

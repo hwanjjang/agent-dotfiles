@@ -118,15 +118,22 @@ undo and rollback in `scripts/account_storage.py` at `4130e05`. It checks two pr
 an interrupted apply or rollback can always be rolled back, and rollback never
 overwrites a later user edit and changes nothing when it refuses. A pinned TLC 1.7.4
 model covers one transaction, two kills, two I/O errors and one later edit, at 9,642
-distinct states. A stdlib harness drives the real functions through 206 kill, error,
+distinct states. A stdlib harness drives the real functions through 813 kill, error,
 edit, lock and real-exit cases. Five broken model variants and five paired code
 mutations each fail on their expected property.
 
-Qualification found one modeling error and no code bug. The journal is stored with
-sorted keys, so rollback walks paths in a different order than the undo; the model
-was corrected. A scratch break that always journals `rolled-back` after the undo was
-reported out of sync and produced 57 property violations in the harness with no model change. After the model
-was updated from the code, TLC failed on the same property. The existing account tests
+Qualification found one modeling error and no violation of the two promises. The
+journal is stored with sorted keys, so rollback walks paths in a different order than
+the undo; the model was corrected. A scratch break that always journals `rolled-back`
+after the undo was reported out of sync and produced harness violations with no model
+change. After the model was updated from the code, TLC failed on the same property.
+PR review found that the harness skipped directory-descriptor opens. With them
+injected, it also reports one observation outside the properties: an I/O error while
+`_below` opens a directory during rollback surfaces as `Unsafe parent for <path>`,
+the same `ValueError` a safety refusal uses, after the journal is already marked
+`rolling-back`. A retry restores every path, so recovery holds, but the message can
+mislead a user into not retrying. Product code is unchanged; this is reported for a
+separate decision. The existing account tests
 passed on the broken code. An [Archify diagram](../architecture/account-transaction-lifecycle.html)
 explains the journal statuses and is checked against the model's status set.
 

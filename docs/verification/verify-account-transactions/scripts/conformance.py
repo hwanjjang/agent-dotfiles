@@ -3,7 +3,8 @@
 Each case builds a synthetic home with the model's three paths (a skill directory replaced by
 a link, a settings file and the receipt), applies one transaction, optionally edits a path as
 the user, and runs `rollback` until it succeeds or refuses. Faults are injected at the
-file-system calls that scripts/account_storage.py makes itself:
+file-system calls that scripts/account_storage.py makes itself (replace, unlink, symlink, mkdir,
+every os.open including directory descriptors, and the capture copies):
   kill  - the call does not happen and the process dies (every later call from the module also
           dies, as `finally` blocks would not run); the lock fd is still closed, as the kernel would
   error - the call raises OSError instead of taking effect
@@ -59,8 +60,6 @@ class Faults:
         def call(*args, **kwargs):
             if sys._getframe(1).f_code.co_filename != self.file:
                 return original(*args, **kwargs)
-            if name == 'open' and not (args[1] & os.O_CREAT):
-                return original(*args, **kwargs)
             if self.dead:
                 raise Killed()
             self.count += 1
@@ -104,6 +103,7 @@ class Case:
         self.changes = {n: values[n] for n in self.names}
         self.edited = {}      # name -> observed value the user left
         self.violations = []
+        self.wrapped_io = 0   # rollback I/O errors surfaced as ValueError('Unsafe parent ...')
 
     def _create(self):
         skill = self.home / SKILL
@@ -192,6 +192,12 @@ class Case:
             except Killed:
                 outcome = 'killed'
             except ValueError as error:
+                if isinstance(error.__cause__, OSError):
+                    # An I/O error that _below reports as 'Unsafe parent': an error, not a refusal.
+                    self.wrapped_io += 1
+                    outcome = 'error'
+                    self.check_journaled(f'after {label}')
+                    return outcome, f
                 outcome = 'refused'
                 end, end_journal, _, _ = self.snapshot()
                 if (end, end_journal) != (start, start_journal):
@@ -234,7 +240,7 @@ def run_case(storage, spec):
         return {'case': spec, 'trail': trail, 'apply_steps': apply_faults.count,
                 'fired': {'apply': sorted(apply_faults.fired), 'rollback': sorted(rb_faults.fired) if rb_faults else []},
                 'rollback_steps': rb_faults.count if rb_faults else None,
-                'violations': case.violations}
+                'wrapped_io': case.wrapped_io, 'violations': case.violations}
 
 
 def triggered(result, spec):
@@ -392,7 +398,9 @@ def summarize(results):
         for v in result['violations']:
             found.setdefault(v['property'], []).append({'family': result['family'], 'case': result['case'],
                                                         'trail': result['trail'], 'detail': v['detail']})
-    return {'cases': len(results), 'by_family': {f: sum(r['family'] == f for r in results) for f in sorted({r['family'] for r in results})},
+    wrapped = [r for r in results if r.get('wrapped_io')]
+    return {'wrapped_io_reported_as_refusal': {'cases': len(wrapped), 'example': wrapped[0]['case'] if wrapped else None},
+            'cases': len(results), 'by_family': {f: sum(r['family'] == f for r in results) for f in sorted({r['family'] for r in results})},
             'violations': {p: len(v) for p, v in found.items()},
             'examples': {p: v[:3] for p, v in found.items()}}
 
@@ -424,6 +432,7 @@ def main(argv=None):
         print(json.dumps(report, indent=2, default=str))
     else:
         print(f"base: {base['cases']} cases {base['by_family']}, violations {base['violations'] or 'none'}")
+        print(f"observation: rollback I/O errors reported as 'Unsafe parent' refusals in {base['wrapped_io_reported_as_refusal']['cases']} cases")
         for m in report['mutations']:
             print(f"mutation {m['id']}: expect {m['expect']} -> {'caught' if m['caught'] else 'MISSED'} {m['violations']}")
         print(f"{'PASS' if report['passed'] else 'FAIL'} in {report['seconds']} s")

@@ -301,14 +301,20 @@ also fails on unchanged `origin/main` on the macOS case-insensitive filesystem.
 
 The [account transaction verifier](verification/verify-account-transactions/SKILL.md)
 ran with Python 3.11.15, OpenJDK 17.0.20 and TLA+ tools 1.7.4 (TLC 2.19) on macOS.
-Each full run took about 21 s: the base model found 9,642 distinct states at depth 30
-with every action taken; seven witnesses were reached; five broken variants and five
-paired code mutations each failed on their expected property; and the real-code
+Each full run took about 21 s at first: the base model found 9,642 distinct states at
+depth 30 with every action taken; seven witnesses were reached; five broken variants and
+five paired code mutations each failed on their expected property; and the real-code
 harness passed 206 cases, including 12 real process exits. Two runs gave identical
-counts. During qualification, the step trace exposed a modeling error, not a code
+counts. PR review (Codex) found that the harness skipped directory-descriptor opens.
+With every `os.open` injected, the harness runs 813 cases, including 27 real exits, in
+about 39 s, and the full run takes about 49 s. No property is violated. In 18 cases a
+rollback I/O error surfaces as `Unsafe parent for <path>` after the journal is marked
+`rolling-back`; each retry restored every path. The runner now also requires TLC exit 0
+for the base model and a non-zero exit (12) for every expected violation. During qualification, the step trace exposed a modeling error, not a code
 bug: rollback walks the journal's sorted keys, unlike the undo. A scratch break in a
 disposable worktree, journaling `rolled-back` after a failed undo, was reported out of
-sync and produced 57 harness violations without a model change. TLC failed the same
+sync and produced 57 harness violations without a model change (603 with the broadened
+harness). TLC failed the same
 property after the model followed the code, while the existing account tests passed.
 After the worktree was removed, a rerun matched the baseline.
 

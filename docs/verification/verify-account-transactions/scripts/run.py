@@ -245,7 +245,7 @@ def full(evidence):
 
     base = tlc(evidence, 'base', 'none', ['TypeOK', *PROPERTIES], coverage=True)
     report['checks']['base'] = base
-    if not base['clean']:
+    if not base['clean'] or base['exit'] != 0:
         fail(f"base model: {base['violated'] or 'did not complete'}" + (' (deadlock)' if base['deadlock'] else ''))
     expected = expectations['base']
     for key in ('distinct_states', 'depth'):
@@ -259,15 +259,15 @@ def full(evidence):
     report['checks']['witnesses'] = []
     for witness in expectations['witnesses']:
         result = tlc(evidence, 'witness-' + witness, 'none', ['TypeOK', witness])
-        report['checks']['witnesses'].append({k: result.get(k) for k in ('label', 'violated', 'counterexample')})
-        if result['violated'] != witness:
+        report['checks']['witnesses'].append({k: result.get(k) for k in ('label', 'exit', 'violated', 'counterexample')})
+        if result['violated'] != witness or result['exit'] == 0:
             fail(f'witness {witness} was not reached')
 
     report['checks']['variants'] = []
     for variant in expectations['variants']:
         result = tlc(evidence, 'variant-' + variant['id'], variant['id'], ['TypeOK', variant['expect']])
-        report['checks']['variants'].append({k: result.get(k) for k in ('variant', 'violated', 'counterexample')})
-        if result['violated'] != variant['expect']:
+        report['checks']['variants'].append({k: result.get(k) for k in ('variant', 'exit', 'violated', 'counterexample')})
+        if result['violated'] != variant['expect'] or result['exit'] == 0:
             fail(f"variant {variant['id']} did not violate {variant['expect']}")
 
     proc = subprocess.run([sys.executable, str(HERE / 'conformance.py'), '--json', '--storage', 'scripts/account_storage.py',
@@ -278,10 +278,11 @@ def full(evidence):
     except json.JSONDecodeError:
         conformance = {'passed': False, 'error': proc.stderr[-2000:]}
     report['checks']['conformance'] = {
-        'passed': conformance.get('passed'), 'seconds': conformance.get('seconds'),
+        'passed': conformance.get('passed'), 'exit': proc.returncode, 'seconds': conformance.get('seconds'),
+        'observation': conformance.get('base', {}).get('wrapped_io_reported_as_refusal'),
         'base': {k: conformance.get('base', {}).get(k) for k in ('cases', 'by_family', 'violations')},
         'mutations': [{k: m[k] for k in ('id', 'expect', 'caught', 'violations')} for m in conformance.get('mutations', [])]}
-    if not conformance.get('passed'):
+    if not conformance.get('passed') or proc.returncode != 0:
         fail('conformance: ' + json.dumps(conformance.get('base', {}).get('violations') or conformance.get('error')))
 
     sync = check_sync()
