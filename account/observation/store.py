@@ -26,6 +26,11 @@ TOKEN = re.compile(r'[A-Za-z0-9_.:@-]{1,160}\Z')
 KEY = re.compile(r'[a-f0-9]{64}\Z')
 EPOCH = re.compile(r'[a-f0-9]{32}\Z')
 KINDS = {'session_start', 'tool_start', 'tool_end', 'response_end'}
+TASK_KINDS = {'task', 'feedback', 'case', 'case_review', 'experience', 'experience_review'}
+VERDICTS = {'helped', 'hurt', 'no_observed_effect', 'confounded'}
+EXPOSURES = {'development', 'heldout', 'unknown'}
+REVIEW_STATUSES = {'reviewed', 'reusable', 'superseded', 'rejected'}
+DECISIONS = {'recommend', 'reject', 'inconclusive', 'not_run'}
 
 
 class InvalidEvent(ValueError):
@@ -390,7 +395,7 @@ class Store:
             row = files.read(('tasks', task_id, name), TASK_RECORD_LIMIT)
             require(isinstance(row, dict) and row.get('schema_version') == 1
                     and row.get('task_id') == task_id and row.get('record_id') == name[:-5]
-                    and row.get('kind') in {'task', 'feedback', 'case', 'case_review'}
+                    and row.get('kind') in TASK_KINDS
                     and integer(row.get('sequence')) and isinstance(row.get('registrations'), list)
                     and 0 < len(row['registrations']) <= 16, 'corrupt_task')
             for ref in row['registrations']:
@@ -667,6 +672,169 @@ class Store:
             export_new(destination, dict(case['public_case'], case_digest=expected_digest),
                        private_root_fd=files.fd)
             return dict(status='exported', case_digest=expected_digest)
+
+    @staticmethod
+    def _experience_payload(case_id, case_digest, cycle, scope, exposure, grade_derived, candidate,
+                            comparison, edits, lesson):
+        """Validate the reviewed-experience contract; grades stay in the comparison record."""
+        require(token(case_id) and isinstance(case_digest, str) and KEY.fullmatch(case_digest), 'experience_case')
+        require(type(cycle) is int and 1 <= cycle <= 2**31, 'experience_cycle')
+        require(token(scope), 'experience_scope')
+        require(exposure in EXPOSURES, 'experience_exposure')
+        require(type(grade_derived) is bool, 'experience_grade_derived')
+        require(isinstance(candidate, dict) and {'baseline_tree', 'candidate_tree'} <= set(candidate)
+                <= {'baseline_tree', 'candidate_tree', 'parent_tree'}
+                and all(isinstance(v, str) and KEY.fullmatch(v) for v in candidate.values()), 'experience_candidate')
+        require(isinstance(comparison, dict) and set(comparison) == {'experiment_id', 'decision'}
+                and token(comparison['experiment_id']) and comparison['decision'] in DECISIONS,
+                'experience_comparison')
+        require(isinstance(edits, list) and 0 < len(edits) <= 32, 'experience_edits')
+        for row in edits:
+            require(isinstance(row, dict) and set(row) == {
+                'component', 'change', 'observed', 'evidence_refs', 'verdict'}
+                and isinstance(row['component'], str) and 0 < len(row['component']) <= 160
+                and row['verdict'] in VERDICTS and isinstance(row['evidence_refs'], list)
+                and len(row['evidence_refs']) <= 16 and all(token(r) for r in row['evidence_refs']),
+                'experience_edits')
+            for text in (row['change'], row['observed']):
+                require(isinstance(text, str) and bool(text.strip()) and len(text.encode()) <= 8192,
+                        'experience_edits')
+        if lesson is not None:
+            require(isinstance(lesson, dict) and set(lesson) == {'cue', 'lesson', 'evidence', 'confidence'}
+                    and lesson['confidence'] in {'low', 'medium', 'high'}, 'experience_lesson')
+            for name in ('cue', 'lesson', 'evidence'):
+                require(isinstance(lesson[name], str) and bool(lesson[name].strip())
+                        and len(lesson[name].encode()) <= 8192, 'experience_lesson')
+        return dict(case_id=case_id, case_digest=case_digest, cycle=cycle, scope=scope, exposure=exposure,
+                    grade_derived=grade_derived, candidate=candidate, comparison=comparison, edits=edits,
+                    lesson=lesson)
+
+    def add_experience(self, task_id, *, case_id, case_digest, request_id, cycle, scope, exposure,
+                       grade_derived, candidate, comparison, edits, lesson=None):
+        """Record what one candidate attempt showed; a missing lesson (NO_ENTRY) is valid."""
+        payload = self._experience_payload(case_id, case_digest, cycle, scope, exposure, grade_derived,
+                                           candidate, comparison, edits, lesson)
+        require(len(encoded(payload)) <= TASK_INPUT_LIMIT, 'task_input_size')
+        with self._locked() as files:
+            rows, case = self._case(files, task_id, case_id, case_digest)
+            require(any(r['kind'] == 'case_review' and r['case_id'] == case_id
+                        and r['expected_digest'] == case_digest for r in rows), 'case_not_reviewed')
+            ident, previous = self._task_retry(files, task_id, rows, 'experience', request_id, payload)
+            if previous:
+                return dict(status='duplicate', experience_id=ident,
+                            experience_digest=previous['experience_digest'])
+            require(len(rows) < MAX_TASK_RECORDS - 1, 'task_capacity')
+            row = dict(schema_version=1, kind='experience', task_id=task_id, record_id=ident,
+                       sequence=len(rows) + 1, request_hash=digest(payload),
+                       registrations=case['registrations'], experience=payload,
+                       experience_digest=digest(payload))
+            require(len(encoded(row)) <= TASK_RECORD_LIMIT, 'task_record_size')
+            files.write(('tasks', task_id, ident + '.json'), row)
+            return dict(status='recorded', experience_id=ident, experience_digest=row['experience_digest'])
+
+    def review_experience(self, task_id, experience_id, *, expected_digest, reviewer, status, request_id):
+        """Append a maintainer decision; the latest review is the entry's status."""
+        require(token(reviewer), 'experience_reviewer')
+        require(status in REVIEW_STATUSES, 'experience_review_status')
+        with self._locked() as files:
+            rows = self._task_records(files, task_id)
+            entry = next((r for r in rows if r['kind'] == 'experience' and r['record_id'] == experience_id), None)
+            require(entry is not None, 'experience_not_found')
+            require(digest(entry['experience']) == entry['experience_digest'] == expected_digest,
+                    'experience_digest_mismatch')
+            request = dict(experience_id=experience_id, expected_digest=expected_digest,
+                           reviewer=reviewer, status=status)
+            ident, previous = self._task_retry(files, task_id, rows, 'experience_review', request_id, request)
+            if not previous:
+                require(len(rows) < MAX_TASK_RECORDS - 1, 'task_capacity')
+                row = dict(request, schema_version=1, kind='experience_review', task_id=task_id,
+                           record_id=ident, sequence=len(rows) + 1, request_hash=digest(request),
+                           registrations=entry['registrations'])
+                files.write(('tasks', task_id, ident + '.json'), row)
+            return dict(status='duplicate' if previous else 'reviewed', experience_id=experience_id,
+                        review_status=status)
+
+    def experience(self, task_id, experience_id):
+        """Open one selected entry in full, with its current review status."""
+        with self._locked() as files:
+            rows = self._task_records(files, task_id)
+            entry = next((r for r in rows if r['kind'] == 'experience' and r['record_id'] == experience_id), None)
+            require(entry is not None, 'experience_not_found')
+            require(digest(entry['experience']) == entry['experience_digest'], 'corrupt_task')
+            return dict(status='ok', task_id=task_id, experience_id=experience_id,
+                        experience_digest=entry['experience_digest'], experience=entry['experience'],
+                        review_status=self._review_state(rows, entry))
+
+    @staticmethod
+    def _review_state(rows, entry):
+        review = None
+        for row in rows:
+            if row['kind'] == 'experience_review' and row.get('experience_id') == entry['record_id']:
+                review = row
+        if review is None or review.get('expected_digest') != entry['experience_digest']:
+            return 'draft'
+        status = review.get('status')
+        return status if status in REVIEW_STATUSES else 'invalid'
+
+    def experience_index(self, *, cycle, scope):
+        """Freeze reusable development entries from earlier cycles; report exclusions by count only."""
+        require(type(cycle) is int and 1 <= cycle <= 2**31 and token(scope), 'experience_index')
+        entries, excluded = [], {}
+
+        def skip(reason):
+            excluded[reason] = excluded.get(reason, 0) + 1
+
+        # A missing store or lock raises: an unreadable store must never look like an empty index.
+        with self._locked() as files:
+            for task_id in files.names(('tasks',)):
+                if not KEY.fullmatch(task_id):
+                    continue
+                try:
+                    rows = self._task_records(files, task_id)
+                except InvalidEvent as error:
+                    if str(error) != 'task_inactive':
+                        raise
+                    skip('inactive')
+                    continue
+                for row in rows:
+                    if row['kind'] != 'experience':
+                        continue
+                    value = row['experience']
+                    require(digest(value) == row['experience_digest'], 'corrupt_task')
+                    try:
+                        # Re-validate stored fields so a malformed record fails closed.
+                        require(isinstance(value, dict), 'experience_record')
+                        self._experience_payload(**value)
+                    except (InvalidEvent, TypeError):
+                        skip('invalid_record')
+                        continue
+                    state = self._review_state(rows, row)
+                    if value['cycle'] >= cycle:
+                        skip('later_cycle')
+                    elif state in ('draft', 'reviewed'):
+                        skip('unreviewed')
+                    elif state in ('superseded', 'rejected'):
+                        skip(state)
+                    elif state != 'reusable':
+                        skip('invalid_review')
+                    elif value['exposure'] != 'development':
+                        skip('heldout_or_unknown_exposure')
+                    elif value['grade_derived']:
+                        skip('grade_derived')
+                    elif value['scope'] != scope:
+                        skip('other_scope')
+                    else:
+                        entries.append(dict(
+                            task_id=task_id, experience_id=row['record_id'],
+                            experience_digest=row['experience_digest'],
+                            cycle=value['cycle'], scope=value['scope'],
+                            decision=value['comparison']['decision'],
+                            edits=[dict(component=e['component'], verdict=e['verdict'])
+                                   for e in value['edits']],
+                            lesson_cue='NO_ENTRY' if value['lesson'] is None else value['lesson']['cue']))
+        entries.sort(key=lambda entry: (entry['task_id'], entry['experience_id']))
+        index = dict(cycle=cycle, scope=scope, entries=entries)
+        return dict(index, status='frozen', excluded=excluded, index_digest=digest(index))
 
     def _delete_tasks(self, files, registration_id):
         try:

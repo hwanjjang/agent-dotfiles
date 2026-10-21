@@ -213,6 +213,18 @@ owns repeatable checks. Rebuild with the screenshot-manual scripts above, replac
 the source name with task-feedback.json. This slice does not implement reviewed
 case export, native Codex collection or comparative evaluation.
 
+## Improvement experience walkthrough
+
+The [two-page experience walkthrough](improvement-experience.pdf) follows the
+candidate step in the map, then records, reviews, indexes and packages one
+synthetic improvement experience. Its [editable source](improvement-experience.json),
+[map image](improvement-experience-map.png), [CLI result image](improvement-experience-result.png)
+and [capture manifest](improvement-experience-capture.json) are maintained together.
+The result image renders actual disposable CLI results in a browser; it is not a
+terminal screenshot, a real candidate or a model comparison. The
+[Store guide](../../account/observation/README.md#record-and-retrieve-improvement-experience)
+owns commands and limits. Both PDF pages were rendered and individually viewed.
+
 ## Reviewed synthetic case walkthrough
 
 The [two-page case walkthrough](reviewed-cases.pdf) follows evidence-bound caller

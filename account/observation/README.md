@@ -378,6 +378,85 @@ The [reviewed-case walkthrough](../../docs/manual/reviewed-cases.pdf) and
 [recipe](../../docs/verification/verify-repository/features/reviewed-cases.md) cover
 actual synthetic prepare/show/review/export, refusal and purge scenarios.
 
+## Record and retrieve improvement experience
+
+An improvement experience records what one candidate attempt showed, following the
+[design contract](../../docs/decisions/account-improvement-loop.md#learn-from-earlier-attempts).
+Records are task records under the same task consent: revoking or pruning the task
+removes them. Each record references a case that has already been reviewed with
+`review_case`, and needs:
+
+- per-component edit rows (`helped`, `hurt`, `no_observed_effect`, `confounded`);
+- one lesson, or `null` for `NO_ENTRY`;
+- a caller-declared `cycle`, `scope` and `exposure` (`development`, `heldout`, `unknown`);
+- `grade_derived`, the candidate tree digests and the comparison decision.
+
+A record never replaces the comparison's grades.
+
+```sh
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" add < experience.json
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" review --task TASK \
+  --experience EXPERIENCE --digest DIGEST --reviewer maintainer --status reusable --request-id R1
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" index --cycle 3 --scope to-tickets
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" show --task TASK --experience EXPERIENCE
+python3.11 scripts/improvement/experience.py --home "$ACCOUNT_HOME" package \
+  --input package.json --output /absolute/new/package
+```
+
+`add` reads `task_id`, `case_id`, `case_digest`, `request_id`, `cycle`, `scope`,
+`exposure`, `grade_derived`, `candidate`, `comparison`, `edits` and `lesson` from
+stdin. Here `case_id` is the private case record ID returned by `prepare`, not the
+public `case_id` inside the exported case JSON that `package` uses.
+
+`review` appends a status: `reviewed`, `reusable`, `superseded` or `rejected`. The
+latest review decides the entry's status.
+
+`index` freezes the entries to give a candidate author. It includes only `reusable`
+entries with development exposure, no grade-derived content, the requested scope,
+and a cycle earlier than the requested one. It reports excluded entries as counts
+by reason, never their content. A missing or unrecognized review status counts
+as `unreviewed` or `invalid_review`, and a malformed stored record counts as
+`invalid_record`; neither passes. A missing store or lock file is an error, never
+an empty index. Each entry names its task,
+so `show` can open the full record, including edit rows and the lesson. The
+`index_digest` stays the same for unchanged inputs; record it with the candidate.
+
+`package` writes a new directory for the author:
+
+- the exported case, the index, inert text copies of the baseline and candidate
+  trees, and diffs against the original baseline;
+- for results whose case ID and `case_input_digest` match the current case,
+  separate trajectory and rendered-artifact files with their own statuses;
+- a manifest and a README listing present items, explicit gaps, excluded paths
+  and authoring/execution costs (`unknown` when not recorded).
+
+Package safety rules:
+
+- The case must be the exported case JSON; its `case_digest` must match its
+  content, or the package is refused.
+- A result for changed case inputs is reported as `stale_result` and not copied.
+  A missing or stale result makes the cost totals `unknown`.
+- Result labels must be unique.
+- A rendering failure never replaces the trajectory.
+- Exclusion patterns remove only a leading `./`, so `.answers/**` still excludes
+  `.answers/key.json` but not `answers/notes.md`. A pattern without wildcards,
+  such as `.answers`, excludes that path and everything below it.
+- Pass canonical absolute paths. An input path whose directories include a
+  symlink is reported as `symlink_in_path` and not read. A symlinked file is
+  reported as `symlink_skipped`, and a file with more than one hard link as
+  `hardlink_skipped`. Every path is opened one directory at a time without
+  following links, so a symlink swapped in after a check is still refused. An
+  output directory below a symlinked parent, or inside or above an input tree,
+  is refused, and the package is written through descriptors opened beneath that
+  parent. A directory that cannot be read becomes a gap, and an excluded
+  directory is listed once with a trailing `/`.
+- Files are copied without execute permission.
+- The package is not reviewed for privacy. Supply only approved development
+  evidence.
+
+The [experience walkthrough](../../docs/manual/improvement-experience.pdf) shows an
+actual synthetic CLI journey.
+
 ## Verification
 
 ```sh
@@ -385,6 +464,7 @@ python3.11 -m unittest discover -s tests -p 'test_observation_store.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_cli.py' -v
 python3.11 -m unittest discover -s tests -p 'test_observation_feedback*.py' -v
 python3.11 -m unittest discover -s tests -p 'test_improvement_cases*.py' -v
+python3.11 -m unittest discover -s tests -p 'test_improvement_experience.py' -v
 ```
 
 Tests use temporary homes and synthetic records. They cover scope isolation,
