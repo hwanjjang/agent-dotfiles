@@ -6,7 +6,7 @@ import re
 import shutil
 
 from account_storage import read, safe
-from setup_account import BUNDLE, load_receipt, status
+from setup_account import BUNDLE, PLANNING_ROUTE, load_receipt, status
 
 
 def check(ident, outcome, message, action=''):
@@ -93,7 +93,7 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
             raw = read(safe(home, name)).decode()
             foreign = re.search(r'<!--\s*(?!agent-dotfiles:)[\w-]+:begin', raw)
             valid = raw.count(block) == 1 and not foreign
-            checks.append(check('instructions.' + name.split('/')[0][1:], 'pass' if valid else 'fail',
+            checks.append(check('instructions.' + Path(name).parts[0].lstrip('.'), 'pass' if valid else 'fail',
                                 'Exactly one installed instruction block, without another managed owner.' if valid
                                 else 'Instruction ownership is missing, changed or duplicated.',
                                 '' if valid else 'Retire the previous managed fragment using its exact receipt.'))
@@ -105,7 +105,7 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
                 for group in groups:
                     if group in expected.get(event, []):
                         continue
-                    if re.search(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook', json.dumps(group)):
+                    if PLANNING_ROUTE.search(json.dumps(group)):
                         extra += 1
             checks.append(check('hooks.' + name.split('/')[0][1:], 'fail' if extra else 'pass',
                                 f'{extra} competing account planning hook groups found.',
@@ -113,7 +113,7 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
         # Inline Codex hooks are another active configuration source.
         import tomllib
         inline = tomllib.loads(read(safe(home, '.codex/config.toml')).decode()).get('hooks', {})
-        if inline and receipt.get('planning_hooks') and re.search(r'planning|/hooks/', json.dumps(inline)):
+        if inline and receipt.get('planning_hooks') and re.search(r'planning|flyingcorp-hook|/hooks/', json.dumps(inline)):
             checks.append(check('codex.inline-hooks', 'fail', 'Inline planning hooks compete with the installed route.',
                                 'Keep one owned planning registration per event.'))
     except (ValueError, OSError, KeyError, TypeError, AttributeError, UnicodeError):

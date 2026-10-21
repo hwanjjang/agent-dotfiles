@@ -16,14 +16,21 @@ import tomllib
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from account_storage import (RECEIPT, STATE_DIR, desired, digest, encoded, lock,
                              observed, read, require, rollback, rollback_plan, safe, transact,
-                             PRESERVED_SKILLS)
+                             INSTRUCTION_ENTRIES, PRESERVED_SKILLS, instruction_path_allowed,
+                             instruction_storage, linked_instruction_files)
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = '.agents/agent-dotfiles/bundle'
 BEGIN, END = '<!-- agent-dotfiles:begin -->', '<!-- agent-dotfiles:end -->'
 TBEGIN, TEND = '# agent-dotfiles:mcp:begin', '# agent-dotfiles:mcp:end'
 CONFIGS = {'.codex/hooks.json', '.claude/settings.json'}
-INSTRUCTIONS = {'.codex/AGENTS.md', '.claude/CLAUDE.md', '.hermes/SOUL.md'}
+INSTRUCTIONS = set(INSTRUCTION_ENTRIES)
+# Planning or observation registrations that must have one owner, including the previous account dispatcher.
+COMPETING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook|observation-hook'
+                             r'|/hooks/(run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py')
+# A second planning route is competing in any event of the file, not only where this installer adds groups.
+PLANNING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook'
+                            r'|\.codex/hooks/(?:run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py')
 
 
 def owned_path(name):
@@ -72,7 +79,13 @@ def load_receipt(home):
     for name in data['assets']:
         require(owned_path(name), 'Receipt owns an unsupported asset')
         safe(home, name)
-    require(set(data['instructions']) <= INSTRUCTIONS and set(data['hooks']) <= CONFIGS,
+    links = data.get('instruction_links', {})
+    require(isinstance(links, dict) and set(links) <= INSTRUCTIONS
+            and all(isinstance(rel, str) and (rel in INSTRUCTIONS or instruction_path_allowed(rel))
+                    for rel in links.values()), 'Invalid receipt: instruction_links')
+    for rel in links.values():
+        safe(home, rel)
+    require(set(data['instructions']) <= INSTRUCTIONS | set(links.values()) and set(data['hooks']) <= CONFIGS,
             'Receipt owns an unsupported configuration')
     require(isinstance(data.get('codex_mcp'), str), 'Invalid MCP receipt')
     observation = data.get('observation')
@@ -151,18 +164,35 @@ def check_codex_mcp(raw, block):
                 'Managed Codex MCP settings changed outside the marked block')
 
 
-def legacy_parts(home, path):
-    """Retire only exact instruction/hook fragments from an explicit old receipt."""
-    if path is None:
-        return {}
-    data = json.loads(path.read_bytes())
-    require(data.get('version') == 1 and data.get('home') == str(home), 'Legacy receipt belongs to another account')
-    require(set(data.get('instructions', {})) <= INSTRUCTIONS and set(data.get('hooks', {})) <= CONFIGS,
-            'Unsupported legacy configuration paths')
-    for block in data.get('instructions', {}).values():
-        require(isinstance(block, str) and block.startswith('<!--') and block.endswith('-->\n'),
-                'Legacy instruction must be an exact marked block')
-    return {k: data.get(k, {}) for k in ('instructions', 'hooks')}
+def legacy_parts(home, paths):
+    """Retire only exact instruction/hook fragments from explicit old receipts."""
+    found = {'instructions': {}, 'hooks': {}}
+    linked = linked_instruction_files(home)
+    for path in paths:
+        data = json.loads(path.read_bytes())
+        require(isinstance(data, dict) and isinstance(data.get('instructions', {}), dict)
+                and isinstance(data.get('hooks', {}), dict), 'Invalid legacy receipt')
+        require(data.get('version') == 1, 'Unsupported legacy receipt version; write a version 1 retire list for its fragments')
+        require(data.get('home') == str(home), 'Legacy receipt belongs to another account')
+        require(set(data.get('hooks', {})) <= CONFIGS, 'Unsupported legacy configuration paths')
+        for events in data.get('hooks', {}).values():
+            require(isinstance(events, dict) and all(isinstance(groups, list) and groups and all(isinstance(g, dict) for g in groups)
+                                                      for groups in events.values()), 'Invalid legacy receipt hook groups')
+        for key, value in data.get('instructions', {}).items():
+            # A receipt may name the client entry or the shared file that its link reaches.
+            require(key in INSTRUCTIONS or key in linked, 'Unsupported legacy configuration paths')
+            storage = instruction_storage(home, key) if key in INSTRUCTIONS else key
+            blocks = [value] if isinstance(value, str) else value
+            require(isinstance(blocks, list) and blocks, 'Legacy instruction must be an exact marked block')
+            for block in blocks:
+                require(isinstance(block, str) and block.startswith('<!--') and block.endswith('-->\n'),
+                        'Legacy instruction must be an exact marked block')
+                require(BEGIN not in block and END not in block, "Legacy receipt cannot retire this installer's own block")
+                found['instructions'].setdefault(storage, []).append(block)
+        for name, events in data.get('hooks', {}).items():
+            for event, groups in events.items():
+                found['hooks'].setdefault(name, {}).setdefault(event, []).extend(groups)
+    return found
 
 
 def status(home):
@@ -170,7 +200,16 @@ def status(home):
     drift = [name for name, value in receipt.get('assets', {}).items()
              if observed(safe(home, name)) != value]
     for name, block in receipt.get('instructions', {}).items():
-        if read(safe(home, name)).decode().count(block) != 1:
+        try:
+            if read(safe(home, name)).decode().count(block) != 1:
+                drift.append(name)
+        except ValueError:
+            drift.append(name)
+    for name, storage in receipt.get('instruction_links', {}).items():
+        try:
+            if instruction_storage(home, name) != storage:
+                drift.append(name)
+        except ValueError:
             drift.append(name)
     for name, events in receipt.get('hooks', {}).items():
         hooks = json.loads(read(safe(home, name)) or b'{}').get('hooks', {})
@@ -194,6 +233,9 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             mcp=None, legacy=None, observation_registration=None):
     old = load_receipt(home)
     require(action != 'update' or old, 'No installation receipt; use install')
+    for name, storage in old.get('instruction_links', {}).items():
+        require(instruction_storage(home, name) == storage, f'Instruction link changed since installation: {name}')
+    legacy = [legacy] if isinstance(legacy, Path) else list(legacy or [])
     require(not legacy or not old, 'Legacy adoption is only available on first install')
     remove = action == 'uninstall'
     require(not remove or old, 'No installation receipt; nothing owned to uninstall')
@@ -273,31 +315,49 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             receipt['assets'][name] = desired(value)
 
     retiring = legacy_parts(home, legacy)
-    if retiring:
+    if legacy:
         conflicts.append('legacy instruction/hook ownership transfer')
     target_instructions = {'.codex/AGENTS.md', '.claude/CLAUDE.md'} | ({'.hermes/SOUL.md'} if hermes else set())
     if remove:
         target_instructions = set()
     if not remove and read(safe(home, '.codex/AGENTS.override.md')).strip():
         raise ValueError('Codex AGENTS.override.md masks global guidance; reconcile it before installation')
-    for name in sorted(target_instructions | set(old.get('instructions', {})) | set(retiring.get('instructions', {}))):
-        path = safe(home, name)
+    # An entry that links to a shared file is edited through that file; each file gets one block.
+    links, entries = {}, {}
+    for name in sorted(target_instructions):
+        storage = instruction_storage(home, name)
+        entries.setdefault(storage, set()).add(name)
+        if storage != name:
+            links[name] = storage
+    for storage in set(old.get('instructions', {})) | set(retiring['instructions']):
+        entries.setdefault(storage, set())
+    for name in set(links) | set(old.get('instruction_links', {})):
+        # Unchanged, but fingerprinted: a link retargeted after the preview stops the apply.
+        change(name, {'link': os.readlink(safe(home, name))})
+    keep_empty = set(links.values()) | set(old.get('instruction_links', {}).values())
+    for storage in sorted(entries):
+        path = safe(home, storage)
         raw = read(path).decode()
-        retired = retiring.get('instructions', {}).get(name)
-        if retired:
+        for retired in retiring['instructions'].get(storage, []):
             require(raw.count(retired) == 1, 'Legacy instruction changed; reconcile first')
             raw = raw.replace(retired, '', 1)
         # Detect an old marked owner instead of layering a second set of instructions silently.
-        require(not re.search(r'<!--\s*(?!agent-dotfiles:)[\w-]+:begin', raw),
-                'Existing managed instructions need --legacy-receipt ownership transfer')
+        owners = sorted(set(re.findall(r'<!--\s*(?!agent-dotfiles:)([\w-]+):begin', raw)))
+        require(not owners, 'Existing managed instructions need --legacy-receipt ownership transfer '
+                            f'({storage}: {", ".join(owners)})')
         target = str(home / BUNDLE / 'account/instructions.md')
-        content = ('@' + target if name == '.claude/CLAUDE.md' and not re.search(r'\s', target)
+        # The import form is Claude's and needs a path without whitespace; a linked file may be read by other clients.
+        content = ('@' + target if storage == '.claude/CLAUDE.md' and entries[storage] == {storage} and not re.search(r'\s', target)
                    else 'Read and follow ' + json.dumps(target) + ' for shared account instructions.')
-        block = BEGIN + '\n' + content + '\n' + END + '\n' if name in target_instructions else ''
-        updated = replace_block(raw, old.get('instructions', {}).get(name, ''), block, BEGIN, END)
-        change(name, {'data': updated.encode(), 'mode': path.stat().st_mode & 0o777 if path.exists() else 0o600} if updated else None)
+        block = BEGIN + '\n' + content + '\n' + END + '\n' if entries[storage] else ''
+        updated = replace_block(raw, old.get('instructions', {}).get(storage, ''), block, BEGIN, END)
+        mode = path.stat().st_mode & 0o777 if path.exists() else 0o600
+        # A file that links point at stays, even when it becomes empty; the links must not dangle.
+        change(storage, {'data': updated.encode(), 'mode': mode} if updated or storage in keep_empty else None)
         if block:
-            receipt['instructions'][name] = block
+            receipt['instructions'][storage] = block
+    if links:
+        receipt['instruction_links'] = links
 
     for client, name in [('codex', '.codex/hooks.json'), ('claude', '.claude/settings.json')]:
         previous = old.get('hooks', {}).get(name, {})
@@ -306,7 +366,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             continue
         if client == 'codex' and (hooks or (observation and observation['client'] == 'codex')):
             inline = tomllib.loads(read(safe(home, '.codex/config.toml')).decode()).get('hooks', {})
-            require(not any(re.search(r'planning|observation-hook|/hooks/', json.dumps(groups))
+            require(not any(re.search(r'planning|observation-hook|flyingcorp-hook|/hooks/', json.dumps(groups))
                             for groups in inline.values()),
                     'Inline Codex planning or observation hooks need ownership reconciliation')
         path = safe(home, name)
@@ -314,6 +374,11 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         config = json.loads(raw or b'{}')
         remove_groups(config, previous)
         remove_groups(config, retired)
+        if hooks:
+            for event, existing in config.get('hooks', {}).items():
+                for group in existing:
+                    require(not any(PLANNING_ROUTE.search(h.get('command', '')) for h in group.get('hooks', [])),
+                            f'Existing planning or observation route needs explicit ownership reconciliation ({name} {event})')
         groups = hook_groups(home, client, files) if hooks else {}
         if observation and client == observation['client']:
             arguments = [sys.executable, str(home / '.agents/bin/observation-hook.py'),
@@ -329,9 +394,8 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         for event, additions in groups.items():
             existing = config.setdefault('hooks', {}).setdefault(event, [])
             for group in existing:
-                require(not any(re.search(r'planning[-_]with[-_]files|planning-hook|observation-hook|/hooks/(run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py', h.get('command', ''))
-                                for h in group.get('hooks', [])),
-                        'Existing planning or observation route needs explicit ownership reconciliation')
+                require(not any(COMPETING_ROUTE.search(h.get('command', '')) for h in group.get('hooks', [])),
+                        f'Existing planning or observation route needs explicit ownership reconciliation ({name} {event})')
             existing.extend(additions)
         if groups:
             receipt['hooks'][name] = groups
@@ -388,7 +452,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
                                      runs_outside_sandbox=True,
                                      trust_persists=True, trust_changed_by_installer=False,
                                      next_action='Review the listed definitions in native /hooks; activate only within explicit authority.'),
-                conflicts=sorted(set(conflicts)), missing_executables=prerequisites,
+                instruction_links=links, conflicts=sorted(set(conflicts)), missing_executables=prerequisites,
                 before=before, after=after, changes=list(changes))
     return plan, changes
 
@@ -401,7 +465,8 @@ def main(argv=None):
     parser.add_argument('--revision', default='HEAD', help='Committed local Git revision; never fetches or uses dirty worktree files')
     parser.add_argument('--apply', action='store_true', help='Apply the previewed operation; otherwise read-only')
     parser.add_argument('--approve-plan', type=Path, help='Exact previously saved preview required to take over conflicting selected paths')
-    parser.add_argument('--legacy-receipt', type=Path, help='Explicit prior v1 receipt: retire only matching instruction/hook fragments')
+    parser.add_argument('--legacy-receipt', type=Path, action='append',
+                        help='Explicit prior v1 receipt, repeatable: retire only matching instruction/hook fragments')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--with-hermes', dest='hermes', action='store_true', default=None)
     group.add_argument('--without-hermes', dest='hermes', action='store_false')

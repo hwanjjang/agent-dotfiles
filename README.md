@@ -34,7 +34,8 @@ one owner in `policies/`; system/Paseo skills and personal settings remain under
 their existing managers. Shared instruction/skill maintenance keeps one canonical
 source and verifies discovery and applicable behavior in each intended client.
 Use the [account guide](account/README.md) for preview,
-install, update, uninstall and guarded rollback on macOS/Linux/WSL. Codex and Claude
+install, update, uninstall and guarded rollback on macOS/Linux/WSL, and for
+[taking over an account managed by earlier tools](account/README.md#take-over-an-account-managed-by-earlier-tools). Codex and Claude
 Code are default; an installed Hermes is opt-in. See the [installation decision](docs/decisions/account-installation.md)
 and the earlier [source selection](docs/decisions/account-source-import.md).
 Use `sh scripts/setup-account.sh doctor` for setup diagnostics, `--native` for
