@@ -31,7 +31,9 @@ and browse [skills](skills/README.md), [policies](policies/README.md),
 [Account source](account/README.md) adds a portable instruction entry point and
 selected planning hook runtime/templates. Communication and execution rules have
 one owner in `policies/`; system/Paseo skills and personal settings remain under
-their existing managers. Use the [account guide](account/README.md) for preview,
+their existing managers. Shared instruction/skill maintenance keeps one canonical
+source and verifies discovery and applicable behavior in each intended client.
+Use the [account guide](account/README.md) for preview,
 install, update, uninstall and guarded rollback on macOS/Linux/WSL, and for
 [taking over an account managed by earlier tools](account/README.md#take-over-an-account-managed-by-earlier-tools). Codex and Claude
 Code are default; an installed Hermes is opt-in. See the [installation decision](docs/decisions/account-installation.md)
