@@ -199,14 +199,13 @@ class Case:
                     outcome = 'error'
                     if not fault:
                         self.fail('RecoveryCompletes', f'{label}: I/O error without an injected fault ({error})')
-                    self.check_journaled(f'after {label}')
-                    return outcome, f
-                outcome = 'refused'
-                end, end_journal, _, _ = self.snapshot()
-                if (end, end_journal) != (start, start_journal):
-                    self.fail('RefusalChangesNothing', f'{label}: refused ({error}) after changing {[n for n in self.names if end[n] != start[n]] or "the journal"}')
-                if not edits and any(start[n] != self.before[n] for n in self.names):
-                    self.fail('NoSpuriousRefusal', f'{label}: refused ({error}) with no later edit while {start_status}')
+                else:
+                    outcome = 'refused'
+                    end, end_journal, _, _ = self.snapshot()
+                    if (end, end_journal) != (start, start_journal):
+                        self.fail('RefusalChangesNothing', f'{label}: refused ({error}) after changing {[n for n in self.names if end[n] != start[n]] or "the journal"}')
+                    if not edits and any(start[n] != self.before[n] for n in self.names):
+                        self.fail('NoSpuriousRefusal', f'{label}: refused ({error}) with no later edit while {start_status}')
             except OSError as error:
                 outcome = 'error'
                 if not fault:
