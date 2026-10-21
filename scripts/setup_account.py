@@ -169,8 +169,13 @@ def legacy_parts(home, paths):
     linked = linked_instruction_files(home)
     for path in paths:
         data = json.loads(path.read_bytes())
+        require(isinstance(data, dict) and isinstance(data.get('instructions', {}), dict)
+                and isinstance(data.get('hooks', {}), dict), 'Invalid legacy receipt')
         require(data.get('version') == 1 and data.get('home') == str(home), 'Legacy receipt belongs to another account')
         require(set(data.get('hooks', {})) <= CONFIGS, 'Unsupported legacy configuration paths')
+        for events in data.get('hooks', {}).values():
+            require(isinstance(events, dict) and all(isinstance(groups, list) and groups and all(isinstance(g, dict) for g in groups)
+                                                      for groups in events.values()), 'Invalid legacy receipt hook groups')
         for key, value in data.get('instructions', {}).items():
             # A receipt may name the client entry or the shared file that its link reaches.
             require(key in INSTRUCTIONS or key in linked, 'Unsupported legacy configuration paths')

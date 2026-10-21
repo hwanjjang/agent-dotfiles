@@ -747,6 +747,38 @@ class AccountSetupTests(unittest.TestCase):
                 hooks = json.loads((self.home / '.claude/settings.json').read_text())['hooks']
                 self.assertNotIn(group, hooks.get('Stop', []))
 
+    def test_a_hermes_entry_may_link_to_the_same_shared_file(self):
+        target = self.shared_instructions()
+        soul = self.home / '.hermes/SOUL.md'
+        soul.parent.mkdir()
+        soul.symlink_to('../.agents/AGENTS.md')
+        with patch.object(setup.shutil, 'which', side_effect=lambda name: '/synthetic/' + name):
+            self.apply(hermes=True)
+        receipt = setup.load_receipt(self.home)
+        self.assertEqual(set(receipt['instructions']), {'.agents/AGENTS.md'})
+        self.assertEqual(receipt['instruction_links']['.hermes/SOUL.md'], '.agents/AGENTS.md')
+        self.assertEqual(target.read_text().count(setup.BEGIN), 1)
+        self.assertTrue(soul.is_symlink())
+
+    def test_malformed_legacy_receipts_are_refused_with_a_message(self):
+        malformed = {
+            'not an object': [],
+            'hooks is a list': {'version': 1, 'home': str(self.home), 'hooks': []},
+            'events is a list': {'version': 1, 'home': str(self.home), 'hooks': {'.codex/hooks.json': []}},
+            'groups is not a list': {'version': 1, 'home': str(self.home), 'hooks': {'.codex/hooks.json': {'Stop': {}}}},
+            'instructions is a list': {'version': 1, 'home': str(self.home), 'instructions': []},
+        }
+        for label, value in malformed.items():
+            with self.subTest(label):
+                path = self.root / 'malformed.json'
+                path.write_text(json.dumps(value))
+                with self.assertRaisesRegex(ValueError, 'legacy receipt|Legacy receipt'):
+                    self.prepare(legacy=[path])
+                with contextlib.redirect_stderr(io.StringIO()) as error:
+                    code = setup.main(['install', '--home', str(self.home), '--repo', str(self.repo), '--legacy-receipt', str(path)])
+                self.assertEqual(code, 2)
+                self.assertTrue(error.getvalue().startswith('Account setup: '))
+
     def test_a_link_changed_after_the_preview_stops_the_apply(self):
         target = self.shared_instructions()
         plan, changes = self.prepare()

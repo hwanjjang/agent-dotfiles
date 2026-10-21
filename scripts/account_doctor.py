@@ -6,7 +6,7 @@ import re
 import shutil
 
 from account_storage import read, safe
-from setup_account import BUNDLE, load_receipt, status
+from setup_account import BUNDLE, PLANNING_ROUTE, load_receipt, status
 
 
 def check(ident, outcome, message, action=''):
@@ -105,7 +105,7 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
                 for group in groups:
                     if group in expected.get(event, []):
                         continue
-                    if re.search(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook', json.dumps(group)):
+                    if PLANNING_ROUTE.search(json.dumps(group)):
                         extra += 1
             checks.append(check('hooks.' + name.split('/')[0][1:], 'fail' if extra else 'pass',
                                 f'{extra} competing account planning hook groups found.',
