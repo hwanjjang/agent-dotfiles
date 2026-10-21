@@ -1161,7 +1161,8 @@
         "Verify the combined candidate with the single tdd method or its explicit alternatives, additional integrated smoke and affected documentation/manual checks.",
         "For PR work, select eligible independent reviewers, deduplicate matching required/additional roles and apply code-review-and-quality inside each assigned context. Preserve findings through fallback, correction and renewed review.",
         "Treat enforced reviewer isolation as optional unless explicitly required; record actual evidence and limitations while retaining model, effort, independence and action limits.",
-        "Stop at the selected endpoint. Pre-merge means verified readiness without merge authority; an authorized merge requires current head/base and gate checks followed by remote integration verification."
+        "Stop at the selected endpoint. Pre-merge means verified readiness without merge authority; an authorized merge requires current head/base and gate checks followed by remote integration verification.",
+        "Resolve review-transfer destination, input manifest and existing authority; inspect available action records and report evidence limits."
       ],
       "outputs": [
         "A task-specific result with traceable intent, decisions, applicable stage artifacts and candidate-bound verification.",
@@ -1375,7 +1376,8 @@
       "usage": "Read this policy and preserve destination instructions and task authority.",
       "behavior": [
         "Defines scoped expectations; installation and deterministic enforcement are separate.",
-        "Use grounded-citations when a source register helps research/document claims; incidental lookups need no ledger."
+        "Use grounded-citations when a source register helps research/document claims; incidental lookups need no ledger.",
+        "For authorized instruction/skill installs and updates, verify the intended source, discovery and applicable behavior in each intended client; report missing checks."
       ],
       "outputs": [
         "A selected shared rule with a clear application boundary."
@@ -2422,11 +2424,13 @@
       "source": "policies/execution.md",
       "summary": "Choose proportionate workflows and preserve the task state needed to resume.",
       "when": [
-        "Starting multi-stage work, handing off, or resuming an existing task."
+        "Starting multi-stage work, handing off, or resuming an existing task.",
+        "Maintaining shared instructions or skills across multiple clients."
       ],
       "usage": "Use execution policy for routing and continuity; the selected skills own their methods.",
       "behavior": [
-        "Keep one task record, link existing artifacts and compare the resumed worktree with the recorded baseline."
+        "Keep one task record, link existing artifacts and compare the resumed worktree with the recorded baseline.",
+        "Maintain one canonical shared instruction/skill source with thin client entry points and preserve unrelated settings during authorized changes."
       ],
       "outputs": [
         "An accurate next action and reusable evidence without a second lifecycle."
@@ -2947,7 +2951,8 @@
         "Match supporting quotes to supplied retrieved text; manually assess claim support and source reliability.",
         "Use destination-supported citations; verify numbered Markdown report IDs, URLs and optional evidence.",
         "Preserve and check body sections after Sources; validate all ingest URLs before ledger mutation.",
-        "Keep state local to the selected task; no Hermes runtime, retrieval backend or automatic installs."
+        "Keep state local to the selected task; no Hermes runtime, retrieval backend or automatic installs.",
+        "For requested multi-platform research, distinguish source types and firsthand reports from promotion/measurements; report coverage gaps."
       ],
       "outputs": [
         "A sourced answer/report, local register and explicit verification limits."

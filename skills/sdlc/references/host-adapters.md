@@ -44,6 +44,9 @@ no source edits, commits/pushes, external messages/publication, production/provi
 mutations or further delegation. Main publishes findings within its authority.
 Prefer immutable scoped input and separate scratch for generated checks, retain
 actual tool/launcher observations, and compare source hashes after the return.
+Inspect available tool/action records alongside the findings; the reviewer's final
+self-report alone does not establish which actions ran. Retain relevant observed
+effects and record unavailable or incomplete action records as evidence limitations.
 These checks record what happened; a prompt or immutable copy alone must not be
 reported as verified tool/network isolation. Missing proof is a recorded limitation,
 not reviewer unavailability. Reject source-changing results and reconcile only
@@ -97,7 +100,15 @@ Skill discovery in both hosts, a local CLI smoke pass, and an actual delegated a
 
 An explicit pre-merge assignment covers scoped code, tests and task evidence transfer among the personal/team accounts and independent agents specified by that assignment, using already configured authenticated paths. Do not repeatedly ask for routine transfer or PR approval already covered by the contract. It does not authorize new accounts, credential/secret transfer, unrelated repository disclosure or permission-setting changes. Inspect actual capabilities without printing tokens. Missing capability is reported; do not broaden access as a fallback.
 
-Use available authenticated GitHub MCP tools or `gh` for the authorized PR and CI operations. Tool choice does not change the endpoint. At pre-merge, merge, auto-merge and merge-queue entry are forbidden even when the account supports them. Keep remote comments concise and preserve detailed receipts in linked reports.
+Before transferring review inputs, identify the actual provider and configured
+account/destination, exact head/base, file manifest, review purpose and trusted
+authority covering that payload and destination in the existing assignment/evidence.
+Send only the needed diff, source and verification; exclude secrets, account settings
+and unrelated content. Reuse earlier approval only while its task, destination and
+disclosure limits still apply. A profile name or this contract supplies no new
+transfer authority.
+
+Use available authenticated GitHub MCP tools or `gh` for the authorized PR and CI operations. Tool choice does not change the endpoint. When the endpoint is pre-merge, do not merge, enable auto-merge or enter a merge queue, even when the account supports those operations. Keep remote comments concise and preserve detailed receipts in linked reports.
 
 ## 2026-09-08 amendment
 

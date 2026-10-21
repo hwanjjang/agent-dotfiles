@@ -213,7 +213,7 @@
         "skills/sdlc/references/skill-routing.md": "f8143d7b8638e9412d89ad0fe7667dedd591f2cc9713cc0c61fb653389722d2d",
         "skills/sdlc/references/verification.md": "93ab29ae7a67017ba4ebbeefe0db9817ee29c2e14eabb7c0f585f82dacf0c3d4",
         "skills/sdlc/references/optional-reviewers.md": "63a4caff73eccd60114f250ceae3c251d242a8fcfe3e708579e1d1b79b0e8361",
-        "skills/sdlc/references/host-adapters.md": "5bb5c6df8292b624b806a8a8e3ea422b053cd6ebd2b0873fe56f43182698d061",
+        "skills/sdlc/references/host-adapters.md": "87c32564dd2b4d7d2e99c799a983413f4fe4b71452b539fc7051dcb6406b9e9c",
         "skills/sdlc/references/intake.md": "cf8629f12f91b97aa01bf86b961c8d89f5647007f9b0b3ca65fd841305665904"
       }
     },
@@ -223,7 +223,7 @@
       "adopted_upstream": "https://github.com/NousResearch/hermes-agent",
       "adopted_revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
       "adopted_path": "skills/research/grounded-citations",
-      "local_skill_sha256": "ecea74f35a15f6d0f08561a298a28b02cea73d05dbafd35074900f81fa3f7bb7"
+      "local_skill_sha256": "9e21debc77aa9ed96129e46ab1885560c1959392ea4c305296442e813c735c6a"
     }
   ]
 }
