@@ -282,7 +282,8 @@ the old updater. Every step previews first; applying needs the exact saved plan.
   that file once, keeps every link, and writes the plain "Read and follow" form so both clients
   can use it. The Claude `@` import form is used only when a regular `.claude/CLAUDE.md`
   is the sole entry for its file. A link is refused before any write when it leaves the account,
-  passes through another link, is missing or names a directory, is not Markdown, or lies in the
+  passes through another link (including a `..` after a directory link, which the client would
+  resolve differently), is missing or names a directory, is not Markdown, or lies in the
   installer's own bundle, state, skill or hook trees. Status and doctor report a retargeted link as drift,
   and update and uninstall stop until you reconcile it.
 - **Old fragments.** `--legacy-receipt` may repeat. Each receipt is JSON with `"version": 1`,
@@ -294,7 +295,8 @@ the old updater. Every step previews first; applying needs the exact saved plan.
   group of the same event, stays untouched; this installer's own markers are rejected.
 - **Competing routes.** A planning registration from another owner is never layered silently.
   A group whose command names the earlier account dispatcher, an earlier planning adapter or
-  this bundle's runtime stops the preview and names the file and event, not the contents.
+  this bundle's runtime stops the preview, in any event of the hook file, and names the file and
+  event, not the contents.
 
 **Order**
 

@@ -28,6 +28,8 @@ INSTRUCTIONS = set(INSTRUCTION_ENTRIES)
 # Planning or observation registrations that must have one owner, including the previous account dispatcher.
 COMPETING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook|observation-hook'
                              r'|/hooks/(run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py')
+# A second planning route is competing in any event of the file, not only where this installer adds groups.
+PLANNING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook')
 
 
 def owned_path(name):
@@ -319,6 +321,9 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             links[name] = storage
     for storage in set(old.get('instructions', {})) | set(retiring['instructions']):
         entries.setdefault(storage, set())
+    for name in links:
+        # Unchanged, but fingerprinted: a link retargeted after the preview stops the apply.
+        change(name, {'link': os.readlink(safe(home, name))})
     keep_empty = set(links.values()) | set(old.get('instruction_links', {}).values())
     for storage in sorted(entries):
         path = safe(home, storage)
@@ -331,7 +336,8 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         require(not owners, 'Existing managed instructions need --legacy-receipt ownership transfer '
                             f'({storage}: {", ".join(owners)})')
         target = str(home / BUNDLE / 'account/instructions.md')
-        content = ('@' + target if entries[storage] == {'.claude/CLAUDE.md'} and not re.search(r'\s', target)
+        # The import form is Claude's and needs a path without whitespace; a linked file may be read by other clients.
+        content = ('@' + target if storage == '.claude/CLAUDE.md' and entries[storage] == {storage} and not re.search(r'\s', target)
                    else 'Read and follow ' + json.dumps(target) + ' for shared account instructions.')
         block = BEGIN + '\n' + content + '\n' + END + '\n' if entries[storage] else ''
         updated = replace_block(raw, old.get('instructions', {}).get(storage, ''), block, BEGIN, END)
@@ -358,6 +364,11 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
         config = json.loads(raw or b'{}')
         remove_groups(config, previous)
         remove_groups(config, retired)
+        if hooks:
+            for event, existing in config.get('hooks', {}).items():
+                for group in existing:
+                    require(not any(PLANNING_ROUTE.search(h.get('command', '')) for h in group.get('hooks', [])),
+                            f'Existing planning or observation route needs explicit ownership reconciliation ({name} {event})')
         groups = hook_groups(home, client, files) if hooks else {}
         if observation and client == observation['client']:
             arguments = [sys.executable, str(home / '.agents/bin/observation-hook.py'),

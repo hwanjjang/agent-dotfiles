@@ -88,14 +88,21 @@ def instruction_path_allowed(rel):
 def instruction_storage(home, name):
     """Account-relative file holding an instruction entry: itself, or the one file its link names.
 
-    Only one in-account link level to a regular Markdown file is followed, so an edit never leaves
-    the account, crosses another link or touches the installer's own payload.
+    Only one in-account link level to a regular Markdown file is followed. The kernel's own
+    resolution (which applies `..` after a link in the link's target, and fails on a missing
+    component) must reach the same file as the lexical path, so an edit never lands on a file
+    the client does not open, leaves the account, crosses another link or touches the payload.
     """
     path = safe(home, name)
     if not path.is_symlink():
         return name
     target = Path(os.path.normpath(path.parent / os.readlink(path)))
     require(target.is_relative_to(home) and target != home, 'Instruction link leaves the account')
+    try:
+        opened = Path(os.path.realpath(path, strict=True))
+    except OSError:
+        opened = None
+    require(opened == target, 'Instruction link must name one regular file in the account')
     rel = target.relative_to(home).as_posix()
     stored = safe(home, rel)
     require(stored.is_file() and not stored.is_symlink(), 'Instruction link must name one regular file in the account')

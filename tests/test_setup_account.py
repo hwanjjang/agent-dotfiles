@@ -513,7 +513,8 @@ class AccountSetupTests(unittest.TestCase):
         link.write_text('A separate regular file.\n')
         self.assertEqual(setup.status(self.home)['drift'], ['.codex/AGENTS.md'])
 
-    def test_claude_only_link_keeps_the_import_form(self):
+    def test_a_linked_claude_entry_uses_the_plain_form(self):
+        # A path without whitespace is where the import form would otherwise apply.
         with tempfile.TemporaryDirectory(prefix='accountinstall') as plain:
             self.home = Path(plain).resolve()
             shared = self.home / '.agents/CLAUDE-shared.md'
@@ -523,7 +524,15 @@ class AccountSetupTests(unittest.TestCase):
             link.parent.mkdir(parents=True)
             link.symlink_to('../.agents/CLAUDE-shared.md')
             self.apply()
-            self.assertIn('@' + str(self.home / setup.BUNDLE / 'account/instructions.md'), shared.read_text())
+            self.assertIn('Read and follow', shared.read_text())
+            self.assertNotIn('@', shared.read_text())
+
+    def test_a_regular_claude_entry_keeps_the_import_form(self):
+        with tempfile.TemporaryDirectory(prefix='accountinstall') as plain:
+            self.home = Path(plain).resolve()
+            self.apply()
+            self.assertIn('@' + str(self.home / setup.BUNDLE / 'account/instructions.md'),
+                          (self.home / '.claude/CLAUDE.md').read_text())
             self.assertIn('Read and follow', (self.home / '.codex/AGENTS.md').read_text())
 
     def test_instruction_links_that_are_not_one_account_markdown_file_are_refused(self):
@@ -537,6 +546,16 @@ class AccountSetupTests(unittest.TestCase):
         (agents / 'notes.txt').write_text('Text.\n')
         (agents / 'skills/x').mkdir(parents=True)
         (agents / 'skills/x/NOTES.md').write_text('Skill notes.\n')
+        # `..` after a link is resolved by the kernel in the link's target, not in the account path.
+        bridge_target = self.root / 'bridge-target'
+        bridge_target.mkdir()
+        (self.home / 'bridge').symlink_to(bridge_target)
+        (self.home / 'AGENTS.md').write_text('Unrelated personal file.\n')
+        (self.root / 'AGENTS.md').write_text('Outside file.\n')
+        (self.home / 'alias').symlink_to(agents)
+        for tree in ('.agents/agent-dotfiles/bundle', '.agents/agent-dotfiles/state', '.codex/hooks', '.claude/hooks'):
+            (self.home / tree).mkdir(parents=True)
+            (self.home / tree / 'NOTES.md').write_text('Payload notes.\n')
         cases = {
             'leaves the account': (str(outside), 'leaves the account'),
             'is a chain': ('../.agents/chain.md', 'one regular file'),
@@ -544,9 +563,16 @@ class AccountSetupTests(unittest.TestCase):
             'is a directory': ('../.agents/folder.md', 'one regular file'),
             'is not Markdown': ('../.agents/notes.txt', 'Markdown'),
             'is inside a skill': ('../.agents/skills/x/NOTES.md', 'protected'),
+            'is inside the bundle': ('../.agents/agent-dotfiles/bundle/NOTES.md', 'protected'),
+            'is inside the state': ('../.agents/agent-dotfiles/state/NOTES.md', 'protected'),
+            'is inside the Codex hooks': ('hooks/NOTES.md', 'protected'),
+            'is inside the Claude hooks': ('../.claude/hooks/NOTES.md', 'protected'),
+            'passes through a directory link outside the account': ('../bridge/../AGENTS.md', 'one regular file'),
+            'passes through a missing directory': ('../missing/../.agents/real.md', 'one regular file'),
+            'passes through a directory link inside the account': ('../alias/real.md', 'one regular file|Unsafe parent'),
         }
         entry = self.home / '.codex/AGENTS.md'
-        entry.parent.mkdir()
+        entry.parent.mkdir(exist_ok=True)
         before = storage.observed(self.home)
         for label, (target, message) in cases.items():
             with self.subTest(label):
@@ -557,7 +583,9 @@ class AccountSetupTests(unittest.TestCase):
                 finally:
                     entry.unlink()
                 self.assertEqual(storage.observed(self.home), before)
-        self.assertFalse((self.home / setup.BUNDLE).exists())
+        self.assertFalse((self.home / setup.BUNDLE / 'account').exists())
+        self.assertEqual((self.home / 'AGENTS.md').read_text(), 'Unrelated personal file.\n')
+        self.assertEqual((self.root / 'AGENTS.md').read_text(), 'Outside file.\n')
 
     def test_managed_target_accepts_an_instruction_file_only_behind_a_current_link(self):
         self.assertFalse(storage.managed_target('.agents/AGENTS.md', self.home))
@@ -700,6 +728,36 @@ class AccountSetupTests(unittest.TestCase):
         groups = json.loads((self.home / '.claude/settings.json').read_text())['hooks']['SessionStart']
         self.assertNotIn(group, groups)
         self.assertTrue(groups)
+
+    def test_a_previous_planning_route_in_any_event_is_not_kept_silently(self):
+        commands = ('python3 /x/.agents/bin/flyingcorp-hook.py claude stop',
+                    'python3 /x/.claude/skills/planning-with-files/scripts/stop.py')
+        for index, command in enumerate(commands):
+            with self.subTest(command):
+                self.home = self.root / f'route account {index}'
+                self.home.mkdir()
+                group = {'hooks': [{'type': 'command', 'command': command}]}
+                self.config('.claude/settings.json', {'hooks': {'Stop': [group]}})
+                with self.assertRaisesRegex(ValueError, r'\.claude/settings\.json Stop'):
+                    self.prepare()
+                receipt = self.receipt_file(f'stop-{index}.json', hooks={'.claude/settings.json': {'Stop': [group]}})
+                plan, changes = self.prepare(legacy=[receipt])
+                with storage.lock(self.home):
+                    storage.transact(self.home, plan, changes)
+                hooks = json.loads((self.home / '.claude/settings.json').read_text())['hooks']
+                self.assertNotIn(group, hooks.get('Stop', []))
+
+    def test_a_link_changed_after_the_preview_stops_the_apply(self):
+        target = self.shared_instructions()
+        plan, changes = self.prepare()
+        other = self.home / '.agents/OTHER.md'
+        other.write_text('Elsewhere.\n')
+        (self.home / '.codex/AGENTS.md').unlink()
+        (self.home / '.codex/AGENTS.md').symlink_to('../.agents/OTHER.md')
+        with storage.lock(self.home), self.assertRaisesRegex(ValueError, r'changed since preview: \.codex/AGENTS\.md'):
+            storage.transact(self.home, plan, changes)
+        self.assertEqual(target.read_text(), 'Personal rule.\n')
+        self.assertEqual(other.read_text(), 'Elsewhere.\n')
 
     def snapshot(self):
         """Every account path outside the installer's own state, as comparable data."""
