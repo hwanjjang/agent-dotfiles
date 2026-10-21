@@ -13,7 +13,12 @@ Run every command from the checkout root.
 
 ## What it promises
 
-- **P1 Recoverable interruption.** If an install, update or uninstall `--apply`, or a
+Scope: one install-shaped transaction over three paths in `setup_account.prepare` order (an
+unowned skill directory replaced by a link, `.claude/settings.json`, and the receipt), within
+the bounds below. Other paths that `prepare` emits, and update or uninstall shapes, follow the
+same functions but are not modeled separately.
+
+- **P1 Recoverable interruption.** If that transaction's `--apply`, or a
   `rollback --apply`, stops at any step (killed, or an I/O error, including one during the
   automatic undo), `rollback --apply` for that transaction restores every touched path to
   its pre-transaction content, after any number of interrupted retries. Harm if broken: an
@@ -39,8 +44,9 @@ the statuses; it is not proof. Its Archify source is
 python3.11 docs/verification/verify-account-transactions/scripts/run.py --check-sync
 ```
 
-It is read-only. `out-of-sync` lists covered functions that changed, new functions in
-`scripts/account_storage.py` that are neither covered nor excluded, model `@code` references
+It is read-only. `out-of-sync` lists covered functions that changed, excluded helpers that
+changed, new functions in `scripts/account_storage.py` that are neither covered nor excluded,
+commits since the sync commit that touch covered files, model `@code` references
 whose source line moved or changed, broken assumptions in `scripts/setup_account.py`, and a
 [lifecycle diagram](../../architecture/account-transaction-lifecycle.html) whose states no longer
 equal the model's journal statuses. It also lists commits since the sync commit. Any of these means review required, not a bug. Also
@@ -125,18 +131,18 @@ that commit.
         "rollback_plan": "bc7f783db369e6fc",
         "rollback": "163b5c38b3567c1c"
       },
-      "excluded": [
-        "_caseless",
-        "_through_real_directories",
-        "digest",
-        "instruction_path_allowed",
-        "instruction_storage",
-        "linked_instruction_files",
-        "managed_target",
-        "read",
-        "require",
-        "safe"
-      ]
+      "excluded": {
+        "_caseless": "3461427e979f1ab8",
+        "_through_real_directories": "1d02c269764bd962",
+        "digest": "7b1c20666613d53a",
+        "instruction_path_allowed": "8192180370e7bd20",
+        "instruction_storage": "9080166f9af30e63",
+        "linked_instruction_files": "9d8ba2abb7a2cfa9",
+        "managed_target": "d8f0aeaa2a894d82",
+        "read": "784134dd533d0793",
+        "require": "82e93c3648c21d67",
+        "safe": "5417caf3e2637533"
+      }
     }
   },
   "assumptions": [
@@ -160,7 +166,9 @@ reverse: settings, skill, receipt. The harness uses the same three paths.
 Verified in the model: one transaction, up to two kills, two I/O errors and one later user
 edit or deletion between commands, with any number of rollback retries. The harness drives
 the real functions in synthetic homes at every replace, unlink, symlink, mkdir, `os.open`
-(including directory descriptors) and copy step they make, with simulated kills, injected
+(including directory descriptors) and copy call that `account_storage.py` makes directly; calls
+made inside `pathlib` or `tempfile` (the parent `mkdir` and temporary file in `write`) are not
+injected, with simulated kills, injected
 errors, real process exits at every apply step and a lock held by a second process. A
 `ValueError` caused by an `OSError` is an I/O error, not a refusal: `_below` wraps directory
 errors as `Unsafe parent`. The harness counts these as an observation, because the CLI shows

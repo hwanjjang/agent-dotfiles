@@ -28,6 +28,7 @@ SKILL = HERE.parent / 'SKILL.md'
 JAR_SHA256 = '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88'  # tla2tools.jar v1.7.4
 DEFAULT_JAR = ROOT / '.local/tools/tla2tools-1.7.4/tla2tools.jar'
 PROPERTIES = ('ChangesAreJournaled', 'NoSpuriousRefusal', 'NoClobber', 'RefusalChangesNothing')
+STUTTER = {'Wait'}  # idle step with UNCHANGED vars: it can never produce a new distinct state
 
 
 def rel(path):
@@ -172,12 +173,17 @@ def check_sync():
                 reasons.append(f'{path}: {name} changed since the sync commit')
         for name in sorted(set(current) - set(spec['functions']) - set(spec['excluded'])):
             reasons.append(f'{path}: new function {name} is neither covered nor excluded')
+        for name, recorded in spec['excluded'].items():
+            if current.get(name) != recorded:
+                reasons.append(f'{path}: excluded helper {name} changed; confirm it is still outside the model')
     reasons += code_references()
     reasons += assumptions()
     commits = subprocess.run(['git', 'log', '--oneline', f"{record['sync_commit']}..HEAD", '--', *record['covered'],
                               'scripts/setup_account.py'], cwd=ROOT, capture_output=True, text=True)
     if commits.returncode != 0:
         reasons.append(f"sync_commit {record['sync_commit']} is not a reachable commit")
+    elif commits.stdout.strip():
+        reasons.append('commits since the sync commit touch covered files; review them against the model')
     return {'status': 'in-sync' if not reasons else 'out-of-sync', 'sync_commit': record['sync_commit'],
             'reasons': reasons, 'commits_since_sync': commits.stdout.splitlines() if commits.returncode == 0 else ['git log failed']}
 
@@ -215,8 +221,10 @@ def tlc(evidence, label, variant, invariants, coverage=False):
     if depth:
         result['depth'] = int(depth.group(1))
     if coverage:
-        result['coverage'] = {m.group(1): int(m.group(3)) for m in
-                              re.finditer(r'^<(\w+) line \d+.*?>: (\d+):(\d+)$', out, re.M)}
+        # Action lines read `<Name ...>: N:M` (or a single number); N counts distinct states the action
+        # produced, M the states it generated. Vacuity requires N > 0, except for the stutter step.
+        result['coverage'] = {m.group(1): {'first': int(m.group(2)), 'second': int(m.group(3) or 0)} for m in
+                              re.finditer(r'^<(\w+) line \d+[^>]*>: (\d+)(?::(\d+))?$', out, re.M)}
     if violated:
         steps = re.findall(r'^State \d+: <(\w+)', out, re.M)
         result['counterexample'] = steps
@@ -255,8 +263,9 @@ def full(evidence):
     for key in ('distinct_states', 'depth'):
         if expected.get(key) is not None and base.get(key) != expected[key]:
             fail(f'base {key} {base.get(key)} differs from the recorded {expected[key]}; update expectations only after review')
-    idle = [a for a in next_actions() if base.get('coverage', {}).get(a, 0) == 0]
-    report['checks']['vacuity'] = {'actions': next_actions(), 'never_taken': idle}
+    coverage = base.get('coverage', {})
+    idle = [a for a in next_actions() if a not in STUTTER and coverage.get(a, {}).get('first', 0) == 0]
+    report['checks']['vacuity'] = {'actions': next_actions(), 'stutter_excluded': sorted(STUTTER), 'never_taken': idle}
     if idle or not base.get('coverage'):
         fail(f'actions never taken in the base run: {idle or "coverage missing"}')
 
