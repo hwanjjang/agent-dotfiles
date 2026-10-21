@@ -1,7 +1,7 @@
 # Account observation and improvement loop
 
 Status: original design for [issue #9](https://github.com/hwanjjang/agent-dotfiles/issues/9),
-2026-10-17, source baseline `ed1da03`; implementation status updated 2026-10-18.
+2026-10-17, source baseline `ed1da03`; implementation status updated 2026-10-20.
 The [store and manual CLI](../../account/observation/README.md) support synthetic
 observations, explicit task feedback and reviewed synthetic development-case export.
 Opt-in [Claude and Codex adapters](../../account/observation/native.md) and installer
@@ -15,9 +15,11 @@ including committed-source verification and selected same-host receipts. The
 historical credential-free and authenticated qualification.
 [Trusted offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots)
 and [serial launch reservations](evaluation-accounting.md#serial-native-launch-reservations)
-are implemented; current-source authenticated admission and actual comparisons remain pending. Automated diagnosis,
-authenticated comparative trials, operational promotion and automatic delivery
-remain unqualified or planned. No persistent real-account collection or scheduled
+are implemented. The [bounded development comparison](../evidence/native-development-pilot-2026-10-19.md) is complete:
+its authenticated outcomes were admitted through the maintained source-bound reader
+and the committed-source recommendation returned reject, so no candidate was selected.
+Same-host held-out evaluation, a positive recommendation, automated diagnosis,
+operational promotion and automatic delivery remain pending or planned. No persistent real-account collection or scheduled
 work was activated by this implementation.
 
 ## Problem and intended experience
@@ -64,8 +66,8 @@ this design, not additional state-machine stages or installed capabilities.
 | 1. Observe | Synthetic store/CLI and opt-in Claude/Codex hook delivery exist; consent, native trust and source-bound platform limits remain explicit. |
 | 2. Reproduce | Explicit task binding, feedback and reviewed synthetic case export are implemented; evidence-bound caller triage is implemented; automated diagnosis remains planned. |
 | 3. Candidate | Existing investigation/authoring/TDD methods can prepare a manual candidate; loop orchestration is planned. |
-| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner retains historical selected-profile qualification; [offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented; current authenticated admission, comparisons and same-host held-out evaluation remain pending. |
-| 5. Review | [Native source review and the selected same-host verifier](promotion-recommendations.md) are implemented. Actual qualifying comparison evidence remains pending; independent source review and account authority remain separate. |
+| 4. Eval | Reviewed exports feed frozen offline comparisons, calibrated deterministic checks and complete paired accounting. The separate native runner retains historical selected-profile qualification; [offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented. The [bounded development comparison](../evidence/native-development-pilot-2026-10-19.md) is complete with a reject result; same-host held-out evaluation remains pending. |
+| 5. Review | [Native source review and the selected same-host verifier](promotion-recommendations.md) are implemented. The actual development comparison returned [reject](../evidence/native-development-pilot-2026-10-19.md); evidence qualifying a positive recommendation, including held-out evaluation, remains pending. Independent source review and account authority remain separate. |
 | 6. Deploy | Existing committed-revision installer and rollback apply; automatic eval-to-deployment integration is planned. Return to observation of the delivered identity. |
 
 The ordinary PR route remains authoritative for authorized source work. Evaluation
@@ -501,8 +503,8 @@ unverified/not-assessed/null facts. The separate
 [implemented receipt verifier](promotion-recommendations.md#same-host-evidence-manifest)
 checks selected context/input records, actual remote anchors, preflight and exposure
 against recomputed native reports. That guide owns the exact executable schemas.
-Current-source qualification, actual pack preparation and real comparisons remain
-pending. Candidate freezing is separate; conformance fixtures neither create nor
+The [bounded development comparison](../evidence/native-development-pilot-2026-10-19.md) is complete with a reject
+result; actual held-out pack preparation and held-out comparison remain pending. Candidate freezing is separate; conformance fixtures neither create nor
 evaluate a real candidate. Synthetic positive conformance is not protocol completion.
 
 Design decision, 2026-10-18: retain problems not supplied to the candidate author,
@@ -673,8 +675,9 @@ trust/platform limits in the native guide. Capacity qualification covers the mea
 synthetic PostToolUse workload only. Slice 3 has explicit task selections, feedback
 and reviewed synthetic case export; caller triage is implemented and automated
 diagnosis remains planned. Slices 4–5 provide offline accounting and diagnostic
-recommendations; authenticated comparative trials and eligible delivery remain
-unqualified. Each slice depends
+recommendations; one authenticated development comparison is
+[complete with a reject result](../evidence/native-development-pilot-2026-10-19.md), while held-out evaluation and
+eligible delivery remain unqualified. Each slice depends
 on the previous contract; expensive model trials begin after deterministic
 collection and isolation qualification.
 
@@ -696,9 +699,12 @@ declared reference machine, tested with concurrent writers and 10,000 synthetic
 events. Record the actual distribution and durability cost; this is a target,
 not an availability promise. Bound every payload/batch and report dropped fields.
 
-Next steps are authenticated Linux and native-child qualification, a qualified
-isolated execution/evidence adapter, same-model development comparison, then
-operational recommendation and disposable-account delivery/rollback. Existing
+The planned sequence was authenticated Linux and native-child qualification, a
+qualified isolated execution/evidence adapter, same-model development comparison,
+then operational recommendation and disposable-account delivery/rollback. The
+[development comparison](../evidence/native-development-pilot-2026-10-19.md) is
+complete with a reject result; held-out evaluation, an operational recommendation
+for an eligible candidate and disposable-account delivery/rollback remain. Existing
 Codex collection and task feedback/case export do not need reimplementation. The
 doctor supplies readiness checks; the separate native adapters own collection. Real-account activation, comparison
 model-budget selection and any recurring analysis are later explicit operations.
@@ -746,4 +752,4 @@ improved task performance.
 
 ### Offline accounting implementation
 
-The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner retains historical selected-profile qualification. [Trusted offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented; current authenticated admission, actual comparisons and same-host held-out evaluation remain incomplete. Diagnostic reports cannot authorize promotion.
+The [deterministic development evaluator](evaluation-accounting.md) implements frozen inventories, calibrated closed checks and all-trial accounting. The separate native runner retains historical selected-profile qualification. [Trusted offline artifact admission](evaluation-accounting.md#admit-recorded-native-artifact-snapshots) and [serial reservations](evaluation-accounting.md#serial-native-launch-reservations) are implemented. The [bounded development comparison](../evidence/native-development-pilot-2026-10-19.md) is complete with a reject result; same-host held-out evaluation remains incomplete. Diagnostic reports cannot authorize promotion.

@@ -222,7 +222,7 @@ FAKE conformance is not actual improvement; the actual fixed comparison returned
 Recommendations never authorize source acceptance, merge or installation.
 
 The [implementation handoff](docs/decisions/account-improvement-loop.md#implementation-handoff-and-evidence-boundaries)
-links the remaining result-collection, grading, pilot, same-host held-out evaluation and delivery work.
+links the result-collection, grading and pilot work, now complete with a reject result, and the remaining same-host held-out evaluation and delivery work.
 The [held-out protocol](docs/decisions/account-improvement-loop.md#same-host-held-out-evaluation)
 uses fresh contexts on the current host/account; additional hosts, accounts and
 external custodians are not required. Its selected receipt verifier is implemented;

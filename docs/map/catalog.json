@@ -2489,13 +2489,13 @@
         "One selected client registration per account; grants, epochs and records remain owned by the private store.",
         "Claude has five observer callbacks; Codex has four. Planning hooks stay separate. Codex tool-end status remains unknown, including nonzero shell exits.",
         "Read the native.md platform matrix before relying on another environment: each result is source-bound. Ubuntu x86_64 source 7ada8e2 authenticated Claude/Codex, exercised baseline/interruption and one native child per client, and added optional Paseo evidence. Explicit native parent relationships remain separate from null collector actor/parent fields; child lifecycle capture is incomplete. Earlier aarch64 failures/prerequisites keep their historical scope. Cancellation is not process-kill proof; WSL is unverified and excluded from the x86_64 run.",
-        "Actor/parent identity, effective exposure, completeness and task success stay unknown. Live comparative evaluation and automatic promotion remain planned.",
+        "Actor/parent identity, effective exposure, completeness and task success stay unknown. One bounded live development comparison is complete with a reject result (docs/evidence/native-development-pilot-2026-10-19.md, #27); held-out evaluation and automatic promotion remain pending or planned.",
         "SessionStart/Stop snapshots record bounded delivery hashes and gaps; tool events inherit no cached identity and effective exposure stays unknown.",
         "10,000 actual PostToolUse dispatcher subprocesses using synthetic inputs (no boundary probes) passed record/replay/interruption checks on the reference host; p95 48.16 ms met the under-50 ms target on this one reference run; it is not a cross-host guarantee. This does not qualify native scheduling or later model behavior.",
         "Bind exact events or inclusive receipt-sequence ranges across explicitly selected sessions; later events do not expand the revision.",
         "Keep symptoms, corrections, suspected causes and contrary evidence separate. Feedback is not a verified diagnosis.",
         "Revocation purges the composite task; expiry disables access immediately and prune removes retained private bytes. Corrupt unknown-lineage tasks are conservatively purged.",
-        "Reviewed synthetic case export uses the same task consent and purge owner; live comparative evaluation remains planned."
+        "Reviewed synthetic case export uses the same task consent and purge owner; the bounded development comparison is complete with a reject result and held-out evaluation remains pending."
       ],
       "outputs": [
         "Private metadata, boundary-scoped delivery snapshots, reservation gaps and measured capacity/latency limits.",
@@ -2617,7 +2617,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Evidence-bound caller triage and reviewed synthetic case prepare/show/review/export are available. Automated diagnosis and model evaluation remain planned.",
+      "summary": "Evidence-bound caller triage and reviewed synthetic case prepare/show/review/export are available. Automated diagnosis remains planned; one bounded development comparison is complete with a reject result and held-out evaluation remains pending.",
       "when": [
         "An observed failure needs a reproducible case before changing a skill, policy or MCP configuration."
       ],
