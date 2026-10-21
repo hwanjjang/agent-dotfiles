@@ -186,3 +186,9 @@ vite.config.ts.timestamp-*
 # Local workflow and diagram runtime evidence
 /.archify/
 /reports/
+
+# Local graft code-graph cache (`graft build` regenerates it), graft's
+# repository settings and token link, and its root ripgrep re-admit file
+/graft/
+/.graft/
+/.ignore
