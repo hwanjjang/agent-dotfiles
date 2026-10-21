@@ -334,7 +334,8 @@
         "repository-verifier",
         "repository-feature-map",
         "create-formal-verification-skill",
-        "maintain-formal-verification-skill"
+        "maintain-formal-verification-skill",
+        "repository-formal-verifier"
       ]
     },
     {
@@ -427,7 +428,8 @@
     "native-isolation": "Before live evaluation, verify native discovery, mock transport and denied access in a restricted executor; use the reusable fixture to retain source-bound success or blocked attempts.",
     "grounded-citations": "Research or source-heavy documents need a retrieved-source register and supporting quotes; skip incidental lookups.",
     "create-formal-verification-skill": "Only on an explicit request to formally verify, model-check or formally prove a stated property; code that merely has concurrency, retries or state machines gets ordinary tests.",
-    "maintain-formal-verification-skill": "A recheck was requested for a formal check whose covered code changed, or a stale formal model, proof or harness needs resyncing; separate drift from bugs."
+    "maintain-formal-verification-skill": "A recheck was requested for a formal check whose covered code changed, or a stale formal model, proof or harness needs resyncing; separate drift from bugs.",
+    "repository-formal-verifier": "You changed this repository's account transaction, undo, rollback or lock code and need its formal model and real-code interruption checks."
   },
   "category_titles": {
     "triage": [
@@ -534,6 +536,7 @@
     "native-isolation": "Native isolation / synthetic",
     "grounded-citations": "trace sources and report citations",
     "create-formal-verification-skill": "prove a requested property",
-    "maintain-formal-verification-skill": "resync formal checks with code"
+    "maintain-formal-verification-skill": "resync formal checks with code",
+    "repository-formal-verifier": "check account transactions"
   }
 }

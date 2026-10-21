@@ -86,6 +86,13 @@ remove hardcoded client paths and implied publication, preserve requested covera
 and distinguish product defects from documentation drift. Optional tooling stays
 a reference; no additional MCP server is enabled.
 
+The [formal verification pair](../decisions/formal-verification.md) adopts pstack's
+beta create/maintain methods at `190d287` with their MIT notice. Local adaptations
+allow model invocation only for explicit requests, keep toolchain installs,
+product-source harnesses and scratch breaks within task authority, and label
+generated-input fallbacks as bounded testing. Setup offers, guide text and the Claude
+harness adapter line are not imported. Community validation is provisional.
+
 The [PR/ticket adoption](../decisions/pr-workflow.md) combines pstack PR planning,
 Matt's ticket adapter and the original Cursor Team Kit review-preparation skill
 discovered through Denyer's port. It extends the existing Addy planning package,

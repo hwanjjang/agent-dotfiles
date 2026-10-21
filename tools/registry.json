@@ -113,6 +113,23 @@
       "runtime": "Node.js and a compatible Chromium browser; no MCP connection required.",
       "entrypoint": "docs/verification/verify-repository/scripts/check.cjs",
       "validation": "Requires an actual target run; source presence does not establish browser availability."
+    },
+    {
+      "id": "tla2tools",
+      "kind": "optional-library",
+      "purpose": "Repository-only TLC model check for the account transaction verifier; not vendored.",
+      "source": "https://github.com/tlaplus/tlaplus/releases/tag/v1.7.4",
+      "license": "MIT",
+      "package": "tla2tools.jar",
+      "version_policy": "Pin v1.7.4 by sha256 936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88, recorded at first download because the release publishes no digest.",
+      "runtime": "Java 11+ (validated with OpenJDK 17); keep the jar at .local/tools/tla2tools-1.7.4/tla2tools.jar or select it with VERIFY_TLA2TOOLS_JAR.",
+      "entrypoint": "docs/verification/verify-account-transactions/scripts/run.py",
+      "check": [
+        "python3.11",
+        "docs/verification/verify-account-transactions/scripts/run.py",
+        "--doctor"
+      ],
+      "validation": "The doctor hashes the jar and reads java -version without writing files; results need an actual run."
     }
   ]
 }

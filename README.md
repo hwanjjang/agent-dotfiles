@@ -91,6 +91,12 @@ verification generation and maintenance. The [repository feature map](docs/verif
 connects this checkout’s catalog journeys to a runnable verifier; it does not claim
 account installation or MCP connectivity.
 
+The [formal verification adoption](docs/decisions/formal-verification.md) adds pstack's
+beta methods to create and maintain a project-local check that formally verifies an
+explicitly requested property. They bundle no verifier; a pass covers only the stated
+model or bound. The repository pilot, [verify-account-transactions](docs/verification/verify-account-transactions/SKILL.md),
+checks the account transaction journal with a pinned TLA+ model and a real-code harness.
+
 ## Repository structure
 
 ```text

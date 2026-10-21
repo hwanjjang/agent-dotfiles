@@ -98,6 +98,10 @@ is a separate maintenance source for real catalog verification recipes. Catalog
 entries link to it; do not duplicate its expected behavior or store runtime pass
 status in catalog.json.
 
+The [account transaction verifier](../verification/verify-account-transactions/SKILL.md)
+is likewise a maintenance source; its catalog entry links to it and its lifecycle
+diagram is explanation, checked against the model's status set.
+
 No hosted publication or automatic installation is configured.
 
 ## Separate AK SDLC view

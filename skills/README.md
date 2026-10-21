@@ -65,7 +65,10 @@ without SDLC; it introduces no tracker runtime or write permissions.
 
 Some upstream frontmatter uses Claude-specific fields such as
 `disable-model-invocation`, `user-invocable`, and `hooks`. They are retained to
-preserve upstream invocation behavior. Codex's strict skill-creator validator
+preserve upstream invocation behavior. The pstack verification and formal
+verification pairs instead drop upstream `disable-model-invocation`; the formal pair
+relies on a narrow explicit-request description
+([decision](../docs/decisions/formal-verification.md)). Codex's strict skill-creator validator
 rejects those extensions; do not claim uniform client compatibility from the
 common name/description schema. Matt's supplied agents/openai.yaml files retain
 its Codex invocation policies. Codex 0.159.2 previously discovered the initial 18 packages in a temporary project; see

@@ -2166,6 +2166,10 @@
           {
             "label": "Origin, adaptations and verification limits",
             "source": "skills/create-formal-verification-skill/provenance.json"
+          },
+          {
+            "label": "Selection, community evidence and limits",
+            "source": "docs/decisions/formal-verification.md"
           }
         ]
       }
@@ -2237,9 +2241,63 @@
           {
             "label": "Origin, adaptations and verification limits",
             "source": "skills/maintain-formal-verification-skill/provenance.json"
+          },
+          {
+            "label": "Selection, community evidence and limits",
+            "source": "docs/decisions/formal-verification.md"
           }
         ]
       }
+    },
+    {
+      "id": "formal-verification-adoption",
+      "title": "Formal verification adoption",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/formal-verification.md",
+      "summary": "Source choice, local adaptations, community evidence, repository pilot and limits for the beta formal verification pair.",
+      "when": [
+        "You are extending the formal pair, adding a verifier toolchain or citing a formal verification result."
+      ],
+      "usage": "Read before changing the formal pair's triggers, authority bounds or qualification rules.",
+      "behavior": [
+        "Records the pinned beta source, author-run evaluations and provisional community evidence.",
+        "Keeps proof claims bounded to the stated model or bound; installs no verifier toolchain."
+      ],
+      "outputs": [
+        "A reviewable selection rationale with explicit verification limits."
+      ],
+      "tags": [
+        "verification",
+        "formal-verification",
+        "formal-verification-adoption"
+      ]
+    },
+    {
+      "id": "repository-formal-verifier",
+      "title": "Verify account transactions",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/verification/verify-account-transactions/SKILL.md",
+      "summary": "Model-check and drive the account installer's transaction journal, undo, rollback and lock with a pinned TLA+ model and a real-code harness.",
+      "when": [
+        "You changed scripts/account_storage.py transaction functions, the receipt-last order or locking in setup_account.py, or documented rollback behavior."
+      ],
+      "usage": "Run --check-sync, then the runner with Python 3.11, Java and the pinned TLA+ tools and a new local evidence directory.",
+      "behavior": [
+        "Checks recoverable interruption and no clobbering within stated bounds; repository maintenance only.",
+        "Fails when covered code drifts from its coverage record or the lifecycle diagram drifts from the model."
+      ],
+      "outputs": [
+        "result.json with model counts, coverage, variants, mutations, conformance cases and sync status."
+      ],
+      "tags": [
+        "verification",
+        "formal-verification",
+        "repository-formal-verifier"
+      ]
     },
     {
       "id": "policy-pr-workflow",
@@ -3491,6 +3549,36 @@
       "from": "create-formal-verification-skill",
       "to": "policy-evidence",
       "label": "Reports bounded evidence"
+    },
+    {
+      "from": "formal-verification-adoption",
+      "to": "create-formal-verification-skill",
+      "label": "selects"
+    },
+    {
+      "from": "formal-verification-adoption",
+      "to": "maintain-formal-verification-skill",
+      "label": "selects"
+    },
+    {
+      "from": "formal-verification-adoption",
+      "to": "repository-formal-verifier",
+      "label": "qualifies locally"
+    },
+    {
+      "from": "formal-verification-adoption",
+      "to": "verification-adoption",
+      "label": "Extends the verification adoption"
+    },
+    {
+      "from": "repository-formal-verifier",
+      "to": "maintain-formal-verification-skill",
+      "label": "resynced by"
+    },
+    {
+      "from": "repository-formal-verifier",
+      "to": "tool-registry",
+      "label": "pins TLA+ tools"
     },
     {
       "from": "repository-verifier",
