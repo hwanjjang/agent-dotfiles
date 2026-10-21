@@ -1,0 +1,73 @@
+{
+  "bounds": {
+    "MaxKills": 2,
+    "MaxIOErrors": 2,
+    "MaxUserChanges": 1
+  },
+  "base": {
+    "distinct_states": 9642,
+    "depth": 30
+  },
+  "witnesses": [
+    "W_PendingGap",
+    "W_RollingBackGap",
+    "W_RecoveryRequired",
+    "W_RefusedLaterEdit",
+    "W_RollbackAfterKill",
+    "W_UndoRolledBack",
+    "W_GapRestored"
+  ],
+  "variants": [
+    {
+      "id": "no-pending-journal",
+      "expect": "ChangesAreJournaled",
+      "means": "transact changes paths before any journal exists",
+      "code_mutation": {
+        "find": "                   after=plan['after'], originals=originals)\n    write(folder / 'journal.json', encoded(journal))\n",
+        "replace": "                   after=plan['after'], originals=originals)\n"
+      }
+    },
+    {
+      "id": "no-rolling-back-mark",
+      "expect": "NoSpuriousRefusal",
+      "means": "rollback does not journal rolling-back before it restores",
+      "code_mutation": {
+        "find": "    journal['status'] = 'rolling-back'\n    write(folder / 'journal.json', encoded(journal))\n",
+        "replace": ""
+      }
+    },
+    {
+      "id": "gap-after-applied",
+      "expect": "NoClobber",
+      "means": "a missing skill directory counts as the move gap even after a completed install",
+      "code_mutation": {
+        "find": "                if journal['status'] != 'applied':\n",
+        "replace": "                if True:\n"
+      }
+    },
+    {
+      "id": "no-later-edit-precheck",
+      "expect": "RefusalChangesNothing",
+      "means": "rollback_plan stops checking for later edits; the per-path check refuses after writes",
+      "code_mutation": {
+        "find": "        require(actual in states, f'Rollback would overwrite later changes: {name}')\n",
+        "replace": ""
+      }
+    },
+    {
+      "id": "no-later-edit-checks",
+      "expect": "NoClobber",
+      "means": "neither rollback check looks for later edits",
+      "code_mutation": {
+        "find": "        require(actual in states, f'Rollback would overwrite later changes: {name}')\n",
+        "replace": "",
+        "also": [
+          [
+            "        require(actual == journal['after'][name] or gap, f'Concurrent rollback change: {name}')\n",
+            ""
+          ]
+        ]
+      }
+    }
+  ]
+}
