@@ -108,7 +108,7 @@ and unrelated content. Reuse earlier approval only while its task, destination a
 disclosure limits still apply. A profile name or this contract supplies no new
 transfer authority.
 
-Use available authenticated GitHub MCP tools or `gh` for the authorized PR and CI operations. Tool choice does not change the endpoint. At pre-merge, merge, auto-merge and merge-queue entry are forbidden even when the account supports them. Keep remote comments concise and preserve detailed receipts in linked reports.
+Use available authenticated GitHub MCP tools or `gh` for the authorized PR and CI operations. Tool choice does not change the endpoint. When the endpoint is pre-merge, do not merge, enable auto-merge or enter a merge queue, even when the account supports those operations. Keep remote comments concise and preserve detailed receipts in linked reports.
 
 ## 2026-09-08 amendment
 
