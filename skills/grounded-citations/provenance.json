@@ -18,7 +18,8 @@
     "Use host-supported chat citations; helper validation is scoped to numbered Markdown reports, not truth, entailment or other rendered formats.",
     "No automatic skill installs, universal citation format or mandatory coverage threshold.",
     "Review correction: recognize Sources headings only outside Markdown fences; preserve fenced examples and later prose during verification and source-block replacement.",
-    "Review corrections: bound the source list to numbered HTTP(S) entries and rendered evidence quotes, preserve/check following body sections, prefix every multiline quote line, and prevalidate the full ingest URL set before mutation."
+    "Review corrections: bound the source list to numbered HTTP(S) entries and rendered evidence quotes, preserve/check following body sections, prefix every multiline quote line, and prevalidate the full ingest URL set before mutation.",
+    "Preserve multi-platform research coverage and source-type attribution from the selected upstream section; distinguish firsthand experience, promotion and measurement, report access gaps, and omit automatic tool installs/fan-out."
   ],
   "skill_dependencies": [],
   "policy_dependencies": [
