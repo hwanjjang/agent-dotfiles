@@ -27,6 +27,10 @@ Run every command from the checkout root.
 
 Model invariants: `ChangesAreJournaled` and `NoSpuriousRefusal` (P1), `NoClobber` and
 `RefusalChangesNothing` (P2). The harness checks the same four on real files, plus lock refusal.
+The [journal lifecycle diagram](../../architecture/account-transaction-lifecycle.html) explains
+the statuses; it is not proof. Its Archify source is
+`docs/architecture/account-transaction-lifecycle.json`; regenerate it with
+[archify](../../../skills/archify/SKILL.md) when the statuses or transitions change.
 
 ## Does this change touch covered code?
 
@@ -36,8 +40,9 @@ python3.11 docs/verification/verify-account-transactions/scripts/run.py --check-
 
 It is read-only. `out-of-sync` lists covered functions that changed, new functions in
 `scripts/account_storage.py` that are neither covered nor excluded, model `@code` references
-whose source line moved or changed, and broken assumptions in `scripts/setup_account.py`. It
-also lists commits since the sync commit. Any of these means review required, not a bug. Also
+whose source line moved or changed, broken assumptions in `scripts/setup_account.py`, and a
+[lifecycle diagram](../../architecture/account-transaction-lifecycle.html) whose states no longer
+equal the model's journal statuses. It also lists commits since the sync commit. Any of these means review required, not a bug. Also
 read `git diff <sync_commit> -- scripts/account_storage.py scripts/setup_account.py` against
 the model; a new writer of journaled paths or a reordered step needs the model even when
 `--check-sync` passes.

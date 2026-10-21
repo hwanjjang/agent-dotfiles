@@ -144,9 +144,23 @@ def assumptions():
     return failed
 
 
+DIAGRAM = ROOT / 'docs/architecture/account-transaction-lifecycle.json'
+
+
+def diagram_drift():
+    """The explanatory lifecycle diagram must show exactly the model's journal statuses."""
+    if not DIAGRAM.exists():
+        return [f'{rel(DIAGRAM)} is missing']
+    text = (MODEL / 'AccountTransactions.tla').read_text()
+    quoted = lambda name: set(re.findall(r'"([a-z-]+)"', re.search(rf'^{name} ==(.*)$', text, re.M).group(1)))
+    statuses = quoted('Accepts') | quoted('Statuses')
+    drawn = {state['id'].replace('_', '-') for state in json.loads(DIAGRAM.read_text())['states']}
+    return [] if drawn == statuses else [f'diagram states {sorted(drawn)} differ from model statuses {sorted(statuses)}']
+
+
 def check_sync():
     record = coverage_record()
-    reasons = []
+    reasons = diagram_drift()
     for path, spec in record['covered'].items():
         current = function_hashes(path)
         for name, recorded in spec['functions'].items():
