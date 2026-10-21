@@ -282,11 +282,12 @@ the old updater. Every step previews first; applying needs the exact saved plan.
   that file once, keeps every link, and writes the plain "Read and follow" form so both clients
   can use it. The Claude `@` import form is used only when a regular `.claude/CLAUDE.md`
   is the sole entry for its file. A link is refused before any write when it leaves the account,
-  passes through another link (including a `..` after a directory link, which the client would
-  resolve differently), cannot be opened as that one regular file (missing, a directory, or a
-  path such as `file.md/`), is not Markdown, or lies in the installer's own bundle, state, skill
-  or hook trees. Status and doctor report a retargeted link as drift,
-  and update and uninstall stop until you reconcile it.
+  passes through another link (any link on the way, including a `..` after a directory link, which
+  the client would resolve differently), cannot be opened as that one regular file (missing, a
+  directory, or a path such as `file.md/`), is not Markdown, or lies in the installer's own bundle,
+  state, skill or hook trees. Those trees are matched ignoring case and Unicode normalization,
+  because a macOS file system treats `.Agents` as `.agents`. Status and doctor report a retargeted
+  link as drift, and update and uninstall stop until you reconcile it.
 - **Old fragments.** `--legacy-receipt` may repeat. Each receipt is JSON with `"version": 1`,
   `"home"` set to this account, and the fields below; other keys are ignored.
   `instructions` maps an instruction entry, or the shared file it links to, to one exact marked

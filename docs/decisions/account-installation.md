@@ -64,7 +64,9 @@ is provisional with respect to community validation and rests on scope fit and t
   (journal, backups, lock) and edits by other tools remain outside that guarantee.
 - Take over an earlier manager only through exact receipts. An instruction entry that is
   an in-account link to one regular Markdown file is edited through that file and keeps
-  its link, as the earlier manager's own handling did. `--legacy-receipt` may repeat and
+  its link, as the earlier manager's own handling did; the link must reach the file through
+  real directories, and the installer's own trees stay protected under any case or Unicode
+  spelling of their names. `--legacy-receipt` may repeat and
   retires only fragments that match exactly once; another owner's planning route is refused
   with its file and event. This is not a universal legacy uninstaller, and leftover files
   of the old manager are never deleted.

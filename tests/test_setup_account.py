@@ -548,6 +548,10 @@ class AccountSetupTests(unittest.TestCase):
         (agents / 'notes.txt').write_text('Text.\n')
         (agents / 'skills/x').mkdir(parents=True)
         (agents / 'skills/x/NOTES.md').write_text('Skill notes.\n')
+        # A link inside the account that the text passes through and comes back from: the kernel and the lexical
+        # form agree, but the file is no longer named through real directories only.
+        (agents / 'sub').mkdir()
+        (agents / 'bridge').symlink_to('sub')
         # `..` after a link is resolved by the kernel in the link's target, not in the account path.
         bridge_target = self.root / 'bridge-target'
         bridge_target.mkdir()
@@ -560,7 +564,8 @@ class AccountSetupTests(unittest.TestCase):
         (hard_dir / 'sub').mkdir(parents=True)
         os.link(self.home / 'AGENTS.md', hard_dir / 'AGENTS.md')
         (self.home / 'bridge-hard').symlink_to(hard_dir / 'sub')
-        for tree in ('.agents/agent-dotfiles/bundle', '.agents/agent-dotfiles/state', '.codex/hooks', '.claude/hooks'):
+        for tree in ('.agents/agent-dotfiles/bundle', '.agents/agent-dotfiles/state', '.codex/hooks', '.claude/hooks',
+                     '.AGENTS/Agent-Dotfiles/state', '.agents/Skills/x', '.Codex/Hooks', '.claude/HOOKS'):
             (self.home / tree).mkdir(parents=True)
             (self.home / tree / 'NOTES.md').write_text('Payload notes.\n')
         cases = {
@@ -574,6 +579,10 @@ class AccountSetupTests(unittest.TestCase):
             'is inside the state': ('../.agents/agent-dotfiles/state/NOTES.md', 'protected'),
             'is inside the Codex hooks': ('hooks/NOTES.md', 'protected'),
             'is inside the Claude hooks': ('../.claude/hooks/NOTES.md', 'protected'),
+            'is inside the state under another spelling': ('../.AGENTS/Agent-Dotfiles/state/NOTES.md', 'protected'),
+            'is inside a skill under another spelling': ('../.agents/Skills/x/NOTES.md', 'protected'),
+            'is inside the Codex hooks under another spelling': ('../.Codex/Hooks/NOTES.md', 'protected'),
+            'is inside the Claude hooks under another spelling': ('../.claude/HOOKS/NOTES.md', 'protected'),
             'ends with a slash': ('../.agents/real.md/', 'one regular file'),
             'ends with a dot component': ('../.agents/real.md/.', 'one regular file'),
             'goes through a regular file': ('../.agents/real.md/../real.md', 'one regular file'),
@@ -581,6 +590,7 @@ class AccountSetupTests(unittest.TestCase):
             'reaches a hard link of an account file through an outside directory link': ('../bridge-hard/../AGENTS.md', 'one regular file'),
             'passes through a missing directory': ('../missing/../.agents/real.md', 'one regular file'),
             'passes through a directory link inside the account': ('../alias/real.md', 'one regular file|Unsafe parent'),
+            'passes through a directory link inside the account and returns': ('../.agents/bridge/../real.md', 'one regular file'),
         }
         entry = self.home / '.codex/AGENTS.md'
         entry.parent.mkdir(exist_ok=True)

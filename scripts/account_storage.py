@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import stat
 import tempfile
+import unicodedata
 import uuid
 from contextlib import contextmanager
 
@@ -79,25 +80,48 @@ def observed(path):
     return {'tree': digest(encoded(tree)), 'mode': path.stat().st_mode & 0o777}
 
 
+PROTECTED_TREES = ('.agents/agent-dotfiles/', '.codex/hooks/', '.claude/hooks/')
+
+
+def _caseless(text):
+    """Names as a file system that ignores case and Unicode normalization compares them (macOS does both)."""
+    return unicodedata.normalize('NFD', unicodedata.normalize('NFD', text).casefold())
+
+
 def instruction_path_allowed(rel):
-    """A Markdown file outside the installer's payload, state, skills and hook trees."""
-    parts = Path(rel).parts
-    return (rel.endswith('.md') and 'skills' not in parts
-            and not rel.startswith(('.agents/agent-dotfiles/', '.codex/hooks/', '.claude/hooks/')))
+    """A Markdown file outside the installer's payload, state, skills and hook trees, whatever the spelling."""
+    folded = _caseless(rel)
+    return (rel.endswith('.md') and 'skills' not in folded.split('/')
+            and not folded.startswith(PROTECTED_TREES))
+
+
+def _through_real_directories(path, link):
+    """Whether the link text reaches its file without passing through another link."""
+    here = path.parent
+    for part in Path(link).parts:
+        if part == '..':
+            here = here.parent
+        else:
+            here = Path(part) if part == '/' else here / part
+            if here.is_symlink():
+                return False
+    return True
 
 
 def instruction_storage(home, name):
     """Account-relative file holding an instruction entry: itself, or the one file its link names.
 
-    Only one in-account link level to a regular Markdown file is followed. Opening the entry must
-    reach the same file as the lexical path (the kernel applies `..` after a link inside the link's
-    target and fails on a missing or non-directory component), so an edit never lands on a file the
-    client does not open, leaves the account, crosses another link or touches the payload.
+    Only one in-account link level to a regular Markdown file is followed. The link text must name the
+    file through real directories (the kernel applies `..` after a link inside that link's target) and
+    opening the entry must reach the same file by the same path (a trailing slash or a regular file on
+    the way fails to open), so an edit never lands on a file the client does not open, leaves the account,
+    crosses another link or touches the payload.
     """
     path = safe(home, name)
     if not path.is_symlink():
         return name
-    target = Path(os.path.normpath(path.parent / os.readlink(path)))
+    link = os.readlink(path)
+    target = Path(os.path.normpath(path.parent / link))
     require(target.is_relative_to(home) and target != home, 'Instruction link leaves the account')
     try:
         opened, named = os.stat(path), os.lstat(target)
@@ -107,7 +131,8 @@ def instruction_storage(home, name):
     # What a client opens through the link, resolved by the kernel, must be the regular file named here: the same
     # file (a trailing slash or a regular file in the path fails to open) reached by the same path (a hard link
     # behind a directory link elsewhere is the same file, not the one named).
-    require(opened is not None and resolved == target and stat.S_ISREG(named.st_mode) and os.path.samestat(opened, named),
+    require(opened is not None and resolved == target and stat.S_ISREG(named.st_mode) and os.path.samestat(opened, named)
+            and _through_real_directories(path, link),
             'Instruction link must name one regular file in the account')
     rel = target.relative_to(home).as_posix()
     safe(home, rel)

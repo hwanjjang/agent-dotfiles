@@ -11,11 +11,12 @@ repeated legacy receipts and refuses a planning route left by the earlier accoun
 dispatcher. Exercised: unit and round-trip tests in disposable homes that replicate
 the layout of an account managed by two earlier tools (shared symlinked instruction
 file with two foreign blocks, old hook groups mixed with unrelated ones, old skill
-directories and links); the same preview, exact-plan apply, status, offline doctor and
+directories and links), on Linux; the same preview, exact-plan apply, status, offline doctor and
 rollback through `scripts/setup-account.sh`; and read-only previews of the real account
 that reach a plan once every old fragment is named. Nothing was applied to the real account.
 Not exercised: native Codex/Claude sessions after a takeover, hook trust in `/hooks`, model
-behavior and Hermes plugin hooks. See the [takeover section](../account/README.md#take-over-an-account-managed-by-earlier-tools)
+behavior, Hermes plugin hooks and a case-insensitive file system such as the macOS default
+(the installer matches its own trees ignoring case and Unicode normalization, but no run was made there). See the [takeover section](../account/README.md#take-over-an-account-managed-by-earlier-tools)
 and the [walkthrough](manual/account-takeover.pdf).
 
 ## SDLC intake evidence - 2026-10-18
