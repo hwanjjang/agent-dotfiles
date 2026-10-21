@@ -1,18 +1,24 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/tt-a1i/archify",
-  "revision": "d5a1333d7447c866a765adac7d4d062f2f02e4d2",
+  "revision": "208acba8d412335185b2056fedf54b3405df43fb",
+  "release": "v3.2.0",
   "path": "archify",
+  "tree": "39069dd190f574064fe410aa3af1b6dfd98a522c",
   "license": "MIT",
-  "retrieved": "2026-10-17",
+  "retrieved": "2026-10-21",
   "adaptations": [],
   "skill_dependencies": [],
   "runtime_requirements": [
-    "Node.js and a compatible browser for rendering and browser checks."
+    "Node.js >=18 and a compatible browser for rendering and browser checks.",
+    "The explainer renders its charts with the vendored Pele 1.3.0 (MIT, explainer/vendor/pele) at build time; delivered pages carry no Pele code."
   ],
-  "selection": "Retained the previously selected AK baseline pin; newer upstream revisions were observed but not upgraded in this import.",
-  "validation": "Bundled doctor passed; demo HTML generated and rendered in an isolated browser without runtime errors. Full custom diagram finalize/provenance workflow not exercised.",
+  "selection": "Updated from the 3.0.1 baseline (d5a1333) to the published v3.2.0 release by AK's decision on 2026-10-21. Provisional with respect to community validation: independent first-hand reports were not found, and the upstream issues reviewed on 2026-10-21 concern viewer, timeline/waterfall, explainer chart and Windows cases rather than the architecture and workflow path used here. Later upstream revisions are not substituted silently.",
+  "validation": "On 2026-10-21 under Linux with Node.js 22 and the account Chromium: the payload equals the upstream tree at the pinned revision except the whitespace-only files below (203 upstream files, 203 vendored); doctor passes for all ten diagram types and the explainer; every bundled example for the ten types validates; finalize passed its validate, deliver, check and browser-check gates for the bundled architecture example (showcase quality) and for the bundled explainer with --browser-check. Not exercised: Windows, macOS, model-driven authoring and perceptual review of generated pages.",
   "packaging_notes": [
-    "Normalized trailing whitespace in seven bundled text files for repository diff checks; no intended runtime change."
+    "Upstream no longer ships test/ inside the skill payload (313 files at 3.0.1, 203 at 3.2.0); this checkout vendors the payload as published and does not keep the old test files.",
+    "The bundled package.json still names scripts that refer to sibling directories absent from this checkout; use `node skills/archify/bin/archify.mjs doctor` as the portable check.",
+    "Normalized trailing whitespace in 17 bundled text files (assets/template.html, rendered example pages and renderers/workflow/workflow-compiler.mjs) for repository diff checks; no intended runtime change: assets/template.html, examples/class-payment-processors-rendered.html, examples/class-payments-rendered.html, examples/dataflow-product-analytics.html, examples/erd-orders-rendered.html, examples/lifecycle-agent-run.html, examples/sequence-cache-miss-request.html, examples/subscription-billing-rendered.html, examples/timeline-archify-dev-activity-rendered.html, examples/timeline-payment-incident-rendered.html, examples/tree-archify-repository-rendered.html, examples/tree-payment-platform-rendered.html, examples/waterfall-checkout-request-rendered.html, examples/waterfall-example-rebuild-rendered.html, examples/web-app-rendered.html, examples/workflow-agent-tool-call-rendered.html, renderers/workflow/workflow-compiler.mjs.",
+    "Behavior to know: live motion is the default for rendered diagrams; finalize and deliver make a bounded (1 s, cached 24 h) request to the project's update manifest unless ARCHIFY_UPDATE_CHECK_DISABLED=1 is set, and since 3.2 the agent may describe the manifest's summary, which the skill treats as untrusted data; after an explainer made on request the skill may offer to add an [archify explainer: ...] line to the global rules file, and only edits it when the user accepts."
   ]
 }

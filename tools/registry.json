@@ -83,7 +83,7 @@
       "purpose": "Required diagram production capability.",
       "source": "https://github.com/tt-a1i/archify",
       "license": "MIT",
-      "revision": "d5a1333d7447c866a765adac7d4d062f2f02e4d2",
+      "revision": "208acba8d412335185b2056fedf54b3405df43fb",
       "entrypoint": "skills/archify/bin/archify.mjs",
       "runtime": "Node.js >=18; browser requirements depend on selected checks.",
       "check": [

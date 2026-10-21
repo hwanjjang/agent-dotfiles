@@ -73,8 +73,9 @@ They report unavailable worker/provider capabilities instead of fabricating an
 independent result. The AK SDLC now routes stages to these methods and validates their evidence modes.
 End-to-end provider execution remains a separate target-host check.
 
-Archify and planning-with-files retain the existing selected baseline revisions.
-Newer upstream revisions were observed but are not silently substituted. Hooks
+planning-with-files retains its existing selected baseline revision. Archify moved to
+v3.2.0 on 2026-10-21; see its update record in [docs/upstream](../docs/upstream/README.md).
+Newer upstream revisions are not silently substituted. Hooks
 and installers included in upstream packages are source assets; importing them
 does not authorize running them or modifying account settings.
 
