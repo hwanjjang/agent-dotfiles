@@ -177,6 +177,13 @@ def _below(home, name, create):
         raise ValueError(f'Unsafe parent for {name}') from error
 
 
+def _shelf(home, displaced):
+    """Descriptor of the journal folder that holds a displaced directory, opened without following a link."""
+    fd = _below(home, displaced.relative_to(home).as_posix(), create=False)
+    require(fd is not None, 'Journaled displacement location is missing')
+    return fd
+
+
 def _entry(parent, leaf):
     try:
         return os.lstat(leaf, dir_fd=parent)
@@ -195,13 +202,21 @@ def _put_below(home, name, value, displaced):
         if info is not None and stat.S_ISDIR(info.st_mode):
             require(displaced is not None and observed(displaced) is None,
                     'Directory replacement requires an unused journaled displacement')
-            os.replace(leaf, displaced, src_dir_fd=parent)
+            shelf = _shelf(home, displaced)
+            try:
+                os.replace(leaf, displaced.name, src_dir_fd=parent, dst_dir_fd=shelf)
+            finally:
+                os.close(shelf)
             moved = True
         try:
             _put_file_below(parent, leaf, value)
         except Exception:
             if moved and _entry(parent, leaf) is None:
-                os.replace(displaced, leaf, dst_dir_fd=parent)
+                shelf = _shelf(home, displaced)
+                try:
+                    os.replace(displaced.name, leaf, src_dir_fd=shelf, dst_dir_fd=parent)
+                finally:
+                    os.close(shelf)
             raise
     finally:
         os.close(parent)
@@ -314,7 +329,11 @@ def restore(path, entry, saved, expected, home=None):
         else:
             parent = _below(home, path.relative_to(home).as_posix(), create=True)
             try:
-                os.replace(displaced, path.name, dst_dir_fd=parent)
+                shelf = _shelf(home, displaced)
+                try:
+                    os.replace(displaced.name, path.name, src_dir_fd=shelf, dst_dir_fd=parent)
+                finally:
+                    os.close(shelf)
             finally:
                 os.close(parent)
     elif entry['kind'] == 'file':

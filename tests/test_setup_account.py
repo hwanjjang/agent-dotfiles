@@ -328,7 +328,7 @@ class AccountSetupTests(unittest.TestCase):
         def interrupt_after_displacement(src, dst, **kwargs):
             result = replace(src, dst, **kwargs)
             # The directory moving to its journaled displacement: a leaf name below an open directory.
-            if src == target.name and 'src_dir_fd' in kwargs and Path(dst).is_absolute():
+            if src == target.name and 'src_dir_fd' in kwargs and str(dst).startswith('displaced-'):
                 raise KeyboardInterrupt('process interrupted after rename')
             return result
         with storage.lock(self.home), patch.object(storage.os, 'replace', interrupt_after_displacement):
@@ -364,7 +364,7 @@ class AccountSetupTests(unittest.TestCase):
         replace, copytree = storage.os.replace, storage.shutil.copytree
         def interrupt_restore(src, dst, **kwargs):
             # The displaced directory moving back into place below an open directory.
-            if Path(src).is_absolute() and dst == target.name and kwargs.get('dst_dir_fd') is not None:
+            if str(src).startswith('displaced-') and dst == target.name and kwargs.get('dst_dir_fd') is not None:
                 raise KeyboardInterrupt('process interrupted before restoration rename')
             return replace(src, dst, **kwargs)
         def interrupt_copy(src, dst, **kwargs):
@@ -843,6 +843,32 @@ class AccountSetupTests(unittest.TestCase):
 
     def test_the_directory_of_a_config_file_swapped_for_a_link_is_not_followed(self):
         self.assert_a_swapped_directory_is_not_followed('.claude', '.claude/settings.json')
+
+    def test_the_journal_directory_swapped_for_a_link_does_not_move_account_directories_outside(self):
+        target = self.home / '.agents/skills/tdd'
+        target.mkdir(parents=True)
+        (target / 'SKILL.md').write_text('original directory')
+        outside = self.root / 'outside of the journal'
+        outside.mkdir()
+        plan, changes = self.prepare()
+        real_put, swapped = storage.put, []
+
+        def swap_then_put(path, value, **kwargs):
+            if path == target and not swapped:
+                swapped.append(True)
+                transactions = self.home / storage.STATE_DIR / 'transactions'
+                (outside / next(transactions.iterdir()).name).mkdir()
+                transactions.rename(transactions.with_name('transactions-moved'))
+                transactions.symlink_to(outside)
+            return real_put(path, value, **kwargs)
+
+        with patch.object(storage, 'put', side_effect=swap_then_put), storage.lock(self.home):
+            with self.assertRaises(ValueError):
+                storage.transact(self.home, plan, changes)
+        self.assertTrue(swapped)
+        self.assertEqual((target / 'SKILL.md').read_text(), 'original directory')
+        # The installer's own journal file is a state file and stays path-based; no account content moved.
+        self.assertFalse([item for item in outside.rglob('*') if item.name.startswith('displaced-') or item.name == 'SKILL.md'])
 
     def test_a_link_retargeted_during_the_writes_rolls_the_apply_back(self):
         target = self.shared_instructions()

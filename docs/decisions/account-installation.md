@@ -58,9 +58,10 @@ is provisional with respect to community validation and rests on scope fit and t
   retain the original privately for retryable rollback without partial copying.
   This is not a multi-file atomic filesystem transaction; close clients during apply.
   It does not lock other editors, supervise agents or recover arbitrary concurrent edits.
-  Writes below the account open each directory without following a link, so a directory
-  replaced by a link while an apply runs makes that write fail instead of redirecting it.
-  Reads, the private state directory and edits by other tools remain outside that guarantee.
+  Writes below the account open each directory without following a link, including moving a
+  replaced directory into the journal and back, so a directory replaced by a link while an apply
+  runs makes that write fail instead of redirecting it. Reads, the installer's own state files
+  (journal, backups, lock) and edits by other tools remain outside that guarantee.
 - Take over an earlier manager only through exact receipts. An instruction entry that is
   an in-account link to one regular Markdown file is edited through that file and keeps
   its link, as the earlier manager's own handling did. `--legacy-receipt` may repeat and
