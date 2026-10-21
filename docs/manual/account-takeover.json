@@ -1,0 +1,20 @@
+{
+  "title": "Take over an account managed by earlier tools",
+  "scenario": "Scenario: account-takeover. Captured on the feature candidate b9e8550 with the real scripts/setup-account.sh entry point in a disposable replica of an account set up by two earlier tools (shared symlinked instruction file with two foreign blocks, old and unowned planning hook groups mixed with unrelated hooks, old skill directories and links). Synthetic content, Python 3.11+, no client, model or network call. Nothing was applied to a real account.",
+  "steps": [
+    {
+      "title": "Preview until every old fragment is named",
+      "instruction": "Run setup-account.sh install without options. Each refusal names the next item: the instruction file and the owners of the blocks left in it, or the hook file and event of a planning route nobody owns. Add the old manager's receipt with --legacy-receipt, then add a small retire-list receipt for each fragment that no receipt covers. When the preview succeeds, save it as plan.json. Applying without approving that exact plan is refused.",
+      "screenshot": "account-takeover-preview.png",
+      "caption": "Browser-rendered summary of actual CLI results in the replica; paths replaced with $ACCOUNT and the plan reduced to selected fields.",
+      "expected": "Nothing in the account changes during these previews. The saved plan lists the kept instruction links, the old skill directories and links that need the exact plan, and the retirement of the listed old fragments. Native hook definitions are listed for review, and none is trusted."
+    },
+    {
+      "title": "Apply the exact plan, check it and roll back",
+      "instruction": "Close agent sessions, then run the same command with --apply --approve-plan plan.json. Run status and doctor. If the result is not wanted, run rollback with the printed transaction ID and --apply.",
+      "screenshot": "account-takeover-result.png",
+      "caption": "Browser-rendered summary of actual CLI results; the transaction ID is shortened and the layout facts come from inspecting the replica before the rollback.",
+      "expected": "Both links stay, the personal text stays, the old blocks and hook groups are gone, unrelated hooks stay, and one block of this installer is present. Status shows no drift and the offline doctor passes its ownership, instruction, hook and skill checks. Rollback restores every compared file byte for byte. Native activation and the Codex /hooks trust review are not covered."
+    }
+  ]
+}

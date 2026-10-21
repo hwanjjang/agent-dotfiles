@@ -225,6 +225,20 @@ terminal screenshot, a real candidate or a model comparison. The
 [Store guide](../../account/observation/README.md#record-and-retrieve-improvement-experience)
 owns commands and limits. Both PDF pages were rendered and individually viewed.
 
+## Account takeover walkthrough
+
+The [two-page takeover walkthrough](account-takeover.pdf) follows `setup-account.sh` through
+an account managed by earlier tools: previews that name each old fragment, the refusal without an
+approved plan, the exact-plan apply, status and doctor, and the rollback. Its
+[editable source](account-takeover.json), [preview image](account-takeover-preview.png),
+[result image](account-takeover-result.png) and [capture manifest](account-takeover-capture.json)
+are maintained together. Both images render actual CLI output from a disposable replica in a
+browser; they are not terminal screenshots, and nothing was applied to a real account. The
+[account guide](../../account/README.md#take-over-an-account-managed-by-earlier-tools) owns
+commands and limits. Native hook trust, client sessions and model behavior are not covered. Both PDF
+pages were rendered and individually viewed. Rebuild with the existing screenshot-manual
+commands using `account-takeover.json` and recapture when the takeover output changes.
+
 ## Reviewed synthetic case walkthrough
 
 The [two-page case walkthrough](reviewed-cases.pdf) follows evidence-bound caller

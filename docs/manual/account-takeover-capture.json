@@ -1,0 +1,23 @@
+{
+  "captured": "2026-10-21",
+  "baseline": "5bc5038",
+  "candidate": "b9e8550",
+  "status": "initial_capture",
+  "scenario": "account-takeover",
+  "source_sha256": {
+    "scripts/setup_account.py": "eaab95fc501d33938cd01b73aff81ebf0ff8e70b7d424e650637735175d36dd7",
+    "scripts/account_storage.py": "b61fd337cf1c0955158817b06f188fd1ab1eabf9c8527018da78d803810fa50f",
+    "tests/test_setup_account.py": "b6b23eecb1e1f4199349273f964895b01b59344f81b241f70d769df12b6ba087",
+    "account/README.md": "c8f397bb8717d58d9ae87cb189e7ee4c2dc07b3897a9932fb903ce0a07b3e440"
+  },
+  "images": {
+    "account-takeover-preview.png": "d0cd04e1dd2dc27fbf6af6b090fcc23818241e283977cb595aa79ca27f3344ab",
+    "account-takeover-result.png": "6025371012ef0780a55469b55e96b2f3d1def1e5be71eadd6f70120279365e21"
+  },
+  "notes": [
+    "Both images are browser-rendered summaries (headless Chromium 1243, 1360 px wide) of the actual output of scripts/setup-account.sh in a disposable replica of an account managed by two earlier tools; paths replaced with $ACCOUNT, the plan reduced to selected fields and the transaction ID shortened.",
+    "The replica holds synthetic content only: a shared symlinked instruction file with personal text and two foreign blocks, old and unowned planning hook groups mixed with unrelated hooks, three old skill directories with links, and three receipts. 835 paths were planned; 17 files were compared before and after the rollback.",
+    "No client, model, network or real-account call. A separate read-only preview of the real account reached a plan once each old fragment was named; that evidence is not reproduced here because it contains host paths.",
+    "Both PDF pages were rendered with PDFium, individually viewed, and text-checked (plan.json, rollback, 2 pages)."
+  ]
+}
