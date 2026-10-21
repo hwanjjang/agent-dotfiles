@@ -555,6 +555,11 @@ class AccountSetupTests(unittest.TestCase):
         (self.home / 'AGENTS.md').write_text('Unrelated personal file.\n')
         (self.root / 'AGENTS.md').write_text('Outside file.\n')
         (self.home / 'alias').symlink_to(agents)
+        # An outside name for the same inode: equal files, different paths (a hard link made by the account owner).
+        hard_dir = self.root / 'hard-target'
+        (hard_dir / 'sub').mkdir(parents=True)
+        os.link(self.home / 'AGENTS.md', hard_dir / 'AGENTS.md')
+        (self.home / 'bridge-hard').symlink_to(hard_dir / 'sub')
         for tree in ('.agents/agent-dotfiles/bundle', '.agents/agent-dotfiles/state', '.codex/hooks', '.claude/hooks'):
             (self.home / tree).mkdir(parents=True)
             (self.home / tree / 'NOTES.md').write_text('Payload notes.\n')
@@ -573,6 +578,7 @@ class AccountSetupTests(unittest.TestCase):
             'ends with a dot component': ('../.agents/real.md/.', 'one regular file'),
             'goes through a regular file': ('../.agents/real.md/../real.md', 'one regular file'),
             'passes through a directory link outside the account': ('../bridge/../AGENTS.md', 'one regular file'),
+            'reaches a hard link of an account file through an outside directory link': ('../bridge-hard/../AGENTS.md', 'one regular file'),
             'passes through a missing directory': ('../missing/../.agents/real.md', 'one regular file'),
             'passes through a directory link inside the account': ('../alias/real.md', 'one regular file|Unsafe parent'),
         }
@@ -590,6 +596,7 @@ class AccountSetupTests(unittest.TestCase):
                 self.assertEqual(storage.observed(self.home), before)
         self.assertFalse((self.home / setup.BUNDLE / 'account').exists())
         self.assertEqual((self.home / 'AGENTS.md').read_text(), 'Unrelated personal file.\n')
+        self.assertEqual((self.root / 'hard-target/AGENTS.md').read_text(), 'Unrelated personal file.\n')
         self.assertEqual((self.root / 'AGENTS.md').read_text(), 'Outside file.\n')
 
     def test_managed_target_accepts_an_instruction_file_only_behind_a_current_link(self):

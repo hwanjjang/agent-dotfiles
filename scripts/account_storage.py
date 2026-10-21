@@ -101,10 +101,13 @@ def instruction_storage(home, name):
     require(target.is_relative_to(home) and target != home, 'Instruction link leaves the account')
     try:
         opened, named = os.stat(path), os.lstat(target)
+        resolved = Path(os.path.realpath(path, strict=True))
     except OSError:
-        opened = named = None
-    # What a client opens through the link, resolved by the kernel, must be the regular file named here.
-    require(opened is not None and stat.S_ISREG(named.st_mode) and os.path.samestat(opened, named),
+        opened = named = resolved = None
+    # What a client opens through the link, resolved by the kernel, must be the regular file named here: the same
+    # file (a trailing slash or a regular file in the path fails to open) reached by the same path (a hard link
+    # behind a directory link elsewhere is the same file, not the one named).
+    require(opened is not None and resolved == target and stat.S_ISREG(named.st_mode) and os.path.samestat(opened, named),
             'Instruction link must name one regular file in the account')
     rel = target.relative_to(home).as_posix()
     safe(home, rel)
@@ -151,7 +154,8 @@ _DIRECTORY = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, 'O_CLOEX
 
 def _below(home, name, create):
     """File descriptor of the directory holding `name`, opened below `home` one component at a time
-    without following a link, so a directory replaced by a link after the path checks fails here."""
+    without following a link, so a directory replaced by a link after the path checks fails here.
+    A missing directory is created, or reported as None when `create` is false."""
     fd = None
     try:
         fd = os.open(home, _DIRECTORY)
@@ -160,7 +164,8 @@ def _below(home, name, create):
                 child = os.open(part, _DIRECTORY, dir_fd=fd)
             except FileNotFoundError:
                 if not create:
-                    raise
+                    os.close(fd)
+                    return None
                 os.mkdir(part, 0o777, dir_fd=fd)
                 child = os.open(part, _DIRECTORY, dir_fd=fd)
             os.close(fd)
@@ -180,12 +185,9 @@ def _entry(parent, leaf):
 
 
 def _put_below(home, name, value, displaced):
-    try:
-        parent = _below(home, name, create=value is not None)
-    except ValueError:
-        if value is None and not (home / name).parent.exists():
-            return
-        raise
+    parent = _below(home, name, create=value is not None)
+    if parent is None:
+        return
     leaf = Path(name).name
     try:
         moved = False
