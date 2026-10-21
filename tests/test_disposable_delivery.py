@@ -1,6 +1,7 @@
 """Committed-fixture delivery mechanics through the public CLI; no client calls."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -11,6 +12,25 @@ from account.observation.store import Store
 
 ROOT = Path(__file__).resolve().parents[1]
 setup, storage = fixtures.setup, fixtures.storage
+
+
+def tree_entries(path):
+    """Per-path fingerprints whose equality matches storage.observed(path), but which can name a difference."""
+    path = Path(path)
+    entries = {'.': {'mode': path.stat().st_mode & 0o777}}
+    for root, dirs, files in os.walk(path, followlinks=False):
+        for name in dirs + files:
+            item = Path(root) / name
+            entries[item.relative_to(path).as_posix()] = (
+                {'directory': True, 'mode': item.stat().st_mode & 0o777}
+                if item.is_dir() and not item.is_symlink() else storage.observed(item))
+    return entries
+
+
+def describe(paths, limit=20):
+    shown = sorted(paths)
+    extra = f' +{len(shown) - limit} more' if len(shown) > limit else ''
+    return repr(shown[:limit]) + extra
 
 
 class DisposableDeliveryTests(unittest.TestCase):
@@ -64,14 +84,22 @@ class DisposableDeliveryTests(unittest.TestCase):
                          'recorded')
         self.original = self.preserved()
 
+    def assert_tree_unchanged(self, path, before):
+        after = tree_entries(path)
+        if after != before:
+            added, removed = after.keys() - before.keys(), before.keys() - after.keys()
+            changed = {key for key in before.keys() & after.keys() if before[key] != after[key]}
+            self.fail(f'Tree changed under {Path(path).name}: added={describe(added)} '
+                      f'removed={describe(removed)} changed={describe(changed)}')
+
     def preview_apply(self, action, revision):
-        before = storage.observed(self.home)
-        source = storage.observed(self.repo)
+        before = tree_entries(self.home)
+        source = tree_entries(self.repo)
         plan = self.cli(action, '--revision', revision)
         self.assertEqual(plan['source_revision'], revision)
         self.assertEqual(plan['conflicts'], [])
-        self.assertEqual(storage.observed(self.home), before)
-        self.assertEqual(storage.observed(self.repo), source)
+        self.assert_tree_unchanged(self.home, before)
+        self.assert_tree_unchanged(self.repo, source)
         result = self.cli(action, '--revision', revision, '--apply')
         self.assertEqual(result['source_revision'], revision)
         self.assertFalse(result['native_activation_verified'])
@@ -157,13 +185,35 @@ class DisposableDeliveryTests(unittest.TestCase):
         bad = self.preview_apply('update', regression)
         component = self.home / setup.BUNDLE / self.COMPONENT
         component.write_text('Synthetic intervening personal edit\n')
-        before = storage.observed(self.home)
+        before = tree_entries(self.home)
         for flags in ((), ('--apply',)):
             error = self.cli('rollback', '--transaction', bad['transaction'], *flags, code=2)
             self.assertIn('Rollback would overwrite later changes:', error)
-            self.assertEqual(storage.observed(self.home), before)
+            self.assert_tree_unchanged(self.home, before)
             self.assertEqual(self.preserved(), self.original)
 
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TreeDiagnosticTests(unittest.TestCase):
+    def test_tree_mismatch_message_names_paths(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'kept.txt').write_text('same\n')
+            (root / 'changed.txt').write_text('before\n')
+            (root / 'removed.txt').write_text('gone\n')
+            before = tree_entries(root)
+            (root / 'changed.txt').write_text('after\n')
+            (root / 'removed.txt').unlink()
+            (root / 'nested').mkdir()
+            (root / 'nested' / 'added.txt').write_text('new\n')
+            with self.assertRaises(AssertionError) as caught:
+                DisposableDeliveryTests.assert_tree_unchanged(self, root, before)
+            message = str(caught.exception)
+            for expected in ("added=['nested', 'nested/added.txt']", "removed=['removed.txt']",
+                             "changed=['changed.txt']"):
+                self.assertIn(expected, message)
+            self.assertNotIn('kept.txt', message)
