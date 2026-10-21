@@ -18,7 +18,7 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 24 skill packages, ten portable policies,
+**Status:** Initial content collection: 26 skill packages, ten portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a

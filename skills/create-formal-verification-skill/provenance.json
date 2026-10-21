@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
+  "path": "pstack/skills/create-formal-verification-skill",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-22",
+  "upstream_files": {
+    "SKILL.md": "6c934cd15a9583533ff9b7a9cad62775d7e80402d26d3ba7f74f79ea21a1d8eb"
+  },
+  "upstream_license_sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e",
+  "adaptations": [
+    "Removed upstream disable-model-invocation (honored by Claude Code and Cursor); a narrow description limits model invocation to explicit formal verification requests and routes test-sized questions to tdd.",
+    "Portable project-local location and discovery reporting; no Cursor paths, setup offer, help or guide text.",
+    "Tool installs, product-source harnesses, fixes and publication stay within task authority; a missing tool is blocked/not-run.",
+    "Isolated scratch breaks with a restored-state check; a separate design model must show how a code change reaches it, with a code-level conformance link where practical.",
+    "Added non-vacuity and bound checks, version/checksum pinning and bounded-testing labels for generated-input fallbacks.",
+    "Linked shared evidence/security policies and existing tdd, diagnosing-bugs, archify and verification owners; raw tool output stays local."
+  ],
+  "skill_dependencies": [
+    "create-verification-skill",
+    "tdd",
+    "diagnosing-bugs",
+    "archify",
+    "maintain-formal-verification-skill"
+  ],
+  "policy_dependencies": [
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "Target source, Git history and a verifier the target can install and run (for example TLA+ tools with Java, Kani, CBMC, Dafny or Lean); none is bundled or installed; no MCP."
+  ],
+  "selection": "cursor/plugins main at 190d287 (pstack 0.15.29, last pstack commit 88d4751); SKILL.md unchanged since 0.15.28 (d457567). The author's announcement labels the pair beta. Community validation is provisional; see docs/decisions/formal-verification.md. Sources: PRs #709 and #721; coverage record from #716.",
+  "validation": "Upstream hash/license, metadata, link and dependency checks passed; the repository pilot and its limits are recorded in docs/client-verification.md. Native routing and general model adherence remain unverified."
+}

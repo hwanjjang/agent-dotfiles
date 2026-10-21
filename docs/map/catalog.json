@@ -2098,6 +2098,148 @@
       ]
     },
     {
+      "id": "create-formal-verification-skill",
+      "title": "Create formal verification",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/create-formal-verification-skill/SKILL.md",
+      "summary": "On explicit request, verify one stated code property with a model checker, prover or code-level verifier and leave a rerunnable project-local check with coverage and sync records.",
+      "when": [
+        "You are asked to formally verify, model-check or formally prove a property of real code.",
+        "A project needs its first formal check for a costly property tests rarely reach; code that merely has retries or state machines still gets tests."
+      ],
+      "usage": "Load skills/create-formal-verification-skill/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use create-formal-verification-skill to prove that a job lease never lets two workers run the same job.",
+      "behavior": [
+        "Choose the strongest consequential property and the cheapest tool that answers it; a missing tool is blocked, not a pass.",
+        "Tie every model or harness step to code a reviewer can open; record bounds, assumptions and exclusions.",
+        "Show each property failing on an isolated broken variant and check that the model is not vacuous.",
+        "Write a verify skill with one rerun command, a pinned tool version, a coverage record and a sync commit.",
+        "Qualify it on a scratch break in real code, restore the checkout and report findings without changing product code."
+      ],
+      "outputs": [
+        "A qualified project-local formal verify skill or a labeled draft, with property, tool, bounds, findings and explicit limits."
+      ],
+      "tags": [
+        "verification",
+        "formal-verification",
+        "create-formal-verification-skill"
+      ],
+      "explanation": {
+        "example": {
+          "situation": "A job queue promises two workers never run the same job, but tests rarely reach lease-expiry interleavings.",
+          "youType": "Use create-formal-verification-skill to prove that a job lease never lets two workers run the same job.",
+          "whatHappens": [
+            "State the property and harm, then choose a model checker at a pinned version.",
+            "Model the lease steps from the code, show the property failing on a broken variant and check reachability.",
+            "Write the verify skill with its coverage record, then qualify it on an isolated scratch break."
+          ],
+          "youGet": "A rerunnable bounded check with findings, limits and a sync commit, or a labeled draft naming the exact gap."
+        },
+        "flows": [
+          [
+            "Choose property and harm",
+            "Choose tool",
+            "Verify and show it can fail",
+            "Write verify skill",
+            "Qualify on scratch break",
+            "Hand off"
+          ]
+        ],
+        "adaptation_notes": [
+          "AK allows model invocation only for explicit formal verification requests; code that merely has concurrency or retries still gets tests.",
+          "Tool installs, product-source harnesses and publication stay within task authority; generated-input fallbacks are bounded testing, and a design-model pass is not code proof."
+        ],
+        "calls": [
+          "tdd",
+          "diagnosing-bugs",
+          "archify",
+          "maintain-formal-verification-skill"
+        ],
+        "sources": [
+          {
+            "label": "Adopted upstream method (pinned)",
+            "url": "https://github.com/cursor/plugins/blob/190d28736eff128ec94f502a22c7fe0c4b56cd37/pstack/skills/create-formal-verification-skill/SKILL.md"
+          },
+          {
+            "label": "Origin, adaptations and verification limits",
+            "source": "skills/create-formal-verification-skill/provenance.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "maintain-formal-verification-skill",
+      "title": "Maintain formal verification",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/maintain-formal-verification-skill/SKILL.md",
+      "summary": "Bring an existing formal verify skill back in line with changed code, rerun it and classify each check as in sync, updated, bug or blocked.",
+      "when": [
+        "Code covered by an existing formal verify skill changed after its sync commit, and a recheck was requested.",
+        "A formal model, proof or harness may no longer describe the code."
+      ],
+      "usage": "Load skills/maintain-formal-verification-skill/SKILL.md through the host\u2019s available skill mechanism, or read the source directly. Use maintain-formal-verification-skill to recheck the lease model after the renewal refactor.",
+      "behavior": [
+        "Find checks by behavior and run each as is before changing anything.",
+        "Read covered-code changes since the sync commit, including moved code and new writers of guarded state.",
+        "Update models or harnesses from code; change a property only with evidence of intent.",
+        "Show that a passing check can still fail, and replay failing counterexamples to separate drift from bugs.",
+        "Update the coverage record and sync commit, except for blocked checks, in a verification-only change."
+      ],
+      "outputs": [
+        "An in sync, updated, bug or blocked report per check with commits read, evidence and coverage gaps."
+      ],
+      "tags": [
+        "verification",
+        "formal-verification",
+        "maintain-formal-verification-skill"
+      ],
+      "explanation": {
+        "example": {
+          "situation": "A refactor split the lease renewal step, and the formal model was not rechecked.",
+          "youType": "Use maintain-formal-verification-skill to recheck the lease model after the renewal refactor.",
+          "whatHappens": [
+            "Run the existing check and read every covered-code change since the sync commit.",
+            "Update the model from the code, then show the updated check can still fail.",
+            "Replay any counterexample against the code to separate drift from a bug."
+          ],
+          "youGet": "One outcome per check, the commits read, any bug in the code's words and the new sync commit."
+        },
+        "flows": [
+          [
+            "Find checks",
+            "Run as is",
+            "Read covered changes",
+            "Update from code",
+            "Rerun and judge",
+            "Update verify skill",
+            "Report"
+          ]
+        ],
+        "adaptation_notes": [
+          "AK invokes it only for requested rechecks or resyncs; it adds no SDLC stage or mandatory audit.",
+          "Audit-only scope, product-source harnesses and tool installs stay within authority; blocked checks keep their sync commit and are never passes."
+        ],
+        "calls": [
+          "diagnosing-bugs",
+          "tdd",
+          "create-formal-verification-skill"
+        ],
+        "sources": [
+          {
+            "label": "Adopted upstream method (pinned)",
+            "url": "https://github.com/cursor/plugins/blob/190d28736eff128ec94f502a22c7fe0c4b56cd37/pstack/skills/maintain-formal-verification-skill/SKILL.md"
+          },
+          {
+            "label": "Origin, adaptations and verification limits",
+            "source": "skills/maintain-formal-verification-skill/provenance.json"
+          }
+        ]
+      }
+    },
+    {
       "id": "policy-pr-workflow",
       "title": "PR workflow policy",
       "kind": "policy",
@@ -3307,6 +3449,36 @@
       "from": "verification-adoption",
       "to": "repository-verifier",
       "label": "qualifies locally"
+    },
+    {
+      "from": "create-formal-verification-skill",
+      "to": "maintain-formal-verification-skill",
+      "label": "maintains generated checks"
+    },
+    {
+      "from": "create-formal-verification-skill",
+      "to": "create-verification-skill",
+      "label": "Leaves user journeys to"
+    },
+    {
+      "from": "create-formal-verification-skill",
+      "to": "tdd",
+      "label": "Uses for authorized fixes"
+    },
+    {
+      "from": "create-formal-verification-skill",
+      "to": "diagnosing-bugs",
+      "label": "Checks counterexample reachability"
+    },
+    {
+      "from": "maintain-formal-verification-skill",
+      "to": "diagnosing-bugs",
+      "label": "Replays counterexamples against code"
+    },
+    {
+      "from": "create-formal-verification-skill",
+      "to": "policy-evidence",
+      "label": "Reports bounded evidence"
     },
     {
       "from": "repository-verifier",

@@ -225,6 +225,24 @@
       "adopted_revision": "b0427271e33c8b239985d3d66bd9d4f10f87e25b",
       "adopted_path": "skills/research/grounded-citations",
       "local_skill_sha256": "9e21debc77aa9ed96129e46ab1885560c1959392ea4c305296442e813c735c6a"
+    },
+    {
+      "id": "create-formal-verification-skill",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "bb5da9b48d081dac1a05d97881483f62d5a830572ba94b7736760ff81926d2da",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
+      "adopted_path": "pstack/skills/create-formal-verification-skill",
+      "reviewed": "2026-10-22"
+    },
+    {
+      "id": "maintain-formal-verification-skill",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "a5383f26894ed424ccfe2bd51d84e8a594d9c80162ad460f9b67e581a877316f",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
+      "adopted_path": "pstack/skills/maintain-formal-verification-skill",
+      "reviewed": "2026-10-22"
     }
   ]
 }

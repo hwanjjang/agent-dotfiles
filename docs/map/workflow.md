@@ -102,8 +102,8 @@ the source of item descriptions, usage, behavior and source paths. The build
 adapter converts these into the upstream renderer's stages, categories, Anytime
 groups and skill models. No skill body is copied into a second maintained source.
 
-All 23 skills have expanded explanations. Sixteen matching skills use the reference
-maps as teaching references; the remaining seven use their adopted upstream or
+All 26 skills have expanded explanations. Sixteen matching skills use the reference
+maps as teaching references; the remaining ten use their adopted upstream or
 AK-authored methods directly. Every explanation is checked against the local
 `SKILL.md`, with public upstream sources pinned where applicable. Their
 details include concrete triggers, steps, expected results, an illustrative

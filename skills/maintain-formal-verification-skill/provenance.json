@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "upstream": "https://github.com/cursor/plugins",
+  "revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
+  "path": "pstack/skills/maintain-formal-verification-skill",
+  "license": "MIT",
+  "license_path": "pstack/LICENSE",
+  "retrieved": "2026-10-22",
+  "upstream_files": {
+    "SKILL.md": "0c96f54293542d3818b68754562b338073958781a9684454611dca37592e2d2c"
+  },
+  "upstream_license_sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e",
+  "adaptations": [
+    "Removed upstream disable-model-invocation; a narrow description limits model invocation to explicit recheck or resync requests.",
+    "Behavior-based discovery with target resolution; audit-only requests authorize no edits and product-source harnesses need explicit authority.",
+    "Missing tools or unauthorized updates are blocked, never passes; an unreachable sync commit uses the documented fallback.",
+    "Isolated breaks with a restored-state check; design-model updates are re-derived from code with a reachability recheck.",
+    "Linked shared policies, diagnosing-bugs for counterexample replay and tdd for authorized fixes; raw tool output stays local."
+  ],
+  "skill_dependencies": [
+    "tdd",
+    "create-formal-verification-skill",
+    "diagnosing-bugs"
+  ],
+  "policy_dependencies": [
+    "policies/evidence.md",
+    "policies/security.md"
+  ],
+  "runtime_requirements": [
+    "An existing project-local formal verify skill, Git history and its recorded verifier version; none is bundled or installed; no MCP."
+  ],
+  "selection": "cursor/plugins main at 190d287 (pstack 0.15.29, last pstack commit 88d4751); SKILL.md unchanged since 0.15.28 (d457567). The author's announcement labels the pair beta. Community validation is provisional; see docs/decisions/formal-verification.md. Source: PR #716, including the blocked-check sync rule.",
+  "validation": "Upstream hash/license, metadata, link and dependency checks passed; a bounded forward check on the repository pilot is recorded in docs/client-verification.md. Native routing and general model adherence remain unverified."
+}
