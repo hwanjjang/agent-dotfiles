@@ -1,9 +1,12 @@
 """Committed-fixture delivery mechanics through the public CLI; no client calls."""
 import hashlib
 import json
+import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
 
 import test_setup_account as fixtures
@@ -11,6 +14,65 @@ from account.observation.store import Store
 
 ROOT = Path(__file__).resolve().parents[1]
 setup, storage = fixtures.setup, fixtures.storage
+
+
+def tree_entries(path):
+    """Per-path fingerprints whose equality matches storage.observed(path), but which can name a difference."""
+    path = Path(path)
+    if path.is_symlink() or not path.is_dir():
+        # storage.observed does not descend into a symlinked or non-directory root either.
+        return {'.': storage.observed(path)}
+    entries = {'.': {'directory': True, 'mode': path.stat().st_mode & 0o777}}
+    for root, dirs, files in os.walk(path, followlinks=False):
+        for name in dirs + files:
+            item = Path(root) / name
+            entries[item.relative_to(path).as_posix()] = (
+                {'directory': True, 'mode': item.stat().st_mode & 0o777}
+                if item.is_dir() and not item.is_symlink() else storage.observed(item))
+    return entries
+
+
+def describe(paths, limit=20):
+    shown = sorted(paths)
+    extra = f' +{len(shown) - limit} more' if len(shown) > limit else ''
+    return repr(shown[:limit]) + extra
+
+
+def summarize(before, after):
+    """A short description of how one fingerprint changed: kind, content digest or mode."""
+    def kind(value):
+        return 'absent' if value is None else '/'.join(sorted(value))
+
+    if before is None or after is None or before.keys() != after.keys():
+        return f'kind {kind(before)}->{kind(after)}'
+    parts = []
+    for key in sorted(before):
+        if before[key] == after[key]:
+            continue
+        old, new = before[key], after[key]
+        if key == 'sha256':
+            parts.append(f'sha256 {old[:12]}->{new[:12]}')
+        elif key == 'mode':
+            parts.append(f'mode {oct(old)}->{oct(new)}')
+        else:
+            parts.append(f'{key} {str(old)[:40]}->{str(new)[:40]}')
+    return ', '.join(parts)
+
+
+def assert_tree_unchanged(testcase, path, before):
+    """Fail testcase with the added, removed and changed paths when path no longer matches before."""
+    after = tree_entries(path)
+    if after != before:
+        added, removed = after.keys() - before.keys(), before.keys() - after.keys()
+        changed = {key for key in before.keys() & after.keys() if before[key] != after[key]}
+        testcase.fail(f'Tree changed under {Path(path).name}: added={describe(added)} '
+                      f'removed={describe(removed)} changed={describe_changes(before, after, changed)}')
+
+
+def describe_changes(before, after, keys, limit=20):
+    shown = sorted(keys)
+    extra = f' +{len(shown) - limit} more' if len(shown) > limit else ''
+    return '[' + ', '.join(f"'{k}' ({summarize(before[k], after[k])})" for k in shown[:limit]) + ']' + extra
 
 
 class DisposableDeliveryTests(unittest.TestCase):
@@ -64,14 +126,17 @@ class DisposableDeliveryTests(unittest.TestCase):
                          'recorded')
         self.original = self.preserved()
 
+    def assert_tree_unchanged(self, path, before):
+        assert_tree_unchanged(self, path, before)
+
     def preview_apply(self, action, revision):
-        before = storage.observed(self.home)
-        source = storage.observed(self.repo)
+        before = tree_entries(self.home)
+        source = tree_entries(self.repo)
         plan = self.cli(action, '--revision', revision)
         self.assertEqual(plan['source_revision'], revision)
         self.assertEqual(plan['conflicts'], [])
-        self.assertEqual(storage.observed(self.home), before)
-        self.assertEqual(storage.observed(self.repo), source)
+        self.assert_tree_unchanged(self.home, before)
+        self.assert_tree_unchanged(self.repo, source)
         result = self.cli(action, '--revision', revision, '--apply')
         self.assertEqual(result['source_revision'], revision)
         self.assertFalse(result['native_activation_verified'])
@@ -102,7 +167,7 @@ class DisposableDeliveryTests(unittest.TestCase):
         status = self.cli('status')
         self.assertEqual(status['drift'], [])
         self.assertEqual(status['source_revision'], revision)
-        before = storage.observed(self.home)
+        before = tree_entries(self.home)
         # Offline readiness may legitimately be blocked by absent host clients.
         report = subprocess.run([sys.executable, str(ROOT / 'scripts/setup_account.py'), 'doctor',
                                  '--home', str(self.home), '--json'], capture_output=True,
@@ -117,7 +182,7 @@ class DisposableDeliveryTests(unittest.TestCase):
         self.assertEqual(doctor['comparison'], {'status': 'not_run', 'promotion_eligible': False})
         self.assertFalse(doctor['model_execution_verified'])
         self.assertFalse(doctor['native_activation_verified'])
-        self.assertEqual(storage.observed(self.home), before)
+        self.assert_tree_unchanged(self.home, before)
         result = subprocess.run([sys.executable, str(self.home / setup.BUNDLE / self.COMPONENT)],
                                 capture_output=True, text=True, timeout=5)
         self.assertEqual((result.returncode, result.stdout, result.stderr), (exit_code, marker + '\n', ''))
@@ -138,10 +203,10 @@ class DisposableDeliveryTests(unittest.TestCase):
         (self.repo / self.COMPONENT).write_text('print("uncommitted-success")\n')
         bad = self.preview_apply('update', regression)
         self.installed(regression, 'regression-seeded', 7)
-        before = storage.observed(self.home)
+        before = tree_entries(self.home)
         rollback = self.cli('rollback', '--transaction', bad['transaction'])
         self.assertEqual(rollback['action'], 'rollback')
-        self.assertEqual(storage.observed(self.home), before)
+        self.assert_tree_unchanged(self.home, before)
         self.cli('rollback', '--transaction', bad['transaction'], '--apply')
         self.assertEqual((self.home / storage.RECEIPT).read_bytes(), before_receipt)
         self.installed(candidate, 'candidate-ok')
@@ -157,12 +222,75 @@ class DisposableDeliveryTests(unittest.TestCase):
         bad = self.preview_apply('update', regression)
         component = self.home / setup.BUNDLE / self.COMPONENT
         component.write_text('Synthetic intervening personal edit\n')
-        before = storage.observed(self.home)
+        before = tree_entries(self.home)
         for flags in ((), ('--apply',)):
             error = self.cli('rollback', '--transaction', bad['transaction'], *flags, code=2)
             self.assertIn('Rollback would overwrite later changes:', error)
-            self.assertEqual(storage.observed(self.home), before)
+            self.assert_tree_unchanged(self.home, before)
             self.assertEqual(self.preserved(), self.original)
+
+
+
+class TreeDiagnosticTests(unittest.TestCase):
+    def test_tree_mismatch_message_names_paths(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'kept.txt').write_text('same\n')
+            (root / 'changed.txt').write_text('before\n')
+            (root / 'removed.txt').write_text('gone\n')
+            before = tree_entries(root)
+            (root / 'changed.txt').write_text('after\n')
+            (root / 'removed.txt').unlink()
+            (root / 'nested').mkdir()
+            (root / 'nested' / 'added.txt').write_text('new\n')
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, before)
+            message = str(caught.exception)
+            for expected in ("added=['nested', 'nested/added.txt']", "removed=['removed.txt']",
+                             "changed=['changed.txt' (sha256 "):
+                self.assertIn(expected, message)
+            self.assertNotIn('kept.txt', message)
+
+    def test_root_replaced_by_symlink_is_a_change(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            root = base / 'tree'; root.mkdir(); (root / 'file.txt').write_text('same\n')
+            before = tree_entries(root)
+            shutil.move(str(root), str(base / 'moved'))
+            os.symlink(base / 'moved', root)
+            self.assertNotEqual(storage.observed(root), storage.observed(base / 'moved'))
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, before)
+            self.assertIn("changed=['.'", str(caught.exception))
+
+    def test_changed_entries_summarize_the_difference(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'content.txt').write_text('before\n')
+            (root / 'mode.txt').write_text('x\n'); (root / 'mode.txt').chmod(0o644)
+            before = tree_entries(root)
+            (root / 'content.txt').write_text('after\n')
+            (root / 'mode.txt').chmod(0o755)
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, before)
+            message = str(caught.exception)
+            self.assertRegex(message, r"'content\.txt' \(sha256 [0-9a-f]{12}->[0-9a-f]{12}\)")
+            self.assertIn("'mode.txt' (mode 0o644->0o755)", message)
+
+    def test_root_removed_or_created_is_summarized(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / 'tree'
+            root.mkdir(); (root / 'file.txt').write_text('x\n')
+            present = tree_entries(root)
+            shutil.rmtree(root)
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, present)
+            self.assertIn("changed=['.' (kind directory/mode->absent)]", str(caught.exception))
+            absent = tree_entries(root)
+            root.mkdir()
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, absent)
+            self.assertIn("changed=['.' (kind absent->directory/mode)]", str(caught.exception))
 
 
 if __name__ == '__main__':
