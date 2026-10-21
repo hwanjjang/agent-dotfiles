@@ -5,7 +5,7 @@ It implements a local store, a synthetic adapter and a manual maintenance CLI.
 The optional [native adapters](native.md) reuse this store with separate
 project consent and installer registration. Explicit task selections and feedback
 are available through the manual CLI, with explicit reviewed synthetic case export.
-Live comparative evaluation remains later work. The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
+A bounded live development comparison is [complete with a reject result](../../docs/evidence/native-development-pilot-2026-10-19.md); held-out evaluation remains later work. The [native platform matrix](native.md#native-platform-evidence--2026-10-18)
 owns source-bound results and remaining environment, subagent and delivery gaps.
 The store never inspects transcripts,
 runs models, changes skills, registers hooks or writes installer state.

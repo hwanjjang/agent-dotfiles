@@ -83,7 +83,8 @@ eval workflow and recovery in 18 pages each. See the [source and capture notes](
 [English editable text](user-guide/manual-en.md) and [Korean editable text](user-guide/manual-ko.md).
 The six-step improvement cycle is documented with explicit implemented/planned status
 at that capture baseline. See the current native walkthrough below for the later
-Claude adapter; comparative model evaluation remains future work.
+Claude adapter. A bounded development comparison is now
+[complete with a reject result](../evidence/native-development-pilot-2026-10-19.md); held-out evaluation remains future work.
 
 The 2026-10-19 SDLC amendment updates integrated-guide pages 5-7 with the single
 `sdlc` entry, evidence-based next action and resumption. Screenshot capture dates
@@ -396,8 +397,11 @@ the PR67 native-YAML surrogate-escape compatibility fix; 351 combined checks pas
 under each supported Python version. The manual independently renewed three
 routing and eight scope CLI calls per version after that checkpoint. Both screenshots
 and both PDF pages passed actual visual, text/page-count and overflow checks.
-No auth, native client, model or VM was used. Current native qualification, actual
-EN/KO comparison and held-out case preparation remain pending. Rebuild with the
+No auth, native client, model or VM was used. At that capture, current native
+qualification, actual EN/KO comparison and held-out case preparation were pending;
+the EN/KO development comparison has since
+[completed with a reject result](../evidence/native-development-pilot-2026-10-19.md),
+and held-out case preparation remains pending. Rebuild with the
 screenshot-manual commands above and `native-routing-admission.json`; retain old
 evidence and renew captures on source/behavior drift.
 
