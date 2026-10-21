@@ -1,6 +1,6 @@
 {
   "title": "Take over an account managed by earlier tools",
-  "scenario": "Scenario: account-takeover. Captured on the installer commit 81d42fc with the real scripts/setup-account.sh entry point in a disposable replica of an account set up by two earlier tools (shared symlinked instruction file with two foreign blocks, old and unowned planning hook groups mixed with unrelated hooks, old skill directories and links, and the previous manager's runtime files). Synthetic content, Python 3.11+, no client, model or network call. Nothing was applied to a real account.",
+  "scenario": "Scenario: account-takeover. Captured on the installer commit 339a99a with the real scripts/setup-account.sh entry point in a disposable replica of an account set up by two earlier tools (shared symlinked instruction file with two foreign blocks, old and unowned planning hook groups mixed with unrelated hooks, old skill directories and links, and the previous manager's runtime files). Synthetic content, Python 3.11+, no client, model or network call. Nothing was applied to a real account.",
   "steps": [
     {
       "title": "Preview until every old fragment is named",

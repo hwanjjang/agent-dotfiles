@@ -1,19 +1,19 @@
 {
   "captured": "2026-10-21",
   "baseline": "5bc5038",
-  "candidate": "81d42fc",
+  "candidate": "339a99a",
   "status": "initial_capture",
   "scenario": "account-takeover",
   "source_sha256": {
-    "scripts/setup_account.py": "066514eb3196dd883771a1e02073c1e630229e1ae7a0c678b59764837c3e9b67",
-    "scripts/account_storage.py": "a06397151d8d3f22721b877a2268a2872826fa6b446889e415af50b0d4ecb55b",
-    "scripts/account_doctor.py": "e27bc7668bdeafcaff9ff1b6647c24caf61ab67b3eb0eba9fc3e0236e642aa01",
-    "tests/test_setup_account.py": "97563d2fdfa41373358f53c28d7c617c6bfd85669b771597a3fcb76ce5db4a88",
-    "account/README.md": "527e7b46132365dbd9ae09b94e0d2843727468ceae81309335e9a787ffe8e692"
+    "scripts/setup_account.py": "a5f707d83b51fea4ffd8edf2990a0766102623ca149b92174925ff8bcf155ab9",
+    "scripts/account_storage.py": "cce4a471ab5c66ed501c6bc7f11769949d09d81741a772da38051508bdf9dd08",
+    "scripts/account_doctor.py": "49b4341872d40ba309b894e59fb84e9dd833bd49813af671063417771e2237e7",
+    "tests/test_setup_account.py": "1872d2a7b1e841364d1eebd773932b5c26d01f3d186f965d2feffcc6a7bd42c9",
+    "account/README.md": "26d943cd61b10330e99fc88f1a466b524c14cef7d0c827032c099ec850c9d28d"
   },
   "images": {
-    "account-takeover-preview.png": "73e33dee4722e0230c036bae253b767413a179810dc5610d1953aae420f8103e",
-    "account-takeover-result.png": "4c23ea2b4f02c33e42fb4f442bb91a648f84855973c42bd7d585b526ab905149"
+    "account-takeover-preview.png": "b2c0ca4dd084807ceeb2b65ed2246d3c2c3d075754b13267acc730930af5097f",
+    "account-takeover-result.png": "0d9298a38eb2b0a807d5bddbc00dae4e943e2c8dd8aaa71f2f692efdd2cf2651"
   },
   "notes": [
     "Both images are browser-rendered summaries (headless Chromium 1243, 1360 px wide) of the actual output of scripts/setup-account.sh in a disposable replica of an account managed by two earlier tools; paths replaced with $ACCOUNT, the plan reduced to selected fields and the transaction ID shortened.",
