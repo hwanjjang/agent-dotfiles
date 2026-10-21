@@ -287,6 +287,44 @@ that were corrected. This is one bounded forward check, not a benchmark or proof
 that every client/model follows the skills. Raw runs stay local; maintained recipes
 and the [adoption decision](decisions/verification.md) document the reusable method.
 
+## Formal verification pair and repository pilot — 2026-10-22
+
+The pstack formal verification pair brings the source total to 26. Both packages and
+the repository-only verifier pass the strict skill validator with `name` and
+`description` only. Their upstream SKILL.md hashes and LICENSE bytes match
+cursor/plugins `190d287`; relative links in changed Markdown resolve, and declared
+skill and policy dependencies exist. Neither package bundles or installs a verifier.
+The map has 76 entries and 128 relationships; the 19 map tests, both freshness checks
+and the 61 SDLC tests pass. The full repository suite ran 841 tests with one error,
+`test_instruction_links_that_are_not_one_account_markdown_file_are_refused`, which
+also fails on unchanged `origin/main` on the macOS case-insensitive filesystem.
+
+The [account transaction verifier](verification/verify-account-transactions/SKILL.md)
+ran with Python 3.11.15, OpenJDK 17.0.20 and TLA+ tools 1.7.4 (TLC 2.19) on macOS.
+Each full run took about 21 s: the base model found 9,642 distinct states at depth 30
+with every action taken; seven witnesses were reached; five broken variants and five
+paired code mutations each failed on their expected property; and the real-code
+harness passed 206 cases, including 12 real process exits. Two runs gave identical
+counts. During qualification, the step trace exposed a modeling error, not a code
+bug: rollback walks the journal's sorted keys, unlike the undo. A scratch break in a
+disposable worktree, journaling `rolled-back` after a failed undo, was reported out of
+sync and produced 57 harness violations without a model change. TLC failed the same
+property after the model followed the code, while the existing account tests passed.
+After the worktree was removed, a rerun matched the baseline.
+
+A separate agent applied the maintenance skill in a disposable worktree after a
+behavior-preserving rename of a covered function. It ran the check as is (out of
+sync, model and harness still passing), read the two commits, updated only the model
+reference and coverage record, showed with a break in a copy that the harness still
+fails, and reported **updated** with no bug. That is one bounded forward check.
+
+Archify finalize passed validation, delivery, strict provenance and browser checks
+for the [lifecycle diagram](architecture/account-transaction-lifecycle.html); its
+light 1440×900 capture was visually inspected. Not exercised: native discovery or
+automatic selection of the pair in any client, the repository browser verifier for
+the new map entries, other hosts, Linux, and CI execution of the model. Raw TLC
+output, harness reports and captures stay local.
+
 ## PR and ticket adoption — 2026-10-17
 
 The PR/ticket pair brought the source total to 22 at that adoption. Strict skill validation passed
