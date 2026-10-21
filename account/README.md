@@ -283,8 +283,9 @@ the old updater. Every step previews first; applying needs the exact saved plan.
   can use it. The Claude `@` import form is used only when a regular `.claude/CLAUDE.md`
   is the sole entry for its file. A link is refused before any write when it leaves the account,
   passes through another link (including a `..` after a directory link, which the client would
-  resolve differently), is missing or names a directory, is not Markdown, or lies in the
-  installer's own bundle, state, skill or hook trees. Status and doctor report a retargeted link as drift,
+  resolve differently), cannot be opened as that one regular file (missing, a directory, or a
+  path such as `file.md/`), is not Markdown, or lies in the installer's own bundle, state, skill
+  or hook trees. Status and doctor report a retargeted link as drift,
   and update and uninstall stop until you reconcile it.
 - **Old fragments.** `--legacy-receipt` may repeat. Each receipt is JSON with `"version": 1`,
   `"home"` set to this account, and the fields below; other keys are ignored.

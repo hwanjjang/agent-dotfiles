@@ -93,7 +93,7 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
             raw = read(safe(home, name)).decode()
             foreign = re.search(r'<!--\s*(?!agent-dotfiles:)[\w-]+:begin', raw)
             valid = raw.count(block) == 1 and not foreign
-            checks.append(check('instructions.' + name.split('/')[0][1:], 'pass' if valid else 'fail',
+            checks.append(check('instructions.' + Path(name).parts[0].lstrip('.'), 'pass' if valid else 'fail',
                                 'Exactly one installed instruction block, without another managed owner.' if valid
                                 else 'Instruction ownership is missing, changed or duplicated.',
                                 '' if valid else 'Retire the previous managed fragment using its exact receipt.'))

@@ -325,9 +325,10 @@ class AccountSetupTests(unittest.TestCase):
         original = storage.observed(target)
         plan, changes = self.prepare()
         replace = storage.os.replace
-        def interrupt_after_displacement(src, dst):
-            result = replace(src, dst)
-            if Path(src) == target:
+        def interrupt_after_displacement(src, dst, **kwargs):
+            result = replace(src, dst, **kwargs)
+            # The directory moving to its journaled displacement: a leaf name below an open directory.
+            if src == target.name and 'src_dir_fd' in kwargs and Path(dst).is_absolute():
                 raise KeyboardInterrupt('process interrupted after rename')
             return result
         with storage.lock(self.home), patch.object(storage.os, 'replace', interrupt_after_displacement):
@@ -361,10 +362,11 @@ class AccountSetupTests(unittest.TestCase):
             storage.rollback_plan(self.home, ident)
         target.symlink_to(installed_link)
         replace, copytree = storage.os.replace, storage.shutil.copytree
-        def interrupt_restore(src, dst):
-            if Path(dst) == target:
+        def interrupt_restore(src, dst, **kwargs):
+            # The displaced directory moving back into place below an open directory.
+            if Path(src).is_absolute() and dst == target.name and kwargs.get('dst_dir_fd') is not None:
                 raise KeyboardInterrupt('process interrupted before restoration rename')
-            return replace(src, dst)
+            return replace(src, dst, **kwargs)
         def interrupt_copy(src, dst, **kwargs):
             if Path(dst) == target:
                 Path(dst).mkdir()
@@ -567,6 +569,9 @@ class AccountSetupTests(unittest.TestCase):
             'is inside the state': ('../.agents/agent-dotfiles/state/NOTES.md', 'protected'),
             'is inside the Codex hooks': ('hooks/NOTES.md', 'protected'),
             'is inside the Claude hooks': ('../.claude/hooks/NOTES.md', 'protected'),
+            'ends with a slash': ('../.agents/real.md/', 'one regular file'),
+            'ends with a dot component': ('../.agents/real.md/.', 'one regular file'),
+            'goes through a regular file': ('../.agents/real.md/../real.md', 'one regular file'),
             'passes through a directory link outside the account': ('../bridge/../AGENTS.md', 'one regular file'),
             'passes through a missing directory': ('../missing/../.agents/real.md', 'one regular file'),
             'passes through a directory link inside the account': ('../alias/real.md', 'one regular file|Unsafe parent'),
@@ -798,6 +803,95 @@ class AccountSetupTests(unittest.TestCase):
         target.rename(real)
         target.symlink_to('REAL.md')
         self.assertIn('.agents/AGENTS.md', setup.status(self.home)['drift'])
+
+    def assert_a_swapped_directory_is_not_followed(self, directory, target):
+        """Replace an account directory by a link to an outside one right before its file is written."""
+        self.home = self.root / ('swap account ' + directory.strip('.'))
+        self.home.mkdir()
+        self.shared_instructions()
+        self.config('.claude/settings.json', {'permissions': {'deny': ['Bash(rm *)']}})
+        outside = self.root / ('outside of ' + directory.strip('.'))
+        outside.mkdir()
+        for name in ('AGENTS.md', 'settings.json'):
+            (outside / name).write_text('Outside file.\n')
+        plan, changes = self.prepare()
+        real_put, swapped = storage.put, []
+
+        def swap_then_put(path, value, **kwargs):
+            if path == self.home / target and not swapped:
+                swapped.append(True)
+                (self.home / directory).rename(self.home / (directory + '-moved'))
+                (self.home / directory).symlink_to(outside)
+            return real_put(path, value, **kwargs)
+
+        with patch.object(storage, 'put', side_effect=swap_then_put), storage.lock(self.home):
+            with self.assertRaises(ValueError):
+                storage.transact(self.home, plan, changes)
+        self.assertTrue(swapped)
+        for name in ('AGENTS.md', 'settings.json'):
+            self.assertEqual((outside / name).read_text(), 'Outside file.\n')
+
+    def test_the_directory_of_a_shared_instruction_file_swapped_for_a_link_is_not_followed(self):
+        self.assert_a_swapped_directory_is_not_followed('.agents', '.agents/AGENTS.md')
+
+    def test_the_directory_of_a_config_file_swapped_for_a_link_is_not_followed(self):
+        self.assert_a_swapped_directory_is_not_followed('.claude', '.claude/settings.json')
+
+    def test_a_link_retargeted_during_the_writes_rolls_the_apply_back(self):
+        target = self.shared_instructions()
+        other = self.home / '.agents/OTHER.md'
+        other.write_text('Elsewhere.\n')
+        plan, changes = self.prepare()
+        real_put, swapped = storage.put, []
+
+        def retarget_then_put(path, value, **kwargs):
+            if not swapped:
+                swapped.append(True)
+                (self.home / '.codex/AGENTS.md').unlink()
+                (self.home / '.codex/AGENTS.md').symlink_to('../.agents/OTHER.md')
+            return real_put(path, value, **kwargs)
+
+        with patch.object(storage, 'put', side_effect=retarget_then_put), storage.lock(self.home):
+            with self.assertRaisesRegex(ValueError, r'Transaction failed.*rolled-back') as caught:
+                storage.transact(self.home, plan, changes)
+        self.assertRegex(str(caught.exception.__cause__), r'Concurrent change: \.codex/AGENTS\.md')
+        self.assertEqual(target.read_text(), 'Personal rule.\n')
+        self.assertFalse((self.home / storage.RECEIPT).exists())
+
+    def test_the_codex_adapter_scripts_are_a_previous_route_in_any_client_file(self):
+        group = {'hooks': [{'type': 'command', 'command': 'python3 /x/.codex/hooks/stop.py'}]}
+        self.config('.claude/settings.json', {'hooks': {'Stop': [group]}})
+        with self.assertRaisesRegex(ValueError, r'\.claude/settings\.json Stop'):
+            self.prepare()
+        receipt = self.receipt_file('adapter-stop.json', hooks={'.claude/settings.json': {'Stop': [group]}})
+        self.assertTrue(self.prepare(legacy=[receipt])[1])
+        # The doctor reports the same route when it appears after an installation.
+        self.home = self.root / 'doctor route account'
+        self.home.mkdir()
+        self.apply()
+        settings = self.home / '.claude/settings.json'
+        config = json.loads(settings.read_text())
+        config['hooks'].setdefault('Stop', []).append(group)
+        settings.write_text(json.dumps(config))
+        import account_doctor
+        checks = {row['id']: row['status'] for row in account_doctor.diagnose(self.home)['checks']}
+        self.assertEqual(checks['hooks.claude'], 'fail')
+
+    def test_the_doctor_names_an_instruction_file_in_the_account_root(self):
+        (self.home / 'AGENTS.md').write_text('Personal rule.\n')
+        (self.home / '.codex').mkdir()
+        (self.home / '.codex/AGENTS.md').symlink_to('../AGENTS.md')
+        self.apply()
+        import account_doctor
+        checks = {row['id']: row['status'] for row in account_doctor.diagnose(self.home)['checks']}
+        self.assertEqual(checks.get('instructions.AGENTS.md'), 'pass')
+
+    def test_an_uninstall_preview_fingerprints_the_installed_links(self):
+        self.shared_instructions()
+        self.apply()
+        plan, _ = self.prepare(action='uninstall')
+        self.assertEqual(sorted(name for name in plan['before'] if name in ('.claude/CLAUDE.md', '.codex/AGENTS.md')),
+                         ['.claude/CLAUDE.md', '.codex/AGENTS.md'])
 
     def test_a_link_changed_after_the_preview_stops_the_apply(self):
         target = self.shared_instructions()

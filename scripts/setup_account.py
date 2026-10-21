@@ -29,7 +29,8 @@ INSTRUCTIONS = set(INSTRUCTION_ENTRIES)
 COMPETING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook|observation-hook'
                              r'|/hooks/(run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py')
 # A second planning route is competing in any event of the file, not only where this installer adds groups.
-PLANNING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook')
+PLANNING_ROUTE = re.compile(r'planning[-_]with[-_]files|planning-hook|flyingcorp-hook'
+                            r'|\.codex/hooks/(?:run_sh|pre_tool_use|post_tool_use|permission_request|stop)\.py')
 
 
 def owned_path(name):
@@ -330,7 +331,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             links[name] = storage
     for storage in set(old.get('instructions', {})) | set(retiring['instructions']):
         entries.setdefault(storage, set())
-    for name in links:
+    for name in set(links) | set(old.get('instruction_links', {})):
         # Unchanged, but fingerprinted: a link retargeted after the preview stops the apply.
         change(name, {'link': os.readlink(safe(home, name))})
     keep_empty = set(links.values()) | set(old.get('instruction_links', {}).values())

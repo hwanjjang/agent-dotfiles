@@ -6,6 +6,7 @@ import os
 import re
 from pathlib import Path
 import shutil
+import stat
 import tempfile
 import uuid
 from contextlib import contextmanager
@@ -88,10 +89,10 @@ def instruction_path_allowed(rel):
 def instruction_storage(home, name):
     """Account-relative file holding an instruction entry: itself, or the one file its link names.
 
-    Only one in-account link level to a regular Markdown file is followed. The kernel's own
-    resolution (which applies `..` after a link in the link's target, and fails on a missing
-    component) must reach the same file as the lexical path, so an edit never lands on a file
-    the client does not open, leaves the account, crosses another link or touches the payload.
+    Only one in-account link level to a regular Markdown file is followed. Opening the entry must
+    reach the same file as the lexical path (the kernel applies `..` after a link inside the link's
+    target and fails on a missing or non-directory component), so an edit never lands on a file the
+    client does not open, leaves the account, crosses another link or touches the payload.
     """
     path = safe(home, name)
     if not path.is_symlink():
@@ -99,13 +100,14 @@ def instruction_storage(home, name):
     target = Path(os.path.normpath(path.parent / os.readlink(path)))
     require(target.is_relative_to(home) and target != home, 'Instruction link leaves the account')
     try:
-        opened = Path(os.path.realpath(path, strict=True))
+        opened, named = os.stat(path), os.lstat(target)
     except OSError:
-        opened = None
-    require(opened == target, 'Instruction link must name one regular file in the account')
+        opened = named = None
+    # What a client opens through the link, resolved by the kernel, must be the regular file named here.
+    require(opened is not None and stat.S_ISREG(named.st_mode) and os.path.samestat(opened, named),
+            'Instruction link must name one regular file in the account')
     rel = target.relative_to(home).as_posix()
-    stored = safe(home, rel)
-    require(stored.is_file() and not stored.is_symlink(), 'Instruction link must name one regular file in the account')
+    safe(home, rel)
     require(rel in INSTRUCTION_ENTRIES or rel.endswith('.md'), 'Instruction link must name a Markdown file')
     require(rel in INSTRUCTION_ENTRIES or instruction_path_allowed(rel), 'Instruction link names a protected path')
     return rel
@@ -144,7 +146,93 @@ def write(path, data, mode=0o600):
             os.unlink(tmp)
 
 
-def put(path, value, displaced=None):
+_DIRECTORY = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, 'O_CLOEXEC', 0)
+
+
+def _below(home, name, create):
+    """File descriptor of the directory holding `name`, opened below `home` one component at a time
+    without following a link, so a directory replaced by a link after the path checks fails here."""
+    fd = None
+    try:
+        fd = os.open(home, _DIRECTORY)
+        for part in Path(name).parts[:-1]:
+            try:
+                child = os.open(part, _DIRECTORY, dir_fd=fd)
+            except FileNotFoundError:
+                if not create:
+                    raise
+                os.mkdir(part, 0o777, dir_fd=fd)
+                child = os.open(part, _DIRECTORY, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        return fd
+    except OSError as error:
+        if fd is not None:
+            os.close(fd)
+        raise ValueError(f'Unsafe parent for {name}') from error
+
+
+def _entry(parent, leaf):
+    try:
+        return os.lstat(leaf, dir_fd=parent)
+    except FileNotFoundError:
+        return None
+
+
+def _put_below(home, name, value, displaced):
+    try:
+        parent = _below(home, name, create=value is not None)
+    except ValueError:
+        if value is None and not (home / name).parent.exists():
+            return
+        raise
+    leaf = Path(name).name
+    try:
+        moved = False
+        info = _entry(parent, leaf)
+        if info is not None and stat.S_ISDIR(info.st_mode):
+            require(displaced is not None and observed(displaced) is None,
+                    'Directory replacement requires an unused journaled displacement')
+            os.replace(leaf, displaced, src_dir_fd=parent)
+            moved = True
+        try:
+            _put_file_below(parent, leaf, value)
+        except Exception:
+            if moved and _entry(parent, leaf) is None:
+                os.replace(displaced, leaf, dst_dir_fd=parent)
+            raise
+    finally:
+        os.close(parent)
+
+
+def _put_file_below(parent, leaf, value):
+    if value is None:
+        try:
+            os.unlink(leaf, dir_fd=parent)
+        except FileNotFoundError:
+            pass
+        return
+    tmp = '.agent-dotfiles-' + uuid.uuid4().hex
+    try:
+        if 'link' in value:
+            os.symlink(value['link'], tmp, dir_fd=parent)
+        else:
+            fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | getattr(os, 'O_CLOEXEC', 0), 0o600, dir_fd=parent)
+            with os.fdopen(fd, 'wb') as stream:
+                stream.write(value['data'])
+                stream.flush()
+                os.fsync(stream.fileno())
+                os.fchmod(stream.fileno(), value['mode'])
+        os.replace(tmp, leaf, src_dir_fd=parent, dst_dir_fd=parent)
+    finally:
+        if _entry(parent, tmp) is not None:
+            os.unlink(tmp, dir_fd=parent)
+
+
+def put(path, value, displaced=None, home=None):
+    """Replace `path` with `value`. With `home`, nothing below it is reached through a link."""
+    if home is not None:
+        return _put_below(home, path.relative_to(home).as_posix(), value, displaced)
     moved = False
     if path.is_dir() and not path.is_symlink():
         # The journal names this private location before the directory moves.
@@ -213,17 +301,24 @@ def capture(path, destination):
     return {'kind': 'file', 'mode': path.stat().st_mode & 0o777}
 
 
-def restore(path, entry, saved, expected):
+def restore(path, entry, saved, expected, home=None):
     if entry['kind'] == 'directory':
         displaced = saved.parent / entry['displaced']
         require(observed(displaced) == expected, 'Displaced original changed or missing')
-        put(path, None)
+        put(path, None, home=home)
         # If interrupted between unlink and rename, the journal still owns both paths.
-        os.replace(displaced, path)
+        if home is None:
+            os.replace(displaced, path)
+        else:
+            parent = _below(home, path.relative_to(home).as_posix(), create=True)
+            try:
+                os.replace(displaced, path.name, dst_dir_fd=parent)
+            finally:
+                os.close(parent)
     elif entry['kind'] == 'file':
-        put(path, {'data': saved.read_bytes(), 'mode': entry['mode']})
+        put(path, {'data': saved.read_bytes(), 'mode': entry['mode']}, home=home)
     else:
-        put(path, {'link': entry['value']} if entry['kind'] == 'link' else None)
+        put(path, {'link': entry['value']} if entry['kind'] == 'link' else None, home=home)
 
 
 def transact(home, plan, changes):
@@ -252,9 +347,12 @@ def transact(home, plan, changes):
             done.append(name)
             entry = originals[name]
             displaced = folder / entry['displaced'] if entry['kind'] == 'directory' else None
-            put(safe(home, name), value, displaced=displaced)
+            put(safe(home, name), value, displaced=displaced, home=home)
         for name in changes:
             require(observed(safe(home, name)) == plan['after'][name], f'Post-write mismatch: {name}')
+        for name, expected in plan['before'].items():
+            # Inputs that were fingerprinted but not changed, such as instruction links, must still be as previewed.
+            require(name in changes or observed(safe(home, name)) == expected, f'Concurrent change: {name}')
         journal['status'] = 'applied'
         write(folder / 'journal.json', encoded(journal))
     except Exception as error:
@@ -266,7 +364,7 @@ def transact(home, plan, changes):
                     continue
                 require(actual == plan['after'][name], 'Concurrent change during recovery')
                 entry = originals[name]
-                restore(safe(home, name), entry, folder / entry['saved'], plan['before'][name])
+                restore(safe(home, name), entry, folder / entry['saved'], plan['before'][name], home=home)
             except Exception:
                 failures.append(name)
         journal['status'] = 'recovery-required' if failures else 'rolled-back'
@@ -320,7 +418,7 @@ def rollback(home, ident):
         gap = (actual is None and entry['kind'] == 'directory'
                and observed(folder / entry['displaced']) == journal['before'][name])
         require(actual == journal['after'][name] or gap, f'Concurrent rollback change: {name}')
-        restore(path, entry, folder / entry['saved'], journal['before'][name])
+        restore(path, entry, folder / entry['saved'], journal['before'][name], home=home)
         require(observed(path) == journal['before'][name], f'Rollback mismatch: {name}')
     journal['status'] = 'rolled-back'
     write(folder / 'journal.json', encoded(journal))
