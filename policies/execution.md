@@ -24,6 +24,11 @@ Carry authorized work through execution, relevant verification and reporting.
 - When authoring a skill, read the host's skill-creator contract when available.
   Keep system-owned implementations under their existing owner; put portable
   adaptations in maintained source rather than editing installed system skills.
+- When maintaining instructions or skills shared by multiple clients, keep one
+  canonical source. Client entry points should import or adapt it without
+  duplicating common rules. Preserve unrelated instructions, skills and settings
+  during an authorized installation or update; follow [evidence](evidence.md)
+  for client verification.
 - For source-derived methods, distinguish the original material, later author
   teaching, third-party interpretation and local defaults in provenance. Review
   coverage and exceptions before integrating the method into runtime behavior.

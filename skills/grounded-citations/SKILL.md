@@ -31,6 +31,12 @@ Follow shared [evidence](../../policies/evidence.md) and
    source date/version and context. Separate facts, reported experiences,
    inference and uncertainty. Conflicting sources retain distinct attribution.
    Cross-check consequential disputed facts independently where practical.
+   When asked for experiences across platforms, select relevant source types
+   such as primary docs/releases/code, community discussions and demonstrations.
+   Use available retrieval routes, retain platform attribution, and distinguish
+   firsthand reports, promotion, reposts and measurements. Report coverage/access
+   gaps rather than silently substituting one platform for the requested scope;
+   anecdotes or popularity alone do not establish effectiveness or consensus.
 4. **Write in the destination's format.** Chat uses supported descriptive links
    near claims; keep native citation annotations when the host requires them.
    Numbered `[n]` markers are the helper's optional Markdown-report format,

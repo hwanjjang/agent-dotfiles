@@ -13,6 +13,10 @@ Scope: shared execution guidance for tasks that produce or change an artifact.
   where the change creates uncertainty; do not add checks merely to lengthen a list.
 - Record what was checked, its result, and material limits. Missing evidence is
   an explicit gap, never an inferred pass.
+- For an authorized instruction or skill installation/update, verify the intended
+  source, discovery and applicable execution or hook behavior in each intended
+  client. Copied files or matching links alone do not establish a working setup;
+  report unavailable client checks explicitly.
 - After integration or a changed assumption, recheck affected claims on the new
   artifact. Keep private raw evidence out of public source.
 
@@ -22,6 +26,8 @@ https://github.com/cursor/plugins/blob/ac4e25a0064cd600afdd605208bad72748cb019a/
 
 Local changes: scoped evidence to the request, allowed reuse, removed dependency
 on an unbundled reporting skill, and clarified integrated-revision checks.
+Client verification requirements are adapted from AK-authored account guidance,
+supplied for public reuse under the repository [MIT license](../LICENSE).
 
 ## Upstream license
 
