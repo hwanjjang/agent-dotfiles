@@ -40,8 +40,11 @@ def describe(paths, limit=20):
 
 def summarize(before, after):
     """A short description of how one fingerprint changed: kind, content digest or mode."""
-    if before.keys() != after.keys():
-        return 'kind ' + '/'.join(sorted(before)) + '->' + '/'.join(sorted(after))
+    def kind(value):
+        return 'absent' if value is None else '/'.join(sorted(value))
+
+    if before is None or after is None or before.keys() != after.keys():
+        return f'kind {kind(before)}->{kind(after)}'
     parts = []
     for key in sorted(before):
         if before[key] == after[key]:
@@ -273,6 +276,21 @@ class TreeDiagnosticTests(unittest.TestCase):
             message = str(caught.exception)
             self.assertRegex(message, r"'content\.txt' \(sha256 [0-9a-f]{12}->[0-9a-f]{12}\)")
             self.assertIn("'mode.txt' (mode 0o644->0o755)", message)
+
+    def test_root_removed_or_created_is_summarized(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / 'tree'
+            root.mkdir(); (root / 'file.txt').write_text('x\n')
+            present = tree_entries(root)
+            shutil.rmtree(root)
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, present)
+            self.assertIn("changed=['.' (kind directory/mode->absent)]", str(caught.exception))
+            absent = tree_entries(root)
+            root.mkdir()
+            with self.assertRaises(AssertionError) as caught:
+                assert_tree_unchanged(self, root, absent)
+            self.assertIn("changed=['.' (kind absent->directory/mode)]", str(caught.exception))
 
 
 if __name__ == '__main__':
