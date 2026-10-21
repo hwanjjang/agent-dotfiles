@@ -48,8 +48,9 @@ these files are templates and are not activated by this checkout.
   maintainer direction. Replace mandatory alternatives sections and dependency
   graphs with task-appropriate guidance; link pstack and Matt design material as
   optional references. This does not change the separate architect or SDLC workflows.
-- Required diagram production: include Archify at the selected baseline pin with
-  its runtime, schemas, templates, and third-party notices.
+- Required diagram production: include Archify at the selected release with its
+  runtime, schemas, templates, and third-party notices. The package moved from the
+  3.0.1 baseline to v3.2.0 on 2026-10-21; see the Archify update record below.
 - Required screenshot manuals: include a focused source/PNG/PDF workflow with a
   reproducible generator, raster preview, and mandatory visual inspection.
 - Logging policy: combine Addy's severity and structured-event guidance with
@@ -120,13 +121,54 @@ Source presence, structural validation, executable checks, and real client behav
 are separate claims. No account installation, external publication, or complete
 SDLC behavioral evaluation was performed by this import.
 
+## Archify update — 2026-10-21
+
+AK selected the update from the 3.0.1 baseline (`d5a1333`) to the published v3.2.0
+release (`208acba8d412335185b2056fedf54b3405df43fb`, tree `39069dd`). The skill's
+[provenance.json](../../skills/archify/provenance.json) owns the exact identity,
+packaging changes and validation; the [tool registry](../../tools/registry.json) and
+the catalog entry carry the same pin, and `tests/test_archify_vendored.py` checks that
+they agree.
+
+- **Included changes.** Ten diagram types (ERD, class, tree, timeline and waterfall
+  join the original five), reader-controlled Live/Still motion built into every diagram
+  (a new page starts Still until the reader chooses Live), bundled viewer locales, and
+  one-page explainer pages whose charts use unmodified Pele 1.3.0 chunks (MIT). The
+  package no longer ships its own tests.
+- **Local changes.** None to upstream text or code. Trailing whitespace was normalized
+  in 17 text files for repository diff checks. provenance.json lists the normalization and
+  the digest of every vendored file, and the test fails on an edit that is not recorded.
+- **Behavior to know.** `finalize` and `deliver` make a bounded request (1 second,
+  cached for 24 hours) to the project's update manifest and report it in the receipt;
+  `ARCHIFY_UPDATE_CHECK_DISABLED=1` removes the check. Since 3.2 the skill lets the agent
+  describe the manifest's summary of at most 160 characters and tells it to treat that
+  text as untrusted data; it never installs or runs an update. Do not update an
+  installed copy in place: it is owned by the account installer, and an edit blocks the
+  next update. After an explainer made on request the skill may offer a proactive mode and
+  edits a global rules file only if the user accepts.
+- **Community evidence.** Limited. Independent first-hand reports were not found; web
+  searches returned aggregator pages, release notes and the project's own pages. One
+  critical article (braindetox.kr, 2026-09-30) assesses the 3.0.1 documentation, not
+  tested results, and says the automated gates check form, not truth. The upstream issues
+  read on 2026-10-21 include open viewer, timeline/waterfall, explainer chart and Windows
+  reports, and none about the architecture or workflow `finalize` path on Linux. The
+  selection is provisional with respect to community validation.
+- **Checks.** The payload equals the upstream tree at the pinned revision except the
+  whitespace-only files. On Linux with Node.js 22 and a Chromium browser, `doctor` passes,
+  every bundled example of the ten types validates, and `finalize` passed its validate,
+  deliver, check and browser-check gates for the architecture example and for the
+  explainer example with `--browser-check`. Not exercised: Windows, macOS, a model-driven
+  session and perceptual review of generated pages.
+- **Rollback.** Restore `skills/archify` and the pins from the repository commit before this
+  update; its provenance record names upstream `d5a1333`.
+
 ## Source-package limitations
 
-- Archify's bundled `package.json` and some tests retain upstream monorepo commands
-  that refer to sibling `scripts/` and `viewer/` directories absent here. Do not use
-  its `npm test` as this checkout's validation command. The checked portable entry
-  is `node skills/archify/bin/archify.mjs doctor`; demo rendering was also exercised.
-  These checks do not establish the full custom-diagram finalize/provenance workflow.
+- Archify's bundled `package.json` retains upstream monorepo commands that refer to
+  sibling `scripts/` and `viewer/` directories absent here, and the package no longer
+  ships its tests. Do not use its npm scripts as this checkout's validation command.
+  The checked portable entry is `node skills/archify/bin/archify.mjs doctor`, together
+  with `tests/test_archify_vendored.py` and the finalize runs listed in the update record.
 - The imported AK SDLC still uses `AK` as the authorizer label for reviewer-effort
   overrides and retains historical repository-layout examples in its playbook.
   It is an AK workflow building block, not a fully generalized principal/host adapter.

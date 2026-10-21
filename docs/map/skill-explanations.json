@@ -154,10 +154,11 @@
     {
       "id": "archify",
       "source_basis": "adopted-upstream",
-      "local_skill_sha256": "66dfe99b35d7ceff95bcbdb00f138b8b3ec8094629acf69efba1eeda1013aaf3",
+      "local_skill_sha256": "93434ad579983f4cff639c2b7230c311e0785cc48a25b66b1498e1802be7de91",
       "adopted_upstream": "https://github.com/tt-a1i/archify",
-      "adopted_revision": "d5a1333d7447c866a765adac7d4d062f2f02e4d2",
-      "adopted_path": "archify"
+      "adopted_revision": "208acba8d412335185b2056fedf54b3405df43fb",
+      "adopted_path": "archify",
+      "reviewed": "2026-10-21"
     },
     {
       "id": "code-review-and-quality",
