@@ -35,7 +35,7 @@ Accepts == {"applied", "pending", "recovery-required", "rolling-back"}
 Statuses == {"none", "rolled-back"} \cup Accepts
 Pcs == {"idle", "i_journal", "i_put", "i_link", "i_repair", "i_applied",
         "u_path", "u_rename", "u_outcome",
-        "r_plan", "r_mark", "r_path", "r_rename", "r_done"}
+        "r_plan", "r_mark", "r_path", "r_rename"}
 
 VARIABLES disk, displaced, journal, pc, idx, done, failures, installed,
           kills, ioerrs, userChanges, userChanged, planStatus, wrote,

@@ -26,7 +26,8 @@ Run every command from the checkout root.
   a rollback deletes settings or skills the user changed after installing.
 
 Model invariants: `ChangesAreJournaled` and `NoSpuriousRefusal` (P1), `NoClobber` and
-`RefusalChangesNothing` (P2). The harness checks the same four on real files, plus lock refusal.
+`RefusalChangesNothing` (P2). The harness checks the same four on real files, plus that a fault-free rollback
+completes with the journal `rolled-back` (`RecoveryCompletes`) and lock refusal.
 The [journal lifecycle diagram](../../architecture/account-transaction-lifecycle.html) explains
 the statuses; it is not proof. Its Archify source is
 `docs/architecture/account-transaction-lifecycle.json`; regenerate it with

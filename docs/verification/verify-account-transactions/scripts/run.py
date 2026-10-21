@@ -135,12 +135,14 @@ def assumptions():
             in_run = within(call, parents, lambda n: isinstance(n, ast.FunctionDef) and n.name == 'run')
             if not in_run:
                 failed.append(f'setup_account.py:{call.lineno} calls transact outside run()')
-    for call in calls:
-        if call.func.id == 'run' and not call.args:
-            guarded = within(call, parents, lambda n: isinstance(n, ast.If) and 'args.apply' in ast.unparse(n.test)
-                             and call in [c for s in n.body for c in ast.walk(s)])
-            if guarded and not within(call, parents, locked):
-                failed.append(f'setup_account.py:{call.lineno} applies run() outside `with lock(...)`')
+    run_calls = [c for c in calls if c.func.id == 'run' and not c.args]
+    preview_only = lambda call: lambda n: (isinstance(n, ast.If) and ast.unparse(n.test) == 'args.apply'
+                                           and any(call in list(ast.walk(s)) for s in n.orelse))
+    if not any(within(c, parents, locked) for c in run_calls):
+        failed.append('setup_account.py has no run() call inside `with lock(...)`')
+    for call in run_calls:
+        if not within(call, parents, locked) and not within(call, parents, preview_only(call)):
+            failed.append(f'setup_account.py:{call.lineno} calls run() outside `with lock(...)` and outside the preview branch')
     return failed
 
 
@@ -174,6 +176,8 @@ def check_sync():
     reasons += assumptions()
     commits = subprocess.run(['git', 'log', '--oneline', f"{record['sync_commit']}..HEAD", '--', *record['covered'],
                               'scripts/setup_account.py'], cwd=ROOT, capture_output=True, text=True)
+    if commits.returncode != 0:
+        reasons.append(f"sync_commit {record['sync_commit']} is not a reachable commit")
     return {'status': 'in-sync' if not reasons else 'out-of-sync', 'sync_commit': record['sync_commit'],
             'reasons': reasons, 'commits_since_sync': commits.stdout.splitlines() if commits.returncode == 0 else ['git log failed']}
 
@@ -283,7 +287,15 @@ def full(evidence):
         'base': {k: conformance.get('base', {}).get(k) for k in ('cases', 'by_family', 'violations')},
         'mutations': [{k: m[k] for k in ('id', 'expect', 'caught', 'violations')} for m in conformance.get('mutations', [])]}
     if not conformance.get('passed') or proc.returncode != 0:
-        fail('conformance: ' + json.dumps(conformance.get('base', {}).get('violations') or conformance.get('error')))
+        missed = [m['id'] for m in conformance.get('mutations', []) if not m.get('caught')]
+        fail('conformance: ' + json.dumps({'violations': conformance.get('base', {}).get('violations'),
+                                           'missed_mutations': missed, 'error': conformance.get('error')}))
+    expected_cases = expectations.get('conformance', {})
+    base_cases = conformance.get('base', {})
+    for key in ('cases', 'by_family'):
+        if expected_cases.get(key) is not None and base_cases.get(key) != expected_cases[key]:
+            fail(f'conformance {key} {base_cases.get(key)} differs from the recorded {expected_cases[key]}; '
+                 'a fault point may have stopped being counted')
 
     sync = check_sync()
     report['checks']['sync'] = sync

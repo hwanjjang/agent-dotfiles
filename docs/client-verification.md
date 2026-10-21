@@ -310,7 +310,10 @@ With every `os.open` injected, the harness runs 813 cases, including 27 real exi
 about 39 s, and the full run takes about 49 s. No property is violated. In 18 cases a
 rollback I/O error surfaces as `Unsafe parent for <path>` after the journal is marked
 `rolling-back`; each retry restored every path. The runner now also requires TLC exit 0
-for the base model and a non-zero exit (12) for every expected violation. During qualification, the step trace exposed a modeling error, not a code
+for the base model and a non-zero exit (12) for every expected violation. A second review (Gemini) tightened
+the lock assumption check and required every fault-free rollback to finish with the journal
+`rolled-back` (`RecoveryCompletes`); a code copy without that final write fails it, and
+expected case counts are now recorded. During qualification, the step trace exposed a modeling error, not a code
 bug: rollback walks the journal's sorted keys, unlike the undo. A scratch break in a
 disposable worktree, journaling `rolled-back` after a failed undo, was reported out of
 sync and produced 57 harness violations without a model change (603 with the broadened

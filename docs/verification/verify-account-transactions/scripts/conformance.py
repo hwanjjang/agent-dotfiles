@@ -26,7 +26,8 @@ import tempfile
 import time
 from pathlib import Path
 
-PROPERTIES = ('ChangesAreJournaled', 'NoSpuriousRefusal', 'NoClobber', 'RefusalChangesNothing', 'LockRefusal', 'KillFidelity')
+PROPERTIES = ('ChangesAreJournaled', 'RecoveryCompletes', 'NoSpuriousRefusal', 'NoClobber', 'RefusalChangesNothing',
+              'LockRefusal', 'KillFidelity')
 SKILL, SETTINGS = '.agents/skills/tdd', '.claude/settings.json'
 ORIGINALS = {}
 
@@ -196,6 +197,8 @@ class Case:
                     # An I/O error that _below reports as 'Unsafe parent': an error, not a refusal.
                     self.wrapped_io += 1
                     outcome = 'error'
+                    if not fault:
+                        self.fail('RecoveryCompletes', f'{label}: I/O error without an injected fault ({error})')
                     self.check_journaled(f'after {label}')
                     return outcome, f
                 outcome = 'refused'
@@ -204,8 +207,10 @@ class Case:
                     self.fail('RefusalChangesNothing', f'{label}: refused ({error}) after changing {[n for n in self.names if end[n] != start[n]] or "the journal"}')
                 if not edits and any(start[n] != self.before[n] for n in self.names):
                     self.fail('NoSpuriousRefusal', f'{label}: refused ({error}) with no later edit while {start_status}')
-            except OSError:
+            except OSError as error:
                 outcome = 'error'
+                if not fault:
+                    self.fail('RecoveryCompletes', f'{label}: OSError without an injected fault ({error})')
         for name in edits:
             if self.obs(name) != start[name] and not (name == SKILL and start[name] is None and gap_allowed):
                 self.fail('NoClobber', f'{label}: changed {name} that held a later edit')
@@ -213,6 +218,8 @@ class Case:
             wrong = [n for n in self.names if n not in self.edited and self.obs(n) != self.before[n]]
             if wrong:
                 self.fail('ChangesAreJournaled', f'{label}: rollback finished with {wrong} not restored')
+            if self.transaction()[1] != 'rolled-back':
+                self.fail('RecoveryCompletes', f'{label}: rollback returned with the journal {self.transaction()[1]}')
         self.check_journaled(f'after {label}')
         return outcome, f
 
@@ -237,6 +244,8 @@ def run_case(storage, spec):
             trail.append(outcome)
             if outcome in ('rolled-back', 'refused', 'no-journal'):
                 break
+        if trail[-1] not in ('rolled-back', 'refused', 'no-journal'):
+            case.fail('RecoveryCompletes', f'fault-free rollback ended {trail[-1]}')
         return {'case': spec, 'trail': trail, 'apply_steps': apply_faults.count,
                 'fired': {'apply': sorted(apply_faults.fired), 'rollback': sorted(rb_faults.fired) if rb_faults else []},
                 'rollback_steps': rb_faults.count if rb_faults else None,
@@ -338,6 +347,8 @@ def real_exits(storage):
                 exited.fail('KillFidelity', f'step {k}: a real exit left {left}, the simulation {expected}')
             exited.check_journaled('after a real exit')
             outcome, _ = exited.rollback({}, 'rollback after a real exit')
+            if outcome not in ('rolled-back', 'refused', 'no-journal'):
+                exited.fail('RecoveryCompletes', f'rollback after a real exit ended {outcome}')
             results.append({'case': {'apply': {'exit_at': k}}, 'trail': ['exited', outcome], 'violations': exited.violations})
     return results
 
