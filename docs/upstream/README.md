@@ -135,7 +135,8 @@ they agree.
   one-page explainer pages whose charts use unmodified Pele 1.3.0 chunks (MIT). The
   package no longer ships its own tests.
 - **Local changes.** None to upstream text or code. Trailing whitespace was normalized
-  in 17 text files for repository diff checks; provenance.json lists them.
+  in 17 text files for repository diff checks. provenance.json lists the normalization and
+  the digest of every vendored file, and the test fails on an edit that is not recorded.
 - **Behavior to know.** `finalize` and `deliver` make a bounded request (1 second,
   cached for 24 hours) to the project's update manifest and report it in the receipt;
   `ARCHIFY_UPDATE_CHECK_DISABLED=1` removes the check. Since 3.2 the skill lets the agent
@@ -157,8 +158,8 @@ they agree.
   deliver, check and browser-check gates for the architecture example and for the
   explainer example with `--browser-check`. Not exercised: Windows, macOS, a model-driven
   session and perceptual review of generated pages.
-- **Rollback.** Restore the 3.0.1 package and its provenance record from Git history
-  (`d5a1333`).
+- **Rollback.** Restore `skills/archify` and the pins from the repository commit before this
+  update; its provenance record names upstream `d5a1333`.
 
 ## Source-package limitations
 

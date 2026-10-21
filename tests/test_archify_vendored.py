@@ -1,6 +1,8 @@
 """The vendored Archify package: its recorded identity agrees across the repository, and every
 documented diagram type has a bundled example that its own validator accepts."""
+import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -9,7 +11,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / 'skills/archify'
-TYPES = ('architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle', 'erd', 'class', 'tree', 'timeline', 'waterfall')
+TYPES = ('architecture', 'workflow', 'sequence', 'dataflow', 'lifecycle', 'erd', 'class', 'tree', 'timeline', 'waterfall', 'explainer')
 
 
 class VendoredArchifyTests(unittest.TestCase):
@@ -31,8 +33,19 @@ class VendoredArchifyTests(unittest.TestCase):
         catalog = (ROOT / 'docs/map/catalog.json').read_text()
         self.assertIn(f"tt-a1i/archify/blob/{provenance['revision']}/archify/SKILL.md", catalog)
         self.assertEqual(provenance['adaptations'], [])
+        self.assertIn(provenance['revision'], (ROOT / 'docs/upstream/README.md').read_text())
+        self.assertIn(provenance['release'], (ROOT / 'skills/README.md').read_text())
 
-    @unittest.skipUnless(shutil.which('node'), 'Node.js is required for the bundled renderer')
+    def test_vendored_files_match_the_recorded_digests(self):
+        recorded = json.loads((SKILL / 'provenance.json').read_text())['files']
+        actual = {str(path.relative_to(SKILL)): hashlib.sha256(path.read_bytes()).hexdigest()
+                  for path in sorted(SKILL.rglob('*')) if path.is_file() and path != SKILL / 'provenance.json'}
+        self.assertEqual(sorted(actual), sorted(recorded), 'the vendored file set differs from the record')
+        changed = sorted(name for name in actual if actual[name] != recorded[name])
+        self.assertEqual(changed, [], 'record every edit of vendored files in provenance.json')
+
+    # A missing Node.js skips this locally but fails in CI, so the required check cannot pass unexercised.
+    @unittest.skipUnless(shutil.which('node') or os.environ.get('CI'), 'Node.js is required for the bundled renderer')
     def test_bundled_examples_validate_for_every_documented_type(self):
         for kind in TYPES:
             examples = sorted((SKILL / 'examples').glob(f'*.{kind}.json'))
@@ -40,7 +53,8 @@ class VendoredArchifyTests(unittest.TestCase):
                 self.assertTrue(examples, f'no bundled {kind} example')
                 for example in examples:
                     result = subprocess.run(['node', str(SKILL / 'bin/archify.mjs'), 'validate', kind, str(example), '--json'],
-                                            cwd=ROOT, capture_output=True, text=True, timeout=120)
+                                            cwd=ROOT, capture_output=True, text=True, timeout=60,
+                                            env=dict(os.environ, ARCHIFY_UPDATE_CHECK_DISABLED='1'))
                     self.assertEqual(result.returncode, 0, f'{example.name}: {result.stdout[-400:]}{result.stderr[-400:]}')
                     self.assertTrue(json.loads(result.stdout)['ok'], example.name)
 
