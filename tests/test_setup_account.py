@@ -453,6 +453,367 @@ class AccountSetupTests(unittest.TestCase):
         groups=json.loads((self.home/'.codex/hooks.json').read_text())['hooks']['Stop']
         self.assertTrue(any(g['hooks'][0]['command']=='personal-check' for g in groups))
 
+    # ---- accounts managed by earlier tools: shared instruction links and exact retirement ----
+
+    def shared_instructions(self, personal='Personal rule.\n'):
+        """One real instruction file; both client entries are links to it, as left by earlier managers."""
+        target = self.home / '.agents/AGENTS.md'
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(personal)
+        for name in ('.claude/CLAUDE.md', '.codex/AGENTS.md'):
+            link = self.home / name
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to('../.agents/AGENTS.md')
+        return target
+
+    def block(self, owner, line):
+        return f'<!-- {owner}:begin -->\n{line}\n<!-- {owner}:end -->\n'
+
+    def receipt_file(self, name, instructions=None, hooks=None):
+        path = self.root / name
+        path.write_text(json.dumps({'version': 1, 'home': str(self.home), 'instructions': instructions or {},
+                                    'hooks': hooks or {}, 'tools': {'ignored': {}}, 'links': {}}))
+        return path
+
+    def test_symlinked_instruction_files_are_edited_through_one_target(self):
+        target = self.shared_instructions()
+        self.apply()
+        for name in ('.claude/CLAUDE.md', '.codex/AGENTS.md'):
+            self.assertEqual(os.readlink(self.home / name), '../.agents/AGENTS.md')
+        text = target.read_text()
+        self.assertTrue(text.startswith('Personal rule.\n'))
+        self.assertEqual(text.count(setup.BEGIN), 1)
+        self.assertIn('Read and follow', text)
+        self.assertNotIn('@' + str(self.home), text)
+        receipt = setup.load_receipt(self.home)
+        self.assertEqual(set(receipt['instructions']), {'.agents/AGENTS.md'})
+        self.assertEqual(receipt['instruction_links'],
+                         {'.claude/CLAUDE.md': '.agents/AGENTS.md', '.codex/AGENTS.md': '.agents/AGENTS.md'})
+        self.assertEqual(setup.status(self.home)['drift'], [])
+        self.assertIsNone(self.apply(action='update'))
+        self.apply(action='uninstall')
+        self.assertEqual(target.read_text(), 'Personal rule.\n')
+        for name in ('.claude/CLAUDE.md', '.codex/AGENTS.md'):
+            self.assertTrue((self.home / name).is_symlink())
+
+    def test_rollback_restores_a_shared_instruction_file(self):
+        target = self.shared_instructions()
+        ident = self.apply()
+        with storage.lock(self.home):
+            storage.rollback(self.home, ident)
+        self.assertEqual(target.read_text(), 'Personal rule.\n')
+        self.assertTrue((self.home / '.claude/CLAUDE.md').is_symlink())
+        self.assertFalse((self.home / storage.RECEIPT).exists())
+
+    def test_retargeted_instruction_link_is_reported_as_drift(self):
+        self.shared_instructions()
+        self.apply()
+        link = self.home / '.codex/AGENTS.md'
+        link.unlink()
+        link.write_text('A separate regular file.\n')
+        self.assertEqual(setup.status(self.home)['drift'], ['.codex/AGENTS.md'])
+
+    def test_claude_only_link_keeps_the_import_form(self):
+        with tempfile.TemporaryDirectory(prefix='accountinstall') as plain:
+            self.home = Path(plain).resolve()
+            shared = self.home / '.agents/CLAUDE-shared.md'
+            shared.parent.mkdir(parents=True)
+            shared.write_text('Personal rule.\n')
+            link = self.home / '.claude/CLAUDE.md'
+            link.parent.mkdir(parents=True)
+            link.symlink_to('../.agents/CLAUDE-shared.md')
+            self.apply()
+            self.assertIn('@' + str(self.home / setup.BUNDLE / 'account/instructions.md'), shared.read_text())
+            self.assertIn('Read and follow', (self.home / '.codex/AGENTS.md').read_text())
+
+    def test_instruction_links_that_are_not_one_account_markdown_file_are_refused(self):
+        outside = self.root / 'outside.md'
+        outside.write_text('Not ours.\n')
+        agents = self.home / '.agents'
+        agents.mkdir()
+        (agents / 'real.md').write_text('Real.\n')
+        (agents / 'chain.md').symlink_to('real.md')
+        (agents / 'folder.md').mkdir()
+        (agents / 'notes.txt').write_text('Text.\n')
+        (agents / 'skills/x').mkdir(parents=True)
+        (agents / 'skills/x/NOTES.md').write_text('Skill notes.\n')
+        cases = {
+            'leaves the account': (str(outside), 'leaves the account'),
+            'is a chain': ('../.agents/chain.md', 'one regular file'),
+            'is missing': ('../.agents/missing.md', 'one regular file'),
+            'is a directory': ('../.agents/folder.md', 'one regular file'),
+            'is not Markdown': ('../.agents/notes.txt', 'Markdown'),
+            'is inside a skill': ('../.agents/skills/x/NOTES.md', 'protected'),
+        }
+        entry = self.home / '.codex/AGENTS.md'
+        entry.parent.mkdir()
+        before = storage.observed(self.home)
+        for label, (target, message) in cases.items():
+            with self.subTest(label):
+                entry.symlink_to(target)
+                try:
+                    with self.assertRaisesRegex(ValueError, message):
+                        self.prepare()
+                finally:
+                    entry.unlink()
+                self.assertEqual(storage.observed(self.home), before)
+        self.assertFalse((self.home / setup.BUNDLE).exists())
+
+    def test_managed_target_accepts_an_instruction_file_only_behind_a_current_link(self):
+        self.assertFalse(storage.managed_target('.agents/AGENTS.md', self.home))
+        self.shared_instructions()
+        self.assertTrue(storage.managed_target('.agents/AGENTS.md', self.home))
+        self.assertFalse(storage.managed_target('.agents/other.md', self.home))
+
+    def test_removing_the_only_block_keeps_the_file_that_links_name(self):
+        target = self.shared_instructions('')
+        self.apply()
+        self.apply(action='uninstall')
+        self.assertEqual(target.read_text(), '')
+        self.assertEqual(os.readlink(self.home / '.codex/AGENTS.md'), '../.agents/AGENTS.md')
+        self.assertTrue((self.home / '.codex/AGENTS.md').exists())
+
+    def test_one_client_entry_may_link_to_the_other(self):
+        real = self.home / '.claude/CLAUDE.md'
+        real.parent.mkdir(parents=True)
+        real.write_text('Personal rule.\n')
+        (self.home / '.codex').mkdir()
+        (self.home / '.codex/AGENTS.md').symlink_to('../.claude/CLAUDE.md')
+        self.apply()
+        receipt = setup.load_receipt(self.home)
+        self.assertEqual(set(receipt['instructions']), {'.claude/CLAUDE.md'})
+        self.assertEqual(receipt['instruction_links'], {'.codex/AGENTS.md': '.claude/CLAUDE.md'})
+        self.assertIn('Read and follow', real.read_text())
+        self.apply(action='uninstall')
+        self.assertEqual(real.read_text(), 'Personal rule.\n')
+        self.assertTrue((self.home / '.codex/AGENTS.md').is_symlink())
+
+    def test_receipt_cannot_claim_files_outside_instruction_links(self):
+        self.shared_instructions()
+        self.apply()
+        path = self.home / storage.RECEIPT
+        receipt = json.loads(path.read_text())
+        forged = {
+            'link to a hook file': dict(receipt, instruction_links={'.codex/AGENTS.md': '.codex/hooks.json'}),
+            'link into a skill': dict(receipt, instruction_links={'.codex/AGENTS.md': '.agents/skills/x/NOTES.md'}),
+            'file without a link': dict(receipt, instruction_links={}),
+        }
+        for label, value in forged.items():
+            with self.subTest(label):
+                path.write_text(json.dumps(value))
+                with self.assertRaisesRegex(ValueError, 'instruction_links|unsupported configuration'):
+                    setup.load_receipt(self.home)
+
+    def test_absolute_instruction_link_inside_the_account_is_followed(self):
+        target = self.home / '.agents/AGENTS.md'
+        target.parent.mkdir()
+        target.write_text('Personal rule.\n')
+        (self.home / '.codex').mkdir()
+        (self.home / '.codex/AGENTS.md').symlink_to(target)
+        self.apply()
+        self.assertEqual(setup.load_receipt(self.home)['instruction_links'], {'.codex/AGENTS.md': '.agents/AGENTS.md'})
+        self.assertEqual(target.read_text().count(setup.BEGIN), 1)
+        self.assertEqual((self.home / '.codex/AGENTS.md').readlink(), target)
+
+    def test_update_and_uninstall_stop_when_an_installed_link_changed(self):
+        self.shared_instructions()
+        self.apply()
+        other = self.home / '.agents/OTHER.md'
+        other.write_text('Elsewhere.\n')
+        link = self.home / '.codex/AGENTS.md'
+        link.unlink()
+        link.symlink_to('../.agents/OTHER.md')
+        for action in ('update', 'uninstall'):
+            with self.subTest(action), self.assertRaisesRegex(ValueError, r'Instruction link changed since installation: \.codex/AGENTS\.md'):
+                self.prepare(action=action)
+        self.assertEqual(other.read_text(), 'Elsewhere.\n')
+
+    def test_rollback_stops_when_the_link_no_longer_names_the_file(self):
+        self.shared_instructions()
+        ident = self.apply()
+        other = self.home / '.agents/OTHER.md'
+        other.write_text('Elsewhere.\n')
+        for name in ('.claude/CLAUDE.md', '.codex/AGENTS.md'):
+            (self.home / name).unlink()
+            (self.home / name).symlink_to('../.agents/OTHER.md')
+        with self.assertRaisesRegex(ValueError, 'Unsupported rollback destination'):
+            storage.rollback_plan(self.home, ident)
+        self.assertEqual(other.read_text(), 'Elsewhere.\n')
+
+    def test_legacy_receipts_repeat_and_name_the_linked_instruction_file(self):
+        first = self.block('flyingcorp', 'Read and follow "/old/flyingcorp.md".')
+        second = self.block('sdlc-installer', 'Read and follow "/old/sdlc.md".')
+        target = self.shared_instructions('Personal rule.\n\n' + second + '\n' + first)
+        one = self.receipt_file('one.json', instructions={'.agents/AGENTS.md': first})
+        two = self.receipt_file('two.json', instructions={'.codex/AGENTS.md': second})
+        # The refusal names the file and the remaining owner, not the block text.
+        with self.assertRaisesRegex(ValueError, r'ownership transfer \(\.agents/AGENTS\.md: sdlc-installer\)') as caught:
+            self.prepare(legacy=[one])
+        self.assertNotIn('Read and follow', str(caught.exception))
+        plan, changes = self.prepare(legacy=[one, two])
+        self.assertIn('legacy instruction/hook ownership transfer', plan['conflicts'])
+        with storage.lock(self.home):
+            storage.transact(self.home, plan, changes)
+        text = target.read_text()
+        self.assertTrue(text.startswith('Personal rule.\n'))
+        self.assertNotIn(':begin', text.replace(setup.BEGIN, ''))
+        self.assertEqual(text.count(setup.BEGIN), 1)
+
+    def test_legacy_instruction_value_may_list_blocks(self):
+        first = self.block('flyingcorp', 'Old one.')
+        second = self.block('sdlc-installer', 'Old two.')
+        target = self.shared_instructions('Personal rule.\n' + second + first)
+        receipt = self.receipt_file('both.json', instructions={'.agents/AGENTS.md': [first, second]})
+        plan, changes = self.prepare(legacy=[receipt])
+        with storage.lock(self.home):
+            storage.transact(self.home, plan, changes)
+        self.assertNotIn('Old', target.read_text())
+
+    def test_legacy_receipts_stay_exact(self):
+        block = self.block('flyingcorp', 'Old one.')
+        target = self.shared_instructions('Personal rule.\n' + block)
+        cases = {
+            'Unsupported legacy configuration paths': self.receipt_file('path.json', instructions={'.agents/OTHER.md': block}),
+            'exact marked block': self.receipt_file('shape.json', instructions={'.agents/AGENTS.md': 'Old one.\n'}),
+            'own block': self.receipt_file('own.json', instructions={
+                '.agents/AGENTS.md': self.block('agent-dotfiles', 'Ours.')}),
+            'changed': self.receipt_file('changed.json', instructions={'.agents/AGENTS.md': self.block('flyingcorp', 'Different.')}),
+        }
+        for message, receipt in cases.items():
+            with self.subTest(message), self.assertRaisesRegex(ValueError, message):
+                self.prepare(legacy=[receipt])
+        foreign = self.root / 'foreign.json'
+        foreign.write_text(json.dumps({'version': 1, 'home': str(self.root / 'other account'), 'instructions': {}, 'hooks': {}}))
+        with self.assertRaisesRegex(ValueError, 'another account'):
+            self.prepare(legacy=[foreign])
+        self.assertEqual(target.read_text(), 'Personal rule.\n' + block)
+
+    def test_previous_account_dispatcher_is_not_layered_silently(self):
+        group = {'hooks': [{'type': 'command', 'command': f'python3 {self.home}/.agents/bin/flyingcorp-hook.py claude session-start'}]}
+        self.config('.claude/settings.json', {'hooks': {'SessionStart': [group]}})
+        with self.assertRaisesRegex(ValueError, r'\.claude/settings\.json.*SessionStart'):
+            self.prepare()
+        receipt = self.receipt_file('hook.json', hooks={'.claude/settings.json': {'SessionStart': [group]}})
+        plan, changes = self.prepare(legacy=[receipt])
+        with storage.lock(self.home):
+            storage.transact(self.home, plan, changes)
+        groups = json.loads((self.home / '.claude/settings.json').read_text())['hooks']['SessionStart']
+        self.assertNotIn(group, groups)
+        self.assertTrue(groups)
+
+    def snapshot(self):
+        """Every account path outside the installer's own state, as comparable data."""
+        found = {}
+        for root, dirs, files in os.walk(self.home):
+            for name in sorted(dirs + files):
+                item = Path(root) / name
+                key = str(item.relative_to(self.home))
+                if key.startswith('.agents/agent-dotfiles'):
+                    continue
+                if item.is_symlink():
+                    found[key] = ('link', os.readlink(item))
+                elif item.is_dir():
+                    continue  # Empty directories left behind by an install are not state.
+                else:
+                    found[key] = ('file', item.read_bytes(), item.stat().st_mode & 0o777)
+        return found
+
+    def build_previous_account(self):
+        """Replica of an account managed by earlier tools, with synthetic content only."""
+        events = ['SessionStart', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'PermissionRequest', 'PreCompact', 'Stop']
+        home = self.home
+        fly = self.block('flyingcorp', f'Read and follow "{home}/.agents/instructions/flyingcorp.md".')
+        sdlc = self.block('sdlc-installer', f'Read and follow "{home}/.agents/policies/sdlc.md" at task intake.')
+        self.shared_instructions('Personal rule.\n\n' + sdlc + '\n' + fly)
+        for name, text in {'.agents/bin/flyingcorp-hook.py': '# old dispatcher\n',
+                           '.agents/instructions/flyingcorp.md': 'Old shared rules.\n',
+                           '.agents/policies/sdlc.md': 'Old SDLC policy.\n'}.items():
+            (home / name).parent.mkdir(parents=True, exist_ok=True)
+            (home / name).write_text(text)
+        old_codex = {e: {'matcher': '*', 'hooks': [{'type': 'command', 'command': f'python3 {home}/.agents/bin/flyingcorp-hook.py codex {e}'}]}
+                     for e in events}
+        adapter = {e: {'hooks': [{'type': 'command', 'command': f'python3 {home}/.agents/adapters/planning-with-files/codex/hooks/run_sh.py {e}'}]}
+                   for e in events}
+        graft = {'hooks': [{'type': 'command', 'command': f'node "{home}/.codex/hooks/graft/graft-hooks.cjs" prompt'}]}
+        old_claude = {'matcher': 'startup', 'hooks': [{'type': 'command', 'command': f'python3 {home}/.agents/bin/flyingcorp-hook.py claude session-start'}]}
+        personal = {'hooks': [{'type': 'command', 'command': 'personal-check'}]}
+        self.config('.codex/hooks.json', {'hooks': {e: [adapter[e], old_codex[e], graft, personal] for e in events}})
+        self.config('.claude/settings.json', {'permissions': {'deny': ['Bash(rm *)']},
+                                              'hooks': {'SessionStart': [graft, old_claude], 'Stop': [personal]}})
+        for skill in ('planning-with-files', 'tdd'):
+            old = home / '.agents/skills' / skill
+            old.mkdir(parents=True)
+            (old / 'SKILL.md').write_text(f'old {skill}\n')
+            for client in ('.claude', '.codex'):
+                alias = home / client / 'skills' / skill
+                alias.parent.mkdir(parents=True, exist_ok=True)
+                alias.symlink_to(old)
+        return {
+            'fly': self.receipt_file('flyingcorp-install.json', instructions={'.agents/AGENTS.md': fly},
+                                     hooks={'.claude/settings.json': {'SessionStart': [old_claude]},
+                                            '.codex/hooks.json': {e: [old_codex[e]] for e in events}}),
+            'sdlc': self.receipt_file('retire-sdlc.json', instructions={'.agents/AGENTS.md': sdlc}),
+            'adapter': self.receipt_file('retire-adapter.json', hooks={'.codex/hooks.json': {e: [adapter[e]] for e in events}}),
+        }
+
+    def test_takeover_of_an_account_managed_by_earlier_tools_round_trips(self):
+        receipts = self.build_previous_account()
+        original = self.snapshot()
+        arguments = ['--home', str(self.home), '--repo', str(self.repo)]
+        for receipt in receipts.values():
+            arguments += ['--legacy-receipt', str(receipt)]
+        preview = io.StringIO()
+        with contextlib.redirect_stdout(preview):
+            self.assertEqual(setup.main(['install'] + arguments), 0)
+        plan = json.loads(preview.getvalue())
+        self.assertEqual(self.snapshot(), original)
+        self.assertIn('legacy instruction/hook ownership transfer', plan['conflicts'])
+        for name in ('.agents/skills/tdd', '.agents/skills/planning-with-files', '.claude/skills/tdd',
+                     '.codex/skills/planning-with-files'):
+            self.assertIn(name, plan['conflicts'])
+        self.assertEqual(plan['instruction_links'],
+                         {'.claude/CLAUDE.md': '.agents/AGENTS.md', '.codex/AGENTS.md': '.agents/AGENTS.md'})
+        saved = self.root / 'approved-plan.json'
+        saved.write_text(preview.getvalue())
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(setup.main(['install', '--apply'] + arguments), 2)
+        applied = io.StringIO()
+        with contextlib.redirect_stdout(applied):
+            self.assertEqual(setup.main(['install', '--apply', '--approve-plan', str(saved)] + arguments), 0)
+        ident = json.loads(applied.getvalue())['transaction']
+
+        text = (self.home / '.agents/AGENTS.md').read_text()
+        self.assertTrue(text.startswith('Personal rule.\n'))
+        self.assertNotIn('flyingcorp', text)
+        self.assertNotIn('sdlc-installer', text)
+        self.assertEqual(text.count(setup.BEGIN), 1)
+        for name in ('.claude/CLAUDE.md', '.codex/AGENTS.md'):
+            self.assertEqual(os.readlink(self.home / name), '../.agents/AGENTS.md')
+        codex = json.loads((self.home / '.codex/hooks.json').read_text())['hooks']
+        for groups in codex.values():
+            commands = json.dumps(groups)
+            self.assertNotIn('flyingcorp-hook', commands)
+            self.assertNotIn('adapters/planning-with-files', commands)
+            self.assertIn('graft-hooks.cjs', commands)
+            self.assertIn('personal-check', commands)
+            self.assertIn('planning-hook.py', commands)
+        claude = json.loads((self.home / '.claude/settings.json').read_text())
+        self.assertEqual(claude['permissions'], {'deny': ['Bash(rm *)']})
+        self.assertNotIn('flyingcorp-hook', json.dumps(claude))
+        self.assertIn('personal-check', json.dumps(claude['hooks']['Stop']))
+        for client in ('agents', 'claude'):
+            self.assertTrue((self.home / f'.{client}/skills/tdd').is_symlink())
+        self.assertEqual(setup.status(self.home)['drift'], [])
+        import account_doctor
+        report = {row['id']: row['status'] for row in account_doctor.diagnose(self.home)['checks']}
+        for ident_check in ('installation', 'owned-content', 'instructions.agents', 'hooks.codex', 'hooks.claude',
+                            'codex.skill-paths', 'claude.skill-paths'):
+            self.assertEqual(report[ident_check], 'pass', ident_check)
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(setup.main(['rollback', '--apply', '--transaction', ident, '--home', str(self.home)]), 0)
+        self.assertEqual(self.snapshot(), original)
+
     def test_second_host_has_own_paths_and_no_host_secrets_in_source(self):
         self.apply();first=setup.load_receipt(self.home)
         self.home=self.root/'different host';self.home.mkdir();self.apply();second=setup.load_receipt(self.home)

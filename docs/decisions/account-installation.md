@@ -58,6 +58,12 @@ is provisional with respect to community validation and rests on scope fit and t
   retain the original privately for retryable rollback without partial copying.
   This is not a multi-file atomic filesystem transaction; close clients during apply.
   It does not lock other editors, supervise agents or recover arbitrary concurrent edits.
+- Take over an earlier manager only through exact receipts. An instruction entry that is
+  an in-account link to one regular Markdown file is edited through that file and keeps
+  its link, as the earlier manager's own handling did. `--legacy-receipt` may repeat and
+  retires only fragments that match exactly once; another owner's planning route is refused
+  with its file and event. This is not a universal legacy uninstaller, and leftover files
+  of the old manager are never deleted.
 - Codex/Claude get shared skills, account pointers and selected planning hooks.
   Hermes opt-in requires an executable and supplies skills/SOUL guidance only.
   No automatic Hermes plugin enablement or unverified lifecycle adapter is introduced.

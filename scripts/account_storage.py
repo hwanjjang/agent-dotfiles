@@ -15,16 +15,22 @@ RECEIPT = STATE_DIR + '/installed.json'
 PRESERVED_SKILLS = {'paseo', 'paseo-advisor', 'paseo-committee', 'paseo-handoff', 'paseo-help', 'paseo-plugin'}
 
 
-def managed_target(name):
-    """Finite config destinations plus the selected payload namespaces."""
+INSTRUCTION_ENTRIES = ('.codex/AGENTS.md', '.claude/CLAUDE.md', '.hermes/SOUL.md')
+
+
+def managed_target(name, home=None):
+    """Finite config destinations plus the selected payload namespaces.
+
+    An instruction file that a client entry links to is accepted only while that link exists.
+    """
     if re.fullmatch(r'\.(?:agents|codex|claude|hermes)/skills/[a-z0-9-]+', name):
         return Path(name).name not in PRESERVED_SKILLS
     return (name.startswith('.agents/agent-dotfiles/bundle/')
             or name.startswith('.codex/hooks/')
             or name in {RECEIPT, '.agents/bin/planning-hook.py', '.agents/bin/observation-hook.py',
-                        '.claude/hooks/planning-with-files-dispatch.sh', '.codex/AGENTS.md',
-                        '.claude/CLAUDE.md', '.hermes/SOUL.md', '.codex/hooks.json',
-                        '.claude/settings.json', '.codex/config.toml', '.claude.json'})
+                        '.claude/hooks/planning-with-files-dispatch.sh', '.codex/hooks.json',
+                        '.claude/settings.json', '.codex/config.toml', '.claude.json', *INSTRUCTION_ENTRIES}
+            or (home is not None and name in linked_instruction_files(home)))
 
 
 def require(ok, message):
@@ -70,6 +76,44 @@ def observed(path):
             tree[key] = ({'directory': True, 'mode': item.stat().st_mode & 0o777}
                          if item.is_dir() and not item.is_symlink() else observed(item))
     return {'tree': digest(encoded(tree)), 'mode': path.stat().st_mode & 0o777}
+
+
+def instruction_path_allowed(rel):
+    """A Markdown file outside the installer's payload, state, skills and hook trees."""
+    parts = Path(rel).parts
+    return (rel.endswith('.md') and 'skills' not in parts
+            and not rel.startswith(('.agents/agent-dotfiles/', '.codex/hooks/', '.claude/hooks/')))
+
+
+def instruction_storage(home, name):
+    """Account-relative file holding an instruction entry: itself, or the one file its link names.
+
+    Only one in-account link level to a regular Markdown file is followed, so an edit never leaves
+    the account, crosses another link or touches the installer's own payload.
+    """
+    path = safe(home, name)
+    if not path.is_symlink():
+        return name
+    target = Path(os.path.normpath(path.parent / os.readlink(path)))
+    require(target.is_relative_to(home) and target != home, 'Instruction link leaves the account')
+    rel = target.relative_to(home).as_posix()
+    stored = safe(home, rel)
+    require(stored.is_file() and not stored.is_symlink(), 'Instruction link must name one regular file in the account')
+    require(rel in INSTRUCTION_ENTRIES or rel.endswith('.md'), 'Instruction link must name a Markdown file')
+    require(rel in INSTRUCTION_ENTRIES or instruction_path_allowed(rel), 'Instruction link names a protected path')
+    return rel
+
+
+def linked_instruction_files(home):
+    """Files that an existing, valid instruction link currently names."""
+    found = set()
+    for name in INSTRUCTION_ENTRIES:
+        try:
+            if safe(home, name).is_symlink():
+                found.add(instruction_storage(home, name))
+        except ValueError:
+            continue
+    return found
 
 
 def read(path):
@@ -176,7 +220,7 @@ def restore(path, entry, saved, expected):
 
 
 def transact(home, plan, changes):
-    require(all(managed_target(name) for name in changes), 'Unsupported transaction destination')
+    require(all(managed_target(name, home) for name in changes), 'Unsupported transaction destination')
     for name, expected in plan['before'].items():
         require(observed(safe(home, name)) == expected, f'Account changed since preview: {name}')
     if not changes:
@@ -231,7 +275,7 @@ def rollback_plan(home, ident):
     require(journal.get('version') == 1 and journal.get('home') == str(home)
             and journal.get('status') in ('applied', 'pending', 'recovery-required', 'rolling-back'), 'Transaction cannot be rolled back')
     for name, entry in journal['originals'].items():
-        require(managed_target(name), 'Unsupported rollback destination')
+        require(managed_target(name, home), 'Unsupported rollback destination')
         path = safe(home, name)
         require(entry['saved'].isdigit(), 'Invalid backup reference')
         saved = folder / entry['saved']

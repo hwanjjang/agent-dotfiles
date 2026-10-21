@@ -2444,14 +2444,16 @@
       "group": "start",
       "status": "available",
       "source": "account/README.md",
-      "summary": "Install, update, remove, recover and diagnose a committed account bundle on another POSIX host.",
+      "summary": "Install, update, remove, recover and diagnose a committed account bundle on another POSIX host, or take over an account managed by earlier tools.",
       "when": [
-        "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts."
+        "Setting up another host, updating the shared bundle, removing it or reviewing ownership conflicts.",
+        "Replacing an earlier account manager that left receipts, shared instruction links or old hook groups."
       ],
-      "usage": "Preview installation with sh scripts/setup-account.sh install; run doctor after setup. Follow account/README.md for native and real-model verification.",
+      "usage": "Preview installation with sh scripts/setup-account.sh install; run doctor after setup. For an account with an earlier manager, follow the takeover section: add each old receipt with --legacy-receipt, save the plan and apply that exact plan. Follow account/README.md for native and real-model verification.",
       "behavior": [
         "Resolve paths on the destination host; deliver Codex and Claude skills/policies/hooks, with installed Hermes opt-in.",
         "Keep receipts and private backups; preserve Paseo, authentication and unrelated settings. Require exact-plan approval for conflicting selected assets.",
+        "Edit a shared instruction file through its in-account links, keep the links, and retire only exact fragments named by repeatable legacy receipts; refuse unsafe links and unowned planning routes.",
         "Use doctor to separate offline ownership, native skill/hook readiness and explicitly selected real-model scenarios; Paseo checks are optional."
       ],
       "outputs": [
@@ -2465,6 +2467,7 @@
         "update",
         "uninstall",
         "rollback",
+        "takeover",
         "codex",
         "claude",
         "hermes",
