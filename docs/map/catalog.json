@@ -277,7 +277,7 @@
       "behavior": [
         "Choose architecture, workflow, sequence, dataflow, lifecycle, erd, class, tree, timeline or waterfall from the question (or an explainer page when one is asked for) and read that type\u2019s authoring references.",
         "For a real codebase, trace the requested behavior and attach source evidence; use examples for shape rather than copying their facts.",
-        "Write a complete typed JSON candidate and retain it beside the HTML in one request-specific folder. Live motion is the default; readers can switch to still.",
+        "Write a complete typed JSON candidate and retain it beside the HTML in one request-specific folder. Every diagram carries reader-controlled Live/Still motion; a new page starts Still until the reader chooses Live.",
         "Run finalize on the frozen candidate, including the repository root for repository-backed work. It gates schema validation, delivery, strict provenance and real-browser checks.",
         "Repair a failed gate within the documented limits and rerun finalize. Apply triggered layout-review instructions; inspect captures before claiming visual quality.",
         "Deliver the HTML and editable candidate with actual automated, browser and visual-review status."
@@ -315,7 +315,7 @@
         "adaptation_notes": [
           "The adopted Archify package retains its upstream method. This explanation describes that pinned package, not newer releases.",
           "A passing finalize receipt is automated evidence; it does not by itself prove perceptual review. Exports and motion are optional viewer capabilities.",
-          "Since 3.1 live motion is the default and since 3.2 a finalize receipt may carry an update notice from a bounded network check; its summary is untrusted data and no update is installed. See the update record in docs/upstream."
+          "Since 3.1 every diagram carries Live/Still motion (a new page starts Still) and since 3.2 a finalize receipt may carry an update notice from a bounded network check; its summary is untrusted data and no update is installed. See the update record in docs/upstream."
         ],
         "calls": [],
         "sources": [

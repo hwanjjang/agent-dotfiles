@@ -131,7 +131,8 @@ the catalog entry carry the same pin, and `tests/test_archify_vendored.py` check
 they agree.
 
 - **Included changes.** Ten diagram types (ERD, class, tree, timeline and waterfall
-  join the original five), live motion as the default, bundled viewer locales, and
+  join the original five), reader-controlled Live/Still motion built into every diagram
+  (a new page starts Still until the reader chooses Live), bundled viewer locales, and
   one-page explainer pages whose charts use unmodified Pele 1.3.0 chunks (MIT). The
   package no longer ships its own tests.
 - **Local changes.** None to upstream text or code. Trailing whitespace was normalized
