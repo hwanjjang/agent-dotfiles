@@ -1223,7 +1223,9 @@
           "maintain-verification-skill",
           "to-tickets",
           "make-pr-easy-to-review",
-          "to-spec"
+          "to-spec",
+          "create-formal-verification-skill",
+          "maintain-formal-verification-skill"
         ],
         "sources": [
           {
@@ -3429,6 +3431,16 @@
       "from": "sdlc",
       "to": "maintain-verification-skill",
       "label": "routes drift audits"
+    },
+    {
+      "from": "sdlc",
+      "to": "create-formal-verification-skill",
+      "label": "routes requested formal checks"
+    },
+    {
+      "from": "sdlc",
+      "to": "maintain-formal-verification-skill",
+      "label": "routes requested formal rechecks"
     },
     {
       "from": "create-verification-skill",

@@ -211,8 +211,8 @@
       "source_basis": "local-original",
       "local_skill_sha256": "938fb4712345ef44f15915f2ca7823de9e94555941eaf56d4bd8abaef83de4b4",
       "supporting_sources": {
-        "skills/sdlc/references/skill-routing.md": "f8143d7b8638e9412d89ad0fe7667dedd591f2cc9713cc0c61fb653389722d2d",
-        "skills/sdlc/references/verification.md": "93ab29ae7a67017ba4ebbeefe0db9817ee29c2e14eabb7c0f585f82dacf0c3d4",
+        "skills/sdlc/references/skill-routing.md": "fb5c4282616db9fd8fb50b2117c5330de60f537778e511c544397dc50b976a0f",
+        "skills/sdlc/references/verification.md": "6926dc2a6a34bb793c0b5af97b5cb96271c931c40e46831faca8ae7f545018ae",
         "skills/sdlc/references/optional-reviewers.md": "63a4caff73eccd60114f250ceae3c251d242a8fcfe3e708579e1d1b79b0e8361",
         "skills/sdlc/references/host-adapters.md": "87c32564dd2b4d7d2e99c799a983413f4fe4b71452b539fc7051dcb6406b9e9c",
         "skills/sdlc/references/intake.md": "cf8629f12f91b97aa01bf86b961c8d89f5647007f9b0b3ca65fd841305665904"

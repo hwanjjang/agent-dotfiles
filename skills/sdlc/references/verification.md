@@ -76,6 +76,12 @@ ordinary changes exercise affected paths plus integrated smoke. Test auto-repair
 must preserve expected behavior. A required skipped, unreachable or failed path
 remains a gap; never convert it into success by changing assertions.
 
+A target's formal verify skill is a project-local check too. When a change touches
+its covered code, follow it and record the property, tool version, bounds and outcome
+with the candidate evidence. Its pass covers only the stated model or bound and
+supplements tdd and integrated smoke; a missing tool is blocked/not-run. Report a
+stale sync commit as a gap; create or resync checks through the [stage routing](skill-routing.md).
+
 ## Test design and execution
 
 Use [the smoke template](../assets/smoke-scenario.md) before implementation. Map every AC to actual test layers and applicable scenario IDs. Cover success and relevant errors, authorization/boundaries, retries/duplicates, transitions and concurrency. State prerequisite environment/data, actions, observable success, explicit failure, executable command or reproducible procedure, required status, side effects and cleanup. Use approved facilities for external side effects.

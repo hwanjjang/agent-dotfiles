@@ -20,7 +20,8 @@
     "Preserved the 2026-10-20 account amendment making enforced reviewer isolation optional, with explicit read_only_required opt-in, honest evidence and unchanged other gates; retained newer repository intake.",
     "Review correction: classify malformed nonboolean read_only_required as probe-required, matching receipt validation without treating strings or integers as opt-in values.",
     "Preserve portable account runtime details: review-transfer destination/input-manifest/authority preflight and inspection of available action records; no personal launcher grant, new schema or isolation requirement.",
-    "Review correction: disambiguate the pre-merge endpoint restriction from entering a readiness handoff; merge, auto-merge and queue operations remain prohibited."
+    "Review correction: disambiguate the pre-merge endpoint restriction from entering a readiness handoff; merge, auto-merge and queue operations remain prohibited.",
+    "Routes explicitly requested formal verification setup and rechecks to the portable pstack formal pair; bounded results feed existing evidence gates without a new stage."
   ],
   "skill_dependencies": [
     "planning-with-files",
@@ -42,7 +43,9 @@
     "maintain-verification-skill",
     "to-tickets",
     "make-pr-easy-to-review",
-    "to-spec"
+    "to-spec",
+    "create-formal-verification-skill",
+    "maintain-formal-verification-skill"
   ],
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
