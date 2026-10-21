@@ -313,7 +313,13 @@ rollback I/O error surfaces as `Unsafe parent for <path>` after the journal is m
 for the base model and a non-zero exit (12) for every expected violation. A second review (Gemini) tightened
 the lock assumption check and required every fault-free rollback to finish with the journal
 `rolled-back` (`RecoveryCompletes`); a code copy without that final write fails it, and
-expected case counts are now recorded. During qualification, the step trace exposed a modeling error, not a code
+expected case counts are now recorded. A third review (Grok) showed that the vacuity
+check read the second coverage number; it now requires the first (distinct states) to be
+non-zero for every action except the stutter step `Wait`. It also narrowed the stated scope
+to one install-shaped transaction, and made commits touching covered files or changed
+excluded helpers report out of sync.
+
+During qualification, the step trace exposed a modeling error, not a code
 bug: rollback walks the journal's sorted keys, unlike the undo. A scratch break in a
 disposable worktree, journaling `rolled-back` after a failed undo, was reported out of
 sync and produced 57 harness violations without a model change (603 with the broadened
