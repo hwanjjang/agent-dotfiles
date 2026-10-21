@@ -171,7 +171,8 @@ def legacy_parts(home, paths):
         data = json.loads(path.read_bytes())
         require(isinstance(data, dict) and isinstance(data.get('instructions', {}), dict)
                 and isinstance(data.get('hooks', {}), dict), 'Invalid legacy receipt')
-        require(data.get('version') == 1 and data.get('home') == str(home), 'Legacy receipt belongs to another account')
+        require(data.get('version') == 1, 'Unsupported legacy receipt version; write a version 1 retire list for its fragments')
+        require(data.get('home') == str(home), 'Legacy receipt belongs to another account')
         require(set(data.get('hooks', {})) <= CONFIGS, 'Unsupported legacy configuration paths')
         for events in data.get('hooks', {}).values():
             require(isinstance(events, dict) and all(isinstance(groups, list) and groups and all(isinstance(g, dict) for g in groups)
@@ -198,7 +199,10 @@ def status(home):
     drift = [name for name, value in receipt.get('assets', {}).items()
              if observed(safe(home, name)) != value]
     for name, block in receipt.get('instructions', {}).items():
-        if read(safe(home, name)).decode().count(block) != 1:
+        try:
+            if read(safe(home, name)).decode().count(block) != 1:
+                drift.append(name)
+        except ValueError:
             drift.append(name)
     for name, storage in receipt.get('instruction_links', {}).items():
         try:
@@ -361,7 +365,7 @@ def prepare(home, repo, revision='HEAD', action='install', hermes=None, hooks=No
             continue
         if client == 'codex' and (hooks or (observation and observation['client'] == 'codex')):
             inline = tomllib.loads(read(safe(home, '.codex/config.toml')).decode()).get('hooks', {})
-            require(not any(re.search(r'planning|observation-hook|/hooks/', json.dumps(groups))
+            require(not any(re.search(r'planning|observation-hook|flyingcorp-hook|/hooks/', json.dumps(groups))
                             for groups in inline.values()),
                     'Inline Codex planning or observation hooks need ownership reconciliation')
         path = safe(home, name)

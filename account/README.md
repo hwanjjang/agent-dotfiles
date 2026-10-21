@@ -296,7 +296,7 @@ the old updater. Every step previews first; applying needs the exact saved plan.
 - **Competing routes.** A planning registration from another owner is never layered silently.
   A group whose command names the earlier account dispatcher, an earlier planning adapter or
   this bundle's runtime stops the preview, in any event of the hook file, and names the file and
-  event, not the contents.
+  event, not the contents. A Codex hook written inline in `config.toml` counts too.
 
 **Order**
 

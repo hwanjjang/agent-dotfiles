@@ -113,7 +113,7 @@ def diagnose(home, *, native=False, client=None, model=None, paseo=False, eviden
         # Inline Codex hooks are another active configuration source.
         import tomllib
         inline = tomllib.loads(read(safe(home, '.codex/config.toml')).decode()).get('hooks', {})
-        if inline and receipt.get('planning_hooks') and re.search(r'planning|/hooks/', json.dumps(inline)):
+        if inline and receipt.get('planning_hooks') and re.search(r'planning|flyingcorp-hook|/hooks/', json.dumps(inline)):
             checks.append(check('codex.inline-hooks', 'fail', 'Inline planning hooks compete with the installed route.',
                                 'Keep one owned planning registration per event.'))
     except (ValueError, OSError, KeyError, TypeError, AttributeError, UnicodeError):

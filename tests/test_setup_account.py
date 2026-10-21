@@ -710,6 +710,10 @@ class AccountSetupTests(unittest.TestCase):
         for message, receipt in cases.items():
             with self.subTest(message), self.assertRaisesRegex(ValueError, message):
                 self.prepare(legacy=[receipt])
+        newer = self.root / 'newer.json'
+        newer.write_text(json.dumps({'version': 2, 'home': str(self.home), 'block': block}))
+        with self.assertRaisesRegex(ValueError, 'Unsupported legacy receipt version'):
+            self.prepare(legacy=[newer])
         foreign = self.root / 'foreign.json'
         foreign.write_text(json.dumps({'version': 1, 'home': str(self.root / 'other account'), 'instructions': {}, 'hooks': {}}))
         with self.assertRaisesRegex(ValueError, 'another account'):
@@ -779,6 +783,22 @@ class AccountSetupTests(unittest.TestCase):
                 self.assertEqual(code, 2)
                 self.assertTrue(error.getvalue().startswith('Account setup: '))
 
+    def test_an_inline_codex_hook_of_the_previous_dispatcher_is_reported(self):
+        config = self.home / '.codex/config.toml'
+        config.parent.mkdir()
+        config.write_text('[[hooks.Stop]]\n[[hooks.Stop.hooks]]\ncommand = "python3 /x/.agents/bin/flyingcorp-hook.py codex stop"\n')
+        with self.assertRaisesRegex(ValueError, 'Inline Codex'):
+            self.prepare()
+
+    def test_status_reports_a_shared_file_that_became_a_link(self):
+        self.shared_instructions()
+        self.apply()
+        target = self.home / '.agents/AGENTS.md'
+        real = self.home / '.agents/REAL.md'
+        target.rename(real)
+        target.symlink_to('REAL.md')
+        self.assertIn('.agents/AGENTS.md', setup.status(self.home)['drift'])
+
     def test_a_link_changed_after_the_preview_stops_the_apply(self):
         target = self.shared_instructions()
         plan, changes = self.prepare()
@@ -830,6 +850,10 @@ class AccountSetupTests(unittest.TestCase):
         self.config('.codex/hooks.json', {'hooks': {e: [adapter[e], old_codex[e], graft, personal] for e in events}})
         self.config('.claude/settings.json', {'permissions': {'deny': ['Bash(rm *)']},
                                               'hooks': {'SessionStart': [graft, old_claude], 'Stop': [personal]}})
+        for rel in ('.codex/hooks/run_sh.py', '.claude/hooks/planning-with-files-dispatch.sh'):
+            write_old = home / rel
+            write_old.parent.mkdir(parents=True, exist_ok=True)
+            write_old.write_text('# previous manager runtime file\n')
         for skill in ('planning-with-files', 'tdd'):
             old = home / '.agents/skills' / skill
             old.mkdir(parents=True)
@@ -859,7 +883,8 @@ class AccountSetupTests(unittest.TestCase):
         self.assertEqual(self.snapshot(), original)
         self.assertIn('legacy instruction/hook ownership transfer', plan['conflicts'])
         for name in ('.agents/skills/tdd', '.agents/skills/planning-with-files', '.claude/skills/tdd',
-                     '.codex/skills/planning-with-files'):
+                     '.codex/skills/planning-with-files', '.codex/hooks/run_sh.py',
+                     '.claude/hooks/planning-with-files-dispatch.sh'):
             self.assertIn(name, plan['conflicts'])
         self.assertEqual(plan['instruction_links'],
                          {'.claude/CLAUDE.md': '.agents/AGENTS.md', '.codex/AGENTS.md': '.agents/AGENTS.md'})
@@ -894,6 +919,7 @@ class AccountSetupTests(unittest.TestCase):
         for client in ('agents', 'claude'):
             self.assertTrue((self.home / f'.{client}/skills/tdd').is_symlink())
         self.assertEqual(setup.status(self.home)['drift'], [])
+        self.assertNotIn('previous manager', (self.home / '.codex/hooks/run_sh.py').read_text())
         import account_doctor
         report = {row['id']: row['status'] for row in account_doctor.diagnose(self.home)['checks']}
         for ident_check in ('installation', 'owned-content', 'instructions.agents', 'hooks.codex', 'hooks.claude',
