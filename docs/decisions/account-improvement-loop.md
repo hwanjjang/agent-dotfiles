@@ -47,6 +47,8 @@ flowchart LR
     H --> I[Installer preview and apply]
     I --> A
     I --> J[Observed deployment or guarded rollback]
+    G -. every outcome .-> K[Reviewed improvement experience]
+    K -. frozen index .-> E
 ```
 
 Collection can run automatically after setup. Analysis and paid evaluation start
@@ -178,8 +180,9 @@ an installer-managed asset or part of its rollback payload.
 | Task | User goal linked to explicit actor/turn ranges across sessions; no account-global current task |
 | Feedback/finding | Author/source, selected task/events, symptom, evidence, contrary examples, suspected cause and confidence; feedback is an observation, not a verified diagnosis |
 | Reviewed case | Synthetic prompt/input fixture, observable outcome contract, development/holdout class, artifact hashes and private lineage reference |
-| Candidate | Baseline tree hash, minimal patch, resulting tree hash, changed components/dependency closure, hypothesis and case IDs |
+| Candidate | Baseline tree hash, minimal patch, resulting tree hash, changed components/dependency closure, hypothesis, case IDs and the frozen experience index digest |
 | Trial/comparison | Frozen experiment hash, exact arm/run identity, actual environment manifest, artifacts, independent grades, missing evidence, costs and verdict |
+| Improvement experience | Referenced finding, case, candidate and comparison identities; per-component edit rows and verdicts; one lesson or `NO_ENTRY`; review status, applicability and exposure class. See [Learn from earlier attempts](#learn-from-earlier-attempts) |
 | Deployment observation | Accepted source identity, installer transaction reference, delivered hashes, qualification result and any rollback reference |
 
 Unknown values carry a reason; they are not empty strings or inferred successes.
@@ -324,6 +327,93 @@ check; the hypothesis names which behavior should improve. It must not rewrite t
 grading contract or install the candidate on the live account. Held-out answers are
 not supplied to its author context; this is procedural separation with recorded
 exposure, not enforced denial of the same-account author's filesystem access.
+
+### Learn from earlier attempts
+
+An **improvement experience** records what one candidate attempt showed, so a later
+author can start from evidence instead of repeating the attempt. It interprets
+existing trial results and never replaces their grades or the comparison decision.
+Record one for every candidate attempt, including rejected and inconclusive ones.
+A missing lesson is an acceptable result.
+
+**Edit rows.** Write one row per changed component:
+
+- the component;
+- what changed;
+- the observed behavioral difference, with references to the run or trajectory point;
+- one verdict: `helped`, `hurt`, `no observed effect` or `confounded`.
+
+Prefer `confounded` when several components changed together. Also prefer it when
+a single repetition carries the difference. Selection, adoption or rejection alone
+does not show which edit caused a result. An edit in a rejected candidate may still
+have helped.
+
+Diff cumulative effects against the original baseline tree. For a sequence of
+candidates, also diff against the parent.
+
+**Lesson.** Write at most one lesson, and only when the edit rows support it:
+
+- `cue`: the shape of situation where it applies;
+- `lesson`: an operation that names the component and can be applied and checked;
+- `evidence`: the supporting rows;
+- `confidence`.
+
+Otherwise record `NO_ENTRY`. Label workspace facts separately from procedures.
+Treat a reused fact as a hypothesis and re-verify it within the existing evidence
+grant. Keep task-specific facts out of shared guidance.
+
+**Review and retrieval.** Entries move through draft → reviewed → reusable →
+superseded. A maintainer reviews an entry when it is admitted or revised; reading
+an entry needs no further approval.
+
+Before authoring, freeze an index of reusable entries from earlier cycles, and
+record its digest with the candidate. The author reads the index first and opens
+only relevant entries. The index excludes:
+
+- stale, unreviewed or incompatible entries;
+- material derived from held-out cases;
+- hints derived from grades.
+
+Later exposure follows the held-out reclassification rules below.
+
+**Storage.** Canonical records, attempt history and retrieval state stay private,
+under the observation store's ownership. That store does not yet accept this
+record kind; see [#81](https://github.com/hwanjjang/agent-dotfiles/issues/81).
+Publish only sanitized examples that are understandable on their own, through a
+reviewed PR under `docs/evidence/`. The first is the
+[development pilot example](../evidence/improvement-experience-pilot-2026-10-19.md).
+A lesson supports a hypothesis. It never authorizes promotion or installation.
+
+**Choosing the component.** Triage infrastructure and routing causes before
+changing instructions, and prefer a script/check for a mechanical defect, as
+described above. When editing instructions, follow
+[writing-for-agents](../../skills/writing-for-agents/SKILL.md): remove guidance
+that does not change behavior, and exercise representative scenarios. A proposed
+extra component-selection heuristic was evaluated and not added; see the
+[selection note](improvement-experience.md#component-selection-heuristic-evaluated-not-added).
+
+**Optional exploration (not active).** "One minimal change" means one coherent
+hypothesis with the smallest necessary set of dependent changes. A later
+development round may explore with propose → probe → compose:
+
+1. Propose distinct candidates.
+2. Probe each on the same reviewed development cases.
+3. Compose the supported parts into one candidate.
+
+Conditions for such a round:
+
+- Composition happens only before the candidate is frozen. The frozen candidate
+  still states one hypothesis and its changed components.
+- Use [arena](../../skills/arena/SKILL.md) and declare the budget before running.
+- A claim about one component's contribution needs a matching ablation: the
+  targeted third arm described under [Frozen comparison](#frozen-comparison).
+  The evaluator compares only baseline and candidate
+  (`scripts/improvement/evaluation.py`), so that arm has to be its own frozen
+  pairwise experiment.
+- Results are development signals, not promotion evidence.
+
+Activate this round only when a concrete candidate has competing hypotheses. See
+the [selection note](improvement-experience.md).
 
 ## Comparative evaluation contract
 
@@ -625,8 +715,11 @@ imports; unsupported features remain disabled while other slices can progress.
 ## Research and validation limits
 
 The design is original repository work; no upstream runtime or skill is copied.
-References were inspected on 2026-10-17 at moving upstream branches, not adopted
-as pinned dependencies. Pin source and preserve licenses before any future import.
+The improvement experience record adapts methods from Harness², pinned at
+`1cfe254` and inspected on 2026-10-20; its sources, evidence and limits are in the
+[selection note](improvement-experience.md). The other references below were
+inspected on 2026-10-17 at moving upstream branches and are not pinned
+dependencies. Pin source and preserve licenses before any future import.
 
 - [pstack eval](https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/playbooks/eval.md)
   informs organic tasks, blinding and verification from actual artifacts/traces.

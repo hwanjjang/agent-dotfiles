@@ -1,0 +1,367 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Improvement experience in the self-improvement loop",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/architecture/improvement-experience-workflow.html",
+    "repository": {
+      "url": "https://github.com/hwanjjang/agent-dotfiles",
+      "revision": "d954f9a01e133015713ef7c1d4d39b7477ccbb38",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "lanes": [
+    {
+      "id": "observe",
+      "label": "Observation and reviewed case"
+    },
+    {
+      "id": "author",
+      "label": "Candidate authoring"
+    },
+    {
+      "id": "evaluate",
+      "label": "Frozen comparison and decision"
+    },
+    {
+      "id": "experience",
+      "label": "Private improvement experience"
+    }
+  ],
+  "groups": [
+    {
+      "id": "inactive",
+      "label": "Optional, not active",
+      "lane": "author",
+      "fromCol": 3,
+      "toCol": 3,
+      "variant": "dashed"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "obs",
+      "lane": "observe",
+      "col": 0,
+      "type": "database",
+      "label": "Private observations",
+      "sublabel": "Explicit task feedback",
+      "width": 150,
+      "sources": [
+        {
+          "path": "account/observation/README.md",
+          "line": 1,
+          "end_line": 12,
+          "label": "Store, feedback and case export"
+        }
+      ]
+    },
+    {
+      "id": "case",
+      "lane": "observe",
+      "col": 1,
+      "type": "backend",
+      "label": "Reviewed case",
+      "sublabel": "Synthetic development",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 303,
+          "end_line": 320,
+          "label": "From a recorded failure to a case"
+        }
+      ]
+    },
+    {
+      "id": "author",
+      "lane": "author",
+      "col": 2,
+      "type": "backend",
+      "label": "Candidate author",
+      "sublabel": "One coherent hypothesis",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 321,
+          "end_line": 327,
+          "label": "One minimal change, no held-out answers"
+        },
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 363,
+          "end_line": 376,
+          "label": "Read the frozen index first"
+        }
+      ]
+    },
+    {
+      "id": "explore",
+      "lane": "author",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Propose, probe, compose",
+      "sublabel": "Arena; budget first",
+      "width": 172,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 393,
+          "end_line": 414,
+          "label": "Optional exploration, not active"
+        },
+        {
+          "path": "skills/arena/SKILL.md",
+          "line": 14,
+          "end_line": 33,
+          "label": "Independent candidates, then synthesis"
+        }
+      ]
+    },
+    {
+      "id": "freeze",
+      "lane": "author",
+      "col": 4,
+      "type": "security",
+      "label": "Frozen candidate",
+      "sublabel": "Declared components",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 591,
+          "end_line": 594,
+          "label": "Freeze before spending budget"
+        }
+      ]
+    },
+    {
+      "id": "compare",
+      "lane": "evaluate",
+      "col": 4,
+      "type": "backend",
+      "label": "Frozen comparison",
+      "sublabel": "Baseline vs candidate",
+      "width": 150,
+      "sources": [
+        {
+          "path": "scripts/improvement/evaluation.py",
+          "line": 17,
+          "end_line": 17,
+          "label": "Two arms only"
+        },
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 596,
+          "end_line": 599,
+          "label": "Targeted ablation arm"
+        }
+      ]
+    },
+    {
+      "id": "decision",
+      "lane": "evaluate",
+      "col": 5,
+      "type": "security",
+      "label": "Graded decision",
+      "sublabel": "Recommend or reject",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 641,
+          "end_line": 646,
+          "label": "Promotion rule"
+        }
+      ]
+    },
+    {
+      "id": "reflect",
+      "lane": "experience",
+      "col": 5,
+      "type": "backend",
+      "label": "Edit rows and lesson",
+      "sublabel": "Or NO_ENTRY",
+      "tag": "Interprets grades",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 337,
+          "end_line": 361,
+          "label": "Edit rows, lesson or NO_ENTRY"
+        }
+      ]
+    },
+    {
+      "id": "admit",
+      "lane": "experience",
+      "col": 4,
+      "type": "security",
+      "label": "Maintainer review",
+      "sublabel": "Admit or revise",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 363,
+          "end_line": 366,
+          "label": "Review at admission"
+        }
+      ]
+    },
+    {
+      "id": "records",
+      "lane": "experience",
+      "col": 3,
+      "type": "database",
+      "label": "Experience records",
+      "sublabel": "Private store",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 377,
+          "end_line": 384,
+          "label": "Private canonical records"
+        },
+        {
+          "path": "account/observation/store.py",
+          "line": 393,
+          "end_line": 393,
+          "label": "Current record kinds"
+        }
+      ]
+    },
+    {
+      "id": "index",
+      "lane": "experience",
+      "col": 2,
+      "type": "database",
+      "label": "Frozen index",
+      "sublabel": "Earlier, reusable only",
+      "tag": "No held-out hints",
+      "width": 150,
+      "sources": [
+        {
+          "path": "docs/decisions/account-improvement-loop.md",
+          "line": 366,
+          "end_line": 376,
+          "label": "Frozen, earlier, reusable only"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "triage",
+      "from": "obs",
+      "to": "case",
+      "label": "triage"
+    },
+    {
+      "id": "case-author",
+      "from": "case",
+      "to": "author",
+      "variant": "emphasis"
+    },
+    {
+      "id": "explore-opt",
+      "from": "author",
+      "to": "explore",
+      "label": "if competing",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "explore-freeze",
+      "from": "explore",
+      "to": "freeze",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "author-freeze",
+      "from": "author",
+      "to": "freeze",
+      "label": "minimal change",
+      "variant": "emphasis",
+      "route": "up-channel"
+    },
+    {
+      "id": "freeze-compare",
+      "from": "freeze",
+      "to": "compare",
+      "variant": "emphasis"
+    },
+    {
+      "id": "compare-decision",
+      "from": "compare",
+      "to": "decision",
+      "variant": "emphasis"
+    },
+    {
+      "id": "decision-reflect",
+      "from": "decision",
+      "to": "reflect",
+      "label": "every outcome",
+      "variant": "emphasis"
+    },
+    {
+      "id": "reflect-admit",
+      "from": "reflect",
+      "to": "admit"
+    },
+    {
+      "id": "admit-records",
+      "from": "admit",
+      "to": "records",
+      "label": "reusable"
+    },
+    {
+      "id": "records-index",
+      "from": "records",
+      "to": "index",
+      "label": "freeze per cycle"
+    },
+    {
+      "id": "index-author",
+      "from": "index",
+      "to": "author",
+      "label": "read, open selectively",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ],
+  "mainPath": [
+    "obs",
+    "case",
+    "author",
+    "freeze",
+    "compare",
+    "decision",
+    "reflect"
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Attribution rules",
+      "items": [
+        "One row per changed component: helped, hurt, no observed effect or confounded.",
+        "Prefer confounded for several components or one repetition; adoption or rejection alone proves nothing."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Boundaries",
+      "items": [
+        "Records stay private; only sanitized examples are published under docs/evidence.",
+        "Held-out and grade-derived material never enter the index; a lesson never authorizes promotion or installation."
+      ]
+    }
+  ]
+}

@@ -27,6 +27,11 @@ these files are templates and are not activated by this checkout.
   records exact source paths, hashes and license. No account installer, generic
   router, private settings or personal permission exceptions are imported.
 
+- [Improvement experience selection](../decisions/improvement-experience.md): adapt
+  Harness² (`1cfe254`, Apache-2.0) reflection and earlier-only retrieval methods as
+  design rules for the account improvement loop. No Harness² code, prompts or
+  runtime are imported; community validation is provisional.
+
 - pstack: port investigation, candidate selection, architecture, and scoped workers;
   retain design resources. Replace Cursor-specific runtime assumptions with declared
   host capabilities. Carry evidence and behavioral-test principles as policies.

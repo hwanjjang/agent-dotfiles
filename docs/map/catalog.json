@@ -2650,14 +2650,16 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/account-improvement-loop.md",
-      "summary": "Manual method available; loop orchestration planned: form one minimal, reviewable source candidate.",
+      "summary": "Manual method available; loop orchestration planned: form one minimal, reviewable source candidate informed by reviewed earlier experience.",
       "when": [
         "A reviewed reproduction supports a concrete hypothesis about a skill, policy or MCP change."
       ],
-      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; bind the baseline, diff and resulting identity before comparison.",
+      "usage": "Use the existing investigation, authoring, planning and TDD methods as appropriate; read the frozen index of reusable improvement experience first and open entries selectively; bind the baseline, diff and resulting identity before comparison.",
       "behavior": [
         "Check infrastructure and routing causes before adding instructions.",
-        "Keep graders, fixtures and hidden answers outside the updater; do not change them during an experiment."
+        "Keep graders, fixtures and hidden answers outside the updater; do not change them during an experiment.",
+        "Record an improvement experience for every attempt: per-component verdicts (helped, hurt, no observed effect, confounded) and one lesson or NO_ENTRY; private storage and retrieval are not implemented yet.",
+        "Propose, probe and compose exploration is documented but not active."
       ],
       "outputs": [
         "A candidate identity, hypothesis and minimal diff; no automatic self-editing."
@@ -2667,6 +2669,32 @@
         "eval",
         "account",
         "design"
+      ]
+    },
+    {
+      "id": "improvement-experience",
+      "title": "Improvement experience selection",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/improvement-experience.md",
+      "summary": "Why the loop records per-attempt improvement experience, which Harness\u00b2 methods were adapted or declined, and the evidence limits.",
+      "when": [
+        "Reviewing how candidate attempts become reusable lessons, or updating the Harness\u00b2 adaptation."
+      ],
+      "usage": "Read the selection note with the loop's Learn from earlier attempts section, which owns the rules. See docs/architecture/improvement-experience-workflow.html for the flow and docs/evidence/improvement-experience-pilot-2026-10-19.md for the first worked example.",
+      "behavior": [
+        "Records Harness\u00b2 revision 1cfe254 (Apache-2.0), adopted and declined methods, and upstream defects that become implementation requirements.",
+        "Labels community validation provisional and records a pre-change heuristic evaluation that was not added."
+      ],
+      "outputs": [
+        "A traceable adoption rationale; no code is imported."
+      ],
+      "tags": [
+        "self-improvement",
+        "research",
+        "community",
+        "decision"
       ]
     },
     {
@@ -3513,6 +3541,21 @@
       "from": "improvement-eval",
       "to": "frozen-trial-dispatch",
       "label": "Prepare one selected executor input"
+    },
+    {
+      "from": "improvement-candidate",
+      "to": "improvement-experience",
+      "label": "Explains experience records and their sources"
+    },
+    {
+      "from": "improvement-experience",
+      "to": "matt-pocock",
+      "label": "Compares retro guidance"
+    },
+    {
+      "from": "improvement-experience",
+      "to": "addy-osmani",
+      "label": "Compares the memory-capsule proposal"
     },
     {
       "from": "policy-evidence",

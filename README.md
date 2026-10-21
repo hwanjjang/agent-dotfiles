@@ -153,6 +153,9 @@ step, with compatibility checked in that client.
 
 The [account improvement loop](docs/decisions/account-improvement-loop.md) connects
 private observations to reviewed cases, comparative evaluation and account updates.
+Each candidate attempt is designed to leave a reviewed
+[improvement experience](docs/decisions/improvement-experience.md) for later authors;
+its storage and retrieval are not implemented yet.
 Its first slice provides a [private synthetic observation store](account/observation/README.md)
 with scoped grants, durable records, batch replay and revocation. Optional
 [Claude and Codex native collection](account/observation/native.md) use explicit
