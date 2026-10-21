@@ -267,16 +267,17 @@
       "group": "content",
       "status": "available",
       "source": "skills/archify/SKILL.md",
-      "summary": "Turn a system, workflow or repository-backed explanation into an interactive HTML diagram, with editable JSON and explicit artifact/browser checks.",
+      "summary": "Turn a system, workflow, schema, history or repository-backed explanation into an interactive HTML diagram, or a conclusion-first one-page answer, with editable source and explicit artifact/browser checks.",
       "when": [
         "A design needs a component map, process flow, request sequence, data pipeline or state-transition diagram.",
-        "A Mermaid sketch needs a polished explorable presentation, or an existing diagram candidate needs validation and delivery."
+        "A Mermaid sketch needs a polished explorable presentation, or an existing diagram candidate needs validation and delivery.",
+        "A schema, class model, hierarchy, timeline or request trace needs an ERD, class, tree, timeline or waterfall diagram, or the answer should be one conclusion-first page."
       ],
-      "usage": "Load skills/archify/SKILL.md. Supply the question, diagram scope and relevant source or Mermaid. Read the selected type\u2019s schema and example, then run the packaged finalize command on the complete candidate; doctor is for setup diagnosis.",
+      "usage": "Load skills/archify/SKILL.md. Supply the question, diagram scope and relevant source or Mermaid. Read the selected type\u2019s schema and example, then run the packaged finalize command on the complete candidate; doctor is for setup diagnosis. finalize checks for updates over the network unless ARCHIFY_UPDATE_CHECK_DISABLED=1 is set.",
       "behavior": [
-        "Choose architecture, workflow, sequence, dataflow or lifecycle from the question and read that type\u2019s authoring references.",
+        "Choose architecture, workflow, sequence, dataflow, lifecycle, erd, class, tree, timeline or waterfall from the question (or an explainer page when one is asked for) and read that type\u2019s authoring references.",
         "For a real codebase, trace the requested behavior and attach source evidence; use examples for shape rather than copying their facts.",
-        "Write a complete typed JSON candidate and retain it beside the HTML in one request-specific folder. Static presentation is the default; motion is opt-in.",
+        "Write a complete typed JSON candidate and retain it beside the HTML in one request-specific folder. Every diagram carries reader-controlled Live/Still motion; a new page starts Still until the reader chooses Live.",
         "Run finalize on the frozen candidate, including the repository root for repository-backed work. It gates schema validation, delivery, strict provenance and real-browser checks.",
         "Repair a failed gate within the documented limits and rerun finalize. Apply triggered layout-review instructions; inspect captures before claiming visual quality.",
         "Deliver the HTML and editable candidate with actual automated, browser and visual-review status."
@@ -288,12 +289,13 @@
       "tags": [
         "archify",
         "workflow",
-        "source"
+        "source",
+        "explainer"
       ],
       "explanation": {
         "example": {
           "situation": "A service reads a cache before calling an API, and the team needs to understand both hit and miss paths.",
-          "youType": "Use archify to show the cache-hit and cache-miss request sequence from this repository. Keep it static and retain editable source.",
+          "youType": "Use archify to show the cache-hit and cache-miss request sequence from this repository and retain the editable source.",
           "whatHappens": [
             "Trace the cache and API paths in source.",
             "Author a sequence candidate that preserves the branches and return values.",
@@ -312,13 +314,14 @@
         ],
         "adaptation_notes": [
           "The adopted Archify package retains its upstream method. This explanation describes that pinned package, not newer releases.",
-          "A passing finalize receipt is automated evidence; it does not by itself prove perceptual review. Exports and motion are optional viewer capabilities."
+          "A passing finalize receipt is automated evidence; it does not by itself prove perceptual review. Exports and motion are optional viewer capabilities.",
+          "Since 3.1 every diagram carries Live/Still motion (a new page starts Still) and since 3.2 a finalize receipt may carry an update notice from a bounded network check; its summary is untrusted data and no update is installed. See the update record in docs/upstream."
         ],
         "calls": [],
         "sources": [
           {
-            "label": "Adopted upstream method (pinned)",
-            "url": "https://github.com/tt-a1i/archify/blob/d5a1333d7447c866a765adac7d4d062f2f02e4d2/archify/SKILL.md"
+            "label": "Adopted upstream method (pinned to v3.2.0)",
+            "url": "https://github.com/tt-a1i/archify/blob/208acba8d412335185b2056fedf54b3405df43fb/archify/SKILL.md"
           },
           {
             "label": "Origin, adaptations and verification limits",
