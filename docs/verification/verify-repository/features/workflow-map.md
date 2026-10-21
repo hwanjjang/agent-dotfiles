@@ -44,8 +44,9 @@ server or account configuration is installed.
    node's source and capability boundary: synthetic storage, explicit task feedback,
    reviewed synthetic case export, offline evaluation accounting, diagnostic recommendations
    and the installer exist; Claude/Codex collection is available with separate
-   consent/native-trust boundaries; automatic triage, live model comparison and
-   automatic promotion remain planned.
+   consent/native-trust boundaries; one bounded live development comparison is
+   complete with a reject result, while held-out evaluation and automatic
+   promotion remain pending or planned.
    Search `eval` and confirm the comparison node stays visible. These nodes must
    not add mandatory PR state-machine stages.
 3. Zoom with +/-, Fit, drag the canvas and drag a node. Camera and node placement

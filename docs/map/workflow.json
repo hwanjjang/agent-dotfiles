@@ -370,7 +370,7 @@
     {
       "id": "improvement",
       "title": "Self-improvement and eval",
-      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, reviewed synthetic case export, opt-in Claude/Codex collection, offline evaluation accounting, committed-source recommendations and selected same-host verification and the installer exist; live model comparison and automatic promotion remain planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
+      "description": "A separate improvement cycle, not extra mandatory PR stages: 1 Observe -> 2 Reproduce -> 3 Candidate -> 4 Eval -> 5 Review -> 6 Deploy -> Observe again. Synthetic storage, explicit task feedback, reviewed synthetic case export, opt-in Claude/Codex collection, offline evaluation accounting, committed-source recommendations and selected same-host verification and the installer exist; one bounded live development comparison is complete with a reject result (docs/evidence/native-development-pilot-2026-10-19.md, #27), while held-out evaluation and automatic promotion remain pending or planned. Native trust and platform gaps are explicit. Available means the source guide exists, not that its runtime is implemented.",
       "items": [
         "observation-store",
         "improvement-case",
