@@ -178,8 +178,9 @@ Not covered: power loss or an OS crash (`write` does not fsync the parent direct
 by other programs while a command holds the lock (documented: close clients during apply);
 several transactions and their rollback order; previews and conflict approval beyond the
 receipt-last order; path safety (`safe`, `managed_target`, instruction links); bundle trees
-larger than one link; cross-device renames; Hermes paths; Linux and WSL (only macOS was run);
-and CI, which does not run this check. After an uncaught interruption, finding the
+larger than one link; cross-device renames; Hermes paths; the TLA+ model check outside
+macOS (it was run only there); both checks on WSL; and the model check and `--check-sync`
+in CI. The real-code harness was run on macOS and, with its paired mutations, in Ubuntu CI. After an uncaught interruption, finding the
 transaction ID means listing `.agents/agent-dotfiles/state/transactions/`.
 
 ## Evidence and cleanup
