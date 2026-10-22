@@ -55,8 +55,8 @@ guides; the account selection comparison is linked from the account guide.
 The **Verification upkeep** group holds two pairs. Use the user-journey
 pair when a project lacks repeatable UI, CLI, API or library checks, or when they have
 drifted. Use the formal pair only when someone explicitly asks to formally verify,
-model-check or formally prove a property, or to recheck such a check after its code
-changed. The two repository verifiers in the group check this checkout only.
+model-check or formally prove a property, to recheck such a check after its code
+changed, or to resync a stale formal model, proof or harness. The two repository verifiers in the group check this checkout only.
 
 ## Self-improvement and eval
 

@@ -45,7 +45,7 @@ server or account configuration is installed.
    Inspect **Self-improvement & eval (1-6)** as a separate numbered cycle:
    observation, reproduction, candidate, eval, review and deployment. Check each
    node's source and capability boundary: synthetic storage, explicit task feedback,
-   reviewed synthetic case export, offline evaluation accounting, diagnostic recommendations
+   reviewed synthetic case export, offline evaluation accounting, committed-source recommendations
    and the installer exist; Claude/Codex collection is available with separate
    consent/native-trust boundaries; one bounded live development comparison is
    complete with a reject result, while held-out evaluation and automatic
