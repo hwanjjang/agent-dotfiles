@@ -4,6 +4,10 @@ English and Korean editions cover the same 18 scenarios, captured on 2026-10-17.
 Read `manual-en.md` or `manual-ko.md`, or use the delivered PDFs. Screenshot paths
 are relative to these sources. The actual map UI remains English in both editions.
 
+Statements in these editions describe the state at their capture baseline below. For
+the current state, read the [README status summary](../../../README.md) and
+[client verification](../../client-verification.md).
+
 ## Product identity and coverage
 
 - Repository: https://github.com/hwanjjang/agent-dotfiles
