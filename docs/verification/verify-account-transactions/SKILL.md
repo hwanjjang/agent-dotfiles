@@ -178,9 +178,10 @@ Not covered: power loss or an OS crash (`write` does not fsync the parent direct
 by other programs while a command holds the lock (documented: close clients during apply);
 several transactions and their rollback order; previews and conflict approval beyond the
 receipt-last order; path safety (`safe`, `managed_target`, instruction links); bundle trees
-larger than one link; cross-device renames; Hermes paths; Linux and WSL (only macOS was run);
-and the model check and `--check-sync` in CI, which runs only `conformance.py` with its
-paired mutations. After an uncaught interruption, finding the
+larger than one link; cross-device renames; Hermes paths; the TLA+ model check on Linux
+and WSL (it was run only on macOS); and the model check and `--check-sync` in CI. CI runs
+`conformance.py` with its paired mutations on Ubuntu, so the real-code harness covers both
+macOS and Linux. After an uncaught interruption, finding the
 transaction ID means listing `.agents/agent-dotfiles/state/transactions/`.
 
 ## Evidence and cleanup
