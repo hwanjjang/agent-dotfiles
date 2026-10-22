@@ -4,6 +4,10 @@ Read the [one-step screenshot walkthrough](catalog.pdf) to inspect a skill in th
 repository map. The [editable source](catalog.json) and [actual screenshot](catalog-detail.png)
 are maintained together. This is a toolchain example, not a complete client installation manual.
 
+Each walkthrough keeps its own recorded capture date and source baseline; later
+changes do not rewrite it. For the current state, read the [README status summary](../../README.md)
+and [client verification](../client-verification.md).
+
 The screenshot was captured from the local generated map on 2026-10-17 using an
 isolated Playwright browser, with Screenshot Manual selected. It contains repository
 content only. The captured How to use text was compared with the current catalog

@@ -121,8 +121,9 @@ its license, provenance, dependencies, and adaptation notes. Raw source staging 
 private provenance remain local.
 
 Skills should use `skills/<skill-name>/SKILL.md`, with supporting scripts,
-references, and assets kept alongside the skill. MCP configuration formats and
-installation paths will be documented as integrations are added.
+references, and assets kept alongside the skill. MCP templates and their required
+environment are documented in the [MCP guide](mcp/README.md); account installation
+paths are in the [account guide](account/README.md).
 
 `AGENTS.md` is the single source of repository maintenance instructions.
 `CLAUDE.md` imports it and contains no independent rules. These files govern this
