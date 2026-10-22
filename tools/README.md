@@ -22,3 +22,7 @@ for screenshot-based PDF manuals. The latter pins ReportLab, pypdf, Pillow, and
 PDFium in its requirements file. Install them in an isolated environment. The
 source tree includes executable tooling; dependency presence and successful
 client operation are checked separately.
+
+The repository-only [account transaction verifier](../docs/verification/verify-account-transactions/SKILL.md)
+uses TLA+ tools v1.7.4 (`tla2tools`), pinned by a sha256 recorded at first download
+because the release publishes no digest. The jar stays in ignored `.local/tools/`.

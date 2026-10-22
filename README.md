@@ -18,7 +18,7 @@ links, and implementation status. Open the HTML from a local checkout; GitHub's
 file view shows source. See the [map guide](docs/map/README.md) for upkeep and
 the [screenshot walkthrough](docs/manual/catalog.pdf) for a usage example.
 
-**Status:** Initial content collection: 24 skill packages, ten portable policies,
+**Status:** Initial content collection: 26 skill packages, ten portable policies,
 three opt-in Claude Code MCP templates, and an external tool registry. Diagram
 production and screenshot-based PDF manuals are included. Source adoption and
 focused checks are documented. Codex 0.159.2 previously discovered the initial 18 packages in a
@@ -90,6 +90,12 @@ The [verification adoption](docs/decisions/verification.md) adds project-local
 verification generation and maintenance. The [repository feature map](docs/verification/verify-repository/features/README.md)
 connects this checkout’s catalog journeys to a runnable verifier; it does not claim
 account installation or MCP connectivity.
+
+The [formal verification adoption](docs/decisions/formal-verification.md) adds pstack's
+beta methods to create and maintain a project-local check that formally verifies an
+explicitly requested property. They bundle no verifier; a pass covers only the stated
+model or bound. The repository pilot, [verify-account-transactions](docs/verification/verify-account-transactions/SKILL.md),
+checks the account transaction journal with a pinned TLA+ model and a real-code harness.
 
 ## Repository structure
 

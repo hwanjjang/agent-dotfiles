@@ -15,7 +15,7 @@ Do not copy this repository's root AGENTS.md as a shared policy.
 | Specification | to-spec |
 | Investigation and design | how, architect, arena, diagnosing-bugs |
 | Planning and execution | planning-and-task-breakdown, planning-with-files, swarm, sdlc |
-| Verification construction and maintenance | create-verification-skill, maintain-verification-skill |
+| Verification construction and maintenance | create-verification-skill, maintain-verification-skill, create-formal-verification-skill, maintain-formal-verification-skill |
 | Verification, review and issues | tdd, code-review-and-quality, make-pr-easy-to-review, issue-writing, to-tickets |
 | Instruction authoring | writing-for-agents |
 | Research evidence | grounded-citations |
@@ -27,6 +27,10 @@ reference; keep that package available even when writing only ticket drafts.
 `architect` retains ownership of its conditional feasibility-experiment reference.
 `grounded-citations` requires Python 3.10+ and explicit task-local `--ledger` state;
 it has no Hermes runtime or automatic retrieval dependency.
+`create-formal-verification-skill` links `create-verification-skill`, `tdd`,
+`diagnosing-bugs`, optional `archify` and its maintenance pair;
+`maintain-formal-verification-skill` links `tdd`, `diagnosing-bugs` and its creator.
+Neither bundles or installs a verifier.
 `architect` uses `how` and `arena`; `diagnosing-bugs` uses `tdd` for authorized
 corrections. SDLC selects methods through its
 [stage routing](sdlc/references/skill-routing.md); its provenance lists the full
@@ -61,7 +65,10 @@ without SDLC; it introduces no tracker runtime or write permissions.
 
 Some upstream frontmatter uses Claude-specific fields such as
 `disable-model-invocation`, `user-invocable`, and `hooks`. They are retained to
-preserve upstream invocation behavior. Codex's strict skill-creator validator
+preserve upstream invocation behavior. The pstack verification and formal
+verification pairs instead drop upstream `disable-model-invocation`; the formal pair
+relies on a narrow explicit-request description
+([decision](../docs/decisions/formal-verification.md)). Codex's strict skill-creator validator
 rejects those extensions; do not claim uniform client compatibility from the
 common name/description schema. Matt's supplied agents/openai.yaml files retain
 its Codex invocation policies. Codex 0.159.2 previously discovered the initial 18 packages in a temporary project; see
