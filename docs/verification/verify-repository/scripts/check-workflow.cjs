@@ -177,6 +177,7 @@ async function main() {
         assert.match(detail, /reservations are implemented and exercised/);
         assert.match(detail, /Current runtime qualification and the bounded eight-row development comparison are complete/);
         assert.match(detail, /the candidate was rejected/);
+        assert.match(detail, /does not verify unseen data/);
       }
       if (id === 'improvement-review') {
         const detail = await page.locator('#pop').innerText();
