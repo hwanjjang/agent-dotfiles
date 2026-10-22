@@ -35,6 +35,11 @@ Check all selected skill links, clean status, a zero-change update, uninstall an
 rollback. Retain source revision, OS/Python/client versions and results locally.
 Never override HOME, reuse real account authentication or publish raw plans/backups.
 
+When a change touches the transaction journal, undo, rollback or lock in
+`scripts/account_storage.py`, also run the separate
+[account transaction verifier](../../verify-account-transactions/SKILL.md). It is a
+bounded formal and real-code check, not a substitute for this lifecycle recipe.
+
 This recipe verifies configuration delivery. Native skill discovery, effective
 instruction loading, hook trust/recovery and MCP authentication require separate,
 authorized target-client checks. Report untested clients and operating systems;

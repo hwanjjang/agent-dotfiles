@@ -102,7 +102,9 @@ async function main() {
       ['planning-and-task-breakdown', /Separate task blockers from PR base dependencies/],
       ['planning-with-files', /tool subprocess setting PLAN_ID does not bind/],
       ['screenshot-manual', /Render and inspect/],
-      ['sdlc', /pre-merge means verified readiness without merge authority/i]
+      ['sdlc', /pre-merge means verified readiness without merge authority/i],
+      ['create-formal-verification-skill', /only for explicit formal verification requests/],
+      ['maintain-formal-verification-skill', /only for requested rechecks or resyncs/]
     ]) {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
@@ -121,13 +123,14 @@ async function main() {
       }
       await close();
     }
-    check('All seven remaining skill explanations, concrete examples and public provenance links');
+    check('Nine adopted and local skill explanations, concrete examples and public provenance links');
     for (const [id, source, expected] of [
       ['policy-communication', 'policies/communication.md', /preserv.*meaning/i],
       ['policy-execution', 'policies/execution.md', /recorded baseline/],
       ['account-source', 'account/README.md', /preview or explicitly applied account change/i],
       ['planning-hooks', 'account/hooks/README.md', /native account activation remains a separate check/i],
-      ['reviewer-runtime', 'skills/sdlc/references/host-adapters.md', /without duplicate reviewers/]
+      ['reviewer-runtime', 'skills/sdlc/references/host-adapters.md', /without duplicate reviewers/],
+      ['repository-formal-verifier', 'docs/verification/verify-account-transactions/SKILL.md', /recoverable interruption and no clobbering/]
     ]) {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
       await page.locator('#pop .xa').click();
@@ -145,7 +148,7 @@ async function main() {
       }
       await close();
     }
-    check('Account sources, policy triggers, reviewer continuity and delivery versus native activation boundaries');
+    check('Account sources, policy triggers, reviewer continuity, the account transaction verifier and delivery versus native activation boundaries');
     await page.locator('.ch[data-id="any:improvement"]').click();
     assert.match(await page.locator('#pop').innerText(), /1 Observe.*2 Reproduce.*3 Candidate.*4 Eval.*5 Review.*6 Deploy/);
     assert.match(await page.locator('#pop').innerText(), /not extra mandatory PR stages/);
@@ -154,8 +157,8 @@ async function main() {
       ['observation-store', /synthetic|Synthetic/, 'account/observation/README.md'],
       ['improvement-case', /caller triage.*are available/, 'docs/decisions/account-improvement-loop.md'],
       ['improvement-candidate', /manual|Manual/, 'docs/decisions/account-improvement-loop.md'],
-      ['improvement-eval', /This tool launches no model or command/, 'docs/decisions/evaluation-accounting.md'],
-      ['improvement-review', /It never merges or installs/, 'docs/decisions/promotion-recommendations.md'],
+      ['improvement-eval', /Only run-next launches an explicitly authorized native attempt/, 'docs/decisions/evaluation-accounting.md'],
+      ['improvement-review', /source acceptance, merge and install authority remain false/, 'docs/decisions/promotion-recommendations.md'],
       ['improvement-deploy', /automatic eval-to-deployment integration remains planned/, 'docs/decisions/account-improvement-loop.md']
     ]) {
       await page.locator('.nd[data-id="' + id + '"]').first().click();
@@ -171,15 +174,15 @@ async function main() {
       if (id === 'improvement-eval') {
         const detail = await page.locator('#pop').innerText();
         assert.match(detail, /4\. Eval \/ offline/);
-        assert.match(detail, /Offline synthetic accounting is available/);
-        assert.match(detail, /native runner has selected-profile qualification/);
-        assert.match(detail, /actual result collection, admission and comparisons remain pending/);
+        assert.match(detail, /reservations are implemented and exercised/);
+        assert.match(detail, /Current runtime qualification and the bounded eight-row development comparison are complete/);
+        assert.match(detail, /the candidate was rejected/);
       }
       if (id === 'improvement-review') {
         const detail = await page.locator('#pop').innerText();
-        assert.match(detail, /5\. Review \/ diagnostic/);
-        assert.match(detail, /Diagnostic recommendations are available/);
-        assert.match(detail, /live promotion gate and operational eligibility remain unavailable/);
+        assert.match(detail, /5\. Review \/ source evidence/);
+        assert.match(detail, /The completed fixed native pilot returned reject/);
+        assert.match(detail, /source acceptance, merge and install authority remain false/);
       }
       assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
       await close();

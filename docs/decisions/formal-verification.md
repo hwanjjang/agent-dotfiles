@@ -116,8 +116,8 @@ The maintenance-only [verify-account-transactions](../verification/verify-accoun
 skill applies the create method to the account installer's transaction journal, automatic
 undo and rollback in `scripts/account_storage.py` at `4130e05`. It checks two promises:
 an interrupted apply or rollback can always be rolled back, and rollback never
-overwrites a later user edit and changes nothing when it refuses. A pinned TLC 1.7.4
-model covers one transaction, two kills, two I/O errors and one later edit, at 9,642
+overwrites a later user edit and changes nothing when it refuses. A model checked with pinned TLA+ tools v1.7.4
+(TLC 2.19) covers one transaction, two kills, two I/O errors and one later edit, at 9,642
 distinct states. A stdlib harness drives the real functions through 813 kill, error,
 edit, lock and real-exit cases. Five broken model variants and five paired code
 mutations each fail on their expected property.

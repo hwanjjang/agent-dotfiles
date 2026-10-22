@@ -129,7 +129,8 @@
         "docs/verification/verify-account-transactions/scripts/run.py",
         "--doctor"
       ],
-      "validation": "The doctor hashes the jar and reads java -version without writing files; results need an actual run."
+      "validation": "The doctor hashes the jar and reads java -version without writing files; results need an actual run.",
+      "reviewed_on": "2026-10-22"
     }
   ]
 }

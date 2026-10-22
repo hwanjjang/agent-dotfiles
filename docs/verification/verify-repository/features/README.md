@@ -34,3 +34,6 @@ combinations, PDF generation, native client activation, MCP and constituent skil
 These require their own checks when affected; this seed does not certify them.
 
 - [Promotion recommendation](promotion-recommendation.md): deterministic evidence binding and refusal paths.
+- [Account transactions](../../verify-account-transactions/SKILL.md): a separate verifier, not
+  part of this index's helpers. It checks the installer's journal, undo, rollback and lock
+  with a TLA+ model and a real-code harness; run it on its own.

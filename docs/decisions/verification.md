@@ -79,3 +79,9 @@ Direct independent, version-specific evaluations of the pair remain sparse.
 raises the cost of duplicating standing rules. [Playwright healer discussion](https://www.reddit.com/r/Playwright/comments/1witr6w/playwrights_healer_agent_is_supposed_to_know_the/)
 raises false-green and skipped-test concerns. These are anecdotal reports, not a
 measured ranking; cross-posts and registry mirrors are not independent validation.
+
+## Related adoption
+
+The [formal verification decision](formal-verification.md) adopts pstack's separate
+create/maintain pair for properties checked across every case in a stated scope. It
+complements these user-journey recipes and runs only on explicit request.

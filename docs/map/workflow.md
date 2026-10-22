@@ -52,6 +52,12 @@ Paseo is an explicit option, with its own real-model evidence and cleanup. These
 stages or installed account features. Their dialogs link to the authoritative
 guides; the account selection comparison is linked from the account guide.
 
+The **Create & maintain verification** group holds two pairs. Use the user-journey
+pair when a project lacks repeatable UI, CLI, API or library checks, or when they have
+drifted. Use the formal pair only when someone explicitly asks to formally verify,
+model-check or formally prove a property, or to recheck such a check after its code
+changed. The two repository verifiers in the group check this checkout only.
+
 ## Self-improvement and eval
 
 The Anytime band includes **Self-improvement & eval (1-6)**. Read its numbered
