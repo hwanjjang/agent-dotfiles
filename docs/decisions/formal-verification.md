@@ -138,7 +138,7 @@ passed on the broken code. An [Archify diagram](../architecture/account-transact
 explains the journal statuses and is checked against the model's status set.
 
 Limits: the upstream pair is beta; a pass covers only the stated model and bounds; the
-check runs on macOS with Java 17 and is not run in CI; the TLA+ tools jar has no
+model check runs on macOS with Java 17 and only the real-code harness runs in CI; the TLA+ tools jar has no
 published checksum, so its hash was recorded at first download; and native skill
 routing is unverified. See [client verification](../client-verification.md) for the
 exact checks. Raw TLC output and harness logs stay local.

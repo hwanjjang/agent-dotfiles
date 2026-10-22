@@ -179,7 +179,8 @@ by other programs while a command holds the lock (documented: close clients duri
 several transactions and their rollback order; previews and conflict approval beyond the
 receipt-last order; path safety (`safe`, `managed_target`, instruction links); bundle trees
 larger than one link; cross-device renames; Hermes paths; Linux and WSL (only macOS was run);
-and CI, which does not run this check. After an uncaught interruption, finding the
+and the model check and `--check-sync` in CI, which runs only `conformance.py` with its
+paired mutations. After an uncaught interruption, finding the
 transaction ID means listing `.agents/agent-dotfiles/state/transactions/`.
 
 ## Evidence and cleanup

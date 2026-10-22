@@ -26,6 +26,12 @@ tests. The token has only `contents: read`; checkout does not persist credential
 No account configuration, model credentials or repository secrets are supplied.
 Tests use their existing disposable synthetic fixtures.
 
+The job also runs the [account transaction verifier's](../docs/verification/verify-account-transactions/SKILL.md)
+real-code harness with its paired code mutations (stdlib only, about a minute). It
+does not run the TLA+ model check, which needs Java and the pinned TLA+ tools, or the
+verifier's `--check-sync`, whose history depth and sync-commit timing are not yet
+defined for pull requests; run both locally as the verifier describes.
+
 ## Reproduce the checks
 
 Start from a clean, committed checkout and use Python 3.11 in a disposable virtual
@@ -41,6 +47,7 @@ python3.11 -m venv .local/ci-venv
 .local/ci-venv/bin/python -c "import reportlab, pypdf, PIL"
 .local/ci-venv/bin/python -m unittest discover -s tests -v
 .local/ci-venv/bin/python -m unittest discover -s skills/sdlc/scripts -p 'test_*.py' -v
+.local/ci-venv/bin/python docs/verification/verify-account-transactions/scripts/conformance.py --mutations docs/verification/verify-account-transactions/model/expectations.json
 .local/ci-venv/bin/python scripts/build_map.py --check
 .local/ci-venv/bin/python scripts/build_workflow.py --check
 
