@@ -4,6 +4,15 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Grok and Antigravity with an installed account — 2026-10-22
+
+Neither client is an installer target. Grok reads `~/.claude/skills`, `~/.claude/CLAUDE.md`
+and the Claude hook file, so the skills and account instructions work there, but its
+observe-only `SessionStart` drops the planning hook's context. Antigravity reads only its
+own `.agents/` and `~/.gemini/config/` locations, so it sees none of the installed skills,
+instructions or hooks until a `skills.json` entry and an `AGENTS.md` connect them. See the
+[Grok and Antigravity record](verification/grok-antigravity.md).
+
 ## Account takeover from earlier managers — 2026-10-21
 
 The installer now edits an instruction file that the client entries link to, accepts

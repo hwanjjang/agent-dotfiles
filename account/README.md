@@ -6,8 +6,10 @@ supports **macOS and Linux**, including Linux inside WSL. Native Windows is not
 supported. It never copies the contributor's installed account configuration.
 
 Codex and Claude Code are the default clients. Hermes is optional and requires
-an installed `hermes` executable. No client, model account or credentials are
-installed by this tool. Install Python 3.11+ and Git first; the shell entry point
+an installed `hermes` executable. Other clients are not targets: Grok reuses the Claude
+skills and instructions, Antigravity sees none of them, as the
+[Grok and Antigravity record](../docs/verification/grok-antigravity.md) shows. No client,
+model account or credentials are installed by this tool. Install Python 3.11+ and Git first; the shell entry point
 finds a compatible Python on PATH, or accepts `AGENT_DOTFILES_PYTHON`.
 
 ## Install, update and remove
