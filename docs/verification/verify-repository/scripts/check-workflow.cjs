@@ -183,7 +183,7 @@ async function main() {
         const detail = await page.locator('#pop').innerText();
         assert.match(detail, /5\. Review \/ source evidence/);
         assert.match(detail, /The completed fixed native pilot returned reject/);
-        assert.match(detail, /source acceptance, merge and install authority remain false/);
+        assert.match(detail, /no candidate acceptance or held-out benefit is claimed/);
       }
       assert.ok(await page.locator('#pop a[href="../../' + source + '"]').isVisible());
       await close();
