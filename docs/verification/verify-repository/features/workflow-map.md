@@ -35,14 +35,17 @@ server or account configuration is installed.
    Also inspect Archify, Code Review And Quality, Issue Writing, Planning And Task
    Breakdown, Planning With Files, Screenshot Manual and SDLC. Each has a concrete
    example, flow, scope notes and public provenance; the SDLC explanation preserves
-   its pre-merge endpoint and conditional method selection.
+   its pre-merge endpoint and conditional method selection. Create Formal
+   Verification and Maintain Formal Verification state that they run only on an explicit
+   request, and both link their provenance.
    Inspect Communication, Execution and the Account setup & runtime group too:
    source links must resolve, triggers must explain when to use them, and account
    source/hook entries must state that they do not establish native activation.
+   The account transaction verifier names its two properties and links its source.
    Inspect **Self-improvement & eval (1-6)** as a separate numbered cycle:
    observation, reproduction, candidate, eval, review and deployment. Check each
    node's source and capability boundary: synthetic storage, explicit task feedback,
-   reviewed synthetic case export, offline evaluation accounting, diagnostic recommendations
+   reviewed synthetic case export, offline evaluation accounting, committed-source recommendations
    and the installer exist; Claude/Codex collection is available with separate
    consent/native-trust boundaries; one bounded live development comparison is
    complete with a reject result, while held-out evaluation and automatic

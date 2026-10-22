@@ -71,5 +71,7 @@ No additional mandatory policy or MCP server is needed. GitHub's read-only profi
 remains read-only; authorized issue/PR writes can use the registered `gh` capability.
 The product verification-skill pair is now adopted in the
 [verification decision](verification.md), with a bounded repository pilot. Other
-projects still qualify their generated verifier on their own runtime. This change does not install hooks, enable servers,
+projects still qualify their generated verifier on their own runtime. The
+[formal verification decision](formal-verification.md) adds the separate on-request pair
+for properties that tests rarely reach. This change does not install hooks, enable servers,
 create PRs or grant deployment authority.

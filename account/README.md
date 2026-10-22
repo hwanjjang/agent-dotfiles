@@ -372,3 +372,8 @@ for source comparisons and limits.
 
 A [screenshot walkthrough](../docs/manual/account-source.pdf) shows where to find
 these commands and the hook guide in the workflow map.
+
+Maintainers changing the transaction journal, undo, rollback or lock in
+`scripts/account_storage.py` can run the repository-only
+[account transaction verifier](../docs/verification/verify-account-transactions/SKILL.md).
+It is not part of installation or recovery and needs no action from users.

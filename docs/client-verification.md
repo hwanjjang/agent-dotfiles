@@ -345,8 +345,11 @@ fails, and reported **updated** with no bug. That is one bounded forward check.
 Archify finalize passed validation, delivery, strict provenance and browser checks
 for the [lifecycle diagram](architecture/account-transaction-lifecycle.html); its
 light 1440×900 capture was visually inspected. Not exercised: native discovery or
-automatic selection of the pair in any client, the repository browser verifier for
-the new map entries, other hosts, Linux, and CI execution of the model. Raw TLC
+automatic selection of the pair in any client, other hosts, Linux, and CI execution
+of the model. A follow-up ran the repository browser verifiers with an existing Playwright
+installation and Chrome 155.0.8059.85: the catalog check passed, and the workflow check
+passed all eight checks, including the formal pair and the account transaction verifier,
+after its stale self-improvement expectations were matched to current catalog and workflow map text. Raw TLC
 output, harness reports and captures stay local.
 
 ## PR and ticket adoption — 2026-10-17

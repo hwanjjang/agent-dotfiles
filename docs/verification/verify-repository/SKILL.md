@@ -69,7 +69,9 @@ a general walkthrough; this change does not alter its UI steps.
 and an explicitly selected real model scenario, with optional local Paseo. It is
 not part of the browser helper: run its CLI recipe separately and preserve the
 reported scope and blocked states. The [account guide](../../../account/README.md)
-owns invocation, privacy, quota and native trust requirements.
+owns invocation, privacy, quota and native trust requirements. Changes to the
+transaction journal, undo, rollback or lock also need the separate
+[account transaction verifier](../verify-account-transactions/SKILL.md).
 
 ## Explicit task feedback
 
