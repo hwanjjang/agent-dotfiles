@@ -566,7 +566,8 @@ class AccountSetupTests(unittest.TestCase):
         (self.home / 'bridge-hard').symlink_to(hard_dir / 'sub')
         for tree in ('.agents/agent-dotfiles/bundle', '.agents/agent-dotfiles/state', '.codex/hooks', '.claude/hooks',
                      '.AGENTS/Agent-Dotfiles/state', '.agents/Skills/x', '.Codex/Hooks', '.claude/HOOKS'):
-            (self.home / tree).mkdir(parents=True)
+            # On a case-insensitive file system (default macOS) the other spellings name the same directories.
+            (self.home / tree).mkdir(parents=True, exist_ok=True)
             (self.home / tree / 'NOTES.md').write_text('Payload notes.\n')
         cases = {
             'leaves the account': (str(outside), 'leaves the account'),
