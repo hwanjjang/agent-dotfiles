@@ -32,7 +32,7 @@
       "adopted_upstream": "https://github.com/cursor/plugins",
       "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
       "adopted_path": "pstack/skills/arena",
-      "local_skill_sha256": "a878d8deacd161cb14631e3f9b8b78ad11df9da5824c0c34ca75ddcc2a9958bf"
+      "local_skill_sha256": "27633c567408ebc4d1a92290477c4824474cd525898d8ca15e802a1471b9a600"
     },
     {
       "id": "swarm",
@@ -86,7 +86,7 @@
       "adopted_upstream": "https://github.com/mattpocock/skills",
       "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
       "adopted_path": "skills/engineering/diagnosing-bugs",
-      "local_skill_sha256": "1d29fa7e197edac763be7f8e33da7e09430b471edd9a24e340d576907ea21789"
+      "local_skill_sha256": "e9b705524257a8a10138ebbc746483f2999db12663205ff44a36e0946ca59fb7"
     },
     {
       "id": "domain-modeling",

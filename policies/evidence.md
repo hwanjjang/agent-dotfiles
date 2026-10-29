@@ -13,6 +13,13 @@ Scope: shared execution guidance for tasks that produce or change an artifact.
   where the change creates uncertainty; do not add checks merely to lengthen a list.
 - Record what was checked, its result, and material limits. Missing evidence is
   an explicit gap, never an inferred pass.
+- Recommended for a measured number such as a speedup, regression, latency,
+  throughput or evaluation result: before running, name the result that would
+  change the decision and the expected noise. Report the run count and spread with
+  the number, and the resource or code path that limits it when known. Rule out
+  errors, skipped or cached work, code that never ran, an untuned comparison side
+  and noise. An effect smaller than the run-to-run spread is unresolved. Frozen
+  evaluation rules, where a workflow defines them, take precedence.
 - For an authorized instruction or skill installation/update, verify the intended
   source, discovery and applicable execution or hook behavior in each intended
   client. Copied files or matching links alone do not establish a working setup;
@@ -26,6 +33,11 @@ https://github.com/cursor/plugins/blob/ac4e25a0064cd600afdd605208bad72748cb019a/
 
 Local changes: scoped evidence to the request, allowed reuse, removed dependency
 on an unbundled reporting skill, and clarified integrated-revision checks.
+The measured-number recommendation is adapted from pstack's
+`principle-explain-the-number` at revision `1ba91fc25c0977741dd0e267849e6234b037ed0a`
+(0.15.36), as guidance rather than a gate and without its benchmark-checklist
+dependency:
+https://github.com/cursor/plugins/blob/1ba91fc25c0977741dd0e267849e6234b037ed0a/pstack/skills/principle-explain-the-number/SKILL.md
 Client verification requirements are adapted from AK-authored account guidance,
 supplied for public reuse under the repository [MIT license](../LICENSE).
 

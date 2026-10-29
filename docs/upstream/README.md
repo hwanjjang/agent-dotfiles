@@ -98,7 +98,8 @@ generated verify skills read TLA+ results with statechart.
 The [statechart adoption](../decisions/statechart.md) vendors pstack's runtime payload
 at `1ba91fc` unchanged, with its MIT notice and per-file digests; the upstream test
 corpus is not vendored. The author announced it as stable; community validation is
-provisional.
+provisional. The same revision supplies arena's cross-family judge rule and the
+evidence policy's measured-number recommendation from `principle-explain-the-number`.
 
 The [PR/ticket adoption](../decisions/pr-workflow.md) combines pstack PR planning,
 Matt's ticket adapter and the original Cursor Team Kit review-preparation skill

@@ -40,6 +40,15 @@ Osmani's agent skills (`eb07f19`) contain no statechart, TLA+ or model-check ski
   results with statechart by name (#794, revised by #977). The local wording adds that
   the chart replaces neither the conformance link nor the scratch-break qualification.
   The maintain skill is unchanged upstream and stays at `190d287`.
+- [arena](../../skills/arena/SKILL.md) takes #986's judge rule without its Cursor model
+  slugs: the judge never shares the lead's model family, and with no other family the
+  judge is skipped and reported.
+- The [evidence policy](../../policies/evidence.md) takes
+  `principle-explain-the-number` as a recommendation, not a gate, and
+  [diagnosing-bugs](../../skills/diagnosing-bugs/SKILL.md) links it for performance
+  regressions. The upstream benchmark-checklist dependency is not imported. Frozen
+  evaluation rules keep precedence. Searches on 2026-10-30 found only directory
+  listings of this principle, no firsthand reports.
 
 ## Community evidence and limits
 

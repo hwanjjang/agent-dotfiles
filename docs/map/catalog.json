@@ -420,7 +420,7 @@
       "behavior": [
         "Freeze the brief, input revisions, acceptance gates, comparison criteria and budget.",
         "Give each candidate its own output location and the same brief; keep candidate outputs independent.",
-        "Collect stable artifacts and record dropouts; a fresh read-only judge compares them against the frozen criteria.",
+        "Collect stable artifacts and record dropouts; a fresh read-only judge from a model family other than the lead's compares them against the frozen criteria, or the judge is skipped and reported.",
         "The lead reads the candidates, resolves disagreements using evidence, selects a base and integrates only compatible improvements.",
         "Verify the combined artifact; a winning candidate does not establish that the synthesized result works."
       ],
@@ -455,7 +455,8 @@
         ],
         "adaptation_notes": [
           "AK defines shared comparison criteria before dispatch and uses the host\u2019s authorized capabilities; it does not require a fixed candidate count or assume cloud runners.",
-          "Selection grants no additional implementation, publication or merge authority."
+          "Selection grants no additional implementation, publication or merge authority.",
+          "The judge never shares the lead's model family; with no other family available the lead selects alone and says so."
         ],
         "calls": [],
         "sources": [
@@ -2354,7 +2355,7 @@
       "group": "start",
       "status": "available",
       "source": "docs/decisions/statechart.md",
-      "summary": "Source choice, community evidence, repository pilot and limits for the statechart skill.",
+      "summary": "Source choice, community evidence, repository pilot and limits for the statechart skill, plus the arena and measured-number changes from the same pstack revision.",
       "when": [
         "You are updating statechart, reading a TLA+ result with it or citing its chart as evidence."
       ],
