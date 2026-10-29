@@ -27,7 +27,7 @@ bug paths are drawn, and with no break no chart is written.
 
 The runtime payload is vendored unchanged with its MIT notice and per-file digests in
 [provenance](../../skills/statechart/provenance.json). The upstream test directory
-(370 files, about 3.6 MB) is not vendored. Upstream `disable-model-invocation: true`
+(376 files, about 3.6 MB) is not vendored. Upstream `disable-model-invocation: true`
 is kept: unlike the formal pair, statechart has no narrower trigger to rely on.
 
 The tie-break did not decide anything: Matt Pocock's skills (`a496f55`) and Addy
@@ -42,7 +42,9 @@ Osmani's agent skills (`eb07f19`) contain no statechart, TLA+ or model-check ski
   The maintain skill is unchanged upstream and stays at `190d287`.
 - [arena](../../skills/arena/SKILL.md) takes #986's judge rule without its Cursor model
   slugs: the judge never shares the lead's model family, and with no other family the
-  judge is skipped and reported.
+  judge is skipped and reported. As upstream, an unknown lead family still gets a judge,
+  but never a seat that inherits the lead's model, and the report says the family check
+  did not run.
 - The [evidence policy](../../policies/evidence.md) takes
   `principle-explain-the-number` as a recommendation, not a gate, and
   [diagnosing-bugs](../../skills/diagnosing-bugs/SKILL.md) links it for performance

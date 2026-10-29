@@ -456,7 +456,7 @@
         "adaptation_notes": [
           "AK defines shared comparison criteria before dispatch and uses the host\u2019s authorized capabilities; it does not require a fixed candidate count or assume cloud runners.",
           "Selection grants no additional implementation, publication or merge authority.",
-          "The judge never shares the lead's model family; with no other family available the lead selects alone and says so."
+          "The judge never shares the lead's model family; with no other family available the lead selects alone and says so, and with an unknown lead family it uses a non-inherited seat and says the family check did not run."
         ],
         "calls": [],
         "sources": [

@@ -31,8 +31,8 @@ it has no Hermes runtime or automatic retrieval dependency.
 `diagnosing-bugs`, optional `archify`, `statechart` for TLA+ results and its maintenance pair;
 `maintain-formal-verification-skill` links `tdd`, `diagnosing-bugs` and its creator.
 Neither bundles or installs a verifier. `statechart` bundles a TypeScript compiler
-that runs TLC on a TLA+ model and needs Node.js 22.18+ (or Bun or Deno) and Java
-with tla2tools; see its [provenance](statechart/provenance.json).
+that runs TLC on a TLA+ model and needs Node.js 22.18-22.x or 23.6+ (or Bun 1.1.5+
+or Deno 2.0+) and Java with tla2tools; see its [provenance](statechart/provenance.json).
 `architect` uses `how` and `arena`; `diagnosing-bugs` uses `tdd` for authorized
 corrections. SDLC selects methods through its
 [stage routing](sdlc/references/skill-routing.md); its provenance lists the full
