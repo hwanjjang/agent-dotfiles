@@ -9,9 +9,11 @@ MCP selections are opt-in and live connections require separate checks.
 The installer applied main `e103a2f` (57 paths, no conflicts). Status shows no drift, and
 the offline doctor passes with 27 skills. `doctor --native` passed for Codex (27 of 27
 skills, 7 owned hooks trusted) and for Claude (27 of 27 skill commands, SessionStart
-recovery). Earlier, on the `31524fc` install, `doctor --model-smoke` passed for Codex
-(`gpt-6-luna`) and Claude (`claude-haiku-5-5`). Model identity was verified, the sources
-were read and the installed files stayed unchanged. MCP authentication was not exercised.
+recovery). The installer reported `rg` (ripgrep) as a missing executable; these checks
+passed without it. Earlier, on the `31524fc` install, `doctor --model-smoke` passed for
+Codex (`gpt-6-luna`) and Claude (`claude-haiku-5-5`). Model identity was verified, the
+sources were read and the installed files stayed unchanged. MCP authentication was not
+exercised.
 
 ## Reviewer execution readiness — 2026-10-30
 

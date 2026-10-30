@@ -33,7 +33,7 @@ now prepares each reviewer's execution before dispatch, and the
     allowed test ran without a prompt, and a denied command was refused rather than
     prompted.
 - **Antigravity.** Only `full-access` is offered; checks run without isolation.
-- **Claude Code** (2.1.302, probed after the readiness rules merged).
+- **Claude Code** (2.1.302, probed on the PR #104 head a884843, whose tree main kept).
   - `auto` mode ran the checks, a write in the checkout and an outbound request without
     a prompt.
   - `default` mode applied a project `.claude/settings.local.json`: allowed checks ran,

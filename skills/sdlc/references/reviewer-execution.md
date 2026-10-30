@@ -136,15 +136,18 @@ Observed with Claude Code 2.1.302 through Paseo's Claude provider (model
   }
   ```
 
-  A command that expanded a shell variable (`env PATH=...:$PATH ...`) still prompted
-  despite the `env` allow rule. The same check with literal values
+  Rules match the command as written. Start Claude Code reviewer commands with
+  `python3.11`, the allowed interpreter, rather than the `python3` of the command block
+  above. A command that expanded a shell variable (`env PATH=...:$PATH ...`) still
+  prompted despite the `env` allow rule. The same check with literal values
   (`env TLA2TOOLS=/abs/path/tla2tools.jar python3.11 -m unittest ...`) ran without one,
   so give Claude Code reviewers commands without variable expansion.
 - The rules limit tools, not effects: an allowed interpreter can still write files, and
   the integrity check only reports drift afterwards.
 - Write the settings file before the helper's last preparation step so the record's
-  snapshot includes it, and delete it after the review; `remove` deletes only the
-  helper's own profiles.
+  snapshot includes it. Keep it unchanged through `integrity`, then delete it: `remove`
+  deletes only the helper's own profiles, and an earlier deletion makes `integrity`
+  report it as removed.
 - Paseo started Claude Code from the nvm Node 24 installation, so its commands resolved
   Node 24 on the observed host, unlike Grok's login shell.
 - Provider independence still applies: when the builder is a Claude model, a Claude Code
