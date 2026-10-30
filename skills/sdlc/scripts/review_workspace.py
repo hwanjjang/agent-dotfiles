@@ -6,11 +6,11 @@ hashed evidence bundle, report runtime versions in the environment that runs the
 command, check the checkout after the review and remove the profiles. The coordinator
 keeps one preparation record per checkout outside that checkout, with a snapshot of the
 ignored files; integrity and removal trust only that record and the helper's own profile
-paths. The integrity check finds
-drift by a reviewer that cannot write outside its checkout; it is no boundary against a
-reviewer with full access. Results are JSON on stdout. Exit codes: 0 passed, 1 failed
-check, 2 usage error. Python 3.11+, stdlib only. It launches no reviewer and changes no
-account settings.
+paths, and every command validates the record before it writes. The integrity check
+finds drift by a reviewer that cannot write outside its checkout; it is no boundary
+against a reviewer with full access. Results are JSON on stdout. Exit codes: 0 passed,
+1 failed check, 2 usage error. Python 3.11+, stdlib only. It launches no reviewer and
+changes no account settings.
 """
 import argparse
 from fnmatch import fnmatchcase
@@ -25,6 +25,7 @@ import unicodedata
 
 MANIFEST = 'MANIFEST.json'
 NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*\Z')
+SHA256 = re.compile(r'[0-9a-f]{64}\Z')
 HEADER = '# Written by the SDLC review_workspace.py helper for a review-only checkout. Remove after the review.\n'
 PROFILES = {
     # Workspace-write sandbox with local socket binding and no outbound network: the proxy
@@ -68,6 +69,21 @@ def plain(relative):
     return all(part not in ('', '.', '..') for part in relative.split('/'))
 
 
+def digest_map(value):
+    """Whether value maps plain relative paths to SHA-256 digests."""
+    return isinstance(value, dict) and all(
+        isinstance(path, str) and plain(path) and isinstance(digest, str) and SHA256.match(digest) for path, digest in value.items())
+
+
+def well_formed(data, root):
+    return (isinstance(data, dict) and data.get('schema_version') == 1 and data.get('checkout') == str(root)
+            and digest_map(data.get('placed')) and isinstance(data.get('bundles'), dict)
+            and all(isinstance(name, str) and NAME.match(name) and isinstance(entry, dict)
+                    and isinstance(entry.get('manifest_sha256'), str) and SHA256.match(entry['manifest_sha256'])
+                    and digest_map(entry.get('files')) for name, entry in data['bundles'].items())
+            and isinstance(data.get('ignored'), list) and all(isinstance(path, str) for path in data['ignored']))
+
+
 def inside(root, relative):
     """Join a plain relative path to the checkout root, refusing symbolic links on the way."""
     if not plain(relative):
@@ -102,10 +118,10 @@ class Record:
             self.data = {'schema_version': 1, 'checkout': str(root), 'placed': {}, 'bundles': {}, 'ignored': []}
         else:
             raise Usage(f'no record at {path}')
-        if not isinstance(self.data, dict) or self.data.get('checkout') != str(root):
-            raise Usage(f'{path} is not the record for {root}')
         if expect and sha(self.path) != expect:
             raise Unsafe('the record changed since preparation')
+        if not well_formed(self.data, root):
+            raise Usage(f'{path} is not a well-formed record (schema 1) for {root}')
 
     def placed_here(self, path):
         """Whether the helper placed this checkout path: a profile or a file in a bundle."""
@@ -195,7 +211,9 @@ def check_bundle(folder, expected=None):
         try:
             recorded = json.loads(entries[MANIFEST].read_text())['files']
         except (ValueError, KeyError, TypeError):
-            return [f'{MANIFEST} is unreadable']
+            recorded = None
+        if not digest_map(recorded):
+            return [f'{MANIFEST} does not map file names to SHA-256 digests']
     else:
         recorded = expected['files']
         if sha(entries[MANIFEST]) != expected['manifest_sha256']:

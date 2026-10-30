@@ -218,18 +218,45 @@ class ReviewWorkspaceTests(unittest.TestCase):
         (self.checkout / '.grok/config.toml').write_text('# edited by reviewer\n')
         data = json.loads(self.record.read_text())
         (self.outside / 'keep.txt').write_text('keep\n')
-        data['placed'].update({'tracked.txt': rw.sha(self.checkout / 'tracked.txt'),
-                               '../outside/keep.txt': rw.sha(self.outside / 'keep.txt')})
+        escaping = dict(data, placed={**data['placed'], '../outside/keep.txt': rw.sha(self.outside / 'keep.txt')})
+        self.record.write_text(json.dumps(escaping))
+        self.assertEqual(self.helper('remove')[0], 2)
+        data['placed']['tracked.txt'] = rw.sha(self.checkout / 'tracked.txt')
         self.record.write_text(json.dumps(data))
         self.assertEqual(self.helper('remove', '--expect-record-sha256', '0' * 64)[0], 1)
         self.assertTrue((self.checkout / '.codex/config.toml').exists())
         code, result = self.helper('remove')
         self.assertEqual(code, 1)
         self.assertEqual(result['removed'], ['.codex/config.toml'])
-        self.assertEqual(len(result['problems']), 3)
+        self.assertEqual(len(result['problems']), 2)
         self.assertFalse((self.checkout / '.codex').exists())
         for kept in (self.checkout / '.grok/config.toml', self.checkout / 'tracked.txt', self.outside / 'keep.txt'):
             self.assertTrue(kept.exists(), kept)
+
+    def test_malformed_record_or_manifest_fails_before_any_write(self):
+        self.record.parent.mkdir(parents=True)
+        base = {'schema_version': 1, 'checkout': str(self.checkout), 'placed': {}, 'bundles': {}, 'ignored': []}
+        malformed = ([], {'checkout': str(self.checkout)}, dict(base, schema_version=2), dict(base, placed=[]),
+                     dict(base, placed={'.grok/config.toml': 'x'}), dict(base, bundles={'b': {'files': {}}}),
+                     dict(base, bundles={'../b': {'manifest_sha256': '0' * 64, 'files': {}}}), dict(base, ignored={}))
+        for data in malformed:
+            self.record.write_text(json.dumps(data))
+            for argv in (('profile', '--host', 'grok'), ('bundle', '--name', 'b', f'--file=x={self.evidence}'),
+                         ('integrity', '--head', self.head), ('remove',)):
+                with self.subTest(record=data, command=argv[0]):
+                    code, result = self.helper(*argv)
+                    self.assertEqual(code, 2)
+                    self.assertIn('well-formed record', result['error'])
+        self.assertEqual(sorted(p.name for p in self.checkout.iterdir()), ['.git', 'tracked.txt'])
+        folder = self.root / 'loose'
+        folder.mkdir()
+        (folder / 'foo').write_text('x\n')
+        for manifest in ({'files': ['foo']}, {'files': {'foo': 'not-a-digest'}}, ['files'], {'other': {}}, 'text'):
+            with self.subTest(manifest=manifest):
+                (folder / rw.MANIFEST).write_text(json.dumps(manifest))
+                code, result = run('verify-bundle', str(folder))
+                self.assertEqual(code, 1)
+                self.assertEqual(result['problems'], ['MANIFEST.json does not map file names to SHA-256 digests'])
 
     def test_runtimes_checks_every_named_tool(self):
         bin_dir = self.root / 'bin'

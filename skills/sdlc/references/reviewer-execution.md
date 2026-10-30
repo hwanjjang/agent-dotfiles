@@ -23,8 +23,9 @@ python3 <skill>/scripts/review_workspace.py remove --checkout <checkout> --recor
 
 Keep each record in the coordinator's ignored task directory, never in a reviewer's
 checkout, and note the `record_sha256` that the last preparation step reports.
-`profile` refuses to replace an existing file with other content, writes refuse
-symbolic links on the way, and `remove` deletes only the helper's unchanged profiles.
+Every command checks the record's structure before it writes. `profile` refuses to
+replace an existing file with other content, writes refuse symbolic links on the way,
+and `remove` deletes only the helper's unchanged profiles.
 `integrity` compares HEAD, `git status`, the placed profiles and the bundles with the
 record, and ignored files by path with the snapshot taken at preparation;
 `--allow-ignored` names expected byproducts of the checks, such as Python bytecode. A
