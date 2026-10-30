@@ -26,3 +26,8 @@ client operation are checked separately.
 The repository-only [account transaction verifier](../docs/verification/verify-account-transactions/SKILL.md)
 uses TLA+ tools v1.7.4 (`tla2tools`), pinned by a sha256 recorded at first download
 because the release publishes no digest. The jar stays in ignored `.local/tools/`.
+
+[statechart](../skills/statechart/SKILL.md) bundles its TypeScript compiler and
+launcher. It finds TLC through `TLA2TOOLS` and `JAVA`; otherwise its first run installs
+Java and tla2tools v1.7.4 with mise over the network, so set those variables or
+confirm install authority first. Optional SVG rendering installs `pele@1.9.0`.

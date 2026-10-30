@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/cursor/plugins",
-  "revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
+  "revision": "1ba91fc25c0977741dd0e267849e6234b037ed0a",
   "path": "pstack/skills/create-formal-verification-skill",
   "license": "MIT",
   "license_path": "pstack/LICENSE",
-  "retrieved": "2026-10-22",
+  "retrieved": "2026-10-30",
   "upstream_files": {
-    "SKILL.md": "6c934cd15a9583533ff9b7a9cad62775d7e80402d26d3ba7f74f79ea21a1d8eb"
+    "SKILL.md": "30ef0ac27612ecd16fdc081112113221d673053cef3f8603db11932193861211"
   },
   "upstream_license_sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e",
   "adaptations": [
@@ -16,14 +16,16 @@
     "Tool installs, product-source harnesses, fixes and publication stay within task authority; a missing tool is blocked/not-run.",
     "Isolated scratch breaks with a restored-state check; a separate design model must show how a code change reaches it, with a code-level conformance link where practical.",
     "Added non-vacuity and bound checks, version/checksum pinning and bounded-testing labels for generated-input fallbacks.",
-    "Linked shared evidence/security policies and existing tdd, diagnosing-bugs, archify and verification owners; raw tool output stays local."
+    "Linked shared evidence/security policies and existing tdd, diagnosing-bugs, archify and verification owners; raw tool output stays local.",
+    "Kept upstream's statechart hand-off (#794, revised in #977) as one paragraph: TLA+ results are read with statechart by name, and its chart does not replace the conformance link or scratch-break qualification."
   ],
   "skill_dependencies": [
     "create-verification-skill",
     "tdd",
     "diagnosing-bugs",
     "archify",
-    "maintain-formal-verification-skill"
+    "maintain-formal-verification-skill",
+    "statechart"
   ],
   "policy_dependencies": [
     "policies/evidence.md",
@@ -32,6 +34,6 @@
   "runtime_requirements": [
     "Target source, Git history and a verifier the target can install and run (for example TLA+ tools with Java, Kani, CBMC, Dafny or Lean); none is bundled or installed; no MCP."
   ],
-  "selection": "cursor/plugins main at 190d287 (pstack 0.15.29, last pstack commit 88d4751); SKILL.md unchanged since 0.15.28 (d457567). The author's announcement labels the pair beta. Community validation is provisional; see docs/decisions/formal-verification.md. Sources: PRs #709 and #721; coverage record from #716.",
+  "selection": "cursor/plugins main at 1ba91fc (pstack 0.15.36). From the first pin 190d287 (0.15.29) the only upstream change is the statechart paragraph added by #794 and revised by #977. The author's announcement with 0.15.27 labels the pair beta; the 2026-10-29 announcement makes statechart stable and does not change the pair's status. Community validation is provisional; see docs/decisions/formal-verification.md and docs/decisions/statechart.md. Sources: PRs #709 and #721; coverage record from #716.",
   "validation": "Upstream hash/license, metadata, link and dependency checks passed; the repository pilot and its limits are recorded in docs/client-verification.md. Native routing and general model adherence remain unverified."
 }

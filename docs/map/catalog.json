@@ -420,7 +420,7 @@
       "behavior": [
         "Freeze the brief, input revisions, acceptance gates, comparison criteria and budget.",
         "Give each candidate its own output location and the same brief; keep candidate outputs independent.",
-        "Collect stable artifacts and record dropouts; a fresh read-only judge compares them against the frozen criteria.",
+        "Collect stable artifacts and record dropouts; a fresh read-only judge from a model family other than the lead's compares them against the frozen criteria, or the judge is skipped and reported.",
         "The lead reads the candidates, resolves disagreements using evidence, selects a base and integrates only compatible improvements.",
         "Verify the combined artifact; a winning candidate does not establish that the synthesized result works."
       ],
@@ -455,7 +455,8 @@
         ],
         "adaptation_notes": [
           "AK defines shared comparison criteria before dispatch and uses the host\u2019s authorized capabilities; it does not require a fixed candidate count or assume cloud runners.",
-          "Selection grants no additional implementation, publication or merge authority."
+          "Selection grants no additional implementation, publication or merge authority.",
+          "The judge never shares the lead's model family; with no other family available the lead selects alone and says so, and with an unknown lead family it uses a non-inherited seat and says the family check did not run."
         ],
         "calls": [],
         "sources": [
@@ -2116,7 +2117,7 @@
         "Choose the strongest consequential property and the cheapest tool that answers it; a missing tool is blocked, not a pass.",
         "Tie every model or harness step to code a reviewer can open; record bounds, assumptions and exclusions.",
         "Show each property failing on an isolated broken variant and check that the model is not vacuous.",
-        "Write a verify skill with one rerun command, a pinned tool version, a coverage record and a sync commit.",
+        "Write a verify skill with one rerun command, a pinned tool version, a coverage record and a sync commit; TLA+ results are read with statechart.",
         "Qualify it on a scratch break in real code, restore the checkout and report findings without changing product code."
       ],
       "outputs": [
@@ -2156,12 +2157,13 @@
           "tdd",
           "diagnosing-bugs",
           "archify",
-          "maintain-formal-verification-skill"
+          "maintain-formal-verification-skill",
+          "statechart"
         ],
         "sources": [
           {
             "label": "Adopted upstream method (pinned)",
-            "url": "https://github.com/cursor/plugins/blob/190d28736eff128ec94f502a22c7fe0c4b56cd37/pstack/skills/create-formal-verification-skill/SKILL.md"
+            "url": "https://github.com/cursor/plugins/blob/1ba91fc25c0977741dd0e267849e6234b037ed0a/pstack/skills/create-formal-verification-skill/SKILL.md"
           },
           {
             "label": "Origin, adaptations and verification limits",
@@ -2250,6 +2252,78 @@
       }
     },
     {
+      "id": "statechart",
+      "title": "Statechart",
+      "kind": "skill",
+      "group": "content",
+      "status": "available",
+      "source": "skills/statechart/SKILL.md",
+      "summary": "Check a TLA+ model with TLC, report the shortest path to each broken rule and draw the explored states as a Mermaid statechart in the reader's words.",
+      "when": [
+        "A TLA+ model's results must be read by someone who does not read TLA+, such as the owner of a product flow or protocol.",
+        "A formal verify skill tells you to read its TLA+ result with statechart."
+      ],
+      "usage": "Load skills/statechart/SKILL.md explicitly; upstream disables model invocation. Use statechart to show why the checkout model breaks NoDoubleCharge.",
+      "behavior": [
+        "Write the reader's rules as invariants and Next as a disjunction of named actions, in a scratch folder outside the repository.",
+        "Run TLC on the config as written, then rerun without each broken rule; report rules not checked when a run hits its bound or errors.",
+        "Label states, steps and phases through a view module; keep bug paths and marks visible when merging labels.",
+        "Draw the full chart only up to 500 states; above that draw only bug paths, and with no break write no chart.",
+        "Hand off each bug with its rule, path and what the model leaves out; replay bug paths against real code before calling them code bugs."
+      ],
+      "outputs": [
+        "report.md with shortest bug paths and rules held or not checked, chart.mmd within the state budget, and raw TLC output."
+      ],
+      "tags": [
+        "verification",
+        "formal-verification",
+        "diagram",
+        "statechart"
+      ],
+      "explanation": {
+        "example": {
+          "situation": "A payment model may charge twice when a retry follows a timeout, and the product owner needs to judge the behavior.",
+          "youType": "Use statechart to show why the checkout model breaks NoDoubleCharge.",
+          "whatHappens": [
+            "Run TLC on the model and its config, then rerun without each broken rule.",
+            "Label the states and steps in the owner's words through a view module.",
+            "Mark the state that breaks the rule and number the shortest path to it."
+          ],
+          "youGet": "A Mermaid chart and report the owner can read, with each bug's path, the rules that held and the model's omissions."
+        },
+        "flows": [
+          [
+            "Write spec and config",
+            "Check with TLC",
+            "Recheck without broken rules",
+            "Label with view",
+            "Draw chart or bug paths",
+            "Hand off"
+          ]
+        ],
+        "adaptation_notes": [
+          "Vendored unchanged from pstack 0.15.36 without the upstream test corpus; upstream disable-model-invocation is kept.",
+          "TLA2TOOLS and JAVA avoid its networked mise install; install tools only within task authority. The view module runs as code.",
+          "The chart explains a checked model; it is not code proof and does not replace a formal verify skill's conformance link."
+        ],
+        "calls": [],
+        "sources": [
+          {
+            "label": "Adopted upstream method (pinned)",
+            "url": "https://github.com/cursor/plugins/blob/1ba91fc25c0977741dd0e267849e6234b037ed0a/pstack/skills/statechart/SKILL.md"
+          },
+          {
+            "label": "Origin, files and verification limits",
+            "source": "skills/statechart/provenance.json"
+          },
+          {
+            "label": "Selection, community evidence and pilot",
+            "source": "docs/decisions/statechart.md"
+          }
+        ]
+      }
+    },
+    {
       "id": "formal-verification-adoption",
       "title": "Formal verification adoption",
       "kind": "guide",
@@ -2272,6 +2346,31 @@
         "verification",
         "formal-verification",
         "formal-verification-adoption"
+      ]
+    },
+    {
+      "id": "statechart-adoption",
+      "title": "Statechart adoption",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/statechart.md",
+      "summary": "Source choice, community evidence, repository pilot and limits for the statechart skill, plus the arena and measured-number changes from the same pstack revision.",
+      "when": [
+        "You are updating statechart, reading a TLA+ result with it or citing its chart as evidence."
+      ],
+      "usage": "Read before changing statechart's pin, invocation or runtime notes.",
+      "behavior": [
+        "Records the pinned source, the author's stable announcement and provisional community evidence.",
+        "Keeps chart claims bounded to the checked model and its bounds; vendors no TLA+ tools."
+      ],
+      "outputs": [
+        "A reviewable selection rationale with pilot results and explicit limits."
+      ],
+      "tags": [
+        "verification",
+        "formal-verification",
+        "statechart-adoption"
       ]
     },
     {
@@ -3849,6 +3948,26 @@
       "from": "to-tickets",
       "to": "to-spec",
       "label": "Shares source extraction"
+    },
+    {
+      "from": "create-formal-verification-skill",
+      "to": "statechart",
+      "label": "Reads TLA+ results with"
+    },
+    {
+      "from": "statechart-adoption",
+      "to": "statechart",
+      "label": "selects"
+    },
+    {
+      "from": "statechart-adoption",
+      "to": "formal-verification-adoption",
+      "label": "Extends the formal verification adoption"
+    },
+    {
+      "from": "statechart",
+      "to": "archify",
+      "label": "Leaves explanatory pages to"
     }
   ]
 }

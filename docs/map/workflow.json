@@ -335,6 +335,7 @@
         "repository-feature-map",
         "create-formal-verification-skill",
         "maintain-formal-verification-skill",
+        "statechart",
         "repository-formal-verifier"
       ]
     },
@@ -429,7 +430,8 @@
     "grounded-citations": "Research or source-heavy documents need a retrieved-source register and supporting quotes; skip incidental lookups.",
     "create-formal-verification-skill": "Only on an explicit request to formally verify, model-check or formally prove a stated property; code that merely has concurrency, retries or state machines gets ordinary tests.",
     "maintain-formal-verification-skill": "A recheck was requested for a formal check whose covered code changed, or a stale formal model, proof or harness needs resyncing; separate drift from bugs.",
-    "repository-formal-verifier": "You changed this repository's account transaction, undo, rollback or lock code and need its formal model and real-code interruption checks."
+    "repository-formal-verifier": "You changed this repository's account transaction, undo, rollback or lock code and need its formal model and real-code interruption checks.",
+    "statechart": "On an explicit request, or when a formal verify skill says so, to read a TLA+ model's TLC result as shortest bug paths and a statechart."
   },
   "category_titles": {
     "triage": [
@@ -537,6 +539,7 @@
     "grounded-citations": "trace sources and report citations",
     "create-formal-verification-skill": "prove a requested property",
     "maintain-formal-verification-skill": "resync formal checks with code",
-    "repository-formal-verifier": "check account transactions"
+    "repository-formal-verifier": "check account transactions",
+    "statechart": "read TLA+ results as charts"
   }
 }

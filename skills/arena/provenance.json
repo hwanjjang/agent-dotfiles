@@ -11,7 +11,8 @@
   },
   "adaptations": [
     "Portable rewrite preserving frame/candidates/judge/base/synthesis/verification.",
-    "Shared criteria, bounded retries, truthful capability gaps, and explicit endpoint."
+    "Shared criteria, bounded retries, truthful capability gaps, and explicit endpoint.",
+    "Judge-family rule from pstack 1ba91fc (0.15.36, #986, upstream SKILL.md sha256 d0adeca6c9b19d43d90ed8f0484f0ddd362f05006d628b8f4cc6c9b55fa4d2b3): the judge never shares the lead's model family, an inherited seat counts as the lead's family, with no other family the judge is skipped and reported, and with an unknown lead family the judge is a non-inherited seat and the report says the family check did not run. Upstream Cursor model slugs and fallback chains are not imported."
   ],
   "skill_dependencies": [],
   "runtime_requirements": [

@@ -25,7 +25,8 @@ request ends at findings; it does not authorize implementation or tracker writes
 3. **Test competing explanations.** For a difficult cause, state plausible
    hypotheses and the observation that would disprove each. Change one variable
    at a time. Use targeted probes or a debugger; measure performance regressions
-   against a baseline. No fixed hypothesis count is required.
+   against a baseline, following the measured-number recommendation in the
+   [evidence policy](../../policies/evidence.md). No fixed hypothesis count is required.
 4. **Correct within scope.** If implementation is authorized, pass the supported
    cause, reproduction and intended behavior to [tdd](../tdd/SKILL.md). It owns
    regression/test-first mechanics and practical exceptions; do not maintain a

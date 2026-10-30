@@ -22,8 +22,13 @@ A sequential single-agent exploration is a different method and must be labeled.
 4. Collect completed artifacts and rationales. Record dropouts. Require genuinely
    different structures when exploring architecture, not cosmetic variants.
 5. After outputs are stable, a fresh read-only judge compares them against the
-   frozen criteria. The lead also reads each artifact and resolves disagreements
-   using evidence or bounded experiments. Model agreement is not proof.
+   frozen criteria. Take the judge from a model family other than the lead's; a
+   seat that inherits the lead's model counts as the lead's family. If no other
+   family is available, skip the judge, select alone and say so. If the lead's
+   family is unknown, take a judge that does not inherit the lead's model and say
+   that the family check did not run. The lead also reads each artifact and
+   resolves disagreements using evidence or bounded experiments. Model agreement
+   is not proof.
 6. Select a base; incorporate only compatible improvements. Record the source and
    reason for each addition, rejected alternatives, and accepted tradeoffs.
 7. Verify the synthesized artifact against the acceptance gates. A candidate's
