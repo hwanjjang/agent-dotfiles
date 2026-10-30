@@ -332,10 +332,11 @@ def reviewer_effort_authority(root, state, intent_receipt=None):
     This checks structure and freshness. The main/adapter must authenticate and
     interpret the user instruction before recording an intent authority output.
     """
+    default = reviewer_effort_default(state)  # checked even when an authority applies
     if intent_receipt is None:
         intent = state['stages']['intent']
         if intent['status'] != 'complete':
-            return reviewer_effort_default(state), None
+            return default, None
         intent_receipt = intent['history'][-1]['receipt']
     require(intent_receipt.get('decision') == 'PROCEED', 'Effort needs successful intent')
     outputs = intent_receipt.get('outputs', [])
@@ -345,7 +346,7 @@ def reviewer_effort_authority(root, state, intent_receipt=None):
             if r.get('kind') == 'reviewer-effort-authority']
     require(len(refs) <= 1, 'Multiple reviewer effort authorities')
     if not refs:
-        return reviewer_effort_default(state), None
+        return default, None
     ref = refs[0]
     data = read_json(check_ref(root, ref))
     require(isinstance(data, dict) and data.get('task_id') == state['task_id']

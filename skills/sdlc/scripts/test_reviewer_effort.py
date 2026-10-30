@@ -70,10 +70,14 @@ class EffortTests(unittest.TestCase):
                     self.check(dict(reviewer(), requested_effort=effort, effort=effort, reviewer_effort_authority=ref))
 
     def test_only_the_high_default_can_be_recorded(self):
-        for value, effort in (('low', 'low'), ('medium', 'medium'), (None, 'medium'), (['high'], 'high')):
-            self.state['reviewer_effort_default'] = value
-            with self.subTest(value=value), self.assertRaises(s.GateError):
-                self.check(dict(reviewer(), requested_effort=effort, effort=effort))
+        for with_authority in (False, True):
+            for value, effort in (('low', 'low'), ('medium', 'medium'), (None, 'medium'), (['high'], 'high')):
+                review = dict(reviewer(), requested_effort=effort, effort=effort)
+                if with_authority:  # an authority must not hide an invalid recorded default
+                    review['reviewer_effort_authority'] = self.authority(effort=effort)
+                self.state['reviewer_effort_default'] = value
+                with self.subTest(with_authority=with_authority, value=value), self.assertRaises(s.GateError):
+                    self.check(review)
 
     def test_default_and_explicit_high(self):
         self.check(reviewer())
