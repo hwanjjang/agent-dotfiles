@@ -94,6 +94,7 @@ labels states by operation and journal status.
 
 The upstream test suite was not run locally: the session's permission classifier
 declined running the downloaded upstream tests. Upstream #982 reports 367 passing
-tests with TLC 1.7.4. Bun, Deno, the mise installation, Pele rendering, Linux and
-Windows, and model-driven use were not exercised. The pilot's view and configs stay in
+tests with TLC 1.7.4. CI installs Java 17, Node.js 24 and the pinned jar, so the vendored
+test's TLC case also runs on Linux there. Bun, Deno, the mise installation, Pele
+rendering, Windows and model-driven use were not exercised. The pilot's view and configs stay in
 ignored `.local/`; the account verifier is unchanged.

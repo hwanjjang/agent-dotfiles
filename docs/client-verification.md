@@ -12,11 +12,12 @@ match cursor/plugins `1ba91fc` byte for byte. Provenance records each digest, an
 and decision note, and the launcher's executable bit; a scratch edit and a removed
 executable bit each failed it. On macOS with Node.js 24.19, OpenJDK 17.0.20 and
 tla2tools v1.7.4 (sha256 matched), its TLC case reported a 3-step shortest violation
-with exit 1 and a holding rule with exit 0. CI has no TLC, so that case skips there.
+with exit 1 and a holding rule with exit 0. CI installs Java 17, Node.js 24 and the pinned
+jar, so the case also runs on Linux there and fails if they are missing.
 The account transaction pilot in the [adoption decision](decisions/statechart.md) drew
 its chart and bug path. The upstream test suite did not run: the session's permission
 classifier declined running the downloaded tests. Bun, Deno, the mise install, Pele
-rendering, other platforms and native routing are unverified.
+rendering, Windows and native routing are unverified.
 
 A fresh Claude agent applied each edited instruction once to a synthetic case. The
 create-formal case wrote a verify-skill section that named statechart and copied none of

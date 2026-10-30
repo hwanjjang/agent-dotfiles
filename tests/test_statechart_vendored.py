@@ -52,11 +52,16 @@ class VendoredStatechartTests(unittest.TestCase):
         self.assertEqual(changed, [], 'vendored files must stay byte-identical to the pinned upstream')
         self.assertTrue(os.access(LAUNCHER, os.X_OK), 'the launcher must stay executable')
 
-    # Without TLA2TOOLS the command would install Java and TLC with mise over the network, so skip.
-    @unittest.skipUnless(TLA2TOOLS and Path(TLA2TOOLS).is_file(), 'set TLA2TOOLS to a tla2tools.jar')
+    # Without TLA2TOOLS the command would install Java and TLC with mise over the network, so skip
+    # locally. CI provides the pinned tools, so a missing jar or runtime fails there instead of skipping.
+    @unittest.skipUnless((TLA2TOOLS and Path(TLA2TOOLS).is_file()) or os.environ.get('CI'),
+                         'set TLA2TOOLS to a tla2tools.jar')
     def test_small_model_reports_its_verdicts(self):
+        self.assertTrue(TLA2TOOLS and Path(TLA2TOOLS).is_file(), 'CI must provide TLA2TOOLS')
         probe = subprocess.run([str(LAUNCHER)], capture_output=True, text=True, timeout=60)
         if probe.returncode == 127:
+            if os.environ.get('CI'):
+                self.fail(probe.stderr.strip())
             self.skipTest(probe.stderr.strip())
         with tempfile.TemporaryDirectory() as scratch:
             work = Path(scratch)

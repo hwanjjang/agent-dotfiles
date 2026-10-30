@@ -27,6 +27,21 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.11'
+      - name: Set up Java for TLC
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Node.js for the statechart launcher
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - name: Download the pinned TLA+ tools
+        run: |
+          jar="$RUNNER_TEMP/tla2tools.jar"
+          curl -fsSL --retry 3 -o "$jar" https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
+          echo "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  $jar" | sha256sum -c -
+          echo "TLA2TOOLS=$jar" >> "$GITHUB_ENV"
       - name: Install existing manual test dependencies
         run: python -m pip install --disable-pip-version-check -r skills/screenshot-manual/requirements.txt
       - name: Require manual test dependencies

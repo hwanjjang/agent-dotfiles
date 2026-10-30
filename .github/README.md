@@ -19,18 +19,23 @@ can require the branch to be up to date before merging; that is separate reposit
 configuration, not enforcement provided or enabled by this workflow.
 
 The job uses Ubuntu 24.04 and Python 3.11, with a 15-minute limit. Python 3.11 meets
-the account tooling's `tomllib` requirement. The runner installs only the existing
+the account tooling's `tomllib` requirement. The runner installs the existing
 [screenshot manual dependencies](../skills/screenshot-manual/requirements.txt).
 An explicit import check prevents their absence from silently skipping the manual
-tests. The token has only `contents: read`; checkout does not persist credentials.
+tests. It also installs Java 17 (Temurin), Node.js 24 and TLA+ tools v1.7.4, whose
+download is checked against the sha256 that [`tools/registry.json`](../tools/registry.json)
+records, and exports `TLA2TOOLS`. With them the vendored [statechart](../skills/statechart/SKILL.md)
+test runs a small model through TLC; in CI it fails instead of skipping when the jar
+or a supported runtime is missing. The token has only `contents: read`; checkout does not persist credentials.
 No account configuration, model credentials or repository secrets are supplied.
 Tests use their existing disposable synthetic fixtures.
 
 The job also runs the [account transaction verifier's](../docs/verification/verify-account-transactions/SKILL.md)
 real-code harness with its paired code mutations (stdlib only, about a minute). It
-does not run the TLA+ model check, which needs Java and the pinned TLA+ tools, or the
-verifier's `--check-sync`, whose history depth and sync-commit timing are not yet
-defined for pull requests; run both locally as the verifier describes.
+does not run that verifier's full run, whose TLA+ model check is available but whose
+sync check walks history from the recorded sync commit, or its `--check-sync`; their
+history depth and sync-commit timing are not yet defined for pull requests. Run both
+locally as the verifier describes.
 
 ## Reproduce the checks
 
@@ -45,6 +50,8 @@ set -e
 python3.11 -m venv .local/ci-venv
 .local/ci-venv/bin/python -m pip install -r skills/screenshot-manual/requirements.txt
 .local/ci-venv/bin/python -c "import reportlab, pypdf, PIL"
+# For the statechart TLC test: Java 11+, Node.js 22.18+ and the pinned jar (see tools/registry.json).
+export TLA2TOOLS="$PWD/.local/tools/tla2tools-1.7.4/tla2tools.jar"
 .local/ci-venv/bin/python -m unittest discover -s tests -v
 .local/ci-venv/bin/python -m unittest discover -s skills/sdlc/scripts -p 'test_*.py' -v
 .local/ci-venv/bin/python docs/verification/verify-account-transactions/scripts/conformance.py --mutations docs/verification/verify-account-transactions/model/expectations.json
