@@ -24,6 +24,8 @@ KINDS = ('behavior', 'refactor', 'non-executable', 'configuration')
 ENDPOINTS = ('local', 'pr', 'pre-merge', 'main')
 LIMIT = 10
 REVIEW_WORKFLOW = '2026-10-01'
+# New tasks record this; tasks initialized before 2026-10-30 have no field and keep medium.
+REVIEWER_EFFORT_DEFAULT = 'high'
 
 
 class GateError(ValueError):
@@ -158,6 +160,7 @@ def initialize(root, task, mode, change_kind, endpoint, criteria):
         require(not path.exists(), 'Task already exists; inspect/resume instead of resetting')
         state = {'schema_version': 1, 'task_id': task, 'mode': mode, 'change_kind': change_kind,
                  'endpoint': endpoint, 'criteria': criteria, 'created_at': timestamp(), 'events': [],
+                 'reviewer_effort_default': REVIEWER_EFFORT_DEFAULT,
                  'stages': {s: {'applicable': s in selected,
                      'status': 'pending' if s in selected else 'not-applicable',
                      'reason': '' if s in selected else ('No correction requested' if s == 'correction' else f'Excluded by {mode}/{endpoint} route'),
@@ -316,16 +319,24 @@ def provider_identity(value):
     return name
 
 
+def reviewer_effort_default(state):
+    if 'reviewer_effort_default' not in state:
+        return 'medium'
+    require(state['reviewer_effort_default'] == REVIEWER_EFFORT_DEFAULT, 'Unknown recorded reviewer effort default')
+    return REVIEWER_EFFORT_DEFAULT
+
+
 def reviewer_effort_authority(root, state, intent_receipt=None):
     """Derive effort only from assessed intent outputs, never reviewer assertions.
 
     This checks structure and freshness. The main/adapter must authenticate and
     interpret the user instruction before recording an intent authority output.
     """
+    default = reviewer_effort_default(state)  # checked even when an authority applies
     if intent_receipt is None:
         intent = state['stages']['intent']
         if intent['status'] != 'complete':
-            return 'medium', None
+            return default, None
         intent_receipt = intent['history'][-1]['receipt']
     require(intent_receipt.get('decision') == 'PROCEED', 'Effort needs successful intent')
     outputs = intent_receipt.get('outputs', [])
@@ -335,7 +346,7 @@ def reviewer_effort_authority(root, state, intent_receipt=None):
             if r.get('kind') == 'reviewer-effort-authority']
     require(len(refs) <= 1, 'Multiple reviewer effort authorities')
     if not refs:
-        return 'medium', None
+        return default, None
     ref = refs[0]
     data = read_json(check_ref(root, ref))
     require(isinstance(data, dict) and data.get('task_id') == state['task_id']
@@ -352,7 +363,8 @@ def reviewer_effort_authority(root, state, intent_receipt=None):
     return effort, ref
 
 
-def validate_reviewer_configuration(review, revised=False, expected_effort="medium", effort_authority=None):
+def validate_reviewer_configuration(review, revised=False, expected_effort=REVIEWER_EFFORT_DEFAULT,
+                                    effort_authority=None):
     require(isinstance(review, dict), 'Missing review configuration')
     for key in ('author_provider', 'provider', 'author_account', 'account', 'model', 'context_id',
                 'builder_context_id', 'model_selection_source', 'model_selection_time'):
@@ -403,7 +415,8 @@ def validate_reviewer_configuration(review, revised=False, expected_effort="medi
         require(read_only, 'This assignment requires verified read-only isolation')
 
 
-def validate_review(review, candidate, revised=False, expected_effort="medium", effort_authority=None):
+def validate_review(review, candidate, revised=False, expected_effort=REVIEWER_EFFORT_DEFAULT,
+                    effort_authority=None):
     validate_reviewer_configuration(review, revised, expected_effort, effort_authority)
     for key in ('head', 'base', 'record_url', 'record_id'):
         require(nonempty(review.get(key)), f'Missing review {key}')

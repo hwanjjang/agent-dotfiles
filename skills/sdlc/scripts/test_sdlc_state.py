@@ -15,7 +15,7 @@ def reviewer(slot=1, provider='anthropic'):
                 account='reviewer', model='fixture-model', context_id='review-context',
                 builder_context_id='build-context', independent=True,
                 model_selection_source='fixture catalog', model_selection_time='2026-10-01',
-                latest_ga_model_verified=True, requested_effort='medium', effort='medium',
+                latest_ga_model_verified=True, requested_effort='high', effort='high',
                 effort_verified=True, requested_mode='auto', mode='auto', mode_verified=True,
                 reviewer_slot=slot, unavailable_reviewers=[
                     dict(slot=i, provider='anthropic', account=f'reviewer-{i}',
