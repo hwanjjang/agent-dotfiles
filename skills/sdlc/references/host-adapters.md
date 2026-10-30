@@ -85,8 +85,8 @@ it. Before dispatch:
 4. Supply inputs the reviewer cannot fetch: a hashed evidence bundle, pinned upstream
    copies and hosted CI logs. Keep file names distinct on case-insensitive file systems.
 5. After the return, check the reviewer's checkout against a preparation record kept
-   outside it: the same HEAD, no tracked, untracked or ignored file added, changed or
-   removed except files the coordinator placed and expected byproducts of the checks,
+   outside it: the same HEAD, no tracked or untracked change and no ignored file added
+   or removed except files the coordinator placed and expected byproducts of the checks,
    and bundles that match the recorded digests. A full-access
    reviewer is allowed when the host offers nothing narrower; record that no isolation
    applied. The check then reports drift but cannot prevent it.
