@@ -84,17 +84,20 @@ it. Before dispatch:
    not install or upgrade software as an implicit fallback.
 4. Supply inputs the reviewer cannot fetch: a hashed evidence bundle, pinned upstream
    copies and hosted CI logs. Keep file names distinct on case-insensitive file systems.
-5. After the return, check the reviewer's checkout: the same HEAD, no tracked or
-   untracked change except files the coordinator placed, and unchanged bundles. A
-   full-access reviewer is allowed when the host offers nothing narrower; record that
-   no isolation applied and rely on this check.
+5. After the return, check the reviewer's checkout against a preparation record kept
+   outside it: the same HEAD, no tracked, untracked or ignored file added, changed or
+   removed except files the coordinator placed and expected byproducts of the checks,
+   and bundles that match the recorded digests. A full-access
+   reviewer is allowed when the host offers nothing narrower; record that no isolation
+   applied. The check then reports drift but cannot prevent it.
 
 Record the execution setting, the preflight result and every check the reviewer could
 not run in the review receipt and the PR-review index. A check the reviewer could not
 run is a limitation of that review, not a pass; another eligible reviewer, hosted CI or
 retained evidence may cover it. The [review workspace helper](../scripts/review_workspace.py)
 writes host profiles, builds and verifies bundles, reports runtime versions and checks
-integrity; it launches no reviewer and changes no account settings.
+integrity against a record kept outside the reviewer's checkout; it launches no reviewer
+and changes no account settings.
 
 ## Incomplete mode discovery
 

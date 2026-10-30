@@ -3,11 +3,17 @@
 
 Subcommands write a host execution profile into a review checkout, build or verify a
 hashed evidence bundle, report runtime versions in the environment that runs the
-command, check the checkout's integrity after the review and remove the profile.
-Results are JSON on stdout. Exit codes: 0 passed, 1 failed check, 2 usage error.
-Python 3.11+, stdlib only. It launches no reviewer and changes no account settings.
+command, check the checkout after the review and remove the profiles. The coordinator
+keeps one preparation record per checkout outside that checkout, with a snapshot of the
+ignored files; integrity and removal trust only that record and the helper's own profile
+paths. The integrity check finds
+drift by a reviewer that cannot write outside its checkout; it is no boundary against a
+reviewer with full access. Results are JSON on stdout. Exit codes: 0 passed, 1 failed
+check, 2 usage error. Python 3.11+, stdlib only. It launches no reviewer and changes no
+account settings.
 """
 import argparse
+from fnmatch import fnmatchcase
 import hashlib
 import json
 from pathlib import Path
@@ -15,9 +21,10 @@ import re
 import shutil
 import subprocess
 import sys
+import unicodedata
 
-RECORD = Path('reports/review-workspace.json')
 MANIFEST = 'MANIFEST.json'
+NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*\Z')
 HEADER = '# Written by the SDLC review_workspace.py helper for a review-only checkout. Remove after the review.\n'
 PROFILES = {
     # Workspace-write sandbox with local socket binding and no outbound network: the proxy
@@ -30,6 +37,7 @@ PROFILES = {
         'Bash(git stash*)', 'Bash(git rebase*)', 'Bash(git merge*)', 'Bash(git tag*)', 'Bash(gh *)',
         'Bash(rm *)', 'Bash(sudo *)', 'Bash(curl *)', 'Bash(wget *)', 'Edit', 'Write')) + ']\n'),
 }
+PROFILE_PATHS = {relative for relative, _ in PROFILES.values()}
 TOOLS = {
     'node': (['node', '--version'], r'v?(\d+)\.(\d+)\.(\d+)'),
     'java': (['java', '-version'], r'version "(?:1\.)?(\d+)(?:\.(\d+))?(?:\.(\d+))?'),
@@ -39,77 +47,164 @@ TOOLS = {
 }
 
 
+class Usage(Exception):
+    """A rejected argument, reported with exit code 2."""
+
+
+class Unsafe(Exception):
+    """A path that is not plain or passes through a symbolic link."""
+
+
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def emit(result):
+def emit(result, code=None):
     print(json.dumps(result, indent=2))
-    return 0 if result.get('ok') else 1
+    return (0 if result.get('ok') else 1) if code is None else code
 
 
-def git(checkout, *args):
-    proc = subprocess.run(['git', '-C', str(checkout), *args], capture_output=True, text=True)
-    return proc.returncode, proc.stdout
+def plain(relative):
+    return all(part not in ('', '.', '..') for part in relative.split('/'))
 
 
-def load_record(checkout):
-    path = Path(checkout) / RECORD
-    return json.loads(path.read_text()) if path.is_file() else {'placed': {}, 'bundles': []}
+def inside(root, relative):
+    """Join a plain relative path to the checkout root, refusing symbolic links on the way."""
+    if not plain(relative):
+        raise Unsafe(f'{relative} is not a plain relative path')
+    path = root
+    for part in relative.split('/'):
+        path = path / part
+        if path.is_symlink():
+            raise Unsafe(f'{path} is a symbolic link')
+    return path
 
 
-def save_record(checkout, record):
-    path = Path(checkout) / RECORD
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(record, indent=2) + '\n')
+def checkout_root(value):
+    """The checkout's top directory; git reports paths relative to it."""
+    root = Path(value).resolve()
+    proc = subprocess.run(['git', '-C', str(root), 'rev-parse', '--show-toplevel'], capture_output=True, text=True)
+    if proc.returncode or Path(proc.stdout.strip()).resolve() != root:
+        raise Usage(f'{value} is not the top directory of a git checkout')
+    return root
 
 
-def collisions(names):
-    seen, clashes = {}, []
-    for name in names:
-        key = name.lower()
-        if key in seen and seen[key] != name:
-            clashes.append([seen[key], name])
-        seen.setdefault(key, name)
-    return clashes
+class Record:
+    """The coordinator's preparation record for one checkout, kept outside that checkout."""
+
+    def __init__(self, path, root, create=False, expect=None):
+        self.path = Path(path).resolve()
+        if self.path == root or root in self.path.parents:
+            raise Usage('keep the record outside the reviewer checkout')
+        if self.path.is_file():
+            self.data = json.loads(self.path.read_text())
+        elif create:
+            self.data = {'schema_version': 1, 'checkout': str(root), 'placed': {}, 'bundles': {}, 'ignored': []}
+        else:
+            raise Usage(f'no record at {path}')
+        if not isinstance(self.data, dict) or self.data.get('checkout') != str(root):
+            raise Usage(f'{path} is not the record for {root}')
+        if expect and sha(self.path) != expect:
+            raise Unsafe('the record changed since preparation')
+
+    def placed_here(self, path):
+        """Whether the helper placed this checkout path: a profile or a file in a bundle."""
+        return path in self.data['placed'] or path.startswith(tuple(f'reports/{name}/' for name in self.data['bundles']))
+
+    def save(self, root=None):
+        """Write the record; with root, first snapshot the ignored files the helper did not place."""
+        if root is not None:
+            self.data['ignored'] = sorted(path for code, path in status(root) if code == '!!' and not self.placed_here(path))
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(json.dumps(self.data, indent=2) + '\n')
+        return sha(self.path)
+
+
+def status(root):
+    """git status entries as (code, path), listing ignored files one by one."""
+    proc = subprocess.run(['git', '-C', str(root), 'status', '--porcelain', '-z', '--untracked-files=all', '--ignored'],
+                          capture_output=True)
+    if proc.returncode:
+        raise OSError(f'git status failed: {proc.stderr.decode(errors="replace").strip()}')
+    fields, entries = iter(proc.stdout.decode(errors='surrogateescape').split('\0')), []
+    for field in fields:
+        if field:
+            entries.append((field[:2], field[3:]))
+            if {'R', 'C'} & set(field[:2]):
+                next(fields, None)
+    return entries
+
+
+def conflicts(names):
+    """Name pairs that share a path ignoring case and Unicode normalization, or need a file and a folder at one path."""
+    folded = [unicodedata.normalize('NFD', unicodedata.normalize('NFD', name).casefold()) for name in names]
+    return [[names[i], names[j]] for i in range(len(names)) for j in range(i + 1, len(names))
+            if folded[i] == folded[j] or folded[j].startswith(folded[i] + '/') or folded[i].startswith(folded[j] + '/')]
 
 
 def bundle(args):
-    """Copy evidence files into reports/<name>/ beside a MANIFEST of their digests."""
+    """Copy evidence files into reports/<name>/ beside a MANIFEST and record their digests."""
+    root = checkout_root(args.checkout)
+    record = Record(args.record, root, create=True)
+    if not NAME.match(args.name):
+        raise Usage(f'use a plain bundle name such as review-bundle, not {args.name!r}')
     pairs = []
     for item in args.file:
         dest, _, src = item.partition('=')
-        if not src or Path(dest).is_absolute() or '..' in Path(dest).parts or not Path(src).is_file():
-            return emit({'ok': False, 'error': f'expected DEST=SRC with a relative DEST and an existing SRC: {item}'})
-        pairs.append((Path(dest).as_posix(), Path(src)))
+        if not plain(dest) or not src or not Path(src).is_file():
+            raise Usage(f'expected DEST=SRC with a plain relative DEST and an existing SRC file, not {item!r}')
+        pairs.append((dest, Path(src)))
     names = [dest for dest, _ in pairs]
-    clashes = collisions(names + [MANIFEST]) + [[n, n] for n in names if names.count(n) > 1 or n == MANIFEST]
+    clashes = conflicts(names + [MANIFEST])
     if clashes:
-        return emit({'ok': False, 'error': 'names collide on a case-insensitive file system', 'collisions': clashes})
-    target = Path(args.checkout) / 'reports' / args.name
+        return emit({'ok': False, 'collisions': clashes,
+                     'error': 'names collide ignoring case or Unicode normalization, or need a file and a folder at one path'})
+    target = inside(root, f'reports/{args.name}')
     if target.exists():
         return emit({'ok': False, 'error': f'{target} exists; use a new bundle name'})
-    for dest, src in pairs:
-        (target / dest).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(src, target / dest)
-    files = {dest: sha(target / dest) for dest in sorted(names)}
-    (target / MANIFEST).write_text(json.dumps({'files': files}, indent=2) + '\n')
-    record = load_record(args.checkout)
-    record['bundles'] = sorted(set(record['bundles']) | {args.name})
-    save_record(args.checkout, record)
-    return emit({'ok': True, 'bundle': str(target), 'files': len(files), 'manifest_sha256': sha(target / MANIFEST)})
+    destinations = [(inside(root, f'reports/{args.name}/{dest}'), src) for dest, src in pairs]
+    target.mkdir(parents=True)
+    try:
+        for path, src in destinations:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, path)
+        files = {dest: sha(target / dest) for dest in sorted(names)}
+        (target / MANIFEST).write_text(json.dumps({'files': files}, indent=2) + '\n')
+    except OSError:
+        shutil.rmtree(target)
+        raise
+    problems = check_bundle(target)
+    if problems:
+        shutil.rmtree(target)
+        return emit({'ok': False, 'error': 'the written bundle does not verify on this file system', 'problems': problems})
+    record.data['bundles'][args.name] = {'manifest_sha256': sha(target / MANIFEST), 'files': files}
+    return emit({'ok': True, 'bundle': str(target), 'files': len(files), 'record_sha256': record.save(root)})
 
 
-def check_bundle(folder):
+def check_bundle(folder, expected=None):
+    """Compare a bundle with the coordinator's recorded digests, or else with its own MANIFEST."""
     folder = Path(folder)
-    if not (folder / MANIFEST).is_file():
-        return [f'{folder}: no {MANIFEST}']
-    recorded = json.loads((folder / MANIFEST).read_text())['files']
-    actual = {p.relative_to(folder).as_posix() for p in folder.rglob('*') if p.is_file() and p.name != MANIFEST}
-    problems = [f'missing {name}' for name in sorted(set(recorded) - actual)]
+    entries = {p.relative_to(folder).as_posix(): p for p in folder.rglob('*') if p.is_file() or p.is_symlink()}
+    links = sorted(name for name, p in entries.items() if p.is_symlink())
+    if links:
+        return [f'symbolic link {name}' for name in links]
+    if MANIFEST not in entries:
+        return [f'no {MANIFEST}']
+    problems = []
+    if expected is None:
+        try:
+            recorded = json.loads(entries[MANIFEST].read_text())['files']
+        except (ValueError, KeyError, TypeError):
+            return [f'{MANIFEST} is unreadable']
+    else:
+        recorded = expected['files']
+        if sha(entries[MANIFEST]) != expected['manifest_sha256']:
+            problems.append(f'{MANIFEST} changed')
+    actual = set(entries) - {MANIFEST}
+    problems += [f'missing {name}' for name in sorted(set(recorded) - actual)]
     problems += [f'unrecorded {name}' for name in sorted(actual - set(recorded))]
-    problems += [f'changed {name}' for name in sorted(set(recorded) & actual) if sha(folder / name) != recorded[name]]
-    problems += [f'case collision {a} / {b}' for a, b in collisions(sorted(recorded) + [MANIFEST])]
+    problems += [f'changed {name}' for name in sorted(set(recorded) & actual) if sha(entries[name]) != recorded[name]]
+    problems += [f'names collide: {a} / {b}' for a, b in conflicts(sorted(recorded) + [MANIFEST])]
     return problems
 
 
@@ -120,18 +215,18 @@ def verify_bundle(args):
 
 def profile(args):
     """Write the host's review profile into the checkout and record its digest."""
+    root = checkout_root(args.checkout)
+    record = Record(args.record, root, create=True)
     relative, content = PROFILES[args.host]
-    path = Path(args.checkout) / relative
+    path = inside(root, relative)
     if path.exists() and path.read_text() != content:
         return emit({'ok': False, 'error': f'{relative} already exists with other content; review and remove it first'})
-    path.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(exist_ok=True)
     path.write_text(content)
-    record = load_record(args.checkout)
-    record['placed'][relative] = sha(path)
-    save_record(args.checkout, record)
-    result = {'ok': True, 'host': args.host, 'placed': relative, 'sha256': record['placed'][relative]}
+    record.data['placed'][relative] = sha(path)
+    result = {'ok': True, 'host': args.host, 'placed': relative, 'record_sha256': record.save(root)}
     if args.host == 'grok' and args.check_grok:
-        proc = subprocess.run(['grok', 'inspect', '--json'], cwd=args.checkout, capture_output=True, text=True)
+        proc = subprocess.run(['grok', 'inspect', '--json'], cwd=root, capture_output=True, text=True)
         try:
             data = json.loads(proc.stdout)
         except json.JSONDecodeError:
@@ -147,99 +242,127 @@ def version_of(name):
     command, pattern = TOOLS[name]
     path = shutil.which(command[0])
     if not path:
-        return {'path': None, 'version': None}
-    proc = subprocess.run(command, capture_output=True, text=True)
+        return {'path': None, 'version': None, 'parts': None}
+    proc = subprocess.run([path, *command[1:]], capture_output=True, text=True)
     match = re.search(pattern, proc.stdout + proc.stderr)
     parts = [int(part) for part in match.groups() if part is not None] if match else None
     return {'path': path, 'version': '.'.join(map(str, parts)) if parts else None, 'parts': parts}
 
 
 def runtimes(args):
-    """Report tool versions as resolved in the environment that runs this command."""
+    """Report tool versions as resolved here; named tools must exist and meet any minimum."""
+    minimums = {}
+    for item in args.min or []:
+        tool, _, version = item.partition('=')
+        if not re.fullmatch(r'\d+(\.\d+)*', version):
+            raise Usage(f'expected TOOL=VERSION such as node=22.18, not {item!r}')
+        minimums[tool] = [int(part) for part in version.split('.')]
+    named = list(dict.fromkeys((args.tool or []) + list(minimums)))
+    unknown = sorted(set(named) - set(TOOLS))
+    if unknown:
+        raise Usage(f'unknown tools {unknown}; known: {sorted(TOOLS)}')
     report, ok = {}, True
-    wanted = dict(item.split('=', 1) for item in args.min) if args.min else {}
-    for name in args.tool or sorted(TOOLS):
-        if name not in TOOLS:
-            return emit({'ok': False, 'error': f'unknown tool {name}; known: {sorted(TOOLS)}'})
+    for name in named or sorted(TOOLS):
         found = version_of(name)
-        if name in wanted:
-            need = [int(part) for part in wanted[name].split('.')]
-            found['minimum'] = wanted[name]
-            found['meets_minimum'] = bool(found['parts']) and found['parts'][:len(need)] >= need
-            ok = ok and found['meets_minimum']
-        found.pop('parts', None)
+        parts = found.pop('parts')
+        if name in minimums:
+            want = minimums[name]
+            found['minimum'] = '.'.join(map(str, want))
+            found['meets_minimum'] = parts is not None and (parts + [0] * len(want))[:len(want)] >= want
+        if name in named:
+            ok = ok and found['path'] is not None and found.get('meets_minimum', True)
         report[name] = found
     return emit({'ok': ok, 'tools': report})
 
 
 def integrity(args):
-    """After the review: same HEAD, no tracked or untracked change but the recorded profile."""
-    record = load_record(args.checkout)
+    """After the review: the same HEAD, and no change but what the record says the helper placed."""
+    root = checkout_root(args.checkout)
+    record = Record(args.record, root, expect=args.expect_record_sha256)
+    placed, bundles = record.data['placed'], record.data['bundles']
     problems = []
-    code, head = git(args.checkout, 'rev-parse', 'HEAD')
-    if code or head.strip() != args.head:
-        problems.append(f'HEAD is {head.strip() or "unreadable"}, expected {args.head}')
-    # Files this helper wrote are expected even where the repository does not ignore reports/.
-    expected = set(record['placed']) | {RECORD.as_posix()}
-    bundles = tuple(f'reports/{name}/' for name in record['bundles'])
-    code, status = git(args.checkout, 'status', '--porcelain', '--untracked-files=all')
-    if code:
-        problems.append('git status failed')
-    for line in status.splitlines():
-        path = line[3:]
-        if not (line.startswith('?? ') and (path in expected or path.startswith(bundles))):
-            problems.append(f'unexpected change: {line}')
-    for relative, digest in record['placed'].items():
-        path = Path(args.checkout) / relative
+    head = subprocess.run(['git', '-C', str(root), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
+    if head != args.head:
+        problems.append(f'HEAD is {head or "unreadable"}, expected {args.head}')
+    entries = status(root)
+    problems += [f'unexpected change: {code} {path}' for code, path in entries
+                 if code != '!!' and not (code == '??' and record.placed_here(path))]
+    ignored = {path for code, path in entries if code == '!!' and not record.placed_here(path)}
+    before = set(record.data.get('ignored', []))
+    allowed = lambda path: any(fnmatchcase(path, pattern) for pattern in args.allow_ignored or [])
+    problems += [f'new ignored file: {path}' for path in sorted(ignored - before) if not allowed(path)]
+    problems += [f'ignored file removed: {path}' for path in sorted(before - ignored) if not allowed(path)]
+    for relative, digest in placed.items():
+        path = inside(root, relative)
         if not path.is_file() or sha(path) != digest:
-            problems.append(f'placed profile changed or missing: {relative}')
-    for name in record['bundles']:
-        problems += [f'bundle {name}: {problem}' for problem in check_bundle(Path(args.checkout) / 'reports' / name)]
-    return emit({'ok': not problems, 'checkout': args.checkout, 'head': args.head, 'problems': problems})
+            problems.append(f'placed file changed or missing: {relative}')
+    for name, expected in bundles.items():
+        problems += [f'bundle {name}: {problem}' for problem in check_bundle(inside(root, f'reports/{name}'), expected)]
+    return emit({'ok': not problems, 'checkout': str(root), 'head': args.head, 'problems': problems})
 
 
 def remove(args):
-    record = load_record(args.checkout)
-    problems, removed = [], []
-    for relative, digest in list(record['placed'].items()):
-        path = Path(args.checkout) / relative
-        if path.is_file() and sha(path) != digest:
+    """Delete the helper's own profiles when unchanged; leave every other path alone."""
+    root = checkout_root(args.checkout)
+    record = Record(args.record, root, expect=args.expect_record_sha256)
+    removed, absent, problems = [], [], []
+    for relative, digest in list(record.data['placed'].items()):
+        if relative not in PROFILE_PATHS:
+            problems.append(f'{relative} is not a helper profile; left in place')
+            continue
+        path = inside(root, relative)
+        if path.exists() and sha(path) != digest:
             problems.append(f'{relative} changed since it was placed; left in place for inspection')
             continue
-        if path.is_file():
+        if path.exists():
             path.unlink()
             if not any(path.parent.iterdir()):
                 path.parent.rmdir()
-        removed.append(relative)
-        del record['placed'][relative]
-    save_record(args.checkout, record)
-    return emit({'ok': not problems, 'removed': removed, 'problems': problems})
+            removed.append(relative)
+        else:
+            absent.append(relative)
+        del record.data['placed'][relative]
+    return emit({'ok': not problems, 'removed': removed, 'absent': absent, 'problems': problems,
+                 'record_sha256': record.save()})
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest='command', required=True)
-    b = sub.add_parser('bundle', help='copy evidence into reports/<name>/ with a MANIFEST')
-    b.add_argument('--checkout', required=True)
-    b.add_argument('--name', required=True)
+
+    def prepared(name, text):
+        command = sub.add_parser(name, help=text)
+        command.add_argument('--checkout', required=True)
+        command.add_argument('--record', required=True, help='preparation record JSON, kept outside the checkout')
+        return command
+
+    b = prepared('bundle', 'copy evidence into reports/<name>/ with a MANIFEST')
+    b.add_argument('--name', required=True, help='plain folder name such as review-bundle')
     b.add_argument('--file', action='append', required=True, metavar='DEST=SRC')
-    v = sub.add_parser('verify-bundle', help='check a bundle against its MANIFEST')
+    v = sub.add_parser('verify-bundle', help='check a bundle against its own MANIFEST')
     v.add_argument('bundle')
-    p = sub.add_parser('profile', help="write the host's review execution profile")
-    p.add_argument('--checkout', required=True)
+    p = prepared('profile', "write the host's review execution profile")
     p.add_argument('--host', required=True, choices=sorted(PROFILES))
     p.add_argument('--check-grok', action='store_true', help='require grok inspect to show trusted, loaded rules')
     r = sub.add_parser('runtimes', help='report tool versions in this environment')
-    r.add_argument('--tool', action='append', help=f'one of {sorted(TOOLS)}; repeatable')
-    r.add_argument('--min', action='append', metavar='TOOL=VERSION', help='for example node=22.18')
-    i = sub.add_parser('integrity', help='check the checkout after the review')
-    i.add_argument('--checkout', required=True)
+    r.add_argument('--tool', action='append', help=f'one of {sorted(TOOLS)}; fails when missing; repeatable')
+    r.add_argument('--min', action='append', metavar='TOOL=VERSION', help='for example node=22.18; repeatable')
+    i = prepared('integrity', 'check the checkout after the review')
     i.add_argument('--head', required=True)
-    x = sub.add_parser('remove', help='remove placed profiles that are unchanged')
-    x.add_argument('--checkout', required=True)
+    i.add_argument('--expect-record-sha256', help='record digest reported by the last preparation step')
+    i.add_argument('--allow-ignored', action='append', metavar='GLOB',
+                   help="ignored paths the review may add or remove, such as '*__pycache__/*'; repeatable")
+    x = prepared('remove', "remove the helper's unchanged profiles")
+    x.add_argument('--expect-record-sha256', help='record digest reported by the last preparation step')
     args = parser.parse_args(argv)
-    return {'bundle': bundle, 'verify-bundle': verify_bundle, 'profile': profile, 'runtimes': runtimes,
-            'integrity': integrity, 'remove': remove}[args.command](args)
+    handler = {'bundle': bundle, 'verify-bundle': verify_bundle, 'profile': profile, 'runtimes': runtimes,
+               'integrity': integrity, 'remove': remove}[args.command]
+    try:
+        return handler(args)
+    except Usage as error:
+        return emit({'ok': False, 'error': str(error)}, code=2)
+    except (Unsafe, OSError, ValueError) as error:
+        return emit({'ok': False, 'error': str(error)})
 
 
 if __name__ == '__main__':

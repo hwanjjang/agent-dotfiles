@@ -1163,7 +1163,7 @@
         "Choose comparable design alternatives when warranted; execute independent authorized implementation slices with isolated resources, explicit owners and serial integration.",
         "Verify the combined candidate with the single tdd method or its explicit alternatives, additional integrated smoke and affected documentation/manual checks.",
         "For PR work, select eligible independent reviewers, deduplicate matching required/additional roles and apply code-review-and-quality inside each assigned context. Preserve findings through fallback, correction and renewed review.",
-        "Before dispatch, prepare each reviewer's execution so it runs the required checks without coordinator approvals: the narrowest host setting, a preflight in the reviewer's environment, hashed offline evidence and an integrity check after the return.",
+        "Before dispatch, prepare each reviewer's execution so it runs the required checks without coordinator approvals: the narrowest host setting, a preflight in the reviewer's environment, hashed offline evidence and, after the return, an integrity check against a record kept outside the reviewer's checkout.",
         "Treat enforced reviewer isolation as optional unless explicitly required; record actual evidence and limitations while retaining model, effort, independence and action limits.",
         "Stop at the selected endpoint. Pre-merge means verified readiness without merge authority; an authorized merge requires current head/base and gate checks followed by remote integration verification.",
         "Resolve review-transfer destination, input manifest and existing authority; inspect available action records and report evidence limits."

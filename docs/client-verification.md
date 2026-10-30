@@ -18,9 +18,13 @@ Probes ran on macOS through Paseo, in disposable review worktrees.
   resolved Node 20 before Node 24, so the TLC case skipped there.
 - **Antigravity.** It offers only full access.
 
-The [review workspace helper](../skills/sdlc/scripts/review_workspace.py) and its 9 tests
-are part of the 70 passing SDLC script tests. Claude Code as a reviewer, Linux hosts and
-other launchers were not exercised. See the [decision](decisions/reviewer-execution.md).
+The [review workspace helper](../skills/sdlc/scripts/review_workspace.py) and its 14 tests
+are part of the 75 passing SDLC script tests. The tests cover the review findings on its
+first version: path escapes, symbolic links, removal outside the helper's own profiles,
+integrity checked against files inside the checkout, ignored files, quoted and
+Unicode-equivalent names, and missing runtimes. Claude Code
+as a reviewer, Linux hosts and other launchers were not exercised. See the
+[decision](decisions/reviewer-execution.md).
 
 ## Grok and Antigravity with an installed account — 2026-10-22
 

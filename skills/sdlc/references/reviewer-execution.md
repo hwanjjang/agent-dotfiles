@@ -9,17 +9,27 @@ evidence.
 The [helper](../scripts/review_workspace.py) applies the file-based parts:
 
 ```sh
-python3 <skill>/scripts/review_workspace.py profile --checkout <checkout> --host codex
-python3 <skill>/scripts/review_workspace.py profile --checkout <checkout> --host grok --check-grok
-python3 <skill>/scripts/review_workspace.py bundle --checkout <checkout> --name review-bundle --file intent.md=<path>
+# Coordinator, before dispatch; one record per review checkout, kept outside it
+python3 <skill>/scripts/review_workspace.py profile --checkout <checkout> --record <record> --host codex
+python3 <skill>/scripts/review_workspace.py profile --checkout <checkout> --record <record> --host grok --check-grok
+python3 <skill>/scripts/review_workspace.py bundle --checkout <checkout> --record <record> --name review-bundle --file intent.md=<path>
+# Reviewer, in its own environment
 python3 <skill>/scripts/review_workspace.py runtimes --min node=22.18 --min java=11
-python3 <skill>/scripts/review_workspace.py integrity --checkout <checkout> --head <sha>
-python3 <skill>/scripts/review_workspace.py remove --checkout <checkout>
+python3 <skill>/scripts/review_workspace.py verify-bundle <checkout>/reports/review-bundle
+# Coordinator, after the return
+python3 <skill>/scripts/review_workspace.py integrity --checkout <checkout> --record <record> --head <sha> --expect-record-sha256 <digest> --allow-ignored '*__pycache__/*'
+python3 <skill>/scripts/review_workspace.py remove --checkout <checkout> --record <record> --expect-record-sha256 <digest>
 ```
 
-The reviewer runs `runtimes` in its own environment; the coordinator runs the rest.
-`profile` refuses to replace an existing file with other content, and `integrity`
-accepts only files the helper placed.
+Keep each record in the coordinator's ignored task directory, never in a reviewer's
+checkout, and note the `record_sha256` that the last preparation step reports.
+`profile` refuses to replace an existing file with other content, writes refuse
+symbolic links on the way, and `remove` deletes only the helper's unchanged profiles.
+`integrity` compares HEAD, `git status`, the placed profiles and the bundles with the
+record, and ignored files by path with the snapshot taken at preparation;
+`--allow-ignored` names expected byproducts of the checks, such as Python bytecode. A
+reviewer with full access could defeat it: it reports drift and is not a security
+boundary.
 
 ## Codex
 
