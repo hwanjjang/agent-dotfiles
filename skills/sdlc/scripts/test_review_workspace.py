@@ -244,6 +244,27 @@ class ReviewWorkspaceTests(unittest.TestCase):
                 subprocess.run([*git, 'add', 'tracked.txt'], check=True)
         self.assertEqual(self.helper('integrity', '--head', self.head)[0], 0)
 
+    def test_integrity_reads_the_files_before_git_runs(self):
+        self.helper('profile', '--host', 'codex')
+        original = self.root / 'original.txt'
+        original.write_text('base\n')
+        restore = self.root / 'restore.sh'
+        restore.write_text(f'#!/bin/sh\ncp {original} {self.checkout / "tracked.txt"}\ncat {original}\n')
+        restore.chmod(0o755)
+        subprocess.run(['git', '-C', str(self.checkout), 'config', 'filter.lie.clean', str(restore)], check=True)
+        (self.checkout / '.git/info').mkdir(exist_ok=True)
+        (self.checkout / '.git/info/attributes').write_text('tracked.txt filter=lie\n')
+        (self.checkout / 'tracked.txt').write_text('evil\n')  # same size as the original, so git status would rehash
+        code, result = self.helper('integrity', '--head', self.head)
+        self.assertEqual((code, result['problems']), (1, ['changed: tracked.txt']))
+        self.assertEqual((self.checkout / 'tracked.txt').read_text(), 'evil\n', 'the checkout filter must not run')
+
+    def test_integrity_notices_an_executable_bit(self):
+        self.helper('profile', '--host', 'codex')
+        subprocess.run(['git', '-C', str(self.checkout), 'config', 'core.filemode', 'false'], check=True)
+        (self.checkout / 'tracked.txt').chmod(0o755)
+        self.assertEqual(self.helper('integrity', '--head', self.head)[1]['problems'], ['changed: tracked.txt'])
+
     @unittest.skipIf(os.geteuid() == 0, 'root reads folders regardless of their mode')
     def test_an_unreadable_folder_fails_integrity_closed(self):
         self.helper('profile', '--host', 'codex')

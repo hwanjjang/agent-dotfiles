@@ -53,8 +53,11 @@ Each probe ran in a disposable review worktree; probe files were removed afterwa
   second review showed that git's view of tracked files can be bent from inside the
   checkout (skip-worktree, assume-unchanged, clean filters, a replaced `.git` link) and
   that `git status` misses ignored files. The record therefore holds the digest of every
-  file read from disk. The helper refuses symbolic links on its write paths and deletes
-  only its own unchanged profiles.
+  file read from disk. The third review showed that a filter from the checkout's git
+  configuration can restore files while `git status` runs, so the check reads every file
+  before any git command and then runs only `git rev-parse` with hooks and fsmonitor
+  disabled. The helper refuses symbolic links on its write paths and deletes only its own
+  unchanged profiles.
 - Keep permission grants with the user. Folder trust for Grok and the auto-approve choice
   are recorded as account decisions. Do not add a coordinator rule that approves other
   agents' prompts.

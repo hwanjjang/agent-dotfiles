@@ -27,6 +27,8 @@ import unicodedata
 MANIFEST = 'MANIFEST.json'
 NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*\Z')
 SHA256 = re.compile(r'[0-9a-f]{64}\Z')
+# Read-only git queries; the checkout's fsmonitor program and hooks must not run.
+GIT = ['git', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null']
 HEADER = '# Written by the SDLC review_workspace.py helper for a review-only checkout. Remove after the review.\n'
 PROFILES = {
     # Workspace-write sandbox with local socket binding and no outbound network: the proxy
@@ -99,11 +101,16 @@ def inside(root, relative):
     return path
 
 
+def rev_parse(root, what):
+    proc = subprocess.run([*GIT, '-C', str(root), 'rev-parse', what], capture_output=True, text=True)
+    return proc.stdout.strip() if proc.returncode == 0 else ''
+
+
 def checkout_root(value):
     """The checkout's top directory; git reports paths relative to it."""
     root = Path(value).resolve()
-    proc = subprocess.run(['git', '-C', str(root), 'rev-parse', '--show-toplevel'], capture_output=True, text=True)
-    if proc.returncode or Path(proc.stdout.strip()).resolve() != root:
+    top = rev_parse(root, '--show-toplevel')
+    if not top or Path(top).resolve() != root:
         raise Usage(f'{value} is not the top directory of a git checkout')
     return root
 
@@ -147,8 +154,8 @@ def snapshot(root):
     """Digest of every file and symbolic link under the checkout, read from disk; the top .git entry is skipped.
 
     Git's own view can be bent from inside the checkout (skip-worktree, assume-unchanged, clean
-    filters), so file contents are read directly. An unreadable folder fails the walk rather
-    than hiding what it holds."""
+    filters), so file contents and executable bits are read directly. An unreadable folder fails
+    the walk rather than hiding what it holds."""
     def fail(error):
         raise error
 
@@ -160,7 +167,12 @@ def snapshot(root):
             files = [name for name in files if name != '.git']
         for name in files + [folder for folder in folders if (here / folder).is_symlink()]:
             path = here / name
-            digest = ('link:' + os.readlink(path) if path.is_symlink() else sha(path) if path.is_file() else 'special')
+            if path.is_symlink():
+                digest = 'link:' + os.readlink(path)
+            elif path.is_file():
+                digest = sha(path) + (' +x' if path.stat().st_mode & 0o111 else '')
+            else:
+                digest = 'special'
             digests[path.relative_to(root).as_posix()] = digest
     return digests
 
@@ -171,21 +183,6 @@ def git_link(root):
     if path.is_symlink():
         return 'link:' + os.readlink(path)
     return sha(path) if path.is_file() else 'directory' if path.is_dir() else 'absent'
-
-
-def status(root):
-    """git status entries for tracked paths as (code, path)."""
-    proc = subprocess.run(['git', '-C', str(root), 'status', '--porcelain', '-z', '--untracked-files=no'],
-                          capture_output=True)
-    if proc.returncode:
-        raise OSError(f'git status failed: {proc.stderr.decode(errors="replace").strip()}')
-    fields, entries = iter(proc.stdout.decode(errors='surrogateescape').split('\0')), []
-    for field in fields:
-        if field:
-            entries.append((field[:2], field[3:]))
-            if {'R', 'C'} & set(field[:2]):
-                next(fields, None)
-    return entries
 
 
 def conflicts(names):
@@ -331,28 +328,31 @@ def runtimes(args):
 
 
 def integrity(args):
-    """After the review: the same HEAD and .git entry, and every file as recorded except the helper's own."""
-    root = checkout_root(args.checkout)
+    """After the review: every file as recorded except the helper's own, then the same .git entry, top and HEAD.
+
+    Everything is read from disk before git runs, and git runs only rev-parse, so no filter, hook or
+    fsmonitor program from the checkout's configuration can run first and restore the files."""
+    root = Path(args.checkout).resolve()
     record = Record(args.record, root, expect=args.expect_record_sha256)
     placed, bundles = record.data['placed'], record.data['bundles']
-    problems = []
-    head = subprocess.run(['git', '-C', str(root), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    if head != args.head:
-        problems.append(f'HEAD is {head or "unreadable"}, expected {args.head}')
-    if git_link(root) != record.data['git_link']:
-        problems.append('the .git entry of the checkout changed')
-    problems += [f'git reports a change: {code} {path}' for code, path in status(root)]
+    before, now, link = record.data['files'], record.unplaced(root), git_link(root)
     allowed = lambda path: any(fnmatchcase(path, pattern) for pattern in args.allow or [])
-    before, now = record.data['files'], record.unplaced(root)
-    for path in sorted(before.keys() | now.keys()):
-        if before.get(path) != now.get(path) and not allowed(path):
-            problems.append(f'{"added" if path not in before else "removed" if path not in now else "changed"}: {path}')
+    problems = [f'{"added" if path not in before else "removed" if path not in now else "changed"}: {path}'
+                for path in sorted(before.keys() | now.keys()) if before.get(path) != now.get(path) and not allowed(path)]
     for relative, digest in placed.items():
         path = inside(root, relative)
         if not path.is_file() or sha(path) != digest:
             problems.append(f'placed file changed or missing: {relative}')
     for name, expected in bundles.items():
         problems += [f'bundle {name}: {problem}' for problem in check_bundle(inside(root, f'reports/{name}'), expected)]
+    if link != record.data['git_link']:
+        problems.append('the .git entry of the checkout changed')
+    top = rev_parse(root, '--show-toplevel')
+    if not top or Path(top).resolve() != root:
+        problems.append(f'{root} is no longer the top directory of a git checkout')
+    head = rev_parse(root, 'HEAD')
+    if head != args.head:
+        problems.append(f'HEAD is {head or "unreadable"}, expected {args.head}')
     return emit({'ok': not problems, 'checkout': str(root), 'head': args.head, 'problems': problems})
 
 

@@ -26,13 +26,16 @@ checkout, and note the `record_sha256` that the last preparation step reports.
 Every command checks the record's structure before it writes. `profile` refuses to
 replace an existing file with other content, writes refuse symbolic links on the way,
 and `remove` deletes only the helper's unchanged profiles.
-`integrity` compares HEAD, the checkout's `.git` entry, the placed profiles, the
-bundles and every other file, read from disk, with the snapshot taken at preparation.
-It does not rely on git's view of tracked files, which index flags and filters set inside
-the checkout can bend, and an unreadable folder fails it. `--allow` names expected
-byproducts of the checks, such as Python bytecode. Contents inside `.git` are not
-compared, and a reviewer with full access could defeat the check: it reports drift and
-is not a security boundary.
+`integrity` reads the placed profiles, the bundles, the checkout's `.git` entry and
+every other file's bytes and executable bit from disk, and compares them with the
+snapshot taken at preparation. It does not rely on git's view of tracked files, which
+index flags and filters set inside the checkout can bend. Only after those reads does it
+run git, and then only `git rev-parse` with hooks and fsmonitor disabled, to confirm the
+checkout top and HEAD; no filter, hook or fsmonitor program from the checkout's
+configuration runs during the check. An unreadable folder fails it. `--allow` names
+expected byproducts of the checks, such as Python bytecode. Contents inside `.git` and
+extended attributes are not compared, and a reviewer with full access could defeat the
+check: it reports drift and is not a security boundary.
 
 ## Codex
 
