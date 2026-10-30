@@ -4,18 +4,19 @@
 Subcommands write a host execution profile into a review checkout, build or verify a
 hashed evidence bundle, report runtime versions in the environment that runs the
 command, check the checkout after the review and remove the profiles. The coordinator
-keeps one preparation record per checkout outside that checkout, with a snapshot of the
-ignored files; integrity and removal trust only that record and the helper's own profile
-paths, and every command validates the record before it writes. The integrity check
-finds drift by a reviewer that cannot write outside its checkout; it is no boundary
-against a reviewer with full access. Results are JSON on stdout. Exit codes: 0 passed,
-1 failed check, 2 usage error. Python 3.11+, stdlib only. It launches no reviewer and
-changes no account settings.
+keeps one preparation record per checkout outside that checkout, with the digest of every
+file in the checkout read from disk; integrity and removal trust only that record and the
+helper's own profile paths, and every command validates the record before it writes. The
+integrity check finds drift by a reviewer that cannot write outside its checkout; it is
+no boundary against a reviewer with full access. Results are JSON on stdout. Exit codes:
+0 passed, 1 failed check, 2 usage error. Python 3.11+, stdlib only. It launches no
+reviewer and changes no account settings.
 """
 import argparse
 from fnmatch import fnmatchcase
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -81,7 +82,9 @@ def well_formed(data, root):
             and all(isinstance(name, str) and NAME.match(name) and isinstance(entry, dict)
                     and isinstance(entry.get('manifest_sha256'), str) and SHA256.match(entry['manifest_sha256'])
                     and digest_map(entry.get('files')) for name, entry in data['bundles'].items())
-            and isinstance(data.get('ignored'), list) and all(isinstance(path, str) for path in data['ignored']))
+            and isinstance(data.get('files'), dict)
+            and all(isinstance(path, str) and plain(path) and isinstance(digest, str) for path, digest in data['files'].items())
+            and isinstance(data.get('git_link'), str))
 
 
 def inside(root, relative):
@@ -115,7 +118,7 @@ class Record:
         if self.path.is_file():
             self.data = json.loads(self.path.read_text())
         elif create:
-            self.data = {'schema_version': 1, 'checkout': str(root), 'placed': {}, 'bundles': {}, 'ignored': []}
+            self.data = {'schema_version': 1, 'checkout': str(root), 'placed': {}, 'bundles': {}, 'files': {}, 'git_link': 'absent'}
         else:
             raise Usage(f'no record at {path}')
         if expect and sha(self.path) != expect:
@@ -127,18 +130,52 @@ class Record:
         """Whether the helper placed this checkout path: a profile or a file in a bundle."""
         return path in self.data['placed'] or path.startswith(tuple(f'reports/{name}/' for name in self.data['bundles']))
 
+    def unplaced(self, root):
+        """Digests of the checkout's files other than those the helper placed."""
+        return {path: digest for path, digest in snapshot(root).items() if not self.placed_here(path)}
+
     def save(self, root=None):
-        """Write the record; with root, first snapshot the ignored files the helper did not place."""
+        """Write the record; with root, first snapshot the files the helper did not place and the .git entry."""
         if root is not None:
-            self.data['ignored'] = sorted(path for code, path in status(root) if code == '!!' and not self.placed_here(path))
+            self.data['files'], self.data['git_link'] = self.unplaced(root), git_link(root)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(self.data, indent=2) + '\n')
         return sha(self.path)
 
 
+def snapshot(root):
+    """Digest of every file and symbolic link under the checkout, read from disk; the top .git entry is skipped.
+
+    Git's own view can be bent from inside the checkout (skip-worktree, assume-unchanged, clean
+    filters), so file contents are read directly. An unreadable folder fails the walk rather
+    than hiding what it holds."""
+    def fail(error):
+        raise error
+
+    digests = {}
+    for directory, folders, files in os.walk(root, onerror=fail):
+        here = Path(directory)
+        if here == root:
+            folders[:] = [name for name in folders if name != '.git']
+            files = [name for name in files if name != '.git']
+        for name in files + [folder for folder in folders if (here / folder).is_symlink()]:
+            path = here / name
+            digest = ('link:' + os.readlink(path) if path.is_symlink() else sha(path) if path.is_file() else 'special')
+            digests[path.relative_to(root).as_posix()] = digest
+    return digests
+
+
+def git_link(root):
+    """The checkout's .git entry: a worktree link file by digest, or the kind of entry."""
+    path = root / '.git'
+    if path.is_symlink():
+        return 'link:' + os.readlink(path)
+    return sha(path) if path.is_file() else 'directory' if path.is_dir() else 'absent'
+
+
 def status(root):
-    """git status entries as (code, path), listing ignored files one by one."""
-    proc = subprocess.run(['git', '-C', str(root), 'status', '--porcelain', '-z', '--untracked-files=all', '--ignored'],
+    """git status entries for tracked paths as (code, path)."""
+    proc = subprocess.run(['git', '-C', str(root), 'status', '--porcelain', '-z', '--untracked-files=no'],
                           capture_output=True)
     if proc.returncode:
         raise OSError(f'git status failed: {proc.stderr.decode(errors="replace").strip()}')
@@ -294,7 +331,7 @@ def runtimes(args):
 
 
 def integrity(args):
-    """After the review: the same HEAD, and no change but what the record says the helper placed."""
+    """After the review: the same HEAD and .git entry, and every file as recorded except the helper's own."""
     root = checkout_root(args.checkout)
     record = Record(args.record, root, expect=args.expect_record_sha256)
     placed, bundles = record.data['placed'], record.data['bundles']
@@ -302,14 +339,14 @@ def integrity(args):
     head = subprocess.run(['git', '-C', str(root), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
     if head != args.head:
         problems.append(f'HEAD is {head or "unreadable"}, expected {args.head}')
-    entries = status(root)
-    problems += [f'unexpected change: {code} {path}' for code, path in entries
-                 if code != '!!' and not (code == '??' and record.placed_here(path))]
-    ignored = {path for code, path in entries if code == '!!' and not record.placed_here(path)}
-    before = set(record.data.get('ignored', []))
-    allowed = lambda path: any(fnmatchcase(path, pattern) for pattern in args.allow_ignored or [])
-    problems += [f'new ignored file: {path}' for path in sorted(ignored - before) if not allowed(path)]
-    problems += [f'ignored file removed: {path}' for path in sorted(before - ignored) if not allowed(path)]
+    if git_link(root) != record.data['git_link']:
+        problems.append('the .git entry of the checkout changed')
+    problems += [f'git reports a change: {code} {path}' for code, path in status(root)]
+    allowed = lambda path: any(fnmatchcase(path, pattern) for pattern in args.allow or [])
+    before, now = record.data['files'], record.unplaced(root)
+    for path in sorted(before.keys() | now.keys()):
+        if before.get(path) != now.get(path) and not allowed(path):
+            problems.append(f'{"added" if path not in before else "removed" if path not in now else "changed"}: {path}')
     for relative, digest in placed.items():
         path = inside(root, relative)
         if not path.is_file() or sha(path) != digest:
@@ -368,8 +405,8 @@ def main(argv=None):
     i = prepared('integrity', 'check the checkout after the review')
     i.add_argument('--head', required=True)
     i.add_argument('--expect-record-sha256', help='record digest reported by the last preparation step')
-    i.add_argument('--allow-ignored', action='append', metavar='GLOB',
-                   help="ignored paths the review may add or remove, such as '*__pycache__/*'; repeatable")
+    i.add_argument('--allow', action='append', metavar='GLOB',
+                   help="paths the review may add, change or remove, such as '*__pycache__/*'; repeatable")
     x = prepared('remove', "remove the helper's unchanged profiles")
     x.add_argument('--expect-record-sha256', help='record digest reported by the last preparation step')
     args = parser.parse_args(argv)

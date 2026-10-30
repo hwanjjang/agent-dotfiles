@@ -51,7 +51,7 @@
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
   ],
-  "validation": "Strict skill metadata and local dependency/link/map checks passed. Codex CLI 0.159.2 previously discovered this source package in a temporary project. SDLC state/reviewer/review-workspace tests: 76 passed, including shared-review effort/provider/authority regressions and an isolated CLI completion scenario. Receipt validation does not launch or deduplicate host calls. Current roster selection and native deployment remain unverified.",
+  "validation": "Strict skill metadata and local dependency/link/map checks passed. Codex CLI 0.159.2 previously discovered this source package in a temporary project. SDLC state/reviewer/review-workspace tests: 79 passed, including shared-review effort/provider/authority regressions and an isolated CLI completion scenario. Receipt validation does not launch or deduplicate host calls. Current roster selection and native deployment remain unverified.",
   "policy_dependencies": [
     "policies/issue-workflow.md",
     "policies/security.md",

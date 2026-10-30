@@ -17,7 +17,7 @@ python3 <skill>/scripts/review_workspace.py bundle --checkout <checkout> --recor
 python3 <skill>/scripts/review_workspace.py runtimes --min node=22.18 --min java=11
 python3 <skill>/scripts/review_workspace.py verify-bundle <checkout>/reports/review-bundle
 # Coordinator, after the return
-python3 <skill>/scripts/review_workspace.py integrity --checkout <checkout> --record <record> --head <sha> --expect-record-sha256 <digest> --allow-ignored '*__pycache__/*'
+python3 <skill>/scripts/review_workspace.py integrity --checkout <checkout> --record <record> --head <sha> --expect-record-sha256 <digest> --allow '*__pycache__/*'
 python3 <skill>/scripts/review_workspace.py remove --checkout <checkout> --record <record> --expect-record-sha256 <digest>
 ```
 
@@ -26,11 +26,13 @@ checkout, and note the `record_sha256` that the last preparation step reports.
 Every command checks the record's structure before it writes. `profile` refuses to
 replace an existing file with other content, writes refuse symbolic links on the way,
 and `remove` deletes only the helper's unchanged profiles.
-`integrity` compares HEAD, `git status`, the placed profiles and the bundles with the
-record, and ignored files by path with the snapshot taken at preparation;
-`--allow-ignored` names expected byproducts of the checks, such as Python bytecode. A
-reviewer with full access could defeat it: it reports drift and is not a security
-boundary.
+`integrity` compares HEAD, the checkout's `.git` entry, the placed profiles, the
+bundles and every other file, read from disk, with the snapshot taken at preparation.
+It does not rely on git's view of tracked files, which index flags and filters set inside
+the checkout can bend, and an unreadable folder fails it. `--allow` names expected
+byproducts of the checks, such as Python bytecode. Contents inside `.git` are not
+compared, and a reviewer with full access could defeat the check: it reports drift and
+is not a security boundary.
 
 ## Codex
 
@@ -85,8 +87,9 @@ Observed with Grok CLI 1.0.70 through Paseo's ACP launcher, 2026-10-30.
 - Commands run in a captured login shell. On the observed host it resolved Homebrew
   Node 20 before an nvm Node 24, below the statechart launcher's minimum; have the
   reviewer run `runtimes` and pass an explicit `PATH` prefix when a runtime is too old.
-- Without a sandbox profile Grok is not isolated: the deny list and the integrity
-  check are the boundary.
+- Without a sandbox Grok is not isolated. The deny list limits its tools, but an
+  allowed shell command can still write anywhere the user can; the integrity check only
+  reports drift afterwards.
 
 Primary sources: Grok's installed user guide, chapters on permissions and safety,
 configuration, sandbox and hooks (folder trust).

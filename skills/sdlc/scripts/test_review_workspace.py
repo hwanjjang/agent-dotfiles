@@ -4,6 +4,7 @@ import io
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -186,7 +187,7 @@ class ReviewWorkspaceTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn('record changed', result['error'])
 
-    def test_integrity_compares_ignored_files_with_the_preparation_snapshot(self):
+    def test_integrity_compares_every_file_with_the_preparation_snapshot(self):
         (self.checkout / '.gitignore').write_text('/reports/\n*.log\nsecret/\n__pycache__/\n')
         (self.checkout / 'old.log').write_text('kept\n')
         git = ['git', '-C', str(self.checkout), '-c', 'user.name=t', '-c', 'user.email=t@example.invalid']
@@ -195,8 +196,10 @@ class ReviewWorkspaceTests(unittest.TestCase):
         head = subprocess.check_output([*git, 'rev-parse', 'HEAD'], text=True).strip()
         self.helper('profile', '--host', 'grok')
         digest = self.bundle()[1]['record_sha256']
-        self.assertEqual(json.loads(self.record.read_text())['ignored'], ['old.log'])
+        self.assertEqual(sorted(json.loads(self.record.read_text())['files']), ['.gitignore', 'old.log', 'tracked.txt'])
         self.assertEqual(self.helper('integrity', '--head', head, '--expect-record-sha256', digest)[0], 0)
+        (self.checkout / 'old.log').write_text('edited\n')
+        self.assertEqual(self.helper('integrity', '--head', head)[1]['problems'], ['changed: old.log'])
         (self.checkout / 'notes.log').write_text('x\n')
         (self.checkout / 'secret').mkdir()
         (self.checkout / 'secret/payload.txt').write_text('x\n')
@@ -206,11 +209,63 @@ class ReviewWorkspaceTests(unittest.TestCase):
         (self.checkout / 'old.log').unlink()
         code, result = self.helper('integrity', '--head', head)
         self.assertEqual(code, 1)
-        self.assertEqual(result['problems'], [
-            'new ignored file: notes.log', 'new ignored file: reports/extra.txt', 'new ignored file: secret/payload.txt',
-            'new ignored file: tests/__pycache__/t.pyc', 'ignored file removed: old.log'])
-        code, result = self.helper('integrity', '--head', head, '--allow-ignored', '*.log', '--allow-ignored', '*__pycache__/*')
-        self.assertEqual(result['problems'], ['new ignored file: reports/extra.txt', 'new ignored file: secret/payload.txt'])
+        self.assertEqual(result['problems'], ['added: notes.log', 'removed: old.log', 'added: reports/extra.txt',
+                                              'added: secret/payload.txt', 'added: tests/__pycache__/t.pyc'])
+        code, result = self.helper('integrity', '--head', head, '--allow', '*.log', '--allow', '*__pycache__/*')
+        self.assertEqual(result['problems'], ['added: reports/extra.txt', 'added: secret/payload.txt'])
+
+    def test_integrity_reads_tracked_bytes_from_disk(self):
+        git = ['git', '-C', str(self.checkout)]
+        self.helper('profile', '--host', 'grok')
+        original = self.root / 'original.txt'
+        original.write_text('base\n')
+        hides = {
+            'skip-worktree': ([*git, 'update-index', '--skip-worktree', 'tracked.txt'], [*git, 'update-index', '--no-skip-worktree', 'tracked.txt']),
+            'assume-unchanged': ([*git, 'update-index', '--assume-unchanged', 'tracked.txt'],
+                                 [*git, 'update-index', '--no-assume-unchanged', 'tracked.txt']),
+            'clean filter': ([*git, 'config', 'filter.lie.clean', f'cat {original}'], [*git, 'config', '--unset', 'filter.lie.clean']),
+        }
+        (self.checkout / '.git/info').mkdir(exist_ok=True)
+        for name, (hide, undo) in hides.items():
+            with self.subTest(name):
+                if name == 'clean filter':
+                    (self.checkout / '.git/info/attributes').write_text('tracked.txt filter=lie\n')
+                subprocess.run(hide, check=True)
+                (self.checkout / 'tracked.txt').write_text('TAMPERED\n')
+                if name == 'clean filter':
+                    subprocess.run([*git, 'add', 'tracked.txt'], check=True)
+                    self.assertEqual(subprocess.check_output([*git, 'status', '--porcelain', '--untracked-files=no']), b'')
+                code, result = self.helper('integrity', '--head', self.head)
+                self.assertEqual(code, 1)
+                self.assertIn('changed: tracked.txt', result['problems'])
+                (self.checkout / 'tracked.txt').write_text('base\n')
+                subprocess.run(undo, check=True)
+                (self.checkout / '.git/info/attributes').write_text('')
+                subprocess.run([*git, 'add', 'tracked.txt'], check=True)
+        self.assertEqual(self.helper('integrity', '--head', self.head)[0], 0)
+
+    @unittest.skipIf(os.geteuid() == 0, 'root reads folders regardless of their mode')
+    def test_an_unreadable_folder_fails_integrity_closed(self):
+        self.helper('profile', '--host', 'codex')
+        hidden = self.checkout / 'hidden'
+        hidden.mkdir()
+        (hidden / 'payload.txt').write_text('x\n')
+        hidden.chmod(0)
+        self.addCleanup(hidden.chmod, 0o755)
+        code, result = self.helper('integrity', '--head', self.head)
+        self.assertEqual(code, 1)
+        self.assertIn('Permission denied', result['error'])
+
+    def test_integrity_notices_a_replaced_git_link(self):
+        worktree, clone, record = self.root / 'wt', self.root / 'clone', self.root / 'wt-record.json'
+        subprocess.run(['git', '-C', str(self.checkout), 'worktree', 'add', '-q', '--detach', str(worktree), 'HEAD'], check=True)
+        self.assertEqual(run('profile', '--checkout', str(worktree), '--record', str(record), '--host', 'codex')[0], 0)
+        subprocess.run(['git', 'clone', '-q', str(self.checkout), str(clone)], check=True)
+        (worktree / '.git').unlink()
+        shutil.move(str(clone / '.git'), str(worktree / '.git'))
+        code, result = run('integrity', '--checkout', str(worktree), '--record', str(record), '--head', self.head)
+        self.assertEqual(code, 1)
+        self.assertEqual(result['problems'], ['the .git entry of the checkout changed'])
 
     def test_remove_deletes_only_unchanged_helper_profiles(self):
         self.helper('profile', '--host', 'grok')
@@ -235,10 +290,11 @@ class ReviewWorkspaceTests(unittest.TestCase):
 
     def test_malformed_record_or_manifest_fails_before_any_write(self):
         self.record.parent.mkdir(parents=True)
-        base = {'schema_version': 1, 'checkout': str(self.checkout), 'placed': {}, 'bundles': {}, 'ignored': []}
+        base = {'schema_version': 1, 'checkout': str(self.checkout), 'placed': {}, 'bundles': {}, 'files': {}, 'git_link': 'absent'}
         malformed = ([], {'checkout': str(self.checkout)}, dict(base, schema_version=2), dict(base, placed=[]),
                      dict(base, placed={'.grok/config.toml': 'x'}), dict(base, bundles={'b': {'files': {}}}),
-                     dict(base, bundles={'../b': {'manifest_sha256': '0' * 64, 'files': {}}}), dict(base, ignored={}))
+                     dict(base, bundles={'../b': {'manifest_sha256': '0' * 64, 'files': {}}}), dict(base, files=[]),
+                     dict(base, files={'../x': '0' * 64}), dict(base, git_link=None))
         for data in malformed:
             self.record.write_text(json.dumps(data))
             for argv in (('profile', '--host', 'grok'), ('bundle', '--name', 'b', f'--file=x={self.evidence}'),

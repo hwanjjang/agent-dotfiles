@@ -49,10 +49,12 @@ Each probe ran in a disposable review worktree; probe files were removed afterwa
   runtime versions and checks integrity. It changes no account settings.
 - Keep the preparation record outside the reviewer's checkout and check integrity
   against it. The first review of this change showed that a record, manifest or
-  removal list inside the checkout can be rewritten by the reviewer it checks, and
-  that `git status` alone misses ignored files. The record therefore also snapshots
-  ignored files. The helper refuses symbolic links on its write paths and deletes only
-  its own unchanged profiles.
+  removal list inside the checkout can be rewritten by the reviewer it checks. Its
+  second review showed that git's view of tracked files can be bent from inside the
+  checkout (skip-worktree, assume-unchanged, clean filters, a replaced `.git` link) and
+  that `git status` misses ignored files. The record therefore holds the digest of every
+  file read from disk. The helper refuses symbolic links on its write paths and deletes
+  only its own unchanged profiles.
 - Keep permission grants with the user. Folder trust for Grok and the auto-approve choice
   are recorded as account decisions. Do not add a coordinator rule that approves other
   agents' prompts.
