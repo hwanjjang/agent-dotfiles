@@ -4,6 +4,17 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Installed account after merging #103 and #104 — 2026-10-30
+
+The installer applied main `e103a2f` (57 paths, no conflicts). Status shows no drift, and
+the offline doctor passes with 27 skills. `doctor --native` passed for Codex (27 of 27
+skills, 7 owned hooks trusted) and for Claude (27 of 27 skill commands, SessionStart
+recovery). The installer reported `rg` (ripgrep) as a missing executable; these checks
+passed without it. Earlier, on the `31524fc` install, `doctor --model-smoke` passed for
+Codex (`gpt-6-luna`) and Claude (`claude-haiku-5-5`). Model identity was verified, the
+sources were read and the installed files stayed unchanged. MCP authentication was not
+exercised.
+
 ## Reviewer execution readiness — 2026-10-30
 
 Probes ran on macOS through Paseo, in disposable review worktrees.
@@ -17,6 +28,12 @@ Probes ran on macOS through Paseo, in disposable review worktrees.
   recorded this repository; untrusted, Grok ignored the project rules. Its login shell
   resolved Node 20 before Node 24, so the TLC case skipped there.
 - **Antigravity.** It offers only full access.
+- **Claude Code 2.1.302 (`claude-sonnet-5-5`).** In `auto` mode it ran every check
+  without a prompt, including the TLC test. It also ran a write in the checkout and an
+  outbound request, and the integrity check reported the write. In `default` mode the
+  [project rules](../skills/sdlc/references/reviewer-execution.md#claude-code-as-a-reviewer)
+  applied: allowed checks ran and denied commands were refused without prompts. A command
+  that expanded `$PATH` still prompted.
 
 The [review workspace helper](../skills/sdlc/scripts/review_workspace.py) and its 20 tests
 are part of the 81 passing SDLC script tests. The tests cover the review findings on its
@@ -24,8 +41,8 @@ earlier versions: path escapes, symbolic links, removal outside the helper's own
 integrity checked against files inside the checkout, ignored files, tracked edits hidden
 from git, a filter that restores files while git runs, an executable bit, a replaced
 `.git` link, an unreadable folder, quoted and Unicode-equivalent names, malformed records
-and manifests, and missing runtimes. Claude Code as a reviewer, Linux hosts and other
-launchers were not exercised. See the [decision](decisions/reviewer-execution.md).
+and manifests, and missing runtimes. Linux hosts and other launchers were not exercised.
+See the [decision](decisions/reviewer-execution.md).
 
 ## Statechart adoption — 2026-10-30
 

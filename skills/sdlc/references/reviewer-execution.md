@@ -111,4 +111,44 @@ execution through coordinator approvals, and do not add a blanket rule that lets
 coordinator approve other agents' prompts; prepare profiles with the user's authority
 before dispatch, or record the gap.
 
-Claude Code as a reviewer is not covered by these observations.
+## Claude Code as a reviewer
+
+Observed with Claude Code 2.1.302 through Paseo's Claude provider (model
+`claude-sonnet-5-5`), 2026-10-30, in review checkouts prepared with the helper.
+
+- `auto` mode ran every check without a prompt, including the statechart TLC test. It
+  also ran a write in the checkout and an outbound request, so nothing is isolated. The
+  integrity check reported the stray file.
+- `default` mode loaded a project `.claude/settings.local.json` placed in the review
+  checkout. Allowed commands ran without a prompt, and denied commands were refused
+  without one.
+
+  ```json
+  {
+    "permissions": {
+      "allow": ["Read", "Grep", "Glob", "Bash(git rev-parse:*)", "Bash(git status:*)",
+                "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)",
+                "Bash(python3.11:*)", "Bash(env:*)"],
+      "deny": ["Edit", "Write", "NotebookEdit", "Bash(git push:*)", "Bash(git commit:*)",
+               "Bash(git reset:*)", "Bash(git checkout:*)", "Bash(rm:*)", "Bash(touch:*)",
+               "Bash(curl:*)", "Bash(wget:*)", "Bash(gh:*)"]
+    }
+  }
+  ```
+
+  Rules match the command as written. Start Claude Code reviewer commands with
+  `python3.11`, the allowed interpreter, rather than the `python3` of the command block
+  above. A command that expanded a shell variable (`env PATH=...:$PATH ...`) still
+  prompted despite the `env` allow rule. The same check with literal values
+  (`env TLA2TOOLS=/abs/path/tla2tools.jar python3.11 -m unittest ...`) ran without one,
+  so give Claude Code reviewers commands without variable expansion.
+- The rules limit tools, not effects: an allowed interpreter can still write files, and
+  the integrity check only reports drift afterwards.
+- Write the settings file before the helper's last preparation step so the record's
+  snapshot includes it. Keep it unchanged through `integrity`, then delete it: `remove`
+  deletes only the helper's own profiles, and an earlier deletion makes `integrity`
+  report it as removed.
+- Paseo started Claude Code from the nvm Node 24 installation, so its commands resolved
+  Node 24 on the observed host, unlike Grok's login shell.
+- Provider independence still applies: when the builder is a Claude model, a Claude Code
+  reviewer is the same-provider fallback, not reviewer 1 or 2.
