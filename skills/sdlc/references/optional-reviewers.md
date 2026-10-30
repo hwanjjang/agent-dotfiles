@@ -45,7 +45,9 @@ sharing roles creates neither another counter nor a reset.
 ## Selection and boundaries
 
 For launch diagnostics and correction-cycle reuse, use the existing
-[host adapter contract](host-adapters.md#incomplete-mode-discovery).
+[host adapter contract](host-adapters.md#incomplete-mode-discovery). Prepare each
+assignment's execution under [reviewer execution readiness](host-adapters.md#reviewer-execution-readiness);
+a check the reviewer cannot run is a recorded limitation, not a reason to skip it.
 
 Use the host's already configured authenticated launchers and current model catalog.
 Resolve the named target to the actual model provider, full model ID and variant,

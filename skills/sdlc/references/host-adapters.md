@@ -63,6 +63,42 @@ omitted/null/default and must reflect actual observations. Authentication, quota
 launch failures and inability to perform required checks still use the existing
 fallback chain.
 
+## Reviewer execution readiness
+
+A reviewer that cannot run a check the review depends on can only cite evidence for
+it. Before dispatch:
+
+1. List the checks the reviewer must run or rerun, such as tests, model checkers and
+   builds, and what each needs from its environment: runtime versions, local sockets,
+   process inspection, network or credentials. Prefer hashed offline inputs to network
+   and credentials.
+2. Give each reviewer the narrowest execution setting its host supports that runs those
+   checks without the coordinator approving individual commands. The coordinator's own
+   host safety layer can refuse such approvals, and granting another agent permission
+   to run commands is the user's decision. Prepare settings that need it with the
+   user's authority before dispatch, or record the gap. [Host recipes](reviewer-execution.md)
+   record verified settings.
+3. Preflight in the reviewer's actual environment, not the coordinator's: resolve tool
+   versions and run the smallest required check first. When a runtime resolves to an
+   unsupported version, pass an explicit path in the assignment or record the gap; do
+   not install or upgrade software as an implicit fallback.
+4. Supply inputs the reviewer cannot fetch: a hashed evidence bundle, pinned upstream
+   copies and hosted CI logs. Keep file names distinct on case-insensitive file systems.
+5. After the return, check the reviewer's checkout against a preparation record kept
+   outside it: the same HEAD; every file, read from disk rather than through git,
+   unchanged except files the coordinator placed and expected byproducts of the checks;
+   and bundles that match the recorded digests. A full-access reviewer is allowed when
+   the host offers nothing narrower; record that no isolation applied. The check then
+   reports drift but cannot prevent it.
+
+Record the execution setting, the preflight result and every check the reviewer could
+not run in the review receipt and the PR-review index. A check the reviewer could not
+run is a limitation of that review, not a pass; another eligible reviewer, hosted CI or
+retained evidence may cover it. The [review workspace helper](../scripts/review_workspace.py)
+writes host profiles, builds and verifies bundles, reports runtime versions and checks
+integrity against a record kept outside the reviewer's checkout; it launches no reviewer
+and changes no account settings.
+
 ## Incomplete mode discovery
 
 An empty wrapper mode catalog or inheritance error is a configuration diagnostic,

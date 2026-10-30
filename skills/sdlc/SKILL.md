@@ -116,3 +116,13 @@ AK requested one review when the required and additional reviewer are the same.
 The [shared-review selection](references/optional-reviewers.md#one-assignment-per-reviewer)
 supersedes earlier separate-context and literal-medium requirements for that case.
 All required eligibility, evidence and finding-resolution gates remain.
+
+## 2026-10-30 reviewer execution readiness amendment
+
+AK asked on 2026-10-30 to find and fix why Codex and Grok reviewers could not run the
+checks a review depended on, for this account and for other hosts. Before dispatch,
+prepare each reviewer under [reviewer execution readiness](references/host-adapters.md#reviewer-execution-readiness):
+the narrowest host setting that runs the required checks without coordinator approvals,
+a preflight in the reviewer's environment, offline evidence and an integrity check after
+the return. [Host recipes](references/reviewer-execution.md) record verified settings.
+Isolation stays optional; authority, model, independence and evidence gates are unchanged.
