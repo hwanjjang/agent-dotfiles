@@ -1163,6 +1163,7 @@
         "Choose comparable design alternatives when warranted; execute independent authorized implementation slices with isolated resources, explicit owners and serial integration.",
         "Verify the combined candidate with the single tdd method or its explicit alternatives, additional integrated smoke and affected documentation/manual checks.",
         "For PR work, select eligible independent reviewers, deduplicate matching required/additional roles and apply code-review-and-quality inside each assigned context. Preserve findings through fallback, correction and renewed review.",
+        "Before dispatch, prepare each reviewer's execution so it runs the required checks without coordinator approvals: the narrowest host setting, a preflight in the reviewer's environment, hashed offline evidence and an integrity check after the return.",
         "Treat enforced reviewer isolation as optional unless explicitly required; record actual evidence and limitations while retaining model, effort, independence and action limits.",
         "Stop at the selected endpoint. Pre-merge means verified readiness without merge authority; an authorized merge requires current head/base and gate checks followed by remote integration verification.",
         "Resolve review-transfer destination, input manifest and existing authority; inspect available action records and report evidence limits."
@@ -1201,7 +1202,8 @@
           "AK owns orchestration; focused skills own their methods and can run independently. Non-PR work receives no new lifecycle unless requested.",
           "The PR implementation route has no separate independent-verification stage. Required and additional roles use one assignment/result when their reviewer matches.",
           "Three-provider design is an AK preference when available and authorized. Host capabilities, source delivery, actual execution and deployment are distinct claims.",
-          "Reuse evidenced reviewer launch configurations across corrections; diagnose wrapper errors before declaring a provider unavailable. Account-specific exceptions do not replace required gates."
+          "Reuse evidenced reviewer launch configurations across corrections; diagnose wrapper errors before declaring a provider unavailable. Account-specific exceptions do not replace required gates.",
+          "Verified Codex, Grok and Antigravity reviewer settings live in host recipes; granting another agent permission to run commands stays the user's decision."
         ],
         "calls": [
           "planning-with-files",
@@ -1247,6 +1249,10 @@
           {
             "label": "Canonical host adapter and runtime contract",
             "source": "skills/sdlc/references/host-adapters.md"
+          },
+          {
+            "label": "Reviewer execution recipes",
+            "source": "skills/sdlc/references/reviewer-execution.md"
           }
         ]
       }
@@ -2496,6 +2502,31 @@
         "tickets",
         "research",
         "adoption"
+      ]
+    },
+    {
+      "id": "reviewer-execution-decision",
+      "title": "Reviewer execution readiness",
+      "kind": "guide",
+      "group": "start",
+      "status": "available",
+      "source": "docs/decisions/reviewer-execution.md",
+      "summary": "Why Codex and Grok reviewers could not run required checks, the verified per-host settings, and how SDLC prepares and checks reviewer execution.",
+      "when": [
+        "A reviewer cannot run a test or model check, or you are adding a new review host."
+      ],
+      "usage": "Read before changing reviewer launch settings, host recipes or the review workspace helper.",
+      "behavior": [
+        "Records each failure with its reproduced cause and the setting verified to fix it.",
+        "Keeps permission grants to other agents with the user; changes no account settings by itself."
+      ],
+      "outputs": [
+        "A reviewable decision with probes, community evidence and limits."
+      ],
+      "tags": [
+        "review",
+        "sdlc",
+        "reviewer-execution-decision"
       ]
     },
     {
@@ -3849,6 +3880,11 @@
       "from": "to-tickets",
       "to": "to-spec",
       "label": "Shares source extraction"
+    },
+    {
+      "from": "reviewer-execution-decision",
+      "to": "sdlc",
+      "label": "Prepares reviewer execution for"
     }
   ]
 }

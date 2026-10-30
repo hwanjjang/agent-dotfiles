@@ -209,13 +209,14 @@
     {
       "id": "sdlc",
       "source_basis": "local-original",
-      "local_skill_sha256": "938fb4712345ef44f15915f2ca7823de9e94555941eaf56d4bd8abaef83de4b4",
+      "local_skill_sha256": "23aea178f32c608bed602271bebee9773adf60b7edaa649bcbda68d484c692ee",
       "supporting_sources": {
         "skills/sdlc/references/skill-routing.md": "5fbaf919788d959ab934fd75291cc183e709a9a1e7efa1a2b26c1504b1d9c120",
         "skills/sdlc/references/verification.md": "6926dc2a6a34bb793c0b5af97b5cb96271c931c40e46831faca8ae7f545018ae",
-        "skills/sdlc/references/optional-reviewers.md": "63a4caff73eccd60114f250ceae3c251d242a8fcfe3e708579e1d1b79b0e8361",
-        "skills/sdlc/references/host-adapters.md": "87c32564dd2b4d7d2e99c799a983413f4fe4b71452b539fc7051dcb6406b9e9c",
-        "skills/sdlc/references/intake.md": "cf8629f12f91b97aa01bf86b961c8d89f5647007f9b0b3ca65fd841305665904"
+        "skills/sdlc/references/optional-reviewers.md": "378834096b8976ba510750fe698b9793b9616a43fee2c012ada4436efed989b2",
+        "skills/sdlc/references/host-adapters.md": "b4bd020eee1b2f221fea5a5980df31862e2ab3670274b8e292cbcbeca82df425",
+        "skills/sdlc/references/intake.md": "cf8629f12f91b97aa01bf86b961c8d89f5647007f9b0b3ca65fd841305665904",
+        "skills/sdlc/references/reviewer-execution.md": "9db1a9e66b6a561c2a5995d66840699208e6e7163b7394aa76fed1643ee7976d"
       }
     },
     {

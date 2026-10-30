@@ -21,7 +21,8 @@
     "Review correction: classify malformed nonboolean read_only_required as probe-required, matching receipt validation without treating strings or integers as opt-in values.",
     "Preserve portable account runtime details: review-transfer destination/input-manifest/authority preflight and inspection of available action records; no personal launcher grant, new schema or isolation requirement.",
     "Review correction: disambiguate the pre-merge endpoint restriction from entering a readiness handoff; merge, auto-merge and queue operations remain prohibited.",
-    "Routes explicitly requested formal verification setup and rechecks to the portable pstack formal pair; bounded results feed existing evidence gates without a new stage."
+    "Routes explicitly requested formal verification setup and rechecks to the portable pstack formal pair; bounded results feed existing evidence gates without a new stage.",
+    "Reviewer execution readiness (2026-10-30): reviewers get the narrowest host setting that runs required checks without coordinator approvals, a preflight in their own environment, offline evidence and an integrity check; host recipes and the stdlib review_workspace.py helper record verified Codex, Grok and Antigravity settings."
   ],
   "skill_dependencies": [
     "planning-with-files",
@@ -50,7 +51,7 @@
   "runtime_requirements": [
     "Python 3 standard library for state tools; Git and target project verification tools."
   ],
-  "validation": "Strict skill metadata and local dependency/link/map checks passed. Codex CLI 0.159.2 previously discovered this source package in a temporary project. SDLC state/reviewer tests: 56 passed, including shared-review effort/provider/authority regressions and an isolated CLI completion scenario. Receipt validation does not launch or deduplicate host calls. Current roster selection and native deployment remain unverified.",
+  "validation": "Strict skill metadata and local dependency/link/map checks passed. Codex CLI 0.159.2 previously discovered this source package in a temporary project. SDLC state/reviewer/review-workspace tests: 70 passed, including shared-review effort/provider/authority regressions and an isolated CLI completion scenario. Receipt validation does not launch or deduplicate host calls. Current roster selection and native deployment remain unverified.",
   "policy_dependencies": [
     "policies/issue-workflow.md",
     "policies/security.md",
