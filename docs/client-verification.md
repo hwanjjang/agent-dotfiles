@@ -27,6 +27,30 @@ from git, a filter that restores files while git runs, an executable bit, a repl
 and manifests, and missing runtimes. Claude Code as a reviewer, Linux hosts and other
 launchers were not exercised. See the [decision](decisions/reviewer-execution.md).
 
+## Statechart adoption — 2026-10-30
+
+Statechart brings the source total to 27. Its 31 vendored upstream files and LICENSE
+match cursor/plugins `1ba91fc` byte for byte. Provenance records each digest, and
+`tests/test_statechart_vendored.py` checks them, the pin recorded in the registry, map
+and decision note, and the launcher's executable bit; a scratch edit and a removed
+executable bit each failed it. On macOS with Node.js 24.19, OpenJDK 17.0.20 and
+tla2tools v1.7.4 (sha256 matched), its TLC case reported a 3-step shortest violation
+with exit 1 and a holding rule with exit 0. CI installs Java 17, Node.js 24 and the pinned
+jar, so the case also runs on Linux there and fails if they are missing.
+The account transaction pilot in the [adoption decision](decisions/statechart.md) drew
+its chart and bug path. The upstream test suite did not run: the session's permission
+classifier declined running the downloaded tests. Bun, Deno, the mise install, Pele
+rendering, Windows and native routing are unverified.
+
+A fresh Claude agent applied each edited instruction once to a synthetic case. The
+create-formal case wrote a verify-skill section that named statechart and copied none of
+its commands. The arena lead chose an other-family judge, skipped the judge when only its
+own family was available, and said when it could not check the family. The
+measured-number case reported an effect inside the run-to-run spread as unresolved. One
+sample per case does not establish general model adherence. The map has 78 entries and
+132 relationships, both freshness checks pass, and the full suite ran 844 tests under
+Python 3.11 with no failures.
+
 ## Grok and Antigravity with an installed account — 2026-10-22
 
 Neither client is an installer target. Grok reads `~/.claude/skills`, `~/.claude/CLAUDE.md`

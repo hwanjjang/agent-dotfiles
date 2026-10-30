@@ -99,6 +99,9 @@ beta methods to create and maintain a project-local check that formally verifies
 explicitly requested property. They bundle no verifier; a pass covers only the stated
 model or bound. The repository pilot, [verify-account-transactions](docs/verification/verify-account-transactions/SKILL.md),
 checks the account transaction journal with a pinned TLA+ model and a real-code harness.
+The [statechart adoption](docs/decisions/statechart.md) adds pstack's TLC result reader:
+it reports the shortest path to each broken rule in a TLA+ model and draws the explored
+states as a Mermaid statechart. Generated formal verify skills read TLA+ results with it.
 
 ## Repository structure
 

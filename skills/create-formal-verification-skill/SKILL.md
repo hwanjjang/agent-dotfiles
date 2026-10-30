@@ -74,6 +74,14 @@ check a harness on the code. Use real commands, paths and nouns; no placeholders
 Keep raw tool output such as state dumps and solver logs in the target's ignored
 evidence area; do not commit it or change ignore rules without authority.
 
+If the check is a TLA+ model, tell the next agent to read each result with the
+[statechart](../statechart/SKILL.md) skill: it gives the shortest path to each
+invariant violation in plain words and, for a small enough model, draws how the
+system moves between states. Refer to statechart by name and copy none of its
+commands, options or paths, which change between releases and machines. Its chart
+explains the checked model; it replaces neither the conformance link nor the
+scratch-break qualification.
+
 ## Qualify before handoff
 
 Follow the generated skill once, as the next agent would, on a scratch change that

@@ -32,7 +32,7 @@
       "adopted_upstream": "https://github.com/cursor/plugins",
       "adopted_revision": "ac4e25a0064cd600afdd605208bad72748cb019a",
       "adopted_path": "pstack/skills/arena",
-      "local_skill_sha256": "a878d8deacd161cb14631e3f9b8b78ad11df9da5824c0c34ca75ddcc2a9958bf"
+      "local_skill_sha256": "5bbad08af8c3a8d52e23897abccdfba0d55a0e3e3aa2a7baaf265de16f2f5e02"
     },
     {
       "id": "swarm",
@@ -86,7 +86,7 @@
       "adopted_upstream": "https://github.com/mattpocock/skills",
       "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
       "adopted_path": "skills/engineering/diagnosing-bugs",
-      "local_skill_sha256": "1d29fa7e197edac763be7f8e33da7e09430b471edd9a24e340d576907ea21789"
+      "local_skill_sha256": "e9b705524257a8a10138ebbc746483f2999db12663205ff44a36e0946ca59fb7"
     },
     {
       "id": "domain-modeling",
@@ -230,11 +230,11 @@
     {
       "id": "create-formal-verification-skill",
       "source_basis": "adopted-upstream",
-      "local_skill_sha256": "bb5da9b48d081dac1a05d97881483f62d5a830572ba94b7736760ff81926d2da",
+      "local_skill_sha256": "60e32facec9ffe3e3e763e207cf812f4db9451ff8355f78729460fd637b2f8a8",
       "adopted_upstream": "https://github.com/cursor/plugins",
-      "adopted_revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
+      "adopted_revision": "1ba91fc25c0977741dd0e267849e6234b037ed0a",
       "adopted_path": "pstack/skills/create-formal-verification-skill",
-      "reviewed": "2026-10-22"
+      "reviewed": "2026-10-30"
     },
     {
       "id": "maintain-formal-verification-skill",
@@ -244,6 +244,15 @@
       "adopted_revision": "190d28736eff128ec94f502a22c7fe0c4b56cd37",
       "adopted_path": "pstack/skills/maintain-formal-verification-skill",
       "reviewed": "2026-10-22"
+    },
+    {
+      "id": "statechart",
+      "source_basis": "adopted-upstream",
+      "local_skill_sha256": "010b7b4532406739b1c3a426d1a45f02bb618a42561fc96b3976e064a7f8384d",
+      "adopted_upstream": "https://github.com/cursor/plugins",
+      "adopted_revision": "1ba91fc25c0977741dd0e267849e6234b037ed0a",
+      "adopted_path": "pstack/skills/statechart",
+      "reviewed": "2026-10-30"
     }
   ]
 }

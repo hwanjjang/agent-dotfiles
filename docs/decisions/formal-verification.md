@@ -23,10 +23,13 @@ Selected cursor/plugins revision: `190d28736eff128ec94f502a22c7fe0c4b56cd37` (ps
   and the coverage record and sync commit that it reads.
 
 Not imported: the setup offer (#715), version and guide changes (#724), the Claude Code
-harness adapter line and pstack help text. pstack ranks first in the maintainer
-tie-break. Neither Matt Pocock's skills (`5beb35b`) nor Addy Osmani's agent skills
-(`aeac41d`) contain a formal verification, model checking or invariant-proving skill,
-so the tie-break did not decide anything.
+harness adapter line and pstack help text. On 2026-10-30 the create method moved to
+`1ba91fc` (pstack 0.15.36) for its one upstream change, reading TLA+ results with
+[statechart](statechart.md); the maintain method is unchanged upstream. The 2026-10-29
+announcement made statechart stable and did not change the pair's beta label. pstack
+ranks first in the maintainer tie-break. Neither Matt Pocock's skills (`5beb35b`) nor
+Addy Osmani's agent skills (`aeac41d`) contain a formal verification, model checking or
+invariant-proving skill, so the tie-break did not decide anything.
 
 ## Upstream evaluations
 
@@ -92,9 +95,10 @@ reports; no independent source yet shows that the wording prevents them.
 - Each target owns its generated verify skill, models, harnesses, coverage record, sync
   commit and evidence. The verify skill handles changes made while it is used; the
   maintain skill handles changes that skipped it.
-- tdd owns fixes, diagnosing-bugs owns counterexample reachability, and Archify may
-  explain a state machine. SDLC routes to the pair only on request
-  ([stage routing](../../skills/sdlc/references/skill-routing.md)); nothing is scheduled.
+- tdd owns fixes, diagnosing-bugs owns counterexample reachability, statechart reads
+  TLA+ results, and Archify may explain a state machine. SDLC routes to the pair only on
+  request ([stage routing](../../skills/sdlc/references/skill-routing.md)); nothing is
+  scheduled.
 
 Both packages drop upstream `disable-model-invocation: true`, as the user-journey pair
 did. This diverges from upstream and from fullerzz's port, so each description matches

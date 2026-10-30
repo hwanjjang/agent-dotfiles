@@ -12,14 +12,16 @@
   "adaptations": [
     "Bounded to difficult defects; removed fixed hypothesis count and ban on useful source analysis.",
     "Reuses tdd for corrections and shared logging/security policies.",
-    "Removed optional upstream HITL script dependency; use existing host interaction."
+    "Removed optional upstream HITL script dependency; use existing host interaction.",
+    "Performance-regression measurement links the evidence policy's measured-number recommendation (adapted from pstack principle-explain-the-number at 1ba91fc)."
   ],
   "skill_dependencies": [
     "tdd"
   ],
   "policy_dependencies": [
     "policies/logging.md",
-    "policies/security.md"
+    "policies/security.md",
+    "policies/evidence.md"
   ],
   "runtime_requirements": [],
   "validation": "Strict skill metadata passed; Codex CLI 0.159.2 discovered this source package in a temporary project. Dependency/link and map checks performed. The separate SDLC test suite checks evidence records, not execution of this skill. No model-adherence, live MCP authentication or multi-provider lifecycle claim."

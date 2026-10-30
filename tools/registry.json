@@ -93,6 +93,18 @@
       ]
     },
     {
+      "id": "statechart",
+      "kind": "bundled-tool",
+      "purpose": "Optional TLC check and Mermaid statechart for TLA+ models, read on explicit request or from a formal verify skill.",
+      "source": "https://github.com/cursor/plugins/tree/1ba91fc25c0977741dd0e267849e6234b037ed0a/pstack/skills/statechart",
+      "license": "MIT",
+      "revision": "1ba91fc25c0977741dd0e267849e6234b037ed0a",
+      "entrypoint": "skills/statechart/scripts/statechart",
+      "runtime": "Node.js 22.18-22.x or 23.6+ (or Bun 1.1.5+, Deno 2.0+); Java and tla2tools via TLA2TOOLS/JAVA, otherwise a networked mise install of java@temurin-25 and tla2tools v1.7.4 pinned by sha256; optional pele@1.9.0 for SVG.",
+      "validation": "No non-mutating doctor; an actual run writes only to a new --out folder. See skills/statechart/provenance.json.",
+      "reviewed_on": "2026-10-30"
+    },
+    {
       "id": "screenshot-manual",
       "kind": "bundled-tool",
       "purpose": "Required screenshot-based user manual PDF production.",
@@ -117,12 +129,12 @@
     {
       "id": "tla2tools",
       "kind": "optional-library",
-      "purpose": "Repository-only TLC model check for the account transaction verifier; not vendored.",
+      "purpose": "TLC for the account transaction verifier and the vendored statechart test; not vendored.",
       "source": "https://github.com/tlaplus/tlaplus/releases/tag/v1.7.4",
       "license": "MIT",
       "package": "tla2tools.jar",
       "version_policy": "Pin v1.7.4 by sha256 936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88, recorded at first download because the release publishes no digest.",
-      "runtime": "Java 11+ (validated with OpenJDK 17); keep the jar at .local/tools/tla2tools-1.7.4/tla2tools.jar or select it with VERIFY_TLA2TOOLS_JAR.",
+      "runtime": "Java 11+ (validated with OpenJDK 17); keep the jar at .local/tools/tla2tools-1.7.4/tla2tools.jar or select it with VERIFY_TLA2TOOLS_JAR. CI downloads the same jar to $RUNNER_TEMP, checks this sha256 and exports TLA2TOOLS for the statechart test.",
       "entrypoint": "docs/verification/verify-account-transactions/scripts/run.py",
       "check": [
         "python3.11",
