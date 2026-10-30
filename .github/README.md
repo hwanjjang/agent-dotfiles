@@ -50,7 +50,7 @@ set -e
 python3.11 -m venv .local/ci-venv
 .local/ci-venv/bin/python -m pip install -r skills/screenshot-manual/requirements.txt
 .local/ci-venv/bin/python -c "import reportlab, pypdf, PIL"
-# For the statechart TLC test: Java 11+, Node.js 22.18+ and the pinned jar (see tools/registry.json).
+# For the statechart TLC test: Java 11+, Node.js 22.18-22.x or 23.6+ and the pinned jar (see tools/registry.json).
 export TLA2TOOLS="$PWD/.local/tools/tla2tools-1.7.4/tla2tools.jar"
 .local/ci-venv/bin/python -m unittest discover -s tests -v
 .local/ci-venv/bin/python -m unittest discover -s skills/sdlc/scripts -p 'test_*.py' -v
