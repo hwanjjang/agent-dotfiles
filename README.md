@@ -80,7 +80,10 @@ prepares reviewer guidance. See the [source comparison and adaptations](docs/dec
 SDLC [shares matching required and additional reviewers](skills/sdlc/references/optional-reviewers.md#one-assignment-per-reviewer)
 through one assignment and result; distinct reviewers remain independent. Each
 selected reviewer uses [code-review-and-quality](skills/code-review-and-quality/SKILL.md)
-inside that context; the method also works standalone.
+inside that context; the method also works standalone. Before dispatch, SDLC
+[prepares each reviewer's execution](docs/decisions/reviewer-execution.md) so it can run
+the checks the review needs without coordinator approvals, then checks the reviewer's
+checkout after the return.
 
 [to-spec](skills/to-spec/SKILL.md) turns settled requirements into a standalone
 specification. AK SDLC uses the same method; its former spec checklist now links

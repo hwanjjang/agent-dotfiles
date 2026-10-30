@@ -4,6 +4,24 @@ Source packaging, client discovery and successful task execution are different
 checks. The account installer delivers configuration only when explicitly applied;
 MCP selections are opt-in and live connections require separate checks.
 
+## Reviewer execution readiness — 2026-10-30
+
+Probes ran on macOS through Paseo, in disposable review worktrees.
+
+- **Codex CLI 0.163.0 (mode `auto`).** It ran the statechart TLC test with no approval
+  after the review checkout received the [Codex recipe](../skills/sdlc/references/reviewer-execution.md#codex):
+  local binding allowed, no outbound domains. `curl` to api.github.com was blocked.
+  Without the recipe, the same test failed on the blocked local port.
+- **Grok CLI 1.0.70.** It ran the allowed test without a prompt under auto-approve, and
+  a project deny rule refused a denied command. This worked only after `grok --trust`
+  recorded this repository; untrusted, Grok ignored the project rules. Its login shell
+  resolved Node 20 before Node 24, so the TLC case skipped there.
+- **Antigravity.** It offers only full access.
+
+The [review workspace helper](../skills/sdlc/scripts/review_workspace.py) and its 9 tests
+are part of the 70 passing SDLC script tests. Claude Code as a reviewer, Linux hosts and
+other launchers were not exercised. See the [decision](decisions/reviewer-execution.md).
+
 ## Grok and Antigravity with an installed account — 2026-10-22
 
 Neither client is an installer target. Grok reads `~/.claude/skills`, `~/.claude/CLAUDE.md`
