@@ -13,7 +13,7 @@
   "adaptations": [
     "Made fact discovery portable and conditional on delegation availability.",
     "Bounded completion to consequential decisions and reused existing authorization.",
-    "Question numbers are stable for the session: a partly answered round stays open and its unanswered questions return under their numbers and wording before new ones, new questions take numbers after the highest used, a deferred question stays open, and a question made moot by a changed goal is closed explicitly without reusing its number. Upstream has open reports and no decision (mattpocock/skills issues #1406, #1386, #1411); added on 2026-11-13 by AK's decision after a local evaluation."
+    "Question numbers are stable for the session: a partly answered round stays open and its unanswered questions return under their numbers and wording before new ones, new questions take numbers after the highest used, a deferred question stays open, and a question made moot by a changed goal is closed explicitly without reusing its number. Basis: mattpocock/skills issue #1406 reports renumbering and partly answered rounds treated as finished; it is open without a maintainer decision. The related upstream proposals to mark question stakes (#1386) and to add a blank answer sheet (#1411) are separate and are not adopted here. Added on 2026-11-13 by AK's decision after a local evaluation."
   ],
   "skill_dependencies": [],
   "runtime_requirements": [
