@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "upstream": "https://github.com/addyosmani/agent-skills",
-  "revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+  "revision": "301b02b12bff98e4688e6984af6556802322bbde",
   "path": "skills/code-review-and-quality",
   "license": "MIT",
   "license_path": "LICENSE",
-  "retrieved": "2026-10-17",
+  "retrieved": "2026-11-13",
   "upstream_files": {
-    "SKILL.md": "2db1e850379f255fd3091ef278cde24cd6c7d2ba23e360cc52ea522c40d4396e"
+    "SKILL.md": "a47551daf26e3cc5670f5286f9e4850c2fc662d5ba08b86eee895254f3851797"
   },
   "adaptations": [
     "Bundled checklist resources and replaced unavailable specialist-skill references.",
@@ -16,15 +16,16 @@
   ],
   "skill_dependencies": [],
   "runtime_requirements": [],
-  "validation": "Source inspected; client discovery and behavioral execution not yet verified.",
+  "selection": "Updated from aeac41d (0.6.13, retrieved 2026-10-17) to 301b02b (0.6.15) by AK's decision on 2026-11-13. Between those revisions the three vendored files change only by the staged-secret check that lists file names (PR #718), the three Step 4 sentences on validating findings (PR #736) and two performance example corrections; all three are taken and the adaptations above are kept. Provisional with respect to community validation: no independent report on these changes was found.",
+  "validation": "On 2026-11-13 under macOS with Python 3.9 and Node.js 24.19, tests/test_review_checklists.py ran the staged-secret command in a temporary repository (a staged match prints the file name and not the value; no match prints nothing and exits 0), parsed the web-vitals snippet with node --check and checked the Lighthouse target; all four checks failed on the earlier files. The command is a keyword check, and no output does not prove that no secret is staged. Upstream PR #736 reports no graded behavioral run. A first pass with fresh Claude Sonnet reviewers on a regression fixture and a behavior-neutral fixture, one run per cell, showed the same result on the regression and, on the neutral change, a base defect reported separately with approval instead of a request for changes; this is provisional. Not verified: client discovery, other hosts and models, and the remaining review method.",
   "additional_upstream_files": {
     "references/security-checklist.md": {
       "destination": "references/security-checklist.md",
-      "sha256": "37774056502fe8970dcd2fd27dca5fa31f2a55232649fc3056c89c3af7d62755"
+      "sha256": "84ed77cbba419c95390618f857eca2fadfeec12f2e5d39af4cc1833b94d82a39"
     },
     "references/performance-checklist.md": {
       "destination": "references/performance-checklist.md",
-      "sha256": "fffc38b8f3b328a973aab8b1a2efdd72b65710d8f4b57f28f8374ddae7f8a88b"
+      "sha256": "ce946457d4a502846e781a2747cf6af50bcc79b1957a66dc024f50557e8982e1"
     }
   }
 }
