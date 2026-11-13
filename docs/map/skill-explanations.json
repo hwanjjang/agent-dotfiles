@@ -122,7 +122,7 @@
       "adopted_upstream": "https://github.com/mattpocock/skills",
       "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
       "adopted_path": "skills/productivity/grilling",
-      "local_skill_sha256": "4c7dc99549e083b47989321f95d1e5f7aa62223cd06b793f95e4bd22bd7fe40f"
+      "local_skill_sha256": "a4e526b91a712b7b28ecf69ebdce13612931723604d26b0327d9072931d38dda"
     },
     {
       "id": "to-spec",

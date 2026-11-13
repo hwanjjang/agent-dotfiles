@@ -23,6 +23,8 @@ Format a round like so:
 
 Word each question so "yes" accepts your recommended answer.
 
+A question keeps its number for the whole session. If the user answers only part of a round, the round stays open: carry each unanswered question into the next round under its number and with its wording, before any new question, and number new questions after the highest number used so far. A question the user defers stays open until they answer it or close it. When a changed goal makes a question moot, say that you are closing it and why; do not reuse its number.
+
 Each round the user answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
 Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), inspect the available sources directly, or delegate when the host supports and permits it; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
