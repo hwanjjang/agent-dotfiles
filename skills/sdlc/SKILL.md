@@ -54,7 +54,7 @@ Use `begin` before a renewed stage attempt, `finish` with its evidence receipt, 
 - The plan must include user scenarios (user, goal, prerequisites, ordered actions, expected result and relevant failure path), mapped to acceptance criteria and test coverage.
 - Remove the separate independent-verification stage from PR implementation. After self-verification, review the PR and evidence in a separate reviewer context. Try reviewer 1, then reviewer 2, each from a provider different from the builder. When both cannot proceed, use an independent reviewer of the same provider if available. Rate limits, unavailable tools and inability to perform required checks advance this chain; disagreement with findings does not. See [review/fallback and handoff rules](references/verification.md).
 - Plan the required and additional reviewers together under [one assignment per reviewer](references/optional-reviewers.md#one-assignment-per-reviewer). A matching required reviewer shares its result with the additional role; dispatch only uncovered Grok/Gemini reviewers. Publish each distinct result once. Reviewers never implement fixes; record actual unavailability without erasing findings or waiving required review.
-- Preserve verified latest GA model selection and authorized effort (medium by default; shared-review selection follows the linked contract). Permission-mode settings are optional: continue under existing permissions with honest isolation observations if setting or observing a mode fails; never relabel an unknown mode as auto/full. Carry stable finding IDs, unresolved findings, author responses, fixes and available evidence to every replacement reviewer. No available reviewer means incomplete review, never an invented PASS.
+- Preserve verified latest GA model selection and authorized effort (high by default; tasks created before 2026-10-30 keep medium; shared-review selection follows the linked contract). Permission-mode settings are optional: continue under existing permissions with honest isolation observations if setting or observing a mode fails; never relabel an unknown mode as auto/full. Carry stable finding IDs, unresolved findings, author responses, fixes and available evidence to every replacement reviewer. No available reviewer means incomplete review, never an invented PASS.
 - Publish concise **Required / Recommended** findings in the PR. The builder assesses each finding, selects and applies changes, verifies and pushes; repeat review until PASS and no author-selected change remains. Unselected recommendations end in the review record: no follow-up issue, owner, reminder or separate tracking.
 - For new features or UX/UI changes, update the user manual with actual scenario screenshots and deliver a visually checked PDF plus editable source. Use the installed `screenshot-manual` skill for screenshot-based PDFs and an available PDF/document skill where applicable. Before completion, check affected manuals, README/API/operations docs and diagrams; update them and renew affected checks/review before final PASS.
 
@@ -126,3 +126,12 @@ the narrowest host setting that runs the required checks without coordinator app
 a preflight in the reviewer's environment, offline evidence and an integrity check after
 the return. [Host recipes](references/reviewer-execution.md) record verified settings.
 Isolation stays optional; authority, model, independence and evidence gates are unchanged.
+
+## 2026-10-30 reviewer effort default amendment
+
+AK asked on 2026-10-30 to change the reviewers' effort to high. New tasks record
+`reviewer_effort_default: "high"`; their required, fallback and shared reviews run at
+high unless an explicit task-scoped [effort authority](references/state-contract.md#reviewer-effort-authority)
+selects another value. Tasks created earlier record no default and keep medium, so their
+histories stay valid. This supersedes the medium default of earlier amendments for new
+tasks; historical receipts are unchanged.

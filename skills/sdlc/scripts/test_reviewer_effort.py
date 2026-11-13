@@ -11,7 +11,7 @@ def reviewer():
                 account='fixture-reviewer', model='offline-model', context_id='review-context',
                 builder_context_id='build-context', independent=True,
                 model_selection_source='offline catalog fixture', model_selection_time='2026-10-03',
-                latest_ga_model_verified=True, requested_effort='medium', effort='medium',
+                latest_ga_model_verified=True, requested_effort='high', effort='high',
                 effort_verified=True, requested_mode='auto', mode='auto', mode_verified=True,
                 reviewer_slot=1, unavailable_reviewers=[])
 
@@ -41,22 +41,63 @@ class EffortTests(unittest.TestCase):
         effort, authority = s.reviewer_effort_authority(self.root, self.state)
         s.validate_reviewer_configuration(config, True, effort, authority)
 
+    def legacy(self):
+        # A task initialized before the high default records no reviewer_effort_default.
+        self.state.pop('reviewer_effort_default', None)
+
+    def test_new_task_records_high_default(self):
+        self.assertEqual(self.state.get('reviewer_effort_default'), 'high')
+        self.assertEqual(s.reviewer_effort_authority(self.root, self.state), ('high', None))
+
+    def test_new_task_expects_high(self):
+        self.check(dict(reviewer(), requested_effort='high', effort='high'))
+        with self.assertRaises(s.GateError):
+            self.check(dict(reviewer(), requested_effort='medium', effort='medium'))
+
+    def test_legacy_task_keeps_medium(self):
+        self.legacy()
+        self.check(dict(reviewer(), requested_effort='medium', effort='medium'))
+        with self.assertRaises(s.GateError):
+            self.check(dict(reviewer(), requested_effort='high', effort='high'))
+
+    def test_authority_overrides_default_on_new_and_legacy(self):
+        for legacy in (False, True):
+            for effort in ('low', 'medium', 'high'):
+                with self.subTest(legacy=legacy, effort=effort):
+                    if legacy:
+                        self.legacy()
+                    ref = self.authority(effort=effort)
+                    self.check(dict(reviewer(), requested_effort=effort, effort=effort, reviewer_effort_authority=ref))
+
+    def test_only_the_high_default_can_be_recorded(self):
+        for with_authority in (False, True):
+            for value, effort in (('low', 'low'), ('medium', 'medium'), (None, 'medium'), (['high'], 'high')):
+                review = dict(reviewer(), requested_effort=effort, effort=effort)
+                if with_authority:  # an authority must not hide an invalid recorded default
+                    review['reviewer_effort_authority'] = self.authority(effort=effort)
+                self.state['reviewer_effort_default'] = value
+                with self.subTest(with_authority=with_authority, value=value), self.assertRaises(s.GateError):
+                    self.check(review)
+
     def test_default_and_explicit_high(self):
         self.check(reviewer())
         ref = self.authority()
         self.check(dict(reviewer(), requested_effort='high', effort='high', reviewer_effort_authority=ref))
 
     def test_shared_reviewer_uses_high_once(self):
-        for provider, role in [('xai', 'grok'), ('grok', 'grok'),
-                               ('google', 'gemini'), ('gemini', 'gemini')]:
-            with self.subTest(provider=provider):
-                shared = dict(reviewer(), provider=provider, shared_optional_review=role,
-                              requested_effort='high', effort='high')
-                self.check(shared)
-                with self.assertRaises(s.GateError):
-                    self.check(dict(shared, requested_effort='medium', effort='medium'))
+        for legacy in (False, True):
+            if legacy:
+                self.legacy()
+            for provider, role in [('xai', 'grok'), ('grok', 'grok'),
+                                   ('google', 'gemini'), ('gemini', 'gemini')]:
+                with self.subTest(legacy=legacy, provider=provider):
+                    shared = dict(reviewer(), provider=provider, shared_optional_review=role,
+                                  requested_effort='high', effort='high')
+                    self.check(shared)
+                    with self.assertRaises(s.GateError):
+                        self.check(dict(shared, requested_effort='medium', effort='medium'))
         # Old receipts are not retroactively reclassified as shared reviews.
-        self.check(dict(reviewer(), provider='xai'))
+        self.check(dict(reviewer(), provider='xai', requested_effort='medium', effort='medium'))
 
     def test_shared_role_requires_matching_provider(self):
         for provider, role in [('anthropic', 'grok'), ('xai', 'gemini'),
@@ -79,9 +120,13 @@ class EffortTests(unittest.TestCase):
                 self.check(dict(shared, **change))
 
     def test_review_cannot_grant_or_replace_authority(self):
-        for extra in ({}, {'authorized_effort':'high'}, {'expected_effort':'high'}, {'effort_authorized':True}):
-            with self.subTest(extra=extra), self.assertRaises(s.GateError):
-                self.check(dict(reviewer(), requested_effort='high', effort='high', **extra))
+        # Each review asks for the effort the task's default does not give it.
+        for legacy, effort in ((False, 'medium'), (True, 'high')):
+            if legacy:
+                self.legacy()
+            for extra in ({}, {'authorized_effort':effort}, {'expected_effort':effort}, {'effort_authorized':True}):
+                with self.subTest(legacy=legacy, extra=extra), self.assertRaises(s.GateError):
+                    self.check(dict(reviewer(), requested_effort=effort, effort=effort, **extra))
         ref = self.authority()
         with self.assertRaises(s.GateError):
             self.check(dict(reviewer(), requested_effort='high', effort='high', reviewer_effort_authority=dict(ref, path='other.json')))
@@ -180,16 +225,17 @@ class EffortTests(unittest.TestCase):
                 self.check(dict(readonly, **changes))
 
     def test_latest_intent_and_history_preserved(self):
-        ref = self.authority()
+        ref = self.authority(effort='medium')
+        medium = dict(reviewer(), requested_effort='medium', effort='medium')
         old = copy.deepcopy(self.state)
-        self.check(dict(reviewer(), requested_effort='high', effort='high'))
+        self.check(medium)
         self.assertEqual(self.state, old)
         self.state['stages']['intent']['history'].append(dict(receipt=dict(decision='PROCEED', outputs=[])))
         self.check(reviewer())
-        with self.assertRaises(s.GateError): self.check(dict(reviewer(), requested_effort='high', effort='high'))
+        with self.assertRaises(s.GateError): self.check(medium)
         self.state['stages']['intent']['history'].pop()
         self.state['stages']['intent']['status']='stale'
-        with self.assertRaises(s.GateError): self.check(dict(reviewer(), requested_effort='high', effort='high', reviewer_effort_authority=ref))
+        with self.assertRaises(s.GateError): self.check(dict(medium, reviewer_effort_authority=ref))
 
 
 if __name__ == '__main__':
