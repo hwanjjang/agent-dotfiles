@@ -163,9 +163,9 @@
     {
       "id": "code-review-and-quality",
       "source_basis": "adopted-upstream",
-      "local_skill_sha256": "13c0161cef1aeb1e45234cf6b6573f0b371ec17774b411dfe3b37028bd4d8769",
+      "local_skill_sha256": "e21a4635133d3c271952f5f5ea27d160abb8d2c0137d2fef4d3d93d81c6b61b9",
       "adopted_upstream": "https://github.com/addyosmani/agent-skills",
-      "adopted_revision": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+      "adopted_revision": "301b02b12bff98e4688e6984af6556802322bbde",
       "adopted_path": "skills/code-review-and-quality"
     },
     {

@@ -125,12 +125,34 @@ attribution. Community effectiveness remains provisional.
 1. Inspect the pinned origin and local adaptations before selecting a new revision.
 2. Fetch into ignored local staging. Review the upstream delta, license, dependencies,
    client requirements, and permission or output changes.
-3. Reapply only adaptations still needed. Preserve method coverage, invocation
+3. When the upstream has an [author channel](#author-channels-on-x), read the
+   author's posts from the delta period and the replies to them.
+4. Reapply only adaptations still needed. Preserve method coverage, invocation
    behavior, and resource closure; do not overwrite the local package blindly.
-4. Run relevant syntax, resource, executable, and behavioral checks. Record which
+5. Run relevant syntax, resource, executable, and behavioral checks. Record which
    client-level or authenticated checks were actually performed.
-5. Update provenance and the map in the same change. Review all public content for
+6. Update provenance and the map in the same change. Review all public content for
    private links and values before an authorized commit.
+
+### Author channels on X
+
+These authors announce releases and explain changes on X. Each account was checked
+on 2026-11-13 against the social link on the author's GitHub profile.
+
+| Upstream | Author account | Also confirmed by |
+| --- | --- | --- |
+| [pstack](https://github.com/cursor/plugins/tree/main/pstack) | [@poteto](https://x.com/poteto) | The plugin manifest names Lauren Tan as author, and the GitHub account `poteto` that links this X account authors the pstack commits |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | [@mattpocockuk](https://x.com/mattpocockuk) | Its profile links aihero.dev, the site on the GitHub profile, and it posts links to the repository |
+| [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | [@addyosmani](https://x.com/addyosmani) | Its profile links addyosmani.com, which links back to the account |
+
+- Use the author's posts for release context and the stated reason for a change.
+  They are author statements, not independent community evidence.
+- Replies and quote posts can contain firsthand reports. Evaluate them with the
+  [community-evidence rules](../../AGENTS.md#external-research-is-part-of-this-project).
+- Commits, pull requests and changelogs remain the record of what changed. A post
+  does not replace the delta review in step 2.
+- X can require sign-in. Record the URL and date of each post you read, and state
+  which posts or replies could not be read.
 
 Source presence, structural validation, executable checks, and real client behavior
 are separate claims. No account installation, external publication, or complete
@@ -176,6 +198,71 @@ they agree.
   session and perceptual review of generated pages.
 - **Rollback.** Restore `skills/archify` and the pins from the repository commit before this
   update; its provenance record names upstream `d5a1333`.
+
+## Upstream check — 2026-11-13
+
+The three reference collections were compared with the previous check of 2026-10-30
+(recorded in the [statechart decision](../decisions/statechart.md)). Per-skill
+provenance owns the selected revisions; this record says what was inspected and decided.
+
+| Upstream | Head at the previous check | Head inspected | Change to adopted paths |
+| --- | --- | --- | --- |
+| [cursor/plugins](https://github.com/cursor/plugins) (pstack) | `1ba91fc` (0.15.36) | `ec56937` (2026-11-12) | None. No commit touches `pstack/` or `cursor-team-kit/`; the version is still 0.15.36. |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | `a496f55` (1.3.2) | `5863806` (2026-11-12) | None since the previous check. Against the `49dd158` pin, `grilling` gained "with a fresh context window" ([#1341](https://github.com/mattpocock/skills/pull/1341)). |
+| [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | `eb07f19` (0.6.14) | `301b02b` (2026-11-01, 0.6.15) | Three files of the vendored review package. |
+
+- **Adopted.** [code-review-and-quality](../../skills/code-review-and-quality/SKILL.md)
+  moves from `aeac41d` to `301b02b`. Between those revisions the three vendored files
+  change in exactly three ways, and all three are taken with the local adaptations kept.
+  The staged-secret check lists the names of matching files instead of printing the
+  matching lines, which contained the secret value
+  ([#718](https://github.com/addyosmani/agent-skills/pull/718)); it is a keyword
+  check, and no output does not prove that no secret is staged. Step 4 tells the
+  reviewer to check a finding against callers, guards and tests, to label defects
+  already in the base separately from regressions, and that zero findings is a valid
+  result ([#736](https://github.com/addyosmani/agent-skills/pull/736)). The
+  performance examples use `http://localhost` for Lighthouse and alias the second
+  `onINP` import, which did not parse as one module.
+- **Checks.** `tests/test_review_checklists.py` runs the staged-secret command in a
+  temporary repository, parses the web-vitals snippet with `node --check` and checks
+  the Lighthouse target; all four checks failed before the update. #736 reports no
+  graded behavioral run. A first pass here ran fresh Claude Sonnet reviewers on two
+  fixtures adapted from the upstream eval fixture, with the expected behavior removed
+  from the prompt: one run per variant on a regression and on a behavior-neutral change.
+  Both variants reported the regression and labelled the base defect. On the neutral
+  change the earlier text returned "request changes" for the base defect and the new
+  text reported it separately and approved. That is one run per cell on one model, so
+  the effect is provisional; the pull request records the repeat on the final files.
+- **Not adopted.** Matt's in-progress `software-factory` and `chief-of-staff` changes;
+  Matt's fresh-context wording, because the local `grilling` sentence is already
+  host-neutral (a wider fresh-context rule for delegation, raised in the 2026-10-30
+  review, is undecided); unmerged pstack proposals such as Codex packaging
+  ([#1143](https://github.com/cursor/plugins/pull/1143)) and Veil
+  ([#1189](https://github.com/cursor/plugins/pull/1189)); and Addy changes to skills
+  that are not vendored here.
+- **Held.** Changes to `grilling` for stable question numbers and partly answered
+  rounds wait for a local evaluation. Upstream reports:
+  [#1406](https://github.com/mattpocock/skills/issues/1406),
+  [#1386](https://github.com/mattpocock/skills/issues/1386),
+  [#1411](https://github.com/mattpocock/skills/issues/1411).
+- **Proposed separately.** Recording upstream statechart reports as known limits, and a
+  local `domain-modeling` rule to reuse an existing glossary location.
+
+Community evidence for this period is limited and mixed, so the selection is
+provisional with respect to community validation.
+
+| Source and date | Context and finding | Limit |
+| --- | --- | --- |
+| Hacker News comments [50431407](https://news.ycombinator.com/item?id=50431407), [50420665](https://news.ycombinator.com/item?id=50420665), [50374679](https://news.ycombinator.com/item?id=50374679), [50364147](https://news.ycombinator.com/item?id=50364147), [50330866](https://news.ycombinator.com/item?id=50330866), 2026-11-01 to 2026-11-09 | Four users in five comments name Matt's skills as the base of their workflow (grill-with-docs, wayfinder; Claude Code, OpenCode and a local model). | Short mentions without measurements. |
+| Hacker News comment [50378737](https://news.ycombinator.com/item?id=50378737), 2026-11-05 | One user runs an adapted poteto-mode with multi-model subagents and reports end-to-end features. | The comment also presents the user's own harness. |
+| mattpocock/skills issues [#1406](https://github.com/mattpocock/skills/issues/1406), [#1386](https://github.com/mattpocock/skills/issues/1386), [#1381](https://github.com/mattpocock/skills/issues/1381), 2026-11-03 to 2026-11-09 | Firsthand grilling reports: a partly answered round treated as finished and questions renumbered; 19 sessions with a median of 15 equally weighted questions; decisions started before the goal was established. | Different problems, not one repeated report; #1381 comes from a ChatGPT session, not a coding harness. No maintainer decision. |
+| cursor/plugins issues [#1176](https://github.com/cursor/plugins/issues/1176), [#1178](https://github.com/cursor/plugins/issues/1178), 2026-11-05 | One user's benchmark: mandatory delegation spawned no subagents on Claude Code and 181 to 208 per run on Codex at about 20 times the cost. | Single reporter, closed by the reporter as misfiled; no artifacts. Consistent with not importing the orchestrator. |
+| addyosmani/agent-skills issues [#776](https://github.com/addyosmani/agent-skills/issues/776), [#781](https://github.com/addyosmani/agent-skills/issues/781), 2026-11-06 to 2026-11-10 | `/build auto` does not enter auto mode on one host; artifact locations differ between worktrees. | Not about the review package. No independent report on #718 or #736 was found. |
+
+Not read: Reddit (the search tool cannot reach it and the site asked for human
+verification), the authors' X posts for this period (the X search agent was over its
+usage limit) and X replies. Step 3 of the update procedure was therefore not performed
+for this check.
 
 ## Source-package limitations
 
