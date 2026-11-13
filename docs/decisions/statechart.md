@@ -98,3 +98,23 @@ tests with TLC 1.7.4. CI installs Java 17, Node.js 24 and the pinned jar, so the
 test's TLC case also runs on Linux there. Bun, Deno, the mise installation, Pele
 rendering, Windows and model-driven use were not exercised. The pilot's view and configs stay in
 ignored `.local/`; the account verifier is unchanged.
+
+## Known limits from upstream reports
+
+Reviewed on 2026-11-13 against cursor/plugins `ec56937`. No commit has touched
+`pstack/` since the vendored revision `1ba91fc`, so the vendored payload still equals
+upstream and each report below applies to it. All four reports and the proposed fixes
+were open on that date, with no reply from a maintainer. The payload is not patched
+here: it stays byte-equal to upstream, and fixes are considered when upstream merges them.
+
+| Limit | Vendored code | Upstream report | Consequence here |
+| --- | --- | --- | --- |
+| Windows is not supported. Java on Windows ends lines with CRLF, the output is split on `\n` only, and the `$`-anchored TLC message markers then fail to match. Process cleanup also spawns `/bin/sh`. The reporter saw TLC finish and the command exit 1 with no chart or report. | `scripts/run.ts` (`outputLines`, `fileLines`, `killGroup`), `scripts/frontends/dot.ts` (`linesOf`), `scripts/frontends/messages.ts` (`START`, `END`), `scripts/statechart.ts` (the janitor) | [#1170](https://github.com/cursor/plugins/issues/1170), 2026-11-04, Windows 10 with Node.js 22.16; proposed fix [#1147](https://github.com/cursor/plugins/pull/1147) | Use statechart on macOS or Linux. Windows was not exercised here either. |
+| Every TLC run uses one worker and no heap flag, so Java's default heap applies. The reporter's 31-million-state model ran about 50 minutes on one core and then failed with `OutOfMemoryError` in the final liveness pass. | `scripts/run.ts` (`PINNED_FLAGS`: `-workers 1 -fp 0 -lncheck final`) | [#1179](https://github.com/cursor/plugins/pull/1179), 2026-11-05 | Expect long runs and possible memory exhaustion on models with millions of states. The account transaction model stays far below that (9,642 states at the verifier's bounds). |
+| A strict typecheck of the scripts fails: `exit` in the `common` object is inferred as `number`, not `0 \| 1 \| 2`. | `scripts/run.ts` (`common` and the two results that spread it) | [#1141](https://github.com/cursor/plugins/issues/1141), 2026-10-30, TypeScript 7.0.2 with `@types/node` 26.1.2 | A static-check failure only. The reporter observed no command failure, and the launcher runs the scripts without type checking. Do not add a typecheck gate for this payload without fixing or excluding these lines. |
+| The upstream test for a launcher reached through a relative symlink fails on macOS, because the temporary directory sits behind the `/var` symlink. | Not vendored (`scripts/test/cli.test.ts` upstream) | [#1164](https://github.com/cursor/plugins/issues/1164), 2026-11-03; proposed fix [#997](https://github.com/cursor/plugins/pull/997) | A test-fixture failure, not a demonstrated command defect. Expect it when running the upstream suite on macOS. |
+
+The proposed fix for the worker limit is not a drop-in update. It would run the first
+check with one worker per CPU and keep a multi-worker trace for a broken `PROPERTY`
+above 100,000 states, so that path can differ between runs. Decide on it separately
+if upstream merges it.

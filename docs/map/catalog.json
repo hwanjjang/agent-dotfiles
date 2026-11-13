@@ -2311,7 +2311,8 @@
         "adaptation_notes": [
           "Vendored unchanged from pstack 0.15.36 without the upstream test corpus; upstream disable-model-invocation is kept.",
           "TLA2TOOLS and JAVA avoid its networked mise install; install tools only within task authority. The view module runs as code.",
-          "The chart explains a checked model; it is not code proof and does not replace a formal verify skill's conformance link."
+          "The chart explains a checked model; it is not code proof and does not replace a formal verify skill's conformance link.",
+          "Known upstream limits are recorded in the decision note: no Windows support, and one TLC worker with the default Java heap."
         ],
         "calls": [],
         "sources": [
@@ -2324,7 +2325,7 @@
             "source": "skills/statechart/provenance.json"
           },
           {
-            "label": "Selection, community evidence and pilot",
+            "label": "Selection, community evidence, pilot and known limits",
             "source": "docs/decisions/statechart.md"
           }
         ]
