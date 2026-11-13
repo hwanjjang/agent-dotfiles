@@ -95,7 +95,7 @@
       "adopted_upstream": "https://github.com/mattpocock/skills",
       "adopted_revision": "49dd158d1076134a641b33efb035946536778336",
       "adopted_path": "skills/engineering/domain-modeling",
-      "local_skill_sha256": "7b925d7b1e341a2eeae33ad68a8a8c0ab889a38ddd22a7598e4c240e5a7556a3"
+      "local_skill_sha256": "a8b05286ece67bc6d6986647b87caca6528b6d671e4bfa31bee1c37d083de0bf"
     },
     {
       "id": "grill-me",

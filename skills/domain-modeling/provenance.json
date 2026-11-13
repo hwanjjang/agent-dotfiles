@@ -12,8 +12,10 @@
     "ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
     "agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b"
   },
-  "adaptations": [],
+  "adaptations": [
+    "Before creating a glossary or an ADR directory, the skill checks project instructions and the repository for an existing one for that domain context and uses that location; it does not start a second one or merge the glossaries of separate contexts. Upstream assumes a root GLOSSARY.md or a GLOSSARY-MAP.md, and its setup skill, which is not imported here, writes the pointer to other locations. Basis: mattpocock/skills issue #1376 (one execution report and one source-based note), added on 2026-11-13 by AK's decision."
+  ],
   "skill_dependencies": [],
   "runtime_requirements": [],
-  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+  "validation": "Source inspected. On 2026-11-13 the adaptation was exercised with fresh Claude subagents that recorded one resolved term in small fixture projects; a script compared the project files afterwards. In a project whose instructions name docs/handbook/domain-language.md, Claude Haiku with the upstream text created a root GLOSSARY.md and said it followed the skill's layout; with the adapted text it updated the named file. Claude Sonnet used the existing glossary with either text in three fixtures, and Haiku did so when the file was named GLOSSARY.md. That first pass was one run per cell; the pull request records the repeats on the final files, including a project without a glossary and one with GLOSSARY-MAP.md. Not verified: client discovery, long sessions through grill-with-docs, ADR directory handling, other hosts and models."
 }
