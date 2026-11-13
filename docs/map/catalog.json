@@ -193,7 +193,7 @@
       "when": [
         "You are comparing workflow routing, evidence, or client packaging."
       ],
-      "usage": "Inspect pinned sources and per-skill provenance. Opening the map does not install or activate anything.",
+      "usage": "Inspect pinned sources and per-skill provenance. When updating, also read the author\u2019s X posts listed in the source adoption guide. Opening the map does not install or activate anything.",
       "behavior": [
         "Provides examples of focused workflows and explicit verification practices.",
         "The structure decision records the source revision inspected for this repository's initial layout."
@@ -219,7 +219,7 @@
       "when": [
         "You are comparing skill boundaries, catalog organization, or intent clarification."
       ],
-      "usage": "Inspect pinned sources and per-skill provenance. Opening the map does not install or activate anything.",
+      "usage": "Inspect pinned sources and per-skill provenance. When updating, also read the author\u2019s X posts listed in the source adoption guide. Opening the map does not install or activate anything.",
       "behavior": [
         "Offers examples of small skills and explicit selection of shipped content.",
         "Use its patterns as evidence; do not assume all of its process fits this repository."
@@ -245,7 +245,7 @@
       "when": [
         "You are comparing workflows, entry commands, or skill resource packaging."
       ],
-      "usage": "Inspect pinned sources and per-skill provenance. Opening the map does not install or activate anything.",
+      "usage": "Inspect pinned sources and per-skill provenance. When updating, also read the author\u2019s X posts listed in the source adoption guide. Opening the map does not install or activate anything.",
       "behavior": [
         "Separates reusable workflows from instructions for maintaining its repository.",
         "The source comparison notes its documented gap between per-skill installs and root-level references."
@@ -490,6 +490,7 @@
         "Read the tests first to understand intended behavior, edge cases and whether the checks would detect a regression.",
         "Inspect implementation across the five review axes, including relevant bundled security/performance checklists and dependency changes.",
         "Prioritize concrete defects and structural regressions. Give each finding a location, evidence, impact and an actionable remedy; keep style preferences distinguishable from blockers.",
+        "Before reporting a finding, check it against the callers, guards and tests that reach the changed code. Label defects already in the base separately from regressions; zero findings is a valid result.",
         "Where authorized and useful, test a defect hypothesis in an isolated disposable copy. Separate checks actually run from author-reported results and inspection-only conclusions.",
         "Return findings, candidate identity and verification limits using the coordinator\u2019s schema when supplied. Review does not edit the author\u2019s work or launch another reviewer."
       ],
@@ -530,7 +531,7 @@
         "sources": [
           {
             "label": "Adopted upstream method (pinned)",
-            "url": "https://github.com/addyosmani/agent-skills/blob/aeac41d4d005999432bb7312f7ff06383a91d59d/skills/code-review-and-quality/SKILL.md"
+            "url": "https://github.com/addyosmani/agent-skills/blob/301b02b12bff98e4688e6984af6556802322bbde/skills/code-review-and-quality/SKILL.md"
           },
           {
             "label": "Origin, adaptations and verification limits",
