@@ -33,6 +33,12 @@ now prepares each reviewer's execution before dispatch, and the
     allowed test ran without a prompt, and a denied command was refused rather than
     prompted.
 - **Antigravity.** Only `full-access` is offered; checks run without isolation.
+- **Claude Code** (2.1.302, probed on the PR #104 head a884843, whose tree main kept).
+  - `auto` mode ran the checks, a write in the checkout and an outbound request without
+    a prompt.
+  - `default` mode applied a project `.claude/settings.local.json`: allowed checks ran,
+    and denied commands were refused without prompts.
+  - A command with shell variable expansion still prompted.
 
 Each probe ran in a disposable review worktree; probe files were removed afterwards.
 
@@ -82,6 +88,7 @@ pages, and Grok's installed user guide (permissions and safety, configuration, s
 hooks).
 
 **Limits.**
-- One macOS host, one launcher (Paseo), Codex 0.163.0 and Grok 1.0.70.
-- Claude Code as a reviewer and Linux hosts were not exercised.
+- One macOS host, one launcher (Paseo), Codex 0.163.0, Grok 1.0.70 and Claude Code
+  2.1.302; Claude Code was probed once, with one model.
+- Linux hosts were not exercised.
 - The recipes record observations, not guarantees for other versions.

@@ -22,7 +22,7 @@
     "Preserve portable account runtime details: review-transfer destination/input-manifest/authority preflight and inspection of available action records; no personal launcher grant, new schema or isolation requirement.",
     "Review correction: disambiguate the pre-merge endpoint restriction from entering a readiness handoff; merge, auto-merge and queue operations remain prohibited.",
     "Routes explicitly requested formal verification setup and rechecks to the portable pstack formal pair; bounded results feed existing evidence gates without a new stage.",
-    "Reviewer execution readiness (2026-10-30): reviewers get the narrowest host setting that runs required checks without coordinator approvals, a preflight in their own environment, offline evidence and an integrity check against a record kept outside the reviewer checkout; host recipes and the stdlib review_workspace.py helper record verified Codex, Grok and Antigravity settings."
+    "Reviewer execution readiness (2026-10-30): reviewers get the narrowest host setting that runs required checks without coordinator approvals, a preflight in their own environment, offline evidence and an integrity check against a record kept outside the reviewer checkout; host recipes and the stdlib review_workspace.py helper record verified Codex, Grok, Antigravity and Claude Code settings."
   ],
   "skill_dependencies": [
     "planning-with-files",
