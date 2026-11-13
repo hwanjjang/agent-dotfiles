@@ -557,7 +557,7 @@
         "Read existing vocabulary and any context map; surface conflicts instead of silently redefining terms.",
         "Challenge vague concepts with specific scenarios and cross-check claimed behavior against code.",
         "Write resolved meanings immediately in the relevant glossary, keeping implementation details out.",
-        "Create files only when there is material to record.",
+        "Create files only when there is material to record. Before creating a glossary or ADR directory, use the location that project instructions name or that already exists for that domain context.",
         "Offer an ADR only for a hard-to-reverse, surprising choice made between real alternatives."
       ],
       "outputs": [
@@ -589,7 +589,8 @@
           ]
         ],
         "adaptation_notes": [
-          "The adopted skill supports multiple domain contexts through GLOSSARY-MAP.md. Merely reading a glossary is not a reason to run this workflow."
+          "The adopted skill supports multiple domain contexts through GLOSSARY-MAP.md. Merely reading a glossary is not a reason to run this workflow.",
+          "Local adaptation: an existing glossary or ADR location for a domain context is reused instead of starting a second one; upstream relies on a setup skill that is not imported."
         ],
         "calls": [],
         "sources": [
