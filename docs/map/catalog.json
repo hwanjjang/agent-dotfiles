@@ -751,6 +751,7 @@
       "behavior": [
         "Map decisions and their prerequisites so dependent questions wait for earlier answers.",
         "Ask the current frontier in a numbered round with recommended answers; a yes accepts the recommendation.",
+        "Keep each question\u2019s number for the session: carry unanswered and deferred questions under their numbers, number new questions after the highest used, and close a question made moot by a changed goal explicitly.",
         "Find environmental facts from available sources instead of asking the user to do that research.",
         "Recompute the frontier after answers and reuse decisions already established.",
         "Finish when consequential choices are resolved or bounded and no material assumption remains hidden."
@@ -786,7 +787,8 @@
         ],
         "adaptation_notes": [
           "AK stops at consequential readiness rather than literally exhausting every imaginable question.",
-          "A finished interview does not grant implementation authority or require another approval of already settled decisions."
+          "A finished interview does not grant implementation authority or require another approval of already settled decisions.",
+          "Local adaptation: stable question numbers across rounds; upstream has open reports on renumbering and no decision yet."
         ],
         "calls": [],
         "sources": [

@@ -12,11 +12,12 @@
   },
   "adaptations": [
     "Made fact discovery portable and conditional on delegation availability.",
-    "Bounded completion to consequential decisions and reused existing authorization."
+    "Bounded completion to consequential decisions and reused existing authorization.",
+    "Question numbers are stable for the session: a partly answered round stays open and its unanswered questions return under their numbers and wording before new ones, new questions take numbers after the highest used, a deferred question stays open, and a question made moot by a changed goal is closed explicitly without reusing its number. Basis: mattpocock/skills issue #1406 reports renumbering and partly answered rounds treated as finished; it is open without a maintainer decision. The related upstream proposals to mark question stakes (#1386) and to add a blank answer sheet (#1411) are separate and are not adopted here. Added on 2026-11-13 by AK's decision after a local evaluation."
   ],
   "skill_dependencies": [],
   "runtime_requirements": [
     "User interaction and source inspection."
   ],
-  "validation": "Source inspected; client discovery and behavioral execution not yet verified."
+  "validation": "Source inspected. On 2026-11-13 the numbering adaptation was evaluated with fresh Claude Fable 5.2 subagents that continued four scripted interview transcripts (a partly answered round, a late answer to an earlier question, a deferred question, a changed goal), two runs per text. With the earlier text 6 of 8 continuations kept numbers stable; one deferral run and one changed-goal run restarted numbering at Q1, so a number meant two questions. With the adapted text 8 of 8 kept numbers stable and closed moot questions explicitly. No run dropped an open question. The pull request records repeats on the final files. Limits: the earlier rounds were scripted, one model, two runs per cell. Not verified: client discovery, live multi-round sessions, other hosts and models, the unchanged parts of the method."
 }
